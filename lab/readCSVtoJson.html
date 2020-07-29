@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <label for="input-csv">Choose your file</label>
+    <input type="file" accept=".csv" id="csv-reader">
+    <script>
+        window.onload = () => {
+            document.querySelector('#csv-reader').addEventListener('change', (event) => {
+                var fileReader = new FileReader()
+                fileReader.onload = (e) => {
+                    var csv = e.target.result
+                    // console.log('result: ', e.target.result)
+                    convertToJSON(csv)
+                }
+                fileReader.readAsBinaryString(event.target.files[0])
+            })
+
+            const convertToJSON = (csv)=>{
+                const lines = csv.split('\n')
+                var resultsInJSON = {}
+                const headers = lines[0].split(",")
+                // console.log('lines: ', lines)
+                // console.log('headers: ', headers)
+                for(var i=1; i< lines.length; i++){
+                    const line = lines[i].split(",")
+                    var obj = {}
+                    for(var j=0; j<line.length; j++){
+                        obj[headers[j]] = line[j]
+                    }
+                    resultsInJSON[i-1] = obj
+                    // results.push(obj)
+
+                }
+                console.log('results in json: ', resultsInJSON)
+
+               
+            }
+        }
+    </script>
+</body>
+
+</html>
