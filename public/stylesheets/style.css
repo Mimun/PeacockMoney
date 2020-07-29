@@ -6,3 +6,18 @@ body {
 a {
   color: #00B7FF;
 }
+
+div#main-container {
+}
+#auth-form {
+  position: absolute;
+  height: 200px;
+  width: 400px;
+  top: 50%;
+  left: 50%;
+  margin-top: -100px;
+  margin-left: -200px;
+  padding: 0;
+}
+#auth-form .input-group {margin-bottom: 10px;}
+#auth-form .panel-body {text-align: center;}
