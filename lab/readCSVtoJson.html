@@ -12,14 +12,16 @@
     <input type="file" accept=".csv" id="csv-reader">
     <script>
         window.onload = () => {
+            window.location = "data:text/csv;base64,77u/" + btoa("foo,bar\r\naaa,bbb")
             document.querySelector('#csv-reader').addEventListener('change', (event) => {
+                const file = event.target.files[0]
                 var fileReader = new FileReader()
                 fileReader.onload = (e) => {
                     var csv = e.target.result
                     // console.log('result: ', e.target.result)
                     convertToJSON(csv)
                 }
-                fileReader.readAsBinaryString(event.target.files[0])
+                fileReader.readAsText(file, 'ISO-8859-1')
             })
 
             const convertToJSON = (csv)=>{
