@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Simple Sidebar - Start Bootstrap Template</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../node_modules/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../node_modules/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+  <link href="../node_modules/material-components-web/dist/material-components-web.min.js">
+
+  <!-- Custom styles for this template -->
+  <style>
+    @import url("../node_modules/font-awesome/css/font-awesome.min.css");
+
+    #wrapper {
+      overflow-x: hidden;
+    }
+
+    #sidebar-wrapper {
+      min-height: 100vh;
+      margin-left: -15rem;
+      -webkit-transition: margin .25s ease-out;
+      -moz-transition: margin .25s ease-out;
+      -o-transition: margin .25s ease-out;
+      transition: margin .25s ease-out;
+    }
+
+    #sidebar-wrapper .sidebar-heading {
+      padding: 0.875rem 1.25rem;
+      font-size: 1.2rem;
+    }
+
+    #sidebar-wrapper .list-group {
+      width: 15rem;
+    }
+
+    #page-content-wrapper {
+      min-width: 100vw;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: 0;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar-wrapper {
+        margin-left: 0;
+      }
+
+      #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+      }
+
+      #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">Happy Money </div>
+      <div class="list-group list-group-flush">
+        <a href="#" class="list-group-item list-group-item-action bg-light">Dashboard</a>
+
+        <!-- Nhac nho -->
+        <a href="#" data-toggle="collapse" data-target="#contract-list"
+          class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
+            Nhac nho </span> <span class="fa fa-chevron-left pull-right"></span> </a>
+        <ul class="sub-menu collapse" id="contract-list">
+          <li class="active"><a href="#" class="list-group-item list-group-item-action bg-light">Hop dong cho</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu qua han</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu sap phai thuc hien</a></li>
+        </ul>
+
+        <!-- Quan ly hop dong -->
+        <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly hop dong</a>
+
+        <!-- Quan ly tham dinh gia -->
+        <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tham dinh gia</a>
+
+        <!-- Tao moi hop dong -->
+        <a href="#" class="list-group-item list-group-item-action bg-light">Tao moi hop dong</a>
+
+        <!-- Quan ly tai san -->
+        <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a>
+
+        <!-- Thong ke bao cao -->
+        <a href="#" class="list-group-item list-group-item-action bg-light">Thong ke/Bao cao</a>
+
+        <!-- Quan ly he thong -->
+        <a href="#" data-toggle="collapse" data-target="#contract-type-list"
+          class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
+            Quan ly he thong </span> <span class="fa fa-chevron-left pull-right"></span> </a>
+        <ul class="collapse" id="contract-type-list" style="padding: 0; margin: 0;">
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau hop dong</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau hop dong</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau phieu</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau phieu</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly khach hang</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
+          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly mau thong ke</a></li>
+          <li><a href="./quanLyThamDinhGia.html" class="list-group-item list-group-item-action bg-light">Quan ly tham
+              dinh gia</a></li>
+
+
+        </ul>
+
+
+
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <!-- navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-bars"></i></button>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- papge content -->
+      <div class="container-fluid">
+        <h1 class="mt-4">Simple Sidebar</h1>
+        <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on
+          larger screens. When toggled using the button below, the menu will change.</p>
+        <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional,
+          and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the
+          menu when clicked.</p>
+        <template id="quan-ly-tham-dinh-gia">
+
+          <style>
+
+            .container {
+              width: 100%;
+              border: 1px solid lightgrey;
+            }
+            .header-row-div{
+              background-color: lightgrey;
+              justify-content: space-between;
+            }
+            .row-div{
+              justify-content: space-between;
+
+            }
+            .header-cell-div{
+              font-weight: bold;
+              padding: 15px;
+            }
+            .cell-div{
+              padding: 15px;
+
+            }
+          </style>
+          <div class="metadata-container" style="display: flex;"></div>
+          <div class="mdc-data-table" style="width: 50%">
+            <!-- <div class="label" data-control-type="label">
+            </div>
+            <div class="input" data-control-type="input">
+            </div> -->
+          </div>
+
+
+        </template>
+        <input type="file" accept=".csv" id="csv-reader" />
+
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="../node_modules//jquery/dist/jquery.min.js"></script>
+  <script src="../node_modules/mdbootstrap/js/bootstrap.min.js"></script>
+
+  <!-- Menu Toggle Script -->
+  <script>
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+    window.onload = () => {
+      // window.location = "data:text/csv;base64,77u/" + btoa("foo,bar\r\naaa,bbb")
+
+      // convert csv to json
+      document.querySelector('#csv-reader').addEventListener('change', (event) => {
+
+
+        const file = event.target.files[0]
+        var fileReader = new FileReader()
+        fileReader.onload = (e) => {
+          var csv = e.target.result
+          console.log('result: ', e.target.result)
+          convertToJSON(csv)
+        }
+        fileReader.readAsText(file, 'ISO-8859-1')
+      })
+
+      const convertToJSON = (csv) => {
+        const lines = csv.split('\n')
+        var resultsInJSON = {}
+        var itemObjs = []
+
+        const type = lines[0].split(",")[0]
+        const category = lines[0].split(",")[1]
+        const typeValue = lines[1].split(",")[0]
+        const categoryValue = lines[1].split(",")[1]
+        const labels = lines[2].split(",")
+
+        for (var i = 3; i < lines.length - 1; i++) {
+          const line = lines[i].split(",")
+          var itemObj = {}
+          var infos = []
+
+          for (var j = 0; j < line.length; j++) {
+            var infoObj = {}
+            if (line[j] !== "") {
+              infoObj["name"] = labels[j]
+              infoObj["value"] = line[j]
+              infos.push(infoObj)
+            }
+
+          }
+          itemObj["infos"] = infos
+          itemObj["metadata"] = {
+            type: typeValue,
+            category: categoryValue
+          }
+          resultsInJSON[i - 1] = itemObj
+          // results.push(obj)
+
+        }
+        itemObjs = Object.values(resultsInJSON)
+
+        if (itemObjs.length !== 0) {
+          generateHTML(itemObjs)
+        }
+
+
+      }
+
+    }
+
+    const generateHTML = (itemObjs) => {
+      const template = document.querySelector('#quan-ly-tham-dinh-gia')
+      const detailContainer = template.content.querySelector('.mdc-data-table')
+
+      // for item metadata
+      const metadataContainer = template.content.querySelector('.metadata-container')
+      Object.keys(itemObjs[0].metadata).forEach((key, index) => {
+        const keyDiv = document.createElement('div')
+        keyDiv.style.margin = '5px'
+        keyDiv.style.fontWeight = 'bold'
+        keyDiv.innerHTML = key + ": " + itemObjs[0].metadata[key]
+        metadataContainer.appendChild(keyDiv)
+
+      })
+
+      itemObjs.map(itemObj => {
+        // create a column for row
+
+
+        for (var i = 0; i < itemObj.infos.length; i++) {
+          const row = document.createElement('div')
+          
+          row.style.display = 'flex'
+          row.style.flexDirection = 'row'
+          
+          const label = document.createElement('div')
+
+          if (i != 0) {
+            // body
+            row.className = 'mdc-data-table__row row-div'
+
+            label.innerHTML = itemObj.infos[i].name
+            label.className = 'mdc-data-table__cell cell-div'
+            
+
+            const value = document.createElement('div')
+            value.innerHTML = itemObj.infos[i].value
+            value.className = 'mdc-data-table__cell cell-div'
+          
+
+            row.appendChild(label)
+            row.appendChild(value)
+
+          } else {
+            // header
+            row.className = 'mdc-data-table__header-row header-row-div'
+
+            label.innerHTML = itemObj.infos[i].value
+            label.className = 'mdc-data-table__header-cell header-cell-div'
+            
+
+            const value = document.createElement('div')
+            value.className = 'mdc-data-table__header-cell header-cell-div'
+            value.innerHTML = "null"
+            value.style.visibility = "hidden"
+
+            row.appendChild(label)
+            row.appendChild(value)
+          }
+          detailContainer.appendChild(row)
+
+        }
+
+
+
+
+      })
+
+      const clone = document.importNode(template.content, true)
+      document.body.querySelector('.container-fluid').appendChild(clone)
+    }
+  </script>
+
+</body>
+
+</html>
