@@ -3,12 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const { dirname } = require('path');
-
 var app = express();
+
+const mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,6 +30,13 @@ app.use('/users', usersRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+// connect to mongo
+mongoose.connect(mongooseURL, {useNewUrlParser: true})
+var db = mongoose.connection
+db.on('open', ()=>{
+  console.log('Connected to database successfully!')
+})
 
 // error handler
 app.use(function(err, req, res, next) {

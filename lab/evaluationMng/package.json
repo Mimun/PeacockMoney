@@ -6,6 +6,7 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "ajax": "0.0.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
@@ -13,9 +14,12 @@
     "font-awesome": "^4.7.0",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
+    "jsonschema": "^1.2.6",
     "material-components-web": "^7.0.0",
     "mdbootstrap": "^4.19.1",
+    "mongoose": "^5.9.27",
     "morgan": "~1.9.1",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "popper": "^1.0.1"
   }
 }

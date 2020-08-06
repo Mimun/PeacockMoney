@@ -12,8 +12,14 @@
 
   <!-- Bootstrap core CSS -->
   <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+  <!-- material design.io -->
   <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
-  <link href="/material-components-web/dist/material-components-web.min.js">
+  <script src="/material-components-web/dist/material-components-web.min.js"></script>
+  <link href="/font-awesome/css/font-awesome.min.css">
 
   <!-- Custom styles for this template -->
   <style>
@@ -170,74 +176,191 @@
       </nav>
 
       <!-- papge content -->
-      <div class="container-fluid">
-        <h1 class="mt-4">Simple Sidebar</h1>
+      <div class="container-fluid" style="display: flex; flex-direction: column">
+        <h1 class="mt-4">Quan Ly Tham Dinh Gia</h1>
         <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on
           larger screens. When toggled using the button below, the menu will change.</p>
         <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional,
           and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the
           menu when clicked.</p>
-        <template id="quan-ly-tham-dinh-gia">
 
+        <!-- template of list of items -->
+        <template id="quan-ly-tham-dinh-gia">
+          <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+          <link href="/font-awesome/css/font-awesome.min.css">
           <style>
+            @import url("/font-awesome/css/font-awesome.min.css");
 
             .container {
               width: 100%;
               border: 1px solid lightgrey;
             }
-            .header-row-div{
+
+            .header-row-div {
               background-color: lightgrey;
               justify-content: space-between;
             }
-            .row-div{
+
+            .row-div {
               justify-content: space-between;
 
             }
-            .header-cell-div{
+
+            .header-cell-div {
               font-weight: bold;
               padding: 15px;
             }
-            .cell-div{
+
+            .cell-div {
               padding: 15px;
 
             }
+
+            input:disabled {
+              border: none;
+              background-color: inherit;
+              width: 100%;
+              cursor: pointer !important;
+            }
+
+            .header-row-div:hover {
+              cursor: pointer;
+              background-color: lightblue;
+            }
           </style>
           <div class="metadata-container" style="display: flex;"></div>
-          <div class="mdc-data-table" style="width: 50%">
-            <!-- <div class="label" data-control-type="label">
-            </div>
-            <div class="input" data-control-type="input">
-            </div> -->
-          </div>
+          <div class="mdc-data-table" id="item-list-container" style="width: 60vw; margin: 0 10vw"></div>
+          <!-- submit button -->
 
 
         </template>
-        <input type="file" accept=".csv" id="csv-reader" />
+
+        <!-- template of data field -->
+        <template id="field-data">
+          <div id="data-fields-container" style="display: flex;">
+            <div class="md-form">
+              <input type="text" class="form-control">
+              <label for="name">Ten Truong</label>
+            </div>
+            <div class="md-form">
+              <input type="text" class="form-control">
+              <label for="value">Gia Tri</label>
+            </div>
+            
+          </div>
+        </template>
+
+        <div id="input-search-container" style="display: flex; justify-content: space-between;">
+          <div id="input-container">
+            <div class="custom-file">
+              <input type="file" accept=".csv" id="csv-reader" lass="custom-file-input"
+                aria-describedby="inputGroupFileAddon01" />
+              <label class="custom-file-label" for="csv-reader">Choose file</label>
+            </div>
+
+          </div>
+          <div id="search-container">
+
+          </div>
+
+        </div>
+        <!-- detail item modal when clicking to an item -->
+        <div class="modal fade" id="itemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div id="item-detail"></div>
+              <div class="button-options">
+                <button class="btn btn-primary" id="edit-btn" style="position: relative; float: right;">Edit</button>
+                <button class="btn btn-danger" id="delete-btn" style="position: relative; float: right;">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- add item modal when clicking to an add item button -->
+        <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+          aria-hidden="true">
+          <!-- Add .modal-dialog-centered to .modal-dialog to vertically center the modal -->
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row-div">
+                  <!-- Material input -->
+                  <div id="data-fields-container" style="display: flex;">
+                    <div class="md-form">
+                      <label for="name">Type</label>
+                    </div>
+                    <div class="md-form">
+                      <input type="text"  class="form-control">
+                      <label for="value">Category</label>
+                    </div>
+                    
+                  </div>
+                  <div id="data-field">
+
+                  </div>
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button id="add-field-button" type="button" class="btn btn-primary">Them Truong Du Lieu</button>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- list of items container -->
+        <div id="table-container"></div>
+
+        <!-- submit button -->
+        <div id="button-container"></div>
+
+        <!-- add item button -->
+        <div id="add-item-button-container"></div>
+
+        <!-- pagination -->
+        <div id="page-navigation-container"></div>
+
+
 
       </div>
     </div>
-    <!-- /#page-content-wrapper -->
+
 
   </div>
-  <!-- /#wrapper -->
 
-
-  <!-- Bootstrap core JavaScript -->
-  <script src="/jquery/dist/jquery.min.js"></script>
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
+  <script src="/mdbootstrap/js/popper.min.js"></script>
   <script src="/mdbootstrap/js/bootstrap.min.js"></script>
-
-  <!-- Menu Toggle Script -->
-  <script>
+  <script src="/mdbootstrap/js/mdb.min.js"></script>
+  <script type="module">
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
     });
+
+    const template = document.querySelector('#quan-ly-tham-dinh-gia')
+
+    const dataTemplate = document.querySelector('#field-data')
+
+    // original item list (after removing duplicated items) for searching
+    var originItemList = null
+
     window.onload = () => {
       // window.location = "data:text/csv;base64,77u/" + btoa("foo,bar\r\naaa,bbb")
 
       // convert csv to json
       document.querySelector('#csv-reader').addEventListener('change', (event) => {
-
 
         const file = event.target.files[0]
         var fileReader = new FileReader()
@@ -245,62 +368,223 @@
           var csv = e.target.result
           console.log('result: ', e.target.result)
           convertToJSON(csv)
+
         }
         fileReader.readAsText(file, 'ISO-8859-1')
+
+
+
       })
+      const searchContainer = document.querySelector('#search-container')
+      if (searchContainer.firstChild) {
+        searchContainer.innerHTML = ''
+      }
+      const search = document.createElement('form')
+      search.className = 'input-group form-sm form-2 pl-0'
+      search.innerHTML = `
+        <input id="search" class="form-control my-0 py-1" type="text" placeholder="Search" aria-label="Search">
+        <div class="input-group-prepend">
+          <span class="input-group-text cyan lighten-3" id="basic-text1"><i class="fa fa-search text-grey"
+              aria-hidden="true"></i></span>
+        </div>`
+      searchContainer.appendChild(search)
 
-      const convertToJSON = (csv) => {
-        const lines = csv.split('\n')
-        var resultsInJSON = {}
-        var itemObjs = []
 
-        const type = lines[0].split(",")[0]
-        const category = lines[0].split(",")[1]
-        const typeValue = lines[1].split(",")[0]
-        const categoryValue = lines[1].split(",")[1]
-        const labels = lines[2].split(",")
 
-        for (var i = 3; i < lines.length - 1; i++) {
-          const line = lines[i].split(",")
-          var itemObj = {}
-          var infos = []
+    }
 
-          for (var j = 0; j < line.length; j++) {
-            var infoObj = {}
-            if (line[j] !== "") {
-              infoObj["name"] = labels[j]
-              infoObj["value"] = line[j]
-              infos.push(infoObj)
-            }
+    const convertToJSON = (csv) => {
+      const lines = csv.split('\n')
+      var resultsInJSON = {}
+      var itemObjs = []
 
+      const type = lines[0].split(",")[0]
+      const category = lines[0].split(",")[1]
+      const typeValue = lines[1].split(",")[0]
+      const categoryValue = lines[1].split(",")[1]
+      const labels = lines[2].split(",")
+
+      for (var i = 3; i < lines.length - 1; i++) {
+        const line = lines[i].split(",")
+        var itemObj = {}
+        var infos = []
+
+        for (var j = 0; j < line.length; j++) {
+          var infoObj = {}
+          if (line[j] !== "") {
+            infoObj["name"] = labels[j]
+            infoObj["value"] = line[j]
+            infos.push(infoObj)
           }
-          itemObj["infos"] = infos
-          itemObj["metadata"] = {
-            type: typeValue,
-            category: categoryValue
-          }
-          resultsInJSON[i - 1] = itemObj
-          // results.push(obj)
 
         }
-        itemObjs = Object.values(resultsInJSON)
-        console.log('item object: ', itemObjs)
-
-        if (itemObjs.length !== 0) {
-          generateHTML(itemObjs)
+        itemObj["infos"] = infos
+        itemObj["metadata"] = {
+          type: typeValue,
+          category: categoryValue
         }
-
+        resultsInJSON[i - 1] = itemObj
+        // results.push(obj)
 
       }
+      itemObjs = Object.values(resultsInJSON)
+      console.log('json: ', itemObjs)
+      if (itemObjs.length !== 0) {
+        // create pagination
+        originItemList = itemObjs.filter((info, index) => {
+          const _thing = JSON.stringify(info);
+          return index === itemObjs.findIndex(obj => {
+            return JSON.stringify(obj) === _thing
+          })
+        })
+        createPagination(originItemList)
+      }
+
+
+    }
+
+    const createPagination = itemObjs => {
+      // pagination
+      const pageNavigationContainer = document.querySelector('#page-navigation-container')
+      if (pageNavigationContainer.firstChild) {
+        pageNavigationContainer.innerHTML = ''
+      }
+      const pageNavigation = document.createElement('div')
+      pageNavigation.innerHTML = `<nav aria-label="Page navigation example" id="page-navigation">
+          <ul class="pagination pg-blue">
+            <li class="page-item ">
+              <button class="page-link" tabindex="-1" id="prev" disabled='false'>Previous</button>
+            </li>
+            <div class="li-list" style="display: flex;"></div>
+            <li class="page-item ">
+              <button class="page-link" id="next" disabled='false'>Next</button>
+            </li>
+          </ul>
+        </nav>`
+      pageNavigationContainer.appendChild(pageNavigation)
+
+      // duplicate object remove
+
+      var list = itemObjs
+      var pageList = []
+      var currentPage = 1
+      var numberPerPage = 5
+      var numberOfPages = Math.ceil(list.length / numberPerPage)
+
+      const generateList = () => {
+
+        for (var i = 1; i <= numberOfPages; i++) {
+          const li = document.createElement('li')
+          li.className = 'page-item'
+
+          const button = document.createElement('button')
+          button.className = 'page-link'
+          button.innerHTML = i
+          button.id = i
+          button.addEventListener('click', (evt) => {
+            // randomPage(i)
+            randomPage(parseInt(evt.target.innerHTML))
+          })
+          li.appendChild(button)
+
+          document.querySelector('.li-list').appendChild(li)
+
+        }
+
+      }
+      generateList()
+
+      const nextPage = () => {
+        currentPage += 1
+        loadList()
+      }
+
+      const prevPage = () => {
+        currentPage -= 1
+        loadList()
+      }
+
+      const randomPage = (page) => {
+        currentPage = page
+        loadList()
+      }
+
+      const loadList = () => {
+        var begin = ((currentPage - 1) * numberPerPage)
+        var end = begin + numberPerPage
+
+        pageList = list.slice(begin, end)
+        generateHTML(pageList)
+        check()
+
+      }
+
+      const check = () => {
+        document.querySelector('#prev').disabled = currentPage == 1 ? true : false
+        document.querySelector('#next').disabled = currentPage == numberOfPages ? true : false
+      }
+
+      loadList()
+      document.querySelector('#prev').addEventListener('click', () => {
+        prevPage()
+      })
+      document.querySelector('#next').addEventListener('click', () => {
+        nextPage()
+      })
+
+      // search bar
+      document.querySelector('#search').addEventListener('change', (event) => {
+        event.preventDefault()
+        searchFunction(event.target.value, originItemList)
+      })
+
+      // add data field 
+      
+
+      const addItemButtonContainer = document.querySelector('#add-item-button-container')
+      if (addItemButtonContainer.firstChild) {
+        addItemButtonContainer.innerHTML = ''
+      }
+      const addItemButton = document.createElement('button')
+      addItemButton.className = 'btn btn-primary px-3 '
+      addItemButton.setAttribute('data-toggle', 'modal')
+      addItemButton.setAttribute('data-target', '#addItemModal')
+      addItemButton.innerHTML = `<i class="fa fa-plus" aria-hidden="true"></i>`
+      addItemButton.addEventListener('click', () => {
+        console.log('abc')
+       
+      })
+      addItemButtonContainer.appendChild(addItemButton)
+
+      const addDataFieldButton = document.querySelector('#add-field-button')
+      addDataFieldButton.addEventListener('click', ()=>{
+        const clone = document.importNode(dataTemplate.content, true)
+        document.querySelector('#data-field').appendChild(clone)
+      })
+      
 
     }
 
     const generateHTML = (itemObjs) => {
-      const template = document.querySelector('#quan-ly-tham-dinh-gia')
-      const detailContainer = template.content.querySelector('.mdc-data-table')
+      if (document.querySelector('#item-list-container')) {
+        document.querySelector('#item-list-container').parentNode.innerHTML = ''
+      }
+      if (document.querySelector('.metadata-container')) {
+        document.querySelector('.metadata-container').parentNode.innerHTML = ''
+
+      }
+      const clone = document.importNode(template.content, true)
+
+      const itemListContainer = clone.querySelector('#item-list-container')
+      if (itemListContainer.firstChild) {
+        itemListContainer.innerHTML = ''
+      }
 
       // for item metadata
-      const metadataContainer = template.content.querySelector('.metadata-container')
+      const metadataContainer = clone.querySelector('.metadata-container')
+      if (metadataContainer.firstChild) {
+        metadataContainer.innerHTML = ''
+      }
       Object.keys(itemObjs[0].metadata).forEach((key, index) => {
         const keyDiv = document.createElement('div')
         keyDiv.style.margin = '5px'
@@ -310,61 +594,207 @@
 
       })
 
+      // item list
       itemObjs.map(itemObj => {
-        // create a column for row
+        // item container
+        const objDiv = document.createElement('div')
+        objDiv.className = "object-div"
+        objDiv.C_DATA = itemObj
+        objDiv.setAttribute('custom_id', itemObj.infos.map(info => {
+          return info.value
+        }).join("-"))
 
+        objDiv.setAttribute('c_data', true)
 
-        for (var i = 0; i < itemObj.infos.length; i++) {
+        // create item info row
+        for (var i = 0; i < objDiv.C_DATA.infos.length; i++) {
+          // create a row div
           const row = document.createElement('div')
-          
           row.style.display = 'flex'
           row.style.flexDirection = 'row'
-          
-          const label = document.createElement('div')
 
           if (i != 0) {
-            // body
+            // body of table
+
+            // body row
             row.className = 'mdc-data-table__row row-div'
 
-            label.innerHTML = itemObj.infos[i].name
+            // label of info
+            const label = document.createElement('input')
+            label.setAttribute('value', objDiv.C_DATA.infos[i].name)
+            label.setAttribute('disabled', true)
+            label.setAttribute('obj_property', 'name')
+            // label.obj_property = 'name'
             label.className = 'mdc-data-table__cell cell-div'
-            
 
-            const value = document.createElement('div')
-            value.innerHTML = itemObj.infos[i].value
+            // value of info
+            const value = document.createElement('input')
+            value.setAttribute('value', objDiv.C_DATA.infos[i].value)
+            value.setAttribute('disabled', true)
+            value.setAttribute('obj_property', 'value')
+            // value.obj_property = 'value'
             value.className = 'mdc-data-table__cell cell-div'
-          
 
             row.appendChild(label)
             row.appendChild(value)
 
           } else {
-            // header
+            // header of table
+
+            // header row
             row.className = 'mdc-data-table__header-row header-row-div'
+            row.setAttribute('data-toggle', 'modal')
+            row.setAttribute('data-target', '#itemModal')
+            row.addEventListener('click', (event) => {
+              // clone specific item and append it to the modal
+              document.querySelector('#item-detail').innerHTML = ''
+              const cloneDiv = event.target.parentNode.cloneNode(true)
+              cloneDiv.querySelector('.header-row-div').removeEventListener('click', () => {
+                null
+              })
+              cloneDiv.C_DATA = objDiv.C_DATA
+              // cloneDiv.custom_id = objDiv.custom_id
+              document.body.querySelector('#item-detail').appendChild(cloneDiv)
+            })
 
-            label.innerHTML = itemObj.infos[i].value
+            // info label
+            const label = document.createElement('input')
+            label.setAttribute('value', objDiv.C_DATA.infos[i].value)
+            label.setAttribute('disabled', true)
+            label.setAttribute('obj_property', 'value')
             label.className = 'mdc-data-table__header-cell header-cell-div'
-            
 
-            const value = document.createElement('div')
-            value.className = 'mdc-data-table__header-cell header-cell-div'
-            value.innerHTML = "null"
-            value.style.visibility = "hidden"
-
+            // append label and value of info into a row
             row.appendChild(label)
-            row.appendChild(value)
+
           }
-          detailContainer.appendChild(row)
 
+          // append row into item container
+          objDiv.appendChild(row)
+
+          // append rows into detail container
+          itemListContainer.appendChild(objDiv)
         }
+      })
+
+      // append clone table to table container
+      document.body.querySelector('#table-container').appendChild(clone)
+
+      // submit button
+      const buttonContainer = document.querySelector('#button-container')
+      if (document.querySelector('#button-container').firstChild) {
+        buttonContainer.innerHTML = ''
+      }
+      const submitBtn = document.createElement('button')
+      submitBtn.className = 'btn btn-primary'
+      submitBtn.id = 'submit-button'
+      submitBtn.innerHTML = "Submit"
+      submitBtn.addEventListener('click', () => {
+        $.ajax({
+          type: 'POST',
+          data: JSON.stringify(itemObjs),
+          contentType: 'application/json',
+          url: 'http://localhost:3000/postItem',
+          success: (data) => {
+            console.log('Saved successfully!')
+          }
+        })
+      })
+      buttonContainer.appendChild(submitBtn)
+
+    }
+
+    // edit button in modal
+    function findNestedObj(entireObj, keyToFind, valToFind) {
+      let foundObj;
+      JSON.stringify(entireObj, (_, nestedValue) => {
+        if (nestedValue && nestedValue[keyToFind] === valToFind) {
+          foundObj = nestedValue;
+        }
+        return nestedValue;
+      });
+      return foundObj;
+    };
+
+    // edit button
+    document.querySelector('#edit-btn').addEventListener('click', () => {
+      const itemDetail = document.querySelector('#item-detail').firstChild
+      itemDetail.querySelectorAll('.cell-div').forEach(element => {
+        element.disabled ? element.removeAttribute('disabled') : element.setAttribute('disabled', true)
+        // when clicking to the editable input
+        element.addEventListener('click', (event) => {
+
+          // get C_DATA of objectDiv
+          var objectDiv = event.target.closest('div[class="object-div"]')
+          var cData = objectDiv.C_DATA
+          var CId = objectDiv.getAttribute('custom_id')
+
+          // find the info object in the C_DATA
+          var oldObj = findNestedObj(cData, event.target.getAttribute('obj_property'), event.target.getAttribute('value'))
+
+          // "clone" found info object
+          let newObj = oldObj
+
+          var propName = event.target.getAttribute('obj_property')
+          event.target.addEventListener('change', (event) => {
+            const index = cData.infos.indexOf(oldObj)
+            if (index > -1) {
+              cData.infos.splice(index, 1)
+            }
+            var propValue = event.target.value
+
+            newObj[propName] = propValue
+            event.target.setAttribute('value', propValue)
+            cData.infos.push(newObj)
 
 
+            const realObjDiv = document.querySelectorAll('div[custom_id = "' + CId + '"]')[1]
+            const realCellDivs = realObjDiv.querySelectorAll('.cell-div')
+            var j = 1
+            for (var i = 0; i < realCellDivs.length; i += 2) {
+              realCellDivs[i].setAttribute('value', cData.infos[j][realCellDivs[i].getAttribute('obj_property')])
+              realCellDivs[i + 1].setAttribute('value', cData.infos[j][realCellDivs[i + 1].getAttribute('obj_property')])
+              j += 1
+            }
+
+          })
+        })
 
 
       })
+    })
 
-      const clone = document.importNode(template.content, true)
-      document.body.querySelector('.container-fluid').appendChild(clone)
+    // search function
+    const searchFunction = (itemValue, itemArray) => {
+      console.log('new item array: ', itemArray)
+      var foundItems = []
+      itemArray.map(obj => {
+        obj.infos.forEach(info => {
+          if (JSON.stringify(info.value) === JSON.stringify(itemValue)) {
+            foundItems.push(obj)
+          }
+        })
+      })
+      console.log('item found: ', foundItems)
+      if (foundItems.length > 0) {
+        createPagination(foundItems)
+      } else {
+        createPagination(itemArray)
+      }
+
+    }
+
+    // check duplicate when loading from db
+    const checkDuplicate = (itemArray1, itemArray2) => {
+      itemArray1.forEach(obj1 => {
+        itemArray2.forEach(obj2 => {
+          if (JSON.stringify(obj1) === JSON.stringify(obj2)) {
+            itemArray1.splice(itemArray1.indexOf(obj1), 1)
+          }
+        })
+      })
+      itemArray1.concat(itemArray2)
+      generateHTML(itemArray1)
     }
   </script>
 
