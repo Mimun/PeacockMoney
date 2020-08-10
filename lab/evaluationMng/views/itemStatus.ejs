@@ -186,7 +186,7 @@
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
-        <h1 class="mt-4">Quan Ly Tham Dinh Gia</h1>
+        <h1 class="mt-4">Quan Ly Tinh Trang Tai San</h1>
         <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on
           larger screens. When toggled using the button below, the menu will change.</p>
         <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional,
@@ -479,13 +479,14 @@
 
       }
       itemObjs = Object.values(resultsInJSON)
+      console.log('itemObj: ', itemObjs)
 
       // check must have props
 
 
       if (itemObjs.length !== 0) {
         itemObjs = itemObjs.filter(item => {
-          var itemThatHasPrice = checkMustHaveInfos(item, "Tham dinh gia")
+          var itemThatHasPrice = checkMustHaveInfos(item, "Giam(%)")
           var itemThatHasName = checkMustHaveInfos(item, "Loai")
           if (itemThatHasPrice && itemThatHasName) {
             return item
@@ -775,6 +776,7 @@
       if (metadataContainer.firstChild) {
         metadataContainer.innerHTML = ''
       }
+      console.log('abcxyz: ', itemObjs)
       Object.keys(itemObjs[0].metadata).forEach((key, index) => {
         const keyDiv = document.createElement('div')
         keyDiv.style.margin = '5px'
@@ -876,7 +878,6 @@
       submitBtn.innerHTML = "Submit"
       submitBtn.style.margin = 'auto'
       submitBtn.addEventListener('click', () => {
-        console.log('origin item list before submitting: ', originItemList)
         $.ajax({
           type: 'POST',
           data: JSON.stringify(originItemList),
@@ -981,7 +982,10 @@
         e.target.setAttribute('data-dismiss', 'modal')
         var objectDiv = e.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"')
         var cData = objectDiv.C_DATA
-        var itemObj = Object.assign({}, cData)
+        var itemObj = {
+          metadata: cData.metadata,
+
+        }
         var infos = []
         objectDiv.querySelectorAll('div[class="data-field-container"]').forEach(element => {
           var info = {}
@@ -990,12 +994,10 @@
           })
           infos.push(info)
         })
-        itemObj = {...itemObj, infos: infos}
-        console.log('origin item list befor editing: ', originItemList)
+        itemObj["infos"] = infos
 
         originItemList.splice(originItemList.indexOf(cData), 1)
         originItemList.unshift(itemObj)
-        console.log('origin item list after editing: ', originItemList)
 
         createPagination(originItemList)
 
@@ -1069,9 +1071,12 @@
     }
 
     // check must have infos
-    if (originItemList.length !== 0) {
+    if(originItemList){
+      if (originItemList.length !== 0) {
       createPagination(originItemList)
     }
+    }
+    
   </script>
 
 </body>
