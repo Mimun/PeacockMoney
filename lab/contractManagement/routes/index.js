@@ -3,7 +3,11 @@ var router = express.Router();
 var Item = require('../models/item')
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res, next){
+  res.render('index', {})
+})
+
+router.get('/createNewContract', function(req, res, next) {
   Item.find({}, (err, results) => {
     if (err) throw err
     res.render('createNewContract', { dbItemObjs: results });
