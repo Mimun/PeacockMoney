@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+  <h1>Image selecting and cutting tool</h1>
+  <!-- <p>Welcome to <%= title %></p> -->
+  <div class="container">
+    <span>
+      <h2>Have to do</h2>
+      <ul style="border: solid;">
+        <li><code>npm install -s cropperjs</code></li>
+        <li>Adding <xmp>
+            app.use(express.static(path.join(__dirname)));
+          </xmp> in app.js</li>
+        <li> Adding
+          <pre>
+              <xmp>
+                <script type="module" src="Components/cropper/cropper.js"></script>
+              </xmp>
+            </pre> in index.ejs
+        </li>
+      </ul>
+    </span>
+  </div>
+  <cropper-wc title="abc"></cropper-wc>
+  <hr>
+  <img id = 'resultImg' class="img-fluid" alt="Responsive image">
+  <hr>
+  <button id = 'selectImg'type="button" class="btn btn-primary">Select Image</button>
+
+  <script type="module" src="Components/cropper/cropper.js"></script>
+  <script>
+
+    customElements.whenDefined('cropper-wc').then(() => {
+      console.log('defined')
+
+    })
+
+    cropper = document.querySelector('cropper-wc')
+    cropper.addEventListener('CROPPED', (evt) => {
+      // console.log('here', evt.detail['image'])
+      // resultImg.setAttribute('src',evt.detail['image'] )
+
+    })
+    selectImg.addEventListener('click', (evt)=>{
+      console.log('selectImg')
+      cropper.getImageData()
+    })
+
+    // convert base64 to png
+
+  </script>
+</body>
+
+</html>
