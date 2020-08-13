@@ -26,6 +26,10 @@ app.use(cookieParser());
 app.use(bodyParser.json())
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static(path.join(__dirname, 'js')));
+
+
 app.use('/eva', evaluationMng)
 
 app.use('/',validateToken, indexRouter);

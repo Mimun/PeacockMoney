@@ -36,10 +36,10 @@ function getToken(req, res, next) {
 function validateToken(req, res, next) {
     console.log('ValidateToken')
     const token = req.body.token
-    if (!token) {
-        res.render('login', { title: 'Invalidate' });
-        return;
-    }
+    // if (!token) {
+    //     res.render('login', { title: 'Invalidate' });
+    //     return;
+    // }
     next()
 }
 

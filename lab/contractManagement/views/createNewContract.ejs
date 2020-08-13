@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- Bootstrap core CSS -->
+  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+  <!-- material design.io -->
+  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="/material-components-web/dist/material-components-web.min.js"></script>
+  <link href="/font-awesome/css/font-awesome.min.css">
+</head>
+
+<body>
+  <style>
+
+  </style>
+
+  <!-- item list template -->
+  <%- include('../../evaluationMng/views/itemList.ejs') %>
+
+
+  <!-- page content -->
+  <div class="container" style="margin: 0; border: none;">
+    <div class="row" style="width: 100vw; height: 100%;">
+
+      <!-- item status column -->
+      <div class="col-sm" style="background-color: purple;">
+        <div id="item-status-list-table-container" style="overflow-y: auto;"></div>
+
+      </div>
+
+      <!-- contract column -->
+      <div class="col-sm-6">
+        <!-- contract form -->
+        <!-- Default form contact -->
+        <form class="text-center border border-light p-5" action="#!" style="width: 100%;">
+
+          <p class="h4 mb-4">Contact us</p>
+
+          <!-- Name -->
+          <input type="text" id="defaultContactFormName" class="form-control mb-4" placeholder="Name">
+
+          <!-- Email -->
+          <input type="email" id="defaultContactFormEmail" class="form-control mb-4" placeholder="E-mail">
+
+          <!-- Subject -->
+          <label>Subject</label>
+          <select class="browser-default custom-select mb-4">
+            <option value="" disabled>Choose option</option>
+            <option value="1" selected>Feedback</option>
+            <option value="2">Report a bug</option>
+            <option value="3">Feature request</option>
+            <option value="4">Feature request</option>
+          </select>
+
+          <!-- Message -->
+          <div class="form-group">
+            <textarea class="form-control rounded-0" id="exampleFormControlTextarea2" rows="3"
+              placeholder="Message"></textarea>
+          </div>
+
+          <!-- Copy -->
+          <div class="custom-control custom-checkbox mb-4">
+            <input type="checkbox" class="custom-control-input" id="defaultContactFormCopy">
+            <label class="custom-control-label" for="defaultContactFormCopy">Send me a copy of this message</label>
+          </div>
+
+          <!-- item evaluation -->
+          <p class="h4 mb-4">Thong tin tham dinh gia</p>
+
+          <div id="item-evaluation">
+
+          </div>
+
+          <!-- item status -->
+          <p class="h4 mb-4">Thong tin tinh trang san pham</p>
+
+          <div id="item-status">
+
+
+          </div>
+
+          <!-- Send button -->
+          <button class="btn btn-info btn-block" type="submit">Send</button>
+
+        </form>
+        <!-- Default form contact -->
+      </div>
+
+      <!-- item list column -->
+      <div class="col-sm" style="background-color: green;">
+        <div id="item-list-table-container" style="overflow-y: auto;"></div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- list of items container -->
+
+
+  <link href="/mdbootstrap/js/popper.min.js">
+  <!-- libs scripts -->
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
+  <script src="/mdbootstrap/js/popper.min.js"></script>
+  <script src="/mdbootstrap/js/bootstrap.min.js"></script>
+  <script src="/mdbootstrap/js/mdb.min.js"></script>
+
+  <script type="module">
+    import { generateHTML } from '/generateHTML.js'
+    var originItemList = <%- JSON.stringify(dbItemObjs) %>;
+
+    const template = document.querySelector('#quan-ly-tham-dinh-gia')
+  
+    const checkMustHaveInfos = (item, propName) => {
+      var isHaving = false
+      item.infos.forEach(info => {
+        if (info["name"] == propName) {
+          isHaving = true
+        }
+      })
+      return isHaving
+    }
+    const convertToJSON = (csv) => {
+      const lines = csv.split('\n')
+      var resultsInJSON = {}
+      var itemObjs = []
+
+      const type = lines[0].split(",")[0]
+      const category = lines[0].split(",")[1]
+      const typeValue = lines[1].split(",")[0]
+      const categoryValue = lines[1].split(",")[1]
+      const labels = lines[2].split(",")
+
+      for (var i = 3; i < lines.length - 1; i++) {
+        const line = lines[i].split(",")
+        var itemObj = {}
+        var infos = []
+
+        for (var j = 0; j < line.length; j++) {
+          var infoObj = {}
+          if (line[j] !== "") {
+            infoObj["name"] = labels[j]
+            infoObj["value"] = line[j]
+            infos.push(infoObj)
+          }
+
+        }
+        itemObj["infos"] = infos
+        itemObj["metadata"] = {
+          type: typeValue,
+          category: categoryValue
+        }
+        resultsInJSON[i - 1] = itemObj
+        // results.push(obj)
+
+      }
+      itemObjs = Object.values(resultsInJSON)
+
+      // check must have props
+
+
+      if (itemObjs.length !== 0) {
+        itemObjs = itemObjs.filter(item => {
+          var itemThatHasPrice = checkMustHaveInfos(item, "Tham dinh gia")
+          var itemThatHasName = checkMustHaveInfos(item, "Loai")
+          if (itemThatHasPrice && itemThatHasName) {
+            return item
+          }
+        })
+        console.log('itemobjs: ', itemObjs)
+        generateHTML(itemObjs, template, 'table-container')
+
+      }
+
+
+    }
+    
+    if (document.querySelector('#item-list-table-container').innerHTML) {
+      document.querySelector('#item-list-table-container').innerHTML = ""
+    }
+    if (document.querySelector('#item-status-list-table-container').innerHTML) {
+      document.querySelector('#item-status-list-table-container').innerHTML = ""
+    }
+
+    generateHTML(originItemList, template, 'item-list-table-container')
+    generateHTML(originItemList, template, 'item-status-list-table-container')
+
+    document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element=>{
+      element.addEventListener('click', (event)=>{
+        console.log('element: ', event.target.parentNode)
+        const cloneNode = event.target.parentNode.cloneNode(true)
+        if(document.querySelector("#item-evaluation")){
+          document.querySelector("#item-evaluation").innerHTML = ''
+        }
+        document.querySelector("#item-evaluation").appendChild(cloneNode)
+      })
+    })
+
+    document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element=>{
+      element.addEventListener('click', (event)=>{
+        const itemStatusDiv = document.querySelector("#item-status")
+        const cloneNode = event.target.parentNode.cloneNode(true)
+        console.log('element: ', )
+        if(itemStatusDiv.firstChild){
+          console.log('all dive: ', )
+          itemStatusDiv.querySelectorAll('div[class="object-div"]').forEach(div=>{
+            console.log('is equal: ', cloneNode.isEqualNode(div))
+            if(cloneNode.isEqualNode(div)){
+              itemStatusDiv.removeChild(div)
+            }
+          })
+        }
+        document.querySelector("#item-status").appendChild(cloneNode)
+      })
+    })
+
+
+
+  </script>
+</body>
+
+</html>

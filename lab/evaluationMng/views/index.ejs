@@ -11,12 +11,18 @@
   <title>Simple Sidebar - Start Bootstrap Template</title>
 
   <!-- Bootstrap core CSS -->
+  <!-- <link rel="stylesheet" href="../../../node_modules/mdbootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../node_modules/mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="../../../node_modules/mdbootstrap//css/style.css"> -->
   <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
   <link href="/mdbootstrap/css/style.css" rel="stylesheet">
 
 
   <!-- material design.io -->
+  <!-- <link rel="stylesheet" href="../../../node_modules/material-components-web/dist/material-components-web.min.css">
+  <script src="../../../node_modules/material-components-web/dist/material-components-web.min.js"></script>
+  <link rel="stylesheet" href="../../../node_modules/font-awesome/css/font-awesome.min.css"> -->
   <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
   <script src="/material-components-web/dist/material-components-web.min.js"></script>
   <link href="/font-awesome/css/font-awesome.min.css">
@@ -90,99 +96,15 @@
 
   <div class="d-flex" id="wrapper">
 
-    <!-- Sidebar -->
-    <div class="bg-light border-right" id="sidebar-wrapper">
-      <div class="sidebar-heading">Happy Money </div>
-      <div class="list-group list-group-flush">
-        <a href="#" class="list-group-item list-group-item-action bg-light">Dashboard</a>
-
-        <!-- Nhac nho -->
-        <a href="#" data-toggle="collapse" data-target="#contract-list"
-          class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
-            Nhac nho </span> <span class="fa fa-chevron-left pull-right"></span> </a>
-        <ul class="sub-menu collapse" id="contract-list">
-          <li class="active"><a href="#" class="list-group-item list-group-item-action bg-light">Hop dong cho</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu qua han</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu sap phai thuc hien</a></li>
-        </ul>
-
-        <!-- Quan ly hop dong -->
-        <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly hop dong</a>
-
-        <!-- Quan ly tham dinh gia -->
-        <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tham dinh gia</a>
-
-        <!-- Tao moi hop dong -->
-        <a href="#" class="list-group-item list-group-item-action bg-light">Tao moi hop dong</a>
-
-        <!-- Quan ly tai san -->
-        <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a>
-
-        <!-- Thong ke bao cao -->
-        <a href="#" class="list-group-item list-group-item-action bg-light">Thong ke/Bao cao</a>
-
-        <!-- Quan ly he thong -->
-        <a href="#" data-toggle="collapse" data-target="#contract-type-list"
-          class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
-            Quan ly he thong </span> <span class="fa fa-chevron-left pull-right"></span> </a>
-        <ul class="collapse" id="contract-type-list" style="padding: 0; margin: 0;">
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau hop dong</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau hop dong</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau phieu</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau phieu</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly khach hang</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
-          <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly mau thong ke</a></li>
-          <li><a href="./quanLyThamDinhGia.html" class="list-group-item list-group-item-action bg-light">Quan ly tham
-              dinh gia</a></li>
-
-
-        </ul>
-
-
-
-      </div>
-    </div>
-    <!-- /#sidebar-wrapper -->
+    <!-- sidebar -->
+    <%- include('sideBar.ejs') %>
+    <!-- /sidebar -->
 
     <!-- Page Content -->
     <div id="page-content-wrapper">
 
       <!-- navbar -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-        <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-bars"></i></button>
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Dropdown
-              </a>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <%- include('navbar.ejs') %>
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
@@ -194,62 +116,7 @@
           menu when clicked.</p>
 
         <!-- template of list of items -->
-        <template id="quan-ly-tham-dinh-gia">
-          <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
-          <link href="/font-awesome/css/font-awesome.min.css">
-          <style>
-            @import url("/font-awesome/css/font-awesome.min.css");
-
-            .container {
-              width: 100%;
-              border: 1px solid lightgrey;
-            }
-
-            .header-row-div {
-              background-color: lightgrey;
-              justify-content: space-between;
-            }
-
-            .row-div {
-              justify-content: space-between;
-
-            }
-
-            .header-cell-div {
-              font-weight: bold;
-              padding: 15px;
-            }
-
-            .cell-div {
-              padding: 15px;
-
-            }
-
-            input:disabled {
-              border: none;
-              background-color: inherit;
-              width: 100%;
-              cursor: pointer !important;
-            }
-
-            .header-row-div:hover {
-              cursor: pointer;
-              background-color: lightblue;
-            }
-
-            .form-control:disabled {
-              border: none;
-              background-color: inherit;
-              width: 100%;
-              cursor: pointer !important;
-            }
-          </style>
-          <div class="metadata-container" style="display: flex;"></div>
-          <div class="mdc-data-table" id="item-list-container" style="width: 60vw; margin: 0 10vw"></div>
-          <!-- submit button -->
-
-
-        </template>
+        <%- include('itemList.ejs') %>
 
         <!-- template of data field -->
         <template id="data-field-template">
@@ -381,7 +248,7 @@
         </div>
 
         <!-- list of items container -->
-        <div id="table-container"></div>
+        <div id="table-container" style="width: 80vw; margin: 2%"></div>
 
         <!-- add item button -->
         <div id="add-item-button-container" style="display: flex; margin: 2vh;"></div>
@@ -396,14 +263,14 @@
 
 
   </div>
-  <link href="../node_modules/mdbootstrap/js/popper.min.js">
-  <!-- libs scripts -->
+  <script src="/mdbootstrap/js/popper.min.js"></script>
   <script src="/mdbootstrap/js/jquery.min.js"></script>
   <script src="/mdbootstrap/js/popper.min.js"></script>
   <script src="/mdbootstrap/js/bootstrap.min.js"></script>
   <script src="/mdbootstrap/js/mdb.min.js"></script>
 
-  <script type="text/javascript">
+  <script type="module">
+    import { generateHTML } from '/generateHTML.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
@@ -670,7 +537,40 @@
         var end = begin + numberPerPage
 
         pageList = list.slice(begin, end)
-        generateHTML(pageList)
+        if (document.querySelector('#table-container').firstChild) {
+          document.querySelector('#table-container').innerHTML = ''
+
+        }
+        generateHTML(pageList, template, 'table-container')
+
+        document.querySelectorAll('div[class="mdc-data-table__header-row header-row-div"]').forEach(element => {
+          element.addEventListener('click', (event) => {
+            itemModal(event.target.parentNode)
+          })
+        })
+        // submit button
+        const buttonContainer = document.querySelector('#button-container')
+        if (document.querySelector('#button-container').firstChild) {
+          buttonContainer.innerHTML = ''
+        }
+        const submitBtn = document.createElement('button')
+        submitBtn.className = 'btn btn-primary'
+        submitBtn.id = 'submit-button'
+        submitBtn.innerHTML = "Submit"
+        submitBtn.style.margin = 'auto'
+        submitBtn.addEventListener('click', () => {
+          console.log('origin item list before submitting: ', originItemList)
+          $.ajax({
+            type: 'POST',
+            data: JSON.stringify(originItemList),
+            contentType: 'application/json',
+            url: 'http://localhost:3001/postItem',
+            success: (data) => {
+              console.log('Saved successfully!')
+            }
+          })
+        })
+        buttonContainer.appendChild(submitBtn)
         check()
 
       }
@@ -689,7 +589,6 @@
       document.querySelector('#last').addEventListener('click', () => {
         lastPage()
       })
-
 
 
       // add item button on the home screen of tham dinh gia
@@ -754,142 +653,6 @@
       createPagination(originItemList)
     })
 
-    const generateHTML = (itemObjs) => {
-
-      if (document.querySelector('#item-list-container')) {
-        document.querySelector('#item-list-container').parentNode.innerHTML = ''
-      }
-      if (document.querySelector('.metadata-container')) {
-        document.querySelector('.metadata-container').parentNode.innerHTML = ''
-
-      }
-      const clone = document.importNode(template.content, true)
-
-      const itemListContainer = clone.querySelector('#item-list-container')
-      if (itemListContainer.firstChild) {
-        itemListContainer.innerHTML = ''
-      }
-
-      // for item metadata
-      const metadataContainer = clone.querySelector('.metadata-container')
-      if (metadataContainer.firstChild) {
-        metadataContainer.innerHTML = ''
-      }
-      Object.keys(itemObjs[0].metadata).forEach((key, index) => {
-        const keyDiv = document.createElement('div')
-        keyDiv.style.margin = '5px'
-        keyDiv.style.fontWeight = 'bold'
-        keyDiv.innerHTML = key + ": " + itemObjs[0].metadata[key]
-        metadataContainer.appendChild(keyDiv)
-
-      })
-
-      // item list
-      itemObjs.map(itemObj => {
-        // item container
-        const objDiv = document.createElement('div')
-        objDiv.className = "object-div"
-        objDiv.C_DATA = itemObj
-        // objDiv.setAttribute('custom_id', itemObj.infos.map(info => {
-        //   return info.value
-        // }).join("-"))
-
-        objDiv.setAttribute('c_data', true)
-
-        // create item info row
-        for (var i = 0; i < objDiv.C_DATA.infos.length; i++) {
-          // create a row div
-          const row = document.createElement('div')
-          row.style.display = 'flex'
-          row.style.flexDirection = 'row'
-
-          if (i != 0) {
-            // body of table
-
-            // body row
-            row.className = 'mdc-data-table__row row-div'
-
-            // label of info
-            const label = document.createElement('input')
-            label.className = 'mdc-data-table__cell cell-div form-control'
-
-            label.setAttribute('value', objDiv.C_DATA.infos[i].name)
-            label.setAttribute('disabled', true)
-            label.setAttribute('obj_property', 'name')
-            // label.obj_property = 'name'
-
-            // value of info
-            const value = document.createElement('input')
-            value.className = 'mdc-data-table__cell cell-div form-control'
-
-            value.setAttribute('value', objDiv.C_DATA.infos[i].value)
-            value.setAttribute('disabled', true)
-            value.setAttribute('obj_property', 'value')
-            // value.obj_property = 'value'
-
-            row.appendChild(label)
-            row.appendChild(value)
-
-          } else {
-            // header of table
-
-            // header row
-            row.className = 'mdc-data-table__header-row header-row-div'
-            row.setAttribute('data-toggle', 'modal')
-            row.setAttribute('data-target', '#itemModal')
-            row.addEventListener('click', (event) => {
-              // clone specific item and append it to the modal
-              itemModal(event.target.parentNode)
-            })
-
-            // info label
-            const label = document.createElement('input')
-            label.setAttribute('value', objDiv.C_DATA.infos[i].value)
-            label.setAttribute('disabled', true)
-            label.setAttribute('obj_property', 'value')
-            label.className = 'mdc-data-table__header-cell header-cell-div'
-
-            // append label and value of info into a row
-            row.appendChild(label)
-
-          }
-
-          // append row into item container
-          objDiv.appendChild(row)
-
-          // append rows into detail container
-          itemListContainer.appendChild(objDiv)
-        }
-      })
-
-      // append clone table to table container
-      document.body.querySelector('#table-container').appendChild(clone)
-
-      // submit button
-      const buttonContainer = document.querySelector('#button-container')
-      if (document.querySelector('#button-container').firstChild) {
-        buttonContainer.innerHTML = ''
-      }
-      const submitBtn = document.createElement('button')
-      submitBtn.className = 'btn btn-primary'
-      submitBtn.id = 'submit-button'
-      submitBtn.innerHTML = "Submit"
-      submitBtn.style.margin = 'auto'
-      submitBtn.addEventListener('click', () => {
-        console.log('origin item list before submitting: ', originItemList)
-        $.ajax({
-          type: 'POST',
-          data: JSON.stringify(originItemList),
-          contentType: 'application/json',
-          url: 'http://localhost:3000/postItem',
-          success: (data) => {
-            console.log('Saved successfully!')
-          }
-        })
-      })
-      buttonContainer.appendChild(submitBtn)
-
-    }
 
     const itemModal = (sourceNode) => {
       document.querySelector('#item-info-container').innerHTML = ''
@@ -920,6 +683,7 @@
 
 
     }
+
 
     // edit button in modal
     function findNestedObj(entireObj, keyToFind, valToFind) {
@@ -990,7 +754,7 @@
           })
           infos.push(info)
         })
-        itemObj = {...itemObj, infos: infos}
+        itemObj = { ...itemObj, infos: infos }
         console.log('origin item list befor editing: ', originItemList)
 
         originItemList.splice(originItemList.indexOf(cData), 1)

@@ -7,13 +7,6 @@ var ItemStatus = require('../models/itemStatus')
 router.get('/', function (req, res, next) {
   Item.find({}, (err, results) => {
     if (err) throw err
-    console.log('result: ', results)
-    const newResult = results.map(result => {
-      return {
-        infos: result.infos,
-        metadata: result.metadata
-      }
-    })
     res.render('index', { dbItemObjs: results });
 
   })
@@ -31,17 +24,19 @@ router.get('/itemStatus', function (req, res, next) {
   //   res.render('index', { dbItemObjs: results });
 
   // })
-  res.render('itemStatus', {dbItemObjs: []})
+  res.render('itemStatus', { dbItemObjs: [] })
 });
 
 router.post('/postItem', (req, res) => {
   var itemObjsArray = req.body
+  var array = []
   itemObjsArray.map(itemObj => {
     if (itemObj._id) {
       console.log('abc: ', itemObj)
       Item.findOneAndUpdate({ _id: itemObj._id }, { $set: { "infos": itemObj.infos } }, (err, result) => {
         if (err) throw err
         console.log('Updated successfully!')
+        array.push(itemObj)
       })
 
     } else {
@@ -49,17 +44,21 @@ router.post('/postItem', (req, res) => {
         metadata: itemObj.metadata,
         infos: itemObj.infos
       })
+      array.push(item)
 
       item.save((err, result) => {
         if (err) throw err
         else {
           console.log('Saved to db successfully!')
+
         }
       })
     }
 
 
   })
-})
+  console.log('array: ', array)
+
+})  
 
 module.exports = router;

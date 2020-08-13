@@ -6,7 +6,16 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var mongoose = require('mongoose')
 
+
+const mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
+
+mongoose.connect(mongooseURL, {useNewUrlParser: true})
+var db = mongoose.connection
+db.on('open', ()=>{
+  console.log('Connected to database successfully!')
+})
 var app = express();
 
 // view engine setup
@@ -19,7 +28,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, '../../js')));
+app.use(express.static(path.join(__dirname, '../evaluationMng/views')));
+
+console.log('dir name: ',path.join(__dirname))
 
 
 app.use('/', indexRouter);
