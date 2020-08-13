@@ -50,23 +50,9 @@
 
   </template>
   <template id="contract_detail">
-    <div class="form-group">
-      <label for="email">Template Name:</label>
-      <input type="text" class="form-control" id="email">
-    </div>
-    <div class="form-group">
-      <label for="pwd">Type:</label>
-      <input type="text" class="form-control" id="pwd">
-    </div>
-    <div class="form-group">
-      <label for="import Template">Type:</label>
-      <input type="file" class="form-control" id="pwd">
-    </div>
-    <!-- <div class="checkbox">
-      <label><input type="checkbox"> Remember me</label>
-    </div> -->
-    <button type="submit" class="btn btn-default">Submit</button>
+    <%- include('templateDetails.ejs') %> 
   </template>
+
   <main>
     <header>
       <h2>
@@ -163,9 +149,9 @@
     console.log("template", templateContent)
     console.log('card_handler', card_handler)
 
-    $("#centralModalSm").on('hide.bs.modal', function () {
-      alert('The modal is about to be hidden.');
-    });
+    // $("#centralModalSm").on('hide.bs.modal', function () {
+    //   alert('The modal is about to be hidden.');
+    // });
 
     addTemplateBnt = document.getElementById('addTemplate').addEventListener('click', (evt) => {
       // Adding something here before popup

@@ -3,6 +3,18 @@
 
 <head>
   <title><%= title %></title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+  <!-- material design.io -->
+  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="/material-components-web/dist/material-components-web.min.js"></script>
+  <link href="/font-awesome/css/font-awesome.min.css">
+
   <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 
@@ -14,24 +26,24 @@
       <h2>Have to do</h2>
       <ul style="border: solid;">
         <li><code>npm install -s cropperjs</code></li>
-        <li>Adding <xmp>
+        <li>Adding<code> <xmp>
             app.use(express.static(path.join(__dirname)));
-          </xmp> in app.js</li>
+          </xmp></code> in app.js</li>
         <li> Adding
-          <pre>
+          <code>
               <xmp>
                 <script type="module" src="Components/cropper/cropper.js"></script>
               </xmp>
-            </pre> in index.ejs
+            </code> in index.ejs
         </li>
       </ul>
     </span>
   </div>
   <cropper-wc title="abc"></cropper-wc>
   <hr>
-  <img id = 'resultImg' class="img-fluid" alt="Responsive image">
+  <img id='resultImg' class="img-fluid" alt="Responsive image">
   <hr>
-  <button id = 'selectImg'type="button" class="btn btn-primary">Select Image</button>
+  <button id='selectImg' type="button" class="btn btn-primary">Select Image</button>
 
   <script type="module" src="Components/cropper/cropper.js"></script>
   <script>
@@ -47,7 +59,7 @@
       // resultImg.setAttribute('src',evt.detail['image'] )
 
     })
-    selectImg.addEventListener('click', (evt)=>{
+    selectImg.addEventListener('click', (evt) => {
       console.log('selectImg')
       cropper.getImageData()
     })
