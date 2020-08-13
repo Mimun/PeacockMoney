@@ -1,26 +1,34 @@
 <div class="container">
-    <cropper-wc title="abc"></cropper-wc>
+    <div class=row>
+        <label>Select Template Icon</label>
+    </div>
+    <div class=row>
+        <cropper-wc title="abc"></cropper-wc>
+    </div>
+    <div class=row>
+        <button id ="SelectImg" type="submit" class="btn btn-default">Select Image</button>
+    </div>
 </div>
-
+<hr>
 
 <div class="container">
     <left>
-        <div class="form-group">
+        <div class=" col-3">
             <label for="email">Template Name:</label>
-            <input type="text" class="form-control" id="email">
+            <input type="text" class="form-control" id="email" data-type="template-metadata">
         </div>
-        <div class="form-group">
+        <div class="col-3">
+            <label for="pwd">Category:</label>
+            <input type="text" class="form-control" id="pwd" data-type="template-metadata">
+        </div>
+        <div class="col-3">
             <label for="pwd">Type:</label>
-            <input type="text" class="form-control" id="pwd">
+            <input type="text" class="form-control" id="pwd" data-type="template-metadata">
         </div>
-        <div class="form-group">
-            <label for="import Template">Type:</label>
-            <input type="file" class="form-control" id="pwd">
+        <div class="">
+            <label for="import Template">Custom Info:</label>
+            <input type="file" class="form-control" id="pwd" data-type="template-metadata">
         </div>
-        <!-- <div class="checkbox">
-                    <label><input type="checkbox"> Remember me</label>
-                  </div> -->
-        <button type="submit" class="btn btn-default">Submit</button>
 
     </left>
 
