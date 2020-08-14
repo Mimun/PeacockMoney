@@ -6,6 +6,7 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
     "cropperjs": "^1.5.7",
     "debug": "~2.6.9",
@@ -14,6 +15,7 @@
     "font-awesome": "^4.7.0",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
+    "jquery.redirect": "^1.1.4",
     "material-components-web": "^7.0.0",
     "mdbootstrap": "^4.19.1",
     "mongoose": "^5.9.28",

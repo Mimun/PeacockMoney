@@ -138,7 +138,8 @@ class TheCropper extends HTMLElement {
 
     }
     getImageData = function () {
-        console.log('getImageData', this.imgData)
+        // console.log('getImageData', this.imgData)
+        return this.imgData
     }
 
 }

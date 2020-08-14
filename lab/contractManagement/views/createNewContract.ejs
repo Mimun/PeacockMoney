@@ -21,7 +21,18 @@
   <style>
 
   </style>
+  <template id="contract-template">
+    <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+    <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+    <div class="container">
+      <div class="md-form">
+        <input id="form1" type="text" class="form-control" disabled>
+        <label id="label" for="form1" data-error="Empty"></label>
+      </div>
+    </div>
 
+  </template>
   <!-- item list template -->
   <%- include('../../evaluationMng/views/itemList.ejs') %>
 
@@ -44,33 +55,8 @@
 
           <p class="h4 mb-4">Contact us</p>
 
-          <!-- Name -->
-          <input type="text" id="defaultContactFormName" class="form-control mb-4" placeholder="Name">
-
-          <!-- Email -->
-          <input type="email" id="defaultContactFormEmail" class="form-control mb-4" placeholder="E-mail">
-
-          <!-- Subject -->
-          <label>Subject</label>
-          <select class="browser-default custom-select mb-4">
-            <option value="" disabled>Choose option</option>
-            <option value="1" selected>Feedback</option>
-            <option value="2">Report a bug</option>
-            <option value="3">Feature request</option>
-            <option value="4">Feature request</option>
-          </select>
-
-          <!-- Message -->
-          <div class="form-group">
-            <textarea class="form-control rounded-0" id="exampleFormControlTextarea2" rows="3"
-              placeholder="Message"></textarea>
-          </div>
-
-          <!-- Copy -->
-          <div class="custom-control custom-checkbox mb-4">
-            <input type="checkbox" class="custom-control-input" id="defaultContactFormCopy">
-            <label class="custom-control-label" for="defaultContactFormCopy">Send me a copy of this message</label>
-          </div>
+          <!-- contract templat -->
+          <div id="contract-template-container"></div>
 
           <!-- item evaluation -->
           <p class="h4 mb-4">Thong tin tham dinh gia</p>
@@ -80,12 +66,9 @@
           </div>
 
           <!-- item status -->
-          <p class="h4 mb-4">Thong tin tinh trang san pham</p>
+          <p class="h4 mb-4">Thong tin tinh trang tai san</p>
 
-          <div id="item-status">
-
-
-          </div>
+          <div id="item-status"></div>
 
           <!-- Send button -->
           <button class="btn btn-info btn-block" type="submit">Send</button>
@@ -115,10 +98,14 @@
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
+    import { generateContractTemplateHTML } from '/generateContractTemplateHTML.js'
     var originItemList = <%- JSON.stringify(dbItemObjs) %>;
+    var originContractTemplate = <%- JSON.stringify(itemObj) %>
 
+      console.log('origin contract template: ', originContractTemplate)
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
-  
+    const contractTemplate = document.querySelector('template[id="contract-template"]')
+
     const checkMustHaveInfos = (item, propName) => {
       var isHaving = false
       item.infos.forEach(info => {
@@ -182,42 +169,63 @@
 
 
     }
-    
+
     if (document.querySelector('#item-list-table-container').innerHTML) {
       document.querySelector('#item-list-table-container').innerHTML = ""
     }
     if (document.querySelector('#item-status-list-table-container').innerHTML) {
       document.querySelector('#item-status-list-table-container').innerHTML = ""
     }
+    if (document.querySelector('#contract-template-container').innerHTML) {
+      document.querySelector('#contract-template-container').innerHTML = ""
+    }
 
     generateHTML(originItemList, template, 'item-list-table-container')
     generateHTML(originItemList, template, 'item-status-list-table-container')
-
-    document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element=>{
-      element.addEventListener('click', (event)=>{
+    generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container')
+    
+    document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
+      element.addEventListener('click', (event) => {
         console.log('element: ', event.target.parentNode)
         const cloneNode = event.target.parentNode.cloneNode(true)
-        if(document.querySelector("#item-evaluation")){
+        if (document.querySelector("#item-evaluation")) {
           document.querySelector("#item-evaluation").innerHTML = ''
         }
         document.querySelector("#item-evaluation").appendChild(cloneNode)
       })
     })
 
-    document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element=>{
-      element.addEventListener('click', (event)=>{
+    document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
+      element.addEventListener('click', (event) => {
         const itemStatusDiv = document.querySelector("#item-status")
         const cloneNode = event.target.parentNode.cloneNode(true)
-        if(itemStatusDiv.firstChild){
-          console.log('all dive: ', )
-          itemStatusDiv.querySelectorAll('div[class="object-div"]').forEach(div=>{
-            console.log('is equal: ', cloneNode.isEqualNode(div))
-            if(cloneNode.isEqualNode(div)){
+
+        const removeButton = document.createElement('button')
+        removeButton.innerHTML = 'X'
+        removeButton.addEventListener('click', (event) => {
+          event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode)
+        })
+        cloneNode.querySelector('div[class="mdc-data-table__header-row header-row-div"]').appendChild(removeButton)
+
+        // prevent duplicate 
+        var isChosen = false
+        if (itemStatusDiv.firstChild) {
+          itemStatusDiv.querySelectorAll('div[class="object-div"]').forEach(div => {
+            if (cloneNode.isEqualNode(div)) {
+              console.log('div: ', div)
+              isChosen = true
+
               itemStatusDiv.removeChild(div)
             }
           })
+          if (!isChosen) {
+            itemStatusDiv.appendChild(cloneNode)
+
+          }
+        } else {
+          itemStatusDiv.appendChild(cloneNode)
+
         }
-        document.querySelector("#item-status").appendChild(cloneNode)
       })
     })
 
