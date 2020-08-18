@@ -18,7 +18,7 @@ class TheCropper extends HTMLElement {
         });
         shadowRoot.innerHTML = _html;
         const template = shadowRoot.querySelector("#cropper-comp").content;
-        console.log("template:", template);
+        // console.log("template:", template);
         const instance = template.cloneNode(true);
 
         // adding instance first and then adding event listener later by query shadowRoot
@@ -95,7 +95,7 @@ class TheCropper extends HTMLElement {
                 var base64data = this.cropper.getCroppedCanvas().toDataURL();
                 _self.imgData = base64data
 
-                // _self.dispatchEvent(new CustomEvent("CROPPED", { detail: { image: base64data } }));
+                _self.dispatchEvent(new CustomEvent("CROPPED", { detail: { image: base64data } }));
 
 
 
@@ -138,7 +138,8 @@ class TheCropper extends HTMLElement {
 
     }
     getImageData = function () {
-        console.log('getImageData', this.imgData)
+        // console.log('getImageData', this.imgData)
+        return this.imgData
     }
 
 }

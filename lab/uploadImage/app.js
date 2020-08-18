@@ -7,7 +7,24 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+const bodyParser = require('body-parser')
+
+var mongoose = require('mongoose');
+var compress = require('compression')
+// https://mongoosejs.com/docs/connections.html
+const mongooseURL = "mongodb://127.0.0.1:27017/Mongo_DB_testBeds"
+
+mongoose.connect(mongooseURL, { useNewUrlParser: true })
+var db = mongoose.connection
+db.on('open', () => {
+  console.log('Connected to database successfully!')
+})
+
+
 var app = express();
+
+app.use(bodyParser({limit: '50mb'}))
+app.use(express.json());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,12 +43,12 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

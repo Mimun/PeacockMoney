@@ -61,7 +61,35 @@
     })
     selectImg.addEventListener('click', (evt) => {
       console.log('selectImg')
-      cropper.getImageData()
+      imgs = cropper.getImageData()
+      resultImg.setAttribute('src', imgs)
+
+      sendObj = {
+        imgs : imgs
+      }
+
+      function doAjax(request) {
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", request.url, false)
+        ajax.setRequestHeader("Content-type", request.contentType)
+        ajax.onreadystatechange = function () {
+          if (ajax.readyState == 4) {
+            request.handler.call(request, ajax.responseText)
+          }
+        }
+        ajax.send(request.payload)
+      }
+
+      doAjax({
+        url: '/uploadImg'
+        , contentType: "application/json"
+        , payload: JSON.stringify(sendObj)
+        , handler: function (response) {
+          console.log(response)
+          window.postMessage(response, "*")
+        }
+      });
+
     })
 
     // convert base64 to png
