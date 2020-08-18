@@ -1,3 +1,5 @@
+// used for generating list of evaluation item
+
 
 export const generateHTML = (itemObjs, template, elementName) => {
 

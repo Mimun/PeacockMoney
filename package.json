@@ -6,21 +6,25 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "ajax": "0.0.4",
     "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
+    "cropperjs": "^1.5.7",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "font-awesome": "^4.7.0",
+    "html2canvas": "^1.0.0-rc.7",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
+    "jquery.redirect": "^1.1.4",
+    "jsonschema": "^1.2.6",
     "jsonwebtoken": "^8.5.1",
+    "jspdf": "^2.0.0",
+    "material-components-web": "^7.0.0",
     "mdbootstrap": "^4.19.1",
     "mongoose": "^5.9.28",
     "morgan": "~1.9.1",
-    "nodemon": "^2.0.4",
-    "ajax": "0.0.4",
-    "font-awesome": "^4.7.0",
-    "jsonschema": "^1.2.6",
-    "material-components-web": "^7.0.0"
+    "nodemon": "^2.0.4"
   }
 }

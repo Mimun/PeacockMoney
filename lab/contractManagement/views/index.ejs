@@ -17,156 +17,238 @@
   <link href="/font-awesome/css/font-awesome.min.css">
 
   <link rel='stylesheet' href='/stylesheets/style.css' />
+
+  <style>
+    @import url("/font-awesome/css/font-awesome.min.css");
+
+    body {
+      padding: 0;
+    }
+
+
+    #wrapper {
+      overflow-x: hidden;
+    }
+
+    #sidebar-wrapper {
+      min-height: 100vh;
+      margin-left: -15rem;
+      -webkit-transition: margin .25s ease-out;
+      -moz-transition: margin .25s ease-out;
+      -o-transition: margin .25s ease-out;
+      transition: margin .25s ease-out;
+    }
+
+    #sidebar-wrapper .sidebar-heading {
+      padding: 0.875rem 1.25rem;
+      font-size: 1.2rem;
+    }
+
+    #sidebar-wrapper .list-group {
+      width: 15rem;
+    }
+
+    #page-content-wrapper {
+      min-width: 100vw;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: 0;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar-wrapper {
+        margin-left: 0;
+      }
+
+      #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+      }
+
+      #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .page-content {
+      margin: 2vh 0;
+    }
+
+    .md-form {
+      width: 80%;
+      margin: 2vh 1vw;
+    }
+  </style>
 </head>
 
 <body>
-  <template id="temp_contract">
-    <!-- Column -->
-    <div class="col-md-4 mb-4 d-flex align-items-stretch object-div" c_data="true">
+  <div class="d-flex" id="wrapper">
 
-      <!--Card-->
-      <div class="card">
+    <%- include('sideBar.ejs') %>
 
-        <!--Card image-->
-        <div class="view">
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/6-col/img%20(133).jpg" class="card-img-top"
-            alt="">
-          <a href="#">
-            <div class="mask rgba-white-slight"></div>
-          </a>
-        </div>
+    <div id="page-content-wrapper">
+      <%- include('navbar.ejs')  %>
+      <main style="padding: 5%;">
+        <template id="temp_contract">
+          <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+          <link href="/font-awesome/css/font-awesome.min.css">
 
-        <!--Card content-->
-        <div class="card-body">
-          <!--Title-->
-          <h4 class="card-title">Card title</h4>
-          <!--Text-->
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-            card's content.</p>
-        </div>
+          <!-- Column -->
+          <div class="col-4 d-flex align-items-stretch object-div" c_data="true" style="margin: 14px 0px;">
+            <!--Card-->
+            <div class="card">
 
-      </div>
-      <!--/.Card-->
+              <!--Card image-->
+              <div class="view">
+                <img class="card-img-top" alt="">
+                <a href="#">
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
 
-  </template>
-  <template id="contract_detail">
-    <!-- <%- include('templateDetails.ejs') %>  -->
-    <%- include('templateDetailscopy.ejs') %>
-  </template>
+              <!--Card content-->
+              <div class="card-body">
+                <!--Title-->
+                <h4 class="card-title"></h4>
+                <!--Text-->
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                  card's content.</p>
+              </div>
 
-  <main>
-    <header>
-      <h2>
-        <b>Quản lý và Tạo hợp đồng</b>
-      </h2>
-    </header>
-    <submain>
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-            aria-selected="true">Tạo hợp đồng</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-            aria-selected="false">Quản lý hợp đồng</a>
-        </li>
-      </ul>
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <template-handler class="row">
+            </div>
+            <!--/.Card-->
 
-          </template-handler>
-          <button type="button" class="btn btn-primary" id="addTemplate">Add Contract Template</button>
-        </div>
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-          <contract-handler>
-            <%- include('contractDetails.ejs')%>
-          </contract-handler>
-        </div>
-      </div>
-    </submain>
-  </main>
-  <div class="container-fluid">
-    <!-- Modal -->
+        </template>
 
-    <!-- Central Modal Small -->
-    <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-      aria-hidden="true">
+        <template id="contract_detail">
+          <!-- <%- include('templateDetails.ejs') %>  -->
+          <%- include('templateDetailscopy.ejs') %>
+        </template>
 
-      <!-- Change class .modal-sm to change the size of the modal -->
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title w-100" id="myModalLabel">Create new contract template</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+        <header>
+          <h2>
+            <b>Quản lý và Tạo mau hợp đồng</b>
+          </h2>
+        </header>
+        <submain>
+          <div id="template-handler" class="row"></div>
+          <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Add Contract Template</button>
+          <button class="btn btn-secondary btn-sm" id="redirect-page">Contract List</button>
+        </submain>
+      </main>
+
+      <div class="container-fluid">
+        <!-- Modal -->
+
+        <!-- Central Modal Small -->
+        <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+          aria-hidden="true">
+
+          <!-- Change class .modal-sm to change the size of the modal -->
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title w-100" id="myModalLabel">Create new contract template</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <modal-body style="width: fit-content;">
+                  <!-- Adding dynamic content here -->
+                  <h2>I am going to add a dynamic content here</h2>
+                </modal-body>
+              </div>
+              <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-sm">Create new Contract</button>
+              </div> -->
+            </div>
           </div>
-          <div class="modal-body">
-            <modal-body style="width: fit-content;">
-              <!-- Adding dynamic content here -->
-              <h2>I am going to add a dynamic content here</h2>
-            </modal-body>
-          </div>
-          <!-- <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary btn-sm">Create new Contract</button>
-          </div> -->
         </div>
+        <!-- Central Modal Small -->
       </div>
     </div>
-    <!-- Central Modal Small -->
   </div>
-  
-  <link href="/mdbootstrap/js/popper.min.js">
-  <!-- libs scripts -->
-  <script src="/mdbootstrap/js/jquery.min.js"></script>
   <script src="/mdbootstrap/js/popper.min.js"></script>
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
   <script src="/mdbootstrap/js/bootstrap.min.js"></script>
   <script src="/mdbootstrap/js/mdb.min.js"></script>
-  <script>
-    templateContent = document.getElementById('temp_contract').content;
-    card_handler = document.querySelector('template-handler')
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
 
-    for (var i = 1; i < 9; i++) {
+  <script type="module">
+    import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
+    import { ObjectId } from '/createMongooseID.js'
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+    const contractTemplate = document.getElementById('temp_contract');
+    // card_handler = document.querySelector('template-handler')
+    const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
 
-      clone = document.importNode(templateContent, true);
-      // clone.setAttribute('id',i)
-      card_handler.appendChild(clone)
-      item = card_handler.lastChild;
-      item.setAttribute('id', i)
-      console.log("item", item)
-      item.addEventListener('click', function (evt) {
-        console.log('Iam here', this)
-        $("#centralModalSm").modal();
-        modalBody = document.querySelector('modal-body')
-        while (modalBody.firstChild) {
-          modalBody.removeChild(modalBody.lastChild)
-        }
-        modalBody.appendChild(this.cloneNode(true))
-        console.log('modalBody', modalBody)
-      })
+    for (var i = 0; i < contractTemplateList.length; i++) {
+      generateContractTemplateCard(contractTemplateList[i], contractTemplate, 'template-handler')
     }
 
-    console.log("template", templateContent)
-    console.log('card_handler', card_handler)
+    // detail template info
+    document.querySelectorAll('.object-div').forEach(element => {
+      element.addEventListener('click', function () {
+        console.log('event abc: ', document.querySelector('modal-body'))
+        var modalBody = document.querySelector('modal-body')
+        modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
+          var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+          // console.log('abc xyz: ', event.target.closest('modal-body').querySelector('.object-div'))
+          $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
+        })
 
-    // $("#centralModalSm").on('hide.bs.modal', function () {
-    //   alert('The modal is about to be hidden.');
-    // });
+        modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
+          var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+          console.log('data to delete: ', cData)
+          $.ajax({
+            type: "DELETE",
+            url: '/deleteContractTemplate/' + cData._id,
+            success: (result) => {
+              console.log(result)
+              // window.location.reload()
+            }
 
-    addTemplateBnt = document.getElementById('addTemplate').addEventListener('click', (evt) => {
-      // Adding something here before popup
-      modalBody = document.querySelector('modal-body')
+          })
+        })
+
+      })
+    })
+
+    // create new contract template button
+    var addTemplateBtn = document.getElementById('addTemplate').addEventListener('click', (evt) => {
+      var modalBody = document.querySelector('modal-body')
       while (modalBody.firstChild) {
         modalBody.removeChild(modalBody.lastChild)
       }
-      tmpContent = document.getElementById('contract_detail').content;
-      clone = document.importNode(tmpContent, true);
+      var tmpContent = document.getElementById('contract_detail').content;
+      var clone = document.importNode(tmpContent, true);
       modalBody.appendChild(clone)
 
       $("#centralModalSm").modal();
     })
+
+    // go to contract list button
+    var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
+      $.ajax({
+        type: 'GET',
+        url: '/contracts',
+        contentType: 'application/json',
+        success: (result) => {
+          window.location.href = "/contracts"
+        }
+      })
+    })
+
 
   </script>
 </body>

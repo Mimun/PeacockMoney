@@ -15,92 +15,193 @@
   <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
   <script src="/material-components-web/dist/material-components-web.min.js"></script>
   <link href="/font-awesome/css/font-awesome.min.css">
+  <style>
+    @import url("/font-awesome/css/font-awesome.min.css");
+
+    body {
+      padding: 0;
+    }
+
+
+    #wrapper {
+      overflow-x: hidden;
+    }
+
+    #sidebar-wrapper {
+      min-height: 100vh;
+      margin-left: -15rem;
+      -webkit-transition: margin .25s ease-out;
+      -moz-transition: margin .25s ease-out;
+      -o-transition: margin .25s ease-out;
+      transition: margin .25s ease-out;
+    }
+
+    #sidebar-wrapper .sidebar-heading {
+      padding: 0.875rem 1.25rem;
+      font-size: 1.2rem;
+    }
+
+    #sidebar-wrapper .list-group {
+      width: 15rem;
+    }
+
+    #page-content-wrapper {
+      min-width: 100vw;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: 0;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar-wrapper {
+        margin-left: 0;
+      }
+
+      #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+      }
+
+      #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .page-content {
+      margin: 2vh 0;
+    }
+
+    .md-form {
+      width: 80%;
+      margin: 2vh 1vw;
+    }
+  </style>
 </head>
 
 <body>
-  <style>
+  <div class="d-flex" id="wrapper">
+    <%- include('sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <%- include('navbar.ejs')  %>
+      <style>
+        body {
+          overflow: auto;
+          -ms-overflow-style: none;
+        }
 
-  </style>
-  <template id="contract-template">
-    <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
-    <link href="/mdbootstrap/css/style.css" rel="stylesheet">
-    <div class="container">
-      <div class="md-form">
-        <input id="form1" type="text" class="form-control" disabled>
-        <label id="label" for="form1" data-error="Empty"></label>
-      </div>
-    </div>
+        body::-webkit-scrollbar {
+          display: none;
+        }
 
-  </template>
-  <!-- item list template -->
-  <%- include('../../evaluationMng/views/itemList.ejs') %>
+        .col-sm.side {
+          max-height: 100vh;
+          overflow-y: auto;
+          -ms-overflow-style: none;
+        }
 
+        .col-sm.side::-webkit-scrollbar {
+          display: none;
+        }
+      </style>
 
-  <!-- page content -->
-  <div class="container" style="margin: 0; border: none;">
-    <div class="row" style="width: 100vw; height: 100%;">
+      <!-- item list template -->
+      <%- include('../../evaluationMng/views/itemList.ejs') %>
 
-      <!-- item status column -->
-      <div class="col-sm" style="background-color: purple;">
-        <div id="item-status-list-table-container" style="overflow-y: auto;"></div>
+      <!-- contract template -->
+      <%- include("./contractPreviewTemplate.ejs") %>
 
-      </div>
+      <!-- page content -->
+      <div class="container" style="margin: 0; border: none;">
+        <div class="row" style="width: 100vw; height: 100%;">
 
-      <!-- contract column -->
-      <div class="col-sm-6">
-        <!-- contract form -->
-        <!-- Default form contact -->
-        <form class="text-center border border-light p-5" action="#!" style="width: 100%;">
+          <!-- item status column -->
+          <!-- <div class="col-sm side">
+            
+    
+          </div> -->
 
-          <p class="h4 mb-4">Contact us</p>
+          <!-- contract column -->
+          <div class="col-sm-8" id="contract-info-container" style="padding: 5%;">
+            <!-- contract form -->
+            <!-- Default form contact -->
+            <form class="text-center " action="" style="width: 100%;">
 
-          <!-- contract templat -->
-          <div id="contract-template-container"></div>
+              <p class="h4 mb-4">Tao Moi Hop Dong</p>
 
-          <!-- item evaluation -->
-          <p class="h4 mb-4">Thong tin tham dinh gia</p>
+              <!-- contract templat -->
+              <div id="contract-template-container"></div>
 
-          <div id="item-evaluation">
+              <!-- item evaluation -->
+              <p class="h4 mb-4">Thong tin tham dinh gia</p>
 
+              <div id="item-evaluation" style="min-height: 40px; margin:5%;">
+
+              </div>
+
+              <!-- item status -->
+              <p class="h4 mb-4">Thong tin tinh trang tai san</p>
+
+              <div id="item-status" style="min-height: 40px; margin: 5%;"></div>
+
+            </form>
+
+            <!-- Send button -->
+            <button class="btn btn-primary" id="btn-submit">Create</button>
+            <!-- Default form contact -->
           </div>
 
-          <!-- item status -->
-          <p class="h4 mb-4">Thong tin tinh trang tai san</p>
+          <!-- item list column -->
+          <div class="col-sm side">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                  aria-selected="true">Tham dinh tai san</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                  aria-controls="profile" aria-selected="false">Tinh trang tai san</a>
+              </li>
 
-          <div id="item-status"></div>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"
+                style="overflow-y: auto;">
+                <div id="item-list-table-container"></div>
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"
+                style="overflow-y: auto;">
+                <div id="item-status-list-table-container"></div>
+              </div>
 
-          <!-- Send button -->
-          <button class="btn btn-info btn-block" type="submit">Send</button>
-
-        </form>
-        <!-- Default form contact -->
-      </div>
-
-      <!-- item list column -->
-      <div class="col-sm" style="background-color: green;">
-        <div id="item-list-table-container" style="overflow-y: auto;"></div>
-
-
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- list of items container -->
-
-
-  <link href="/mdbootstrap/js/popper.min.js">
-  <!-- libs scripts -->
-  <script src="/mdbootstrap/js/jquery.min.js"></script>
   <script src="/mdbootstrap/js/popper.min.js"></script>
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
   <script src="/mdbootstrap/js/bootstrap.min.js"></script>
   <script src="/mdbootstrap/js/mdb.min.js"></script>
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { generateContractTemplateHTML } from '/generateContractTemplateHTML.js'
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
     var originItemList = <%- JSON.stringify(dbItemObjs) %>;
-    var originContractTemplate = <%- JSON.stringify(itemObj) %>
+    var originContractTemplate = <%- JSON.stringify(itemObj) %>;
+    var originItemStatusList = <%- JSON.stringify(dbItemStatusObjs) %>
+
 
       console.log('origin contract template: ', originContractTemplate)
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
@@ -115,6 +216,7 @@
       })
       return isHaving
     }
+
     const convertToJSON = (csv) => {
       const lines = csv.split('\n')
       var resultsInJSON = {}
@@ -181,13 +283,15 @@
     }
 
     generateHTML(originItemList, template, 'item-list-table-container')
-    generateHTML(originItemList, template, 'item-status-list-table-container')
+    generateHTML(originItemStatusList, template, 'item-status-list-table-container')
     generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container')
-    
+
     document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
       element.addEventListener('click', (event) => {
         console.log('element: ', event.target.parentNode)
         const cloneNode = event.target.parentNode.cloneNode(true)
+        cloneNode.C_DATA = event.target.parentNode.C_DATA
+        cloneNode.className = "object-div item"
         if (document.querySelector("#item-evaluation")) {
           document.querySelector("#item-evaluation").innerHTML = ''
         }
@@ -199,11 +303,23 @@
       element.addEventListener('click', (event) => {
         const itemStatusDiv = document.querySelector("#item-status")
         const cloneNode = event.target.parentNode.cloneNode(true)
+        cloneNode.C_DATA = event.target.parentNode.C_DATA
+        cloneNode.className = "object-div item-status"
 
-        const removeButton = document.createElement('button')
-        removeButton.innerHTML = 'X'
+        const removeButton = document.createElement('i')
+        removeButton.className = "fa fa-times"
+        removeButton.style.fontSize = "25px"
+        removeButton.style.margin = "12px"
+
+        removeButton.style.color = '#bdbdbd '
+        // removeButton.className = "btn"
+        // removeButton.style.backgroundColor = "#e0e0e0"
+        // removeButton.innerHTML = '<i class="fa fa-times"></i>'
+
         removeButton.addEventListener('click', (event) => {
-          event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode)
+          console.log('event: ', event.target)
+          event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
+          // event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode)
         })
         cloneNode.querySelector('div[class="mdc-data-table__header-row header-row-div"]').appendChild(removeButton)
 
@@ -220,17 +336,41 @@
           })
           if (!isChosen) {
             itemStatusDiv.appendChild(cloneNode)
+            itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
 
           }
         } else {
           itemStatusDiv.appendChild(cloneNode)
+          itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
+
 
         }
       })
     })
 
-
-
+    document.querySelector('button[id="btn-submit"]').addEventListener('click', (event) => {
+      var data = {
+        metadata: {},
+        infos: [],
+        item: {},
+        itemStatus: []
+      }
+      document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div"]').forEach(element => {
+        // console.log('Object divs found: ', element)
+        data["metadata"] = element.C_DATA["metadata"]
+        data["infos"] = element.C_DATA["infos"]
+      })
+      document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div item"]').forEach(element => {
+        // console.log('Object divs found: ', element)
+        data["item"] = element.C_DATA["_id"]
+      })
+      document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div item-status"]').forEach(element => {
+        // console.log('Object divs found: ', element)
+        data["itemStatus"].push(element.C_DATA["_id"])
+      })
+      $.redirect("/contracts", { data: JSON.stringify(data) }, "POST");
+      console.log('data: ', data)
+    })
   </script>
 </body>
 

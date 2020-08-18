@@ -10,8 +10,11 @@ const bodyParser = require('body-parser');
 const { validateToken } = require('./Libs/Authentication/auth');
 
 var app = express();
+app.use(bodyParser({limit: '50mb'}))
+app.use(express.json());
 require ('./Libs/autoload');
 const evaluationMng = require('./lab/evaluationMng/app')
+const contractMng = require('./lab/contractManagement/app')
 
 
 // view engine setup
@@ -32,7 +35,8 @@ app.use(express.static(path.join(__dirname, 'styles')));
 
 
 
-app.use('/eva', evaluationMng)
+app.use('/evaluationMng', evaluationMng)
+app.use('/contractMng', contractMng)
 
 app.use('/',validateToken, indexRouter);
 // app.use('/users', usersRouter);

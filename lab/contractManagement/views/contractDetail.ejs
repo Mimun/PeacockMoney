@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+  <!-- material design.io -->
+  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="/material-components-web/dist/material-components-web.min.js"></script>
+  <link href="/font-awesome/css/font-awesome.min.css">
+
+  <style>
+    @import url("/font-awesome/css/font-awesome.min.css");
+
+    body {
+      padding: 0;
+    }
+
+
+    #wrapper {
+      overflow-x: hidden;
+    }
+
+    #sidebar-wrapper {
+      min-height: 100vh;
+      margin-left: -15rem;
+      -webkit-transition: margin .25s ease-out;
+      -moz-transition: margin .25s ease-out;
+      -o-transition: margin .25s ease-out;
+      transition: margin .25s ease-out;
+    }
+
+    #sidebar-wrapper .sidebar-heading {
+      padding: 0.875rem 1.25rem;
+      font-size: 1.2rem;
+    }
+
+    #sidebar-wrapper .list-group {
+      width: 15rem;
+    }
+
+    #page-content-wrapper {
+      min-width: 100vw;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: 0;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar-wrapper {
+        margin-left: 0;
+      }
+
+      #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+      }
+
+      #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .page-content {
+      margin: 2vh 0;
+    }
+
+    .md-form {
+      width: 80%;
+      margin: 2vh 1vw;
+    }
+  </style>
+</head>
+
+<body>
+  <template id="info-template">
+    <!-- Bootstrap core CSS -->
+    <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+    <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+    <!-- material design.io -->
+    <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="/material-components-web/dist/material-components-web.min.js"></script>
+    <link href="/font-awesome/css/font-awesome.min.css">
+    <style>
+      label {
+        font-weight: bold;
+      }
+    </style>
+    <div class="form-group row">
+      <!-- Material input -->
+      <label for="inputEmail3MD" class="col-sm-4 col-form-label"></label>
+      <div class="col-sm-8">
+        <div class="md-form mt-0">
+          <input type="email" class="form-control" id="inputEmail3MD" value="" disabled>
+        </div>
+      </div>
+    </div>
+
+  </template>
+  
+  <template id="contract-template">
+    <style>
+      .content-container {
+        border: 1px solid lightgrey;
+        padding: 5%;
+        /* width: 50vw; */
+      }
+  
+      .part {
+        margin-bottom: 3%;
+      }
+  
+      .contract-image {
+        width: 128px;
+        height: auto;
+        max-height: 128px;
+        position: relative;
+        float: right;
+      }
+  
+      .contract-image img {
+        width: 100%;
+        height: auto;
+      }
+  
+      .contract-detail-body {
+        padding: 0 5%;
+      }
+  
+      .contract-detail-body .section {
+        margin: 2% 0;
+        padding: 0 5%;
+      }
+  
+      .section-title {
+        font-weight: bold;
+      }
+  
+      .section-title.signature-container {
+        font-weight: normal;
+        font-style: italic;
+        margin: 5%;
+      }
+  
+      .signature {
+        min-height: 192px;
+      }
+  
+      .signature h5 {
+        font-weight: bold;
+        text-align: center;
+      }
+  
+      .invisible-div {
+        visibility: hidden;
+        width: 0;
+        height: 0;
+      }
+    </style>
+    <div class="content-container">
+      <div class="contract-detail-container">
+        <div class="contract-detail-header part">
+          <div class="container">
+            <!-- <div class="row">
+              <div class="col"></div>
+              <div class="col-10">
+                <p class="h3" style="text-align: center;">Cong hoa, Xa hoi, Chu nghia Viet Nam</p>
+                <p class="h4" style="text-align: center;"> Doc lap - Tu do - Hanh phuc</p>
+              </div>
+              <div class="col"></div>
+    
+            </div> -->
+            <div class="row">
+              <div class="col-2"></div>
+              <div class="col" style="display: flex;">
+                <div class="contract-title" style="margin: auto; ">
+                  <p class="h3" style="font-weight: bold; text-decoration: underline;">CONTRACT TITLE</p>
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="contract-image">
+                  <img src="" alt="" id="contract-image">
+                </div>
+              </div>
+            </div>
+          </div>
+  
+  
+        </div>
+        <div class="contract-detail-body part">
+          <div class="a-side-info-container section-container">
+            <h4 class="section-title">I. Thong tin ben A</h4>
+            <div class="section"></div>
+          </div>
+          <div class="b-side-info-container section-container">
+            <h4 class="section-title">II. Thong tin ben B</h4>
+            <div class="section"></div>
+  
+          </div>
+          <div class="contract-info-container section-container">
+            <h4 class="section-title">III. Thong tin hop dong</h4>
+            <div class="section"></div>
+  
+          </div>
+          <div class="item-info-container section-container">
+            <h4 class="section-title">IV. Thong tin tai san the chap</h4>
+            <div class="section">
+              <div class="item-info">
+              </div>
+              <div class="item-status">
+              </div>
+            </div>
+  
+          </div>
+        </div>
+        <div class="contract-detail-footer part">
+          <h6 class="section-title signature-container" style="text-align: right;">Ha Noi, ngay... thang...nam...</h6>
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="signature">
+                  <h5>Xac nhan ben A</h5>
+                </div>
+              </div>
+              <div class="col">
+                <div class="signature">
+                  <h5>Xac nhan ben B</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-options" style="display: flex;">
+        <a href="" class="btn btn-primary btn-sm get-pdf" style="margin: auto;">Get PDF</a>
+  
+      </div>
+  
+    </div>
+  </template>
+  
+  <div id="contract-info"></div>
+
+
+
+  <script src="/mdbootstrap/js/popper.min.js"></script>
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
+  <script src="/mdbootstrap/js/bootstrap.min.js"></script>
+  <script src="/mdbootstrap/js/mdb.min.js"></script>
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.js"></script>
+  <!-- generate contract detail in html -->
+
+  <!-- <script type="module">
+    
+    const PDF1 = () => {
+    html2canvas(document.querySelector('.contract-detail-container'), { scrollY: -window.scrollY }).then(function (canvas) {
+      var doc = new jsPDF('p', 'mm', 'a4')
+      var image = canvas.toDataURL("image/jpeg")
+      console.log('image', image)
+      doc.addImage(image, 'JPEG', 30, 20, 150, 250)
+      doc.save('contract.pdf')
+    })
+  
+  }
+
+  </script> -->
+
+</body>
+
+</html>

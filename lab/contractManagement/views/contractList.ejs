@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- Bootstrap core CSS -->
+  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+  <!-- material design.io -->
+  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="/material-components-web/dist/material-components-web.min.js"></script>
+  <link href="/font-awesome/css/font-awesome.min.css">
+
+
+  <style>
+    @import url("/font-awesome/css/font-awesome.min.css");
+
+    body {
+      padding: 0;
+    }
+
+
+    #wrapper {
+      overflow-x: hidden;
+    }
+
+    #sidebar-wrapper {
+      min-height: 100vh;
+      margin-left: -15rem;
+      -webkit-transition: margin .25s ease-out;
+      -moz-transition: margin .25s ease-out;
+      -o-transition: margin .25s ease-out;
+      transition: margin .25s ease-out;
+    }
+
+    #sidebar-wrapper .sidebar-heading {
+      padding: 0.875rem 1.25rem;
+      font-size: 1.2rem;
+    }
+
+    #sidebar-wrapper .list-group {
+      width: 15rem;
+    }
+
+    #page-content-wrapper {
+      min-width: 100vw;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: 0;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar-wrapper {
+        margin-left: 0;
+      }
+
+      #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+      }
+
+      #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .page-content {
+      margin: 2vh 0;
+    }
+
+    .md-form {
+      width: 80%;
+      margin: 2vh 1vw;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="d-flex" id="wrapper">
+    <%- include('sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <%- include('navbar.ejs')  %>
+      <template id="contract-card-template">
+        <style>
+          .list-group-item:hover {
+            cursor: pointer;
+            background-color: lightgrey;
+          }
+        </style>
+
+        <div class="list-group-item object-div" style="border: none; ">
+          <div class="container">
+            <div class="row">
+              <div class="col-3" style="margin: auto">
+                <div class="image-container" style="width: 193px; max-width: 256px; height: auto; max-height: 192px;">
+                  <img alt="" style="width: 100%; height: auto;">
+
+                </div>
+              </div>
+              <div class="col" style="margin: auto;">
+                <p class="h4 mb-4 contract-title">Template title</p>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis totam, qui, omnis perspiciatis
+                  dicta
+                  laboriosam, enim voluptas fuga facilis eveniet mollitia nisi sunt iure quos odio similique molestiae.
+                  Voluptatibus, id!</p>
+              </div>
+              <div class="col-2 btn-options" style="margin: auto;">
+                <button class="btn btn-primary btn-sm"></button>
+                <!-- <button class="btn btn-secondary btn-sm" id="btn-complete">Complete</button> -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </template>
+
+      <template id="contract-detail-container-template">
+        <%- include('contractDetail.ejs') %> 
+
+      </template>
+
+      <div class="contract-list-container container" style="padding: 5% 2%; ">
+        <div class="title-container" style="margin: auto;">
+          <p class="h2 mb-2" style="text-align: center; ">Contract List</p>
+        </div>
+
+         <!-- filter|selector -->
+         <div class="filter-boxes" style="padding-bottom: 5%;">
+          <select class="browser-default custom-select selector" style="width: 200px;">
+            <option selected value="all">All</option>
+            <option value="waiting">Waiting</option>
+            <option value="approved">Aproved</option>
+            <option value="completed">Completed</option>
+          </select>
+
+        </div>
+
+        <div class="list-group-flush" id="list-container">
+
+        </div>
+       
+      </div>
+
+      <!-- modal -->
+      <div class="container-fluid">
+        <!-- Modal -->
+
+        <!-- Central Modal Small -->
+        <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+          aria-hidden="true" >
+
+          <!-- Change class .modal-sm to change the size of the modal -->
+          <div class="modal-dialog modal-lg" role="document" >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title w-100" id="myModalLabel">Contract Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <modal-body style="width: fit-content;">
+                  <!-- Adding dynamic content here -->
+                  <h2>I am going to add a dynamic content here</h2>
+                </modal-body>
+              </div>
+              <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-sm">Create new Contract</button>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <!-- Central Modal Small -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/mdbootstrap/js/popper.min.js"></script>
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
+  <script src="/mdbootstrap/js/bootstrap.min.js"></script>
+  <script src="/mdbootstrap/js/mdb.min.js"></script>
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
+
+  <script type="module">
+    import { generateContractListHTML } from './generateContractListHTML.js'
+    import {generateContractDetailHTML} from './generateContractDetailHTML.js'
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+    const contractList = <%- JSON.stringify(contractList) %>;
+    const template = document.querySelector('#contract-card-template')
+
+    contractList.map(contract => {
+
+      generateContractListHTML(contract, template, 'list-container')
+    })
+
+    // handling button onclick event
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', (event) => {
+
+        if (event.target.textContent.toLowerCase() === "approve") {
+          console.log('button: ', event.target.textContent)
+          $.ajax({
+            type: "PUT",
+            url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
+            contentType: 'application/json',
+            data: JSON.stringify({ contractStatus: 'approved' }),
+            success: result => {
+              console.log(result)
+            }
+          })
+          event.target.closest('.object-div').setAttribute('data-status', 'approved')
+          event.target.innerHTML = 'Complete'
+          event.target.className = 'btn btn-secondary btn-sm'
+        } else if (event.target.textContent.toLowerCase() === "complete") {
+          console.log('button: ', event.target.textContent)
+          $.ajax({
+            type: "PUT",
+            url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
+            contentType: 'application/json',
+            data: JSON.stringify({ contractStatus: 'completed' }),
+            success: result => {
+              console.log(result)
+            }
+          })
+          event.target.closest('.object-div').setAttribute('data-status', 'completed')
+          event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
+        }
+      })
+    })
+
+    // handling selector onclick event
+    document.querySelector('div[class="filter-boxes"]').addEventListener('change', (event) => {
+      var newArray = contractList.filter(contract => {
+        return contract.contractStatus === event.target.value
+      })
+
+      console.log('new array: ', newArray)
+
+      if (event.target.value !== "all") {
+
+        document.querySelector('#list-container').innerHTML = ''
+        newArray.map(object => {
+          generateContractListHTML(object, template, 'list-container')
+        })
+        addClickEvent()
+      } else {
+        document.querySelector('#list-container').innerHTML = ''
+        contractList.map(object => {
+          generateContractListHTML(object, template, 'list-container')
+        })
+        addClickEvent()
+      }
+
+    })
+    const addClickEvent = () => {
+      // handling contract onclick event (contract detail page)
+      document.querySelectorAll('.object-div').forEach(element => {
+        element.addEventListener('click', (event) => {
+          console.log('clicked to object div')
+          document.querySelector('.modal-body').innerHTML = ''
+          const contractDetailContainerTemplate = document.querySelector('#contract-detail-container-template')
+          const contractDetailContainerTemplateClone = contractDetailContainerTemplate.content.cloneNode(true)
+          document.querySelector('.modal-body').appendChild(contractDetailContainerTemplateClone)
+
+          const contractTemplate = document.querySelector('#contract-template')
+          console.log('contract template', contractTemplate)
+          generateContractDetailHTML(event.target.closest('.object-div').C_DATA, contractTemplate, 'contract-info')
+
+          $("#centralModalSm").modal();
+        })
+      })
+    }
+    addClickEvent()
+
+
+
+  </script>
+</body>
+
+</html>

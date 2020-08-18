@@ -1,4 +1,3 @@
-import {generateHTML} 
 export const createPagination = itemObjs => {
   // pagination
 

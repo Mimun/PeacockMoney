@@ -59,18 +59,8 @@
   }
 </style>
 
-<template id="contract-template">
-  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
-  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
-  <div class="container">
-    <div class="md-form">
-      <input id="form1" type="text" class="form-control" disabled>
-      <label id="label" for="form1" data-error="Empty"></label>
-    </div>
-  </div>
-
-</template>
+<!-- contract template -->
+<%- include("./contractPreviewTemplate.ejs") %>
 
 <form id="regForm" action="">
 
@@ -113,30 +103,38 @@
       <input type="text" id="form2" class="form-control validate" disabled>
       <label for="form2" data-error="Empty">Nguoi nhan</label>
     </div>
+    <div class="md-form">
+      <input type="number" id="form3" class="form-control validate">
+      <label for="form3" data-error="Empty">So tien vay</label>
+    </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
           <div class="md-form">
-            <input type="number" id="form3" class="form-control validate">
-            <label for="form3" data-error="Empty">So tien max</label>
+            <input type="number" id="form4" class="form-control validate">
+            <label for="form4" data-error="Empty">So tien max</label>
           </div>
         </div>
         <div class="col">
           <div class="md-form">
-            <input type="number" id="form4" class="form-control validate">
-            <label for="form4" data-error="Empty">So tien min</label>
+            <input type="number" id="form5" class="form-control validate">
+            <label for="form5" data-error="Empty">So tien min</label>
           </div>
         </div>
 
       </div>
     </div>
     <div class="md-form">
-      <input type="date" id="form5" class="form-control validate" disabled>
-      <label for="form5" data-error="Empty">Ngay lap</label>
+      <input type="date" id="form6" class="form-control validate" disabled>
+      <label for="form6" data-error="Empty">Ngay lap</label>
     </div>
     <div class="md-form">
-      <input type="text" id="form6" class="form-control validate">
-      <label for="form6" data-error="Empty">Ti le lai theo ngay(%)</label>
+      <input type="number" id="form7" class="form-control validate">
+      <label for="form7" data-error="Empty">Ti le lai theo ngay(%)</label>
+    </div>
+    <div class="md-form">
+      <input type="number" id="form8" class="form-control validate">
+      <label for="form8" data-error="Empty">Ti le phat theo ngay(%)</label>
     </div>
   </div>
 
@@ -161,8 +159,8 @@
       <span class="step"></span>
     </div>
     <div style="float:right;">
-      <button type="button" class="btn btn-primary btn-sm" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-      <button type="button" class="btn btn-primary btn-sm" id="nextBtn" onclick="nextPrev(1)">Next</button>
+      <button type="button" class="btn btn-primary btn-sm" id="prevBtn">Previous</button>
+      <button type="button" class="btn btn-primary btn-sm" id="nextBtn">Next</button>
     </div>
 
   </div>
@@ -179,10 +177,18 @@
 <script src="/mdbootstrap/js/mdb.min.js"></script>
 <script src="/jquery.redirect/jquery.redirect.js"></script>
 
-<script>
+<script type="module">
+  import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
+  import { ObjectId } from '/createMongooseID.js'
   var currentTab = 0; // Current tab is set to be the first tab (0)
   showTab(currentTab); // Display the current tab
-
+  const contractTemplate = document.getElementById('temp_contract')
+  document.querySelector('#prevBtn').addEventListener('click', () => {
+    nextPrev(-1)
+  })
+  document.querySelector('#nextBtn').addEventListener('click', () => {
+    nextPrev(1)
+  })
   function showTab(n) {
     // This function will display the specified tab of the form ...
     var x = document.getElementsByClassName("tab");
@@ -218,8 +224,10 @@
       //...the form gets submitted:
       var templateItem = {
         metadata: {},
-        infos: []
+        infos: [],
+        _id: ObjectId()
       }
+      console.log('object id: ', templateItem._id)
       var imgData = document.querySelector('cropper-wc').getImageData()
       templateItem.infos.push({
         name: 'image',
@@ -248,10 +256,31 @@
         }
 
       })
-      displayTemplate(templateItem)
-      console.log('def: ', templateItem)
 
-      // document.getElementById("regForm").submit();
+      $.ajax({
+        type: 'POST',
+        data: JSON.stringify(templateItem),
+        contentType: 'application/json',
+        url: '/createNewContractTemplate',
+        success: (result) => {
+          console.log(result)
+          displayTemplate(templateItem, contractTemplate, 'template-handler')
+        }
+      })
+      // $.redirect("/createNewContractTemplate", { data: JSON.stringify(templateItem) }, "POST");
+
+      // var xhttp = new XMLHttpRequest()
+      // xhttp.open('POST', '/createNewContractTemplate', true)
+      // xhttp.onreadystatechange = function () {
+      //   if (xhttp.readyState === 4) {
+      //     console.log(decodeURIComponent(xhttp.response))
+      //   }
+      // }
+      // xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      // xhttp.send(encodeURIComponent(templateItem))
+      // console.log('def: ', templateItem)
+
+     
       return false;
     }
     // Otherwise, display the correct tab:
@@ -301,42 +330,37 @@
     return foundObj;
   };
 
-  const displayTemplate = (itemObj) => {
-    const templateContract = document.getElementById('temp_contract')
-    const card_handler = document.querySelector('template-handler')
-
-    const templateContractClone = document.importNode(templateContract.content, true);
-    // clone.setAttribute('id',i)
-    card_handler.appendChild(templateContractClone)
-    item = card_handler.lastChild;
-    item.C_DATA = itemObj
-
-    // fill data into modal
-    const imageInfo = findNestedObj(itemObj, 'name', 'image')
-    item.querySelector('img').setAttribute('src', imageInfo.value)
-
-    item.querySelector('h4[class="card-title"]').innerHTML = itemObj.metadata["template name"] ? itemObj.metadata["template name"] : "Template name"
-
-    // item.setAttribute('id', i)
-    item.addEventListener('click', function (evt) {
-      $("#centralModalSm").modal();
-      modalBody = document.querySelector('modal-body')
-      while (modalBody.firstChild) {
-        modalBody.removeChild(modalBody.lastChild)
-      }
-      const createNewContractButton = document.createElement('button')
-      createNewContractButton.className = "btn btn-primary"
-      createNewContractButton.innerHTML = "Create new contract"
-      createNewContractButton.addEventListener('click', () => {
-        // console.log('json stringify: ', JSON.stringify(itemObj), ', type of: ', typeof JSON.stringify(itemObj))
-        $.redirect("/createNewContract", {data: JSON.stringify(itemObj)}, "POST");
-       
+  const displayTemplate = (itemObj, template, elementName) => {
+    generateContractTemplateCard(itemObj, template, elementName)
+    document.querySelector('#template-handler').lastChild.addEventListener('click', (event) => {
+      console.log('event abc: ', document.querySelector('modal-body'))
+      var modalBody = document.querySelector('modal-body')
+      modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
+        var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+        // console.log('abc xyz: ', event.target.closest('modal-body').querySelector('.object-div'))
+        $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
       })
-      modalBody.appendChild(this.cloneNode(true))
-      modalBody.appendChild(createNewContractButton)
 
-      console.log('modalBody', modalBody)
+      modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
+        var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+        console.log('data to delete: ', cData)
+        $.ajax({
+          type: "DELETE",
+          url: '/deleteContractTemplate/' + cData._id,
+          success: (result) => {
+            console.log(result)
+            // window.location.reload()
+          }
+
+        })
+      })
+
     })
+    // document.querySelectorAll('.object-div').forEach(element => {
+    //   element.addEventListener('click', function (event) {
+
+    //   })
+    // })
 
   }
 
@@ -344,7 +368,7 @@
 
 <script type="module">
   // generate template after choosing file
-  import { generateTemplateHTML } from '/generateTemplateHTML.js'
+  import { generateCustomInfoTemplate } from '/generateCustomInfoTemplate.js'
   const template = document.querySelector('#contract-template')
 
   document.querySelector('#inputTemplateFile').addEventListener('change', (event) => {
@@ -379,7 +403,7 @@
         j += 1
       }
       j = linesBreakPoint[i] + 1
-      generateTemplateHTML(array, template, 'contract-template-container')
+      generateCustomInfoTemplate(array, template, 'contract-template-container')
     }
 
 

@@ -186,12 +186,8 @@
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
-        <h1 class="mt-4">Quan Ly Tinh Trang Tai San</h1>
-        <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on
-          larger screens. When toggled using the button below, the menu will change.</p>
-        <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional,
-          and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the
-          menu when clicked.</p>
+        <h1 class="mt-4">Quản lý tình trạng tài sản</h1>
+      
 
         <!-- template of list of items -->
         <template id="quan-ly-tham-dinh-gia">
@@ -282,7 +278,7 @@
             <div class="custom-file">
               <input type="file" accept=".csv" id="csv-reader" lass="custom-file-input"
                 aria-describedby="inputGroupFileAddon01" />
-              <label class="custom-file-label" for="csv-reader">Choose file</label>
+              <label class="custom-file-label" for="csv-reader">Chọn file quản lý tình trạng</label>
             </div>
 
           </div>
@@ -882,7 +878,7 @@
           type: 'POST',
           data: JSON.stringify(originItemList),
           contentType: 'application/json',
-          url: 'http://localhost:3000/postItem',
+          url: 'http://localhost:3001/postItemStatus',
           success: (data) => {
             console.log('Saved successfully!')
           }

@@ -1,4 +1,6 @@
-export const generateTemplateHTML = (array, template, elementName) => {
+// used for generating custom info of a contract template when creating new contract template
+
+export const generateCustomInfoTemplate = (array, template, elementName) => {
   const infoContainer = document.createElement('div')
   infoContainer.className = array[0]
 
