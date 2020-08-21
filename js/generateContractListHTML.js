@@ -22,7 +22,7 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
     // clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button[id="btn-complete"]'))
   } else if (contractStatus === "approved") {
     button.id = 'btn-complete'
-    button.className = 'btn btn-secondary btn-sm'
+    button.className = 'btn btn-default btn-sm'
     button.innerHTML = 'Complete'
   } else if(contractStatus === "completed"){
     clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))

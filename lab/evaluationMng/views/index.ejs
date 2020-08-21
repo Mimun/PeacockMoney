@@ -266,6 +266,7 @@
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
+    import { ObjectId } from '/createMongooseID.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
@@ -335,6 +336,9 @@
         itemObj["metadata"] = {
           type: typeValue,
           category: categoryValue
+        }
+        if(itemObj._id===null || itemObj._id === undefined){
+          itemObj._id = ObjectId()
         }
         resultsInJSON[i - 1] = itemObj
         // results.push(obj)
@@ -555,11 +559,20 @@
         submitBtn.style.margin = 'auto'
         submitBtn.addEventListener('click', () => {
           console.log('origin item list before submitting: ', originItemList)
+          // $.ajax({
+          //   type: 'POST',
+          //   data: JSON.stringify(originItemList),
+          //   contentType: 'application/json',
+          //   url: '/items',
+          //   success: (data) => {
+          //     console.log('Saved successfully!')
+          //   }
+          // })
           $.ajax({
             type: 'POST',
             data: JSON.stringify(originItemList),
             contentType: 'application/json',
-            url: 'http://localhost:3001/postItem',
+            url: 'http://localhost:3000/evaluationMng/items',
             success: (data) => {
               console.log('Saved successfully!')
             }
@@ -640,9 +653,28 @@
           'type': type,
           'category': category
         },
-        infos: infos
+        infos: infos,
+        _id: ObjectId()
       }
       originItemList.unshift(dataObj)
+      // $.ajax({
+      //   type: 'POST',
+      //   url: '/createItem',
+      //   data: JSON.stringify(dataObj),
+      //   contentType: 'application/json',
+      //   success: (result) => {
+      //     console.log(result)
+      //   }
+      // })
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/evaluationMng/createItem',
+        data: JSON.stringify(dataObj),
+        contentType: 'application/json',
+        success: (result) => {
+          console.log(result)
+        }
+      })
       console.log('data obj: ', dataObj)
 
       createPagination(originItemList)
@@ -692,6 +724,7 @@
       return foundObj;
     };
 
+    // edit button 
     document.querySelector('#edit-btn').addEventListener('click', (e) => {
       if (e.target.textContent == 'Edit') {
         console.log('Edit')
@@ -752,11 +785,37 @@
         itemObj = { ...itemObj, infos: infos }
         console.log('origin item list befor editing: ', originItemList)
 
-        originItemList.splice(originItemList.indexOf(cData), 1)
-        originItemList.unshift(itemObj)
+        console.log('item: ', itemObj)
+        // $.ajax({
+        //   type: "PUT",
+        //   url: '/items/' + itemObj._id,
+        //   contentType: 'application/json',
+        //   data: JSON.stringify(itemObj),
+        //   success: result => {
+        //     console.log(result.message)
+        //     if (result.isUpdated) {
+        //       originItemList.splice(originItemList.indexOf(cData), 1)
+        //       originItemList.unshift(itemObj)
+        //       createPagination(originItemList)
+
+        //     }
+        $.ajax({
+          type: "PUT",
+          url: 'http://localhost:3000/evaluationMng/items/' + itemObj._id,
+          contentType: 'application/json',
+          data: JSON.stringify(itemObj),
+          success: result => {
+            console.log(result.message)
+            if (result.isUpdated) {
+              originItemList.splice(originItemList.indexOf(cData), 1)
+              originItemList.unshift(itemObj)
+              createPagination(originItemList)
+
+            }
+          }
+        })
         console.log('origin item list after editing: ', originItemList)
 
-        createPagination(originItemList)
 
         e.target.closest('div[class="modal-footer"]').removeChild(e.target.closest('div[class="modal-footer"]').querySelector('button[id="add-field-button"]'))
 
@@ -770,12 +829,37 @@
       const deleteCData = event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').C_DATA
       var index = originItemList.indexOf(deleteCData)
       console.log('index: ', index)
-      if (index > -1) {
-        originItemList.splice(index, 1)
-        createPagination(originItemList)
+
+      // $.ajax({
+      //   type: 'DELETE',
+      //   url: '/items/' + deleteCData._id,
+      //   success: result => {
+      //     console.log(result.message)
+      //     if (result.isDeleted) {
+      //       if (index > -1) {
+      //         originItemList.splice(index, 1)
+      //         createPagination(originItemList)
 
 
-      }
+      //       }
+      //     }
+      //   }
+      // })
+      $.ajax({
+        type: 'DELETE',
+        url: 'http://localhost:3000/evaluationMng/items/' + deleteCData._id,
+        success: result => {
+          console.log(result.message)
+          if (result.isDeleted) {
+            if (index > -1) {
+              originItemList.splice(index, 1)
+              createPagination(originItemList)
+
+
+            }
+          }
+        }
+      })
 
     })
 

@@ -356,9 +356,21 @@
         itemStatus: []
       }
       document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div"]').forEach(element => {
-        // console.log('Object divs found: ', element)
+        console.log('Object divs found: ', element)
         data["metadata"] = element.C_DATA["metadata"]
-        data["infos"] = element.C_DATA["infos"]
+        data.infos.push({
+          name: "image", 
+          value: element.querySelector('img').getAttribute('src')
+        })
+        element.querySelectorAll('.md-form').forEach(element=>{
+          var info = {
+            name: "", value: ""
+          }
+          info["name"] = element.querySelector('label').innerHTML.toLowerCase()
+          info["value"] = element.querySelector('input').value
+          data["infos"].push(info)
+        })
+        // data["infos"] = element.C_DATA["infos"]
       })
       document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div item"]').forEach(element => {
         // console.log('Object divs found: ', element)
@@ -368,7 +380,9 @@
         // console.log('Object divs found: ', element)
         data["itemStatus"].push(element.C_DATA["_id"])
       })
-      $.redirect("/contracts", { data: JSON.stringify(data) }, "POST");
+      // $.redirect("/contracts", { data: JSON.stringify(data) }, "POST");
+      $.redirect("http://localhost:3000/contractMng/contracts", { data: JSON.stringify(data) }, "POST");
+
       console.log('data: ', data)
     })
   </script>

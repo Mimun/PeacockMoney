@@ -126,7 +126,7 @@
       </template>
 
       <template id="contract-detail-container-template">
-        <%- include('contractDetail.ejs') %> 
+        <%- include('contractDetail.ejs') %>
 
       </template>
 
@@ -135,8 +135,8 @@
           <p class="h2 mb-2" style="text-align: center; ">Contract List</p>
         </div>
 
-         <!-- filter|selector -->
-         <div class="filter-boxes" style="padding-bottom: 5%;">
+        <!-- filter|selector -->
+        <div class="filter-boxes" style="padding-bottom: 5%;">
           <select class="browser-default custom-select selector" style="width: 200px;">
             <option selected value="all">All</option>
             <option value="waiting">Waiting</option>
@@ -149,7 +149,7 @@
         <div class="list-group-flush" id="list-container">
 
         </div>
-       
+
       </div>
 
       <!-- modal -->
@@ -158,10 +158,10 @@
 
         <!-- Central Modal Small -->
         <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-          aria-hidden="true" >
+          aria-hidden="true">
 
           <!-- Change class .modal-sm to change the size of the modal -->
-          <div class="modal-dialog modal-lg" role="document" >
+          <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title w-100" id="myModalLabel">Contract Detail</h4>
@@ -195,12 +195,13 @@
 
   <script type="module">
     import { generateContractListHTML } from './generateContractListHTML.js'
-    import {generateContractDetailHTML} from './generateContractDetailHTML.js'
+    import { generateContractDetailHTML } from './generateContractDetailHTML.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
     });
     const contractList = <%- JSON.stringify(contractList) %>;
+    console.log('contract list: ', contractList)
     const template = document.querySelector('#contract-card-template')
 
     contractList.map(contract => {
@@ -213,33 +214,53 @@
       button.addEventListener('click', (event) => {
 
         if (event.target.textContent.toLowerCase() === "approve") {
-          console.log('button: ', event.target.textContent)
-          $.ajax({
-            type: "PUT",
-            url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
-            contentType: 'application/json',
-            data: JSON.stringify({ contractStatus: 'approved' }),
-            success: result => {
-              console.log(result)
-            }
-          })
+          console.log('button: ', event.target.closest('.object-div'))
+          // $.ajax({
+          //   type: "PUT",
+          //   url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
+          //   contentType: 'application/json',
+          //   data: JSON.stringify({ contractStatus: 'approved' }),
+          //   success: result => {
+          //     console.log(result)
+          //   }
+          // })
+          // $.ajax({
+          //   type: "PUT",
+          //   url: 'http://localhost:3000/contractMng/contracts/' + event.target.closest('.object-div').C_DATA._id,
+          //   contentType: 'application/json',
+          //   data: JSON.stringify({ contractStatus: 'approved' }),
+          //   success: result => {
+          //     console.log(result)
+          //   }
+          // })
           event.target.closest('.object-div').setAttribute('data-status', 'approved')
           event.target.innerHTML = 'Complete'
-          event.target.className = 'btn btn-secondary btn-sm'
+          event.target.className = 'btn btn-default btn-sm'
         } else if (event.target.textContent.toLowerCase() === "complete") {
-          console.log('button: ', event.target.textContent)
-          $.ajax({
-            type: "PUT",
-            url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
-            contentType: 'application/json',
-            data: JSON.stringify({ contractStatus: 'completed' }),
-            success: result => {
-              console.log(result)
-            }
-          })
+          console.log('button: ', event.target.closest('.object-div').C_DATA)
+          // $.ajax({
+          //   type: "PUT",
+          //   url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
+          //   contentType: 'application/json',
+          //   data: JSON.stringify({ contractStatus: 'completed' }),
+          //   success: result => {
+          //     console.log(result)
+          //   }
+          // })
+          // $.ajax({
+          //   type: "PUT",
+          //   url: 'http://localhost:3000/contractMng/contracts/' + event.target.closest('.object-div').C_DATA._id,
+          //   contentType: 'application/json',
+          //   data: JSON.stringify({ contractStatus: 'completed' }),
+          //   success: result => {
+          //     console.log(result)
+          //   }
+          // })
           event.target.closest('.object-div').setAttribute('data-status', 'completed')
           event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
         }
+        event.stopPropagation()
+
       })
     })
 

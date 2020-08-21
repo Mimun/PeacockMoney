@@ -2,7 +2,7 @@
 // console.log("CropperJS");
 
 import _html from "./cropperTpl.js";
-import Cropper from "../../node_modules/cropperjs/dist/cropper.esm.js"
+import Cropper from "/cropperjs/dist/cropper.esm.js"
 
 class TheCropper extends HTMLElement {
 

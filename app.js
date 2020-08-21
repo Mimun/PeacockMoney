@@ -32,14 +32,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use(express.static(path.join(__dirname, 'js')));
 app.use(express.static(path.join(__dirname, 'styles')));
+app.use(express.static(path.join(__dirname, 'lab/contractManagement/Components')));
+console.log('dir name: ', path.join(__dirname, 'lab/contractManagement/Components/cropper'))
 
 
 
-app.use('/evaluationMng', evaluationMng)
-app.use('/contractMng', contractMng)
+
+
+
 
 app.use('/',validateToken, indexRouter);
-// app.use('/users', usersRouter);
+app.use('/evaluationMng', evaluationMng)
+app.use('/contractMng', contractMng)
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

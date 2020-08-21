@@ -71,9 +71,9 @@
       <div class=row>
         <cropper-wc title="abc"></cropper-wc>
       </div>
-      <div class=row>
+      <!-- <div class=row>
         <button id="SelectImg" class="btn btn-default">Confirm</button>
-      </div>
+      </div> -->
     </div>
   </div>
 
@@ -91,34 +91,38 @@
       <input type="text" id="form3" class="form-control validate">
       <label for="form3" data-error="Empty">Type</label>
     </div>
+    <div class="md-form">
+      <input type="text" id="form4" class="form-control validate">
+      <label for="form4" data-error="Empty">Nguoi lap</label>
+    </div>
+    <div class="md-form">
+      <input type="text" id="form5" class="form-control validate">
+      <label for="form5" data-error="Empty">Nguoi nhan</label>
+    </div>
+    <div class="md-form">
+      <input type="text" id="form6" class="form-control validate">
+      <label for="form6" data-error="Empty">So tien vay</label>
+    </div>
   </div>
 
   <!-- Step 3: Contract metadata -->
   <div class="tab md-tabs">Contract metadata:
     <div class="md-form">
       <input type="text" id="form1" class="form-control validate" disabled>
-      <label for="form1" data-error="Empty">Nguoi lap</label>
-    </div>
-    <div class="md-form">
-      <input type="text" id="form2" class="form-control validate" disabled>
-      <label for="form2" data-error="Empty">Nguoi nhan</label>
-    </div>
-    <div class="md-form">
-      <input type="number" id="form3" class="form-control validate">
-      <label for="form3" data-error="Empty">So tien vay</label>
+      <label for="form1" data-error="Empty">Loai tai san</label>
     </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
           <div class="md-form">
             <input type="number" id="form4" class="form-control validate">
-            <label for="form4" data-error="Empty">So tien max</label>
+            <label for="form4" data-error="Empty">So tien min</label>
           </div>
         </div>
         <div class="col">
           <div class="md-form">
             <input type="number" id="form5" class="form-control validate">
-            <label for="form5" data-error="Empty">So tien min</label>
+            <label for="form5" data-error="Empty">So tien max</label>
           </div>
         </div>
 
@@ -159,8 +163,8 @@
       <span class="step"></span>
     </div>
     <div style="float:right;">
-      <button type="button" class="btn btn-primary btn-sm" id="prevBtn">Previous</button>
-      <button type="button" class="btn btn-primary btn-sm" id="nextBtn">Next</button>
+      <button type="button" class="btn btn-default btn-sm" id="prevBtn">Previous</button>
+      <button type="button" class="btn btn-default btn-sm" id="nextBtn">Next</button>
     </div>
 
   </div>
@@ -257,14 +261,24 @@
 
       })
 
+      // $.ajax({
+      //   type: 'POST',
+      //   data: JSON.stringify(templateItem),
+      //   contentType: 'application/json',
+      //   url: '/createNewContractTemplate',
+      //   success: (result) => {
+      //     console.log(result)
+      //     displayTemplate(templateItem, contractTemplate, 'template-handler')
+      //   }
+      // })
       $.ajax({
         type: 'POST',
         data: JSON.stringify(templateItem),
         contentType: 'application/json',
-        url: '/createNewContractTemplate',
+        url: 'http://localhost:3000/contractMng/createNewContractTemplate',
         success: (result) => {
           console.log(result)
-          displayTemplate(templateItem, contractTemplate, 'template-handler')
+          displayTemplate(result.contractTemplateList, contractTemplate, 'template-handler')
         }
       })
       // $.redirect("/createNewContractTemplate", { data: JSON.stringify(templateItem) }, "POST");
@@ -338,18 +352,29 @@
       modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
         var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
         // console.log('abc xyz: ', event.target.closest('modal-body').querySelector('.object-div'))
-        $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
+        // $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
+        $.redirect("http://localhost:3000/contractMng/createNewContract", { data: JSON.stringify(cData) }, "POST");
+        
       })
 
       modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
         var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
         console.log('data to delete: ', cData)
+        // $.ajax({
+        //   type: "DELETE",
+        //   url: '/deleteContractTemplate/' + cData._id,
+        //   success: (result) => {
+        //     console.log(result)
+        //     // window.location.reload()
+        //   }
+
+        // })
         $.ajax({
           type: "DELETE",
-          url: '/deleteContractTemplate/' + cData._id,
+          url: 'http://localhost:3000/contractMng/deleteContractTemplate/' + cData._id,
           success: (result) => {
             console.log(result)
-            // window.location.reload()
+            window.location.href = 'http://localhost:3000/contractMng/'
           }
 
         })

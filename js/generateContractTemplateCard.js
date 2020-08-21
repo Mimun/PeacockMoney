@@ -7,7 +7,16 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
   clone.querySelector('img').setAttribute('src', contractTemplateImage)
 
   // title
-  clone.querySelector('.card-title').innerHTML = itemObj.metadata["template name"] ? itemObj.metadata["template name"] : "Template name"
+  clone.querySelector('.card-title').innerHTML = itemObj.metadata["template name"] ? itemObj.metadata["template name"].charAt(0).toUpperCase() + itemObj.metadata["template name"].slice(1) : "Template name"
+
+  // short info
+  var cardText = clone.querySelector('.card-text')
+  for(var property in itemObj.metadata){
+    var cardTextClone = cardText.cloneNode(true)
+    cardTextClone.innerHTML = property.charAt(0).toUpperCase() + property.slice(1) + ": "+ itemObj.metadata[property]
+    clone.querySelector('.card-body').appendChild(cardTextClone)
+  }
+
 
   clone.querySelector('.object-div').addEventListener('click', function (evt) {
     console.log('Iam here', event.target)
@@ -36,12 +45,26 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createNewContractButton.id = 'btn-create-new-contract'
     createNewContractButton.className = "btn btn-primary btn-sm"
     createNewContractButton.innerHTML = "Create new contract"
+    // createNewContractButton.addEventListener('click', ()=>{
+    //   console.log('this is called from create new contract button')
+    //   fetch('http://localhost:3000/contractMng/createNewContract', {
+    //     method: "POST",
+    //     body: JSON.stringify(itemObj),
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     redirect: 'follow'
+    //   }).then(result=>{
+    //     console.log('result after posting: ', result)
+    //     window.location.href = result.url
+    //   })
+    // })
     buttonOptions.appendChild(createNewContractButton)
 
 
     const deleteContractTemplateButton = document.createElement('button')
     deleteContractTemplateButton.id = 'btn-delete-contract-template'
-    deleteContractTemplateButton.className = "btn btn-primary btn-sm"
+    deleteContractTemplateButton.className = "btn btn-secondary btn-sm"
     deleteContractTemplateButton.innerHTML = "Delete template"
     buttonOptions.appendChild(deleteContractTemplateButton)
     modalBody.querySelector('.template-preview').appendChild(buttonOptions)
@@ -67,7 +90,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
         const label = document.createElement('div')
         label.className = 'label'
         label.style.fontWeight = 'bold'
-        label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1) + ": ", info.value
+        label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1) + ": "+ info.value
         infoContainer.appendChild(label)
   
         // const value = document.createElement('div')

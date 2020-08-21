@@ -99,13 +99,13 @@
           <link href="/font-awesome/css/font-awesome.min.css">
 
           <!-- Column -->
-          <div class="col-4 d-flex align-items-stretch object-div" c_data="true" style="margin: 14px 0px;">
+          <div class="col mb-4 d-flex align-items-stretch object-div" c_data="true" style="margin: 14px 0px;">
             <!--Card-->
-            <div class="card">
+            <div class="card" style="width: 100%;">
 
               <!--Card image-->
-              <div class="view">
-                <img class="card-img-top" alt="">
+              <div class="view overlay">
+                <img class="card-img-top" alt="Card image cap">
                 <a href="#">
                   <div class="mask rgba-white-slight"></div>
                 </a>
@@ -116,8 +116,7 @@
                 <!--Title-->
                 <h4 class="card-title"></h4>
                 <!--Text-->
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                  card's content.</p>
+                <p class="card-text"></p>
               </div>
 
             </div>
@@ -136,9 +135,9 @@
           </h2>
         </header>
         <submain>
-          <div id="template-handler" class="row"></div>
+          <div id="template-handler" class="row row-cols-1 row-cols-md-3"></div>
           <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Add Contract Template</button>
-          <button class="btn btn-secondary btn-sm" id="redirect-page">Contract List</button>
+          <button class="btn btn-default btn-sm" id="redirect-page">Contract List</button>
         </submain>
       </main>
 
@@ -204,7 +203,9 @@
         modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
           var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
           // console.log('abc xyz: ', event.target.closest('modal-body').querySelector('.object-div'))
-          $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
+          // $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
+          $.redirect("http://localhost:3000/contractMng/createNewContract", { data: JSON.stringify(cData) }, "POST");
+
         })
 
         modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
@@ -212,10 +213,10 @@
           console.log('data to delete: ', cData)
           $.ajax({
             type: "DELETE",
-            url: '/deleteContractTemplate/' + cData._id,
+            url: 'http://localhost:3000/contractMng/deleteContractTemplate/' + cData._id,
             success: (result) => {
               console.log(result)
-              // window.location.reload()
+              window.location.href = 'http://localhost:3000/contractMng/'
             }
 
           })
@@ -239,12 +240,20 @@
 
     // go to contract list button
     var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
+      // $.ajax({
+      //   type: 'GET',
+      //   url: '/contracts',
+      //   contentType: 'application/json',
+      //   success: (result) => {
+      //     window.location.href = "/contracts"
+      //   }
+      // })
       $.ajax({
         type: 'GET',
-        url: '/contracts',
+        url: 'http://localhost:3000/contractMng/contracts',
         contentType: 'application/json',
         success: (result) => {
-          window.location.href = "/contracts"
+          window.location.href = "http://localhost:3000/contractMng/contracts"
         }
       })
     })
