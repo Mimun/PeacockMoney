@@ -15,79 +15,30 @@
   <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
   <script src="/material-components-web/dist/material-components-web.min.js"></script>
   <link href="/font-awesome/css/font-awesome.min.css">
+
   <style>
-    @import url("/font-awesome/css/font-awesome.min.css");
-
-    body {
-      padding: 0;
+    .tab-content{
+      max-height: 550px;
+      overflow-y: scroll;
     }
-
-
-    #wrapper {
-      overflow-x: hidden;
-    }
-
-    #sidebar-wrapper {
-      min-height: 100vh;
-      margin-left: -15rem;
-      -webkit-transition: margin .25s ease-out;
-      -moz-transition: margin .25s ease-out;
-      -o-transition: margin .25s ease-out;
-      transition: margin .25s ease-out;
-    }
-
-    #sidebar-wrapper .sidebar-heading {
-      padding: 0.875rem 1.25rem;
-      font-size: 1.2rem;
-    }
-
-    #sidebar-wrapper .list-group {
-      width: 15rem;
-    }
-
-    #page-content-wrapper {
-      min-width: 100vw;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-      margin-left: 0;
-    }
-
-    @media (min-width: 768px) {
-      #sidebar-wrapper {
-        margin-left: 0;
-      }
-
-      #page-content-wrapper {
-        min-width: 0;
-        width: 100%;
-      }
-
-      #wrapper.toggled #sidebar-wrapper {
-        margin-left: -15rem;
-      }
-    }
-
-    ul {
-      list-style-type: none;
-    }
-
-    .page-content {
-      margin: 2vh 0;
-    }
-
-    .md-form {
-      width: 80%;
-      margin: 2vh 1vw;
+    .tab-content::-webkit-scrollbar {
+      display: none;
     }
   </style>
 </head>
 
 <body>
+  <!-- item list template -->
+  <%- include('../../evaluationMng/views/itemList.ejs') %>
+
+  <!-- contract template -->
+  <%- include("./contractPreviewTemplate.ejs") %>
+
+
   <div class="d-flex" id="wrapper">
-    <%- include('sideBar.ejs') %>
+    <%- include('../../evaluationMng/views/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <%- include('navbar.ejs')  %>
+      <%- include('../../evaluationMng/views/navbar.ejs')  %>
       <style>
         body {
           overflow: auto;
@@ -109,46 +60,49 @@
         }
       </style>
 
-      <!-- item list template -->
-      <%- include('../../evaluationMng/views/itemList.ejs') %>
-
-      <!-- contract template -->
-      <%- include("./contractPreviewTemplate.ejs") %>
-
       <!-- page content -->
       <div class="container" style="margin: 0; border: none;">
         <div class="row" style="width: 100vw; height: 100%;">
-
-          <!-- item status column -->
-          <!-- <div class="col-sm side">
-            
-    
-          </div> -->
-
           <!-- contract column -->
-          <div class="col-sm-8" id="contract-info-container" style="padding: 5%;">
+          <div class="col-sm" id="contract-info-container" style="padding: 5%;">
             <!-- contract form -->
             <!-- Default form contact -->
             <form class="text-center " action="" style="width: 100%;">
 
               <p class="h4 mb-4">Tao Moi Hop Dong</p>
 
-              <!-- contract templat -->
+              <!-- contract template -->
               <div id="contract-template-container"></div>
 
-              <!-- item evaluation -->
-              <p class="h4 mb-4">Thong tin tham dinh gia</p>
+              <!-- contract item  -->
+              <div class="contract-item">
+                <p class="h4 mb-4">Thong tin tai san</p>
 
-              <div id="item-evaluation" style="min-height: 40px; margin:5%;">
+                <!-- custom info -->
+                <div class="contract-item-container">
+                  <div class="item-container" style="margin: 5% 0; padding: 3%;">
+                    <p class="h5">Tai san <span id="number"></span></p>
+                    <div id="custom-info"></div>
+                    <p class="h6 mb-4">Thong tin tai san tham dinh</p>
+                    <div id="item-evaluation">
 
+                    </div>
+                    <p class="h6 mb-4">Thong tin tinh trang tai san</p>
+                    <div id="item-status">
+
+                    </div>
+                  </div>
+                  <!-- <template id="item-evaluation-template">
+                    
+                    
+                  </template> -->
+
+                </div>
               </div>
 
-              <!-- item status -->
-              <p class="h4 mb-4">Thong tin tinh trang tai san</p>
-
-              <div id="item-status" style="min-height: 40px; margin: 5%;"></div>
-
             </form>
+
+            <button class="btn btn-default" id="btn-add-item">Add new item</button>
 
             <!-- Send button -->
             <button class="btn btn-primary" id="btn-submit">Create</button>
@@ -156,7 +110,7 @@
           </div>
 
           <!-- item list column -->
-          <div class="col-sm side">
+          <div class="col-sm-4 side-4">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
@@ -194,18 +148,19 @@
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { generateContractTemplateHTML } from '/generateContractTemplateHTML.js'
-    $("#menu-toggle").click(function (e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
-    var originItemList = <%- JSON.stringify(dbItemObjs) %>;
-    var originContractTemplate = <%- JSON.stringify(itemObj) %>;
-    var originItemStatusList = <%- JSON.stringify(dbItemStatusObjs) %>
+    
+    var originItemList = <%- JSON.stringify(itemResults) %>;
+    var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
+    var originItemStatusList = <%- JSON.stringify(statusResults) %>;
 
 
       console.log('origin contract template: ', originContractTemplate)
+
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
+
+    var currentDiv = null
+    var prevDiv = null
 
     const checkMustHaveInfos = (item, propName) => {
       var isHaving = false
@@ -286,22 +241,71 @@
     generateHTML(originItemStatusList, template, 'item-status-list-table-container')
     generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container')
 
+    document.querySelector('#btn-add-item').addEventListener('click', (event) => {
+      const cData = event.target.closest('#contract-info-container').querySelector('.object-div').C_DATA
+      const itemTemplateClone = document.querySelector('.item-container').cloneNode(true)
+      itemTemplateClone.querySelectorAll('input').forEach(element => {
+        element.value = ''
+      })
+      itemTemplateClone.querySelector('#item-evaluation').innerHTML = ''
+      itemTemplateClone.querySelector('#item-status').innerHTML = ''
+      itemTemplateClone.style.border = 'none'
+      console.log('last child: ', )
+      itemTemplateClone.querySelector('span').innerHTML = parseInt(document.querySelectorAll('.item-container')[document.querySelectorAll('.item-container').length -1].querySelector('span').innerHTML)+1
+
+      itemTemplateClone.addEventListener('click', (event) => {
+        prevDiv = currentDiv
+        currentDiv = event.target.closest('.item-container')
+        if (currentDiv !== null) {
+          currentDiv.style.border = '1px solid #2BBBAD'
+
+        }
+        if (prevDiv !== null && prevDiv.isSameNode(currentDiv) === false) {
+          prevDiv.style.border = 'none'
+
+        }
+
+        console.log('event abc: ', currentDiv)
+      })
+      document.querySelector('div[class="contract-item-container"]').appendChild(itemTemplateClone)
+
+    })
+
+    document.querySelectorAll('.item-container').forEach(element => {
+      element.addEventListener('click', (event) => {
+        prevDiv = currentDiv
+        currentDiv = event.target.closest('.item-container')
+        if (currentDiv !== null) {
+          currentDiv.style.border = '1px solid #2BBBAD'
+
+        }
+        if (prevDiv !== null && prevDiv.isSameNode(currentDiv) === false) {
+          currentDiv.style.border = 'none'
+        }
+
+        console.log('event abc: ', currentDiv)
+
+      })
+    })
+
     document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
       element.addEventListener('click', (event) => {
-        console.log('element: ', event.target.parentNode)
+
+
+        console.log('element: ', this)
         const cloneNode = event.target.parentNode.cloneNode(true)
         cloneNode.C_DATA = event.target.parentNode.C_DATA
         cloneNode.className = "object-div item"
-        if (document.querySelector("#item-evaluation")) {
-          document.querySelector("#item-evaluation").innerHTML = ''
+        if (currentDiv.querySelector("#item-evaluation")) {
+          currentDiv.querySelector("#item-evaluation").innerHTML = ''
         }
-        document.querySelector("#item-evaluation").appendChild(cloneNode)
+        currentDiv.querySelector("#item-evaluation").appendChild(cloneNode)
       })
     })
 
     document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
       element.addEventListener('click', (event) => {
-        const itemStatusDiv = document.querySelector("#item-status")
+        const itemStatusDiv = currentDiv.querySelector("#item-status")
         const cloneNode = event.target.parentNode.cloneNode(true)
         cloneNode.C_DATA = event.target.parentNode.C_DATA
         cloneNode.className = "object-div item-status"
@@ -350,38 +354,51 @@
 
     document.querySelector('button[id="btn-submit"]').addEventListener('click', (event) => {
       var data = {
-        metadata: {},
-        infos: [],
-        item: {},
-        itemStatus: []
+        metadata: [],
+        items: [],
+       
       }
-      document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div"]').forEach(element => {
-        console.log('Object divs found: ', element)
-        data["metadata"] = element.C_DATA["metadata"]
-        data.infos.push({
-          name: "image", 
-          value: element.querySelector('img').getAttribute('src')
-        })
-        element.querySelectorAll('.md-form').forEach(element=>{
-          var info = {
-            name: "", value: ""
+
+      // metadata
+      const contractInfoContainer = event.target.closest('#contract-info-container')
+      const cData = contractInfoContainer.querySelector('#contract-template-container').querySelector('.object-div').C_DATA
+      data.metadata = cData.contractMetadata
+
+      // item info
+      const contractItemContainer = contractInfoContainer.querySelector('.contract-item-container')
+      contractItemContainer.querySelectorAll('.item-container').forEach(itemContainer => {
+        var itemInfo = {
+          infos: [],
+          evaluationItem: null,
+          status: []
+        }
+        // custom info
+        itemContainer.querySelectorAll('.md-form').forEach(element => {
+          var input = {}
+          const label = element.querySelector('label').innerHTML
+          const value = element.querySelector('input').value
+          input = {
+            name: label,
+            value: value
           }
-          info["name"] = element.querySelector('label').innerHTML.toLowerCase()
-          info["value"] = element.querySelector('input').value
-          data["infos"].push(info)
+          itemInfo.infos.push(input)
         })
-        // data["infos"] = element.C_DATA["infos"]
+
+        // evaluation item and item status
+        var item = itemContainer.querySelector('#item-evaluation').querySelector('.object-div')
+        if (item) {
+          itemInfo.evaluationItem = item.C_DATA._id
+        }
+        var itemStatus = itemContainer.querySelector('#item-status').querySelectorAll('.object-div')
+        if (itemStatus) {
+          itemStatus = itemStatus.forEach(element => itemInfo.status.push(element.C_DATA._id))
+        }
+        
+        data.items.push(itemInfo)
       })
-      document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div item"]').forEach(element => {
-        // console.log('Object divs found: ', element)
-        data["item"] = element.C_DATA["_id"]
-      })
-      document.querySelector('div[id="contract-info-container"]').querySelectorAll('div[class="object-div item-status"]').forEach(element => {
-        // console.log('Object divs found: ', element)
-        data["itemStatus"].push(element.C_DATA["_id"])
-      })
-      // $.redirect("/contracts", { data: JSON.stringify(data) }, "POST");
-      $.redirect("http://localhost:3000/contractMng/contracts", { data: JSON.stringify(data) }, "POST");
+
+
+      $.redirect("contracts", { data: JSON.stringify(data) }, "POST");
 
       console.log('data: ', data)
     })

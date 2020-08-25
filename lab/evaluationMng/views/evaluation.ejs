@@ -16,50 +16,106 @@
   <script src="/material-components-web/dist/material-components-web.min.js"></script>
   <link href="/font-awesome/css/font-awesome.min.css">
 
+  <!-- Custom styles for this template -->
+  <style>
+    .info-container{
+      min-height: 96px;
+      border: 2px dashed lightgrey;
+      border-radius: 5px;
+      margin-bottom: 15%;
+      padding: 5%;
+    }
+    .tab-content{
+      max-height: 550px;
+      overflow-y: scroll;
+    }
+    .tab-content::-webkit-scrollbar {
+      display: none;
+    }
+    
+  </style>
+
+
 </head>
 
 <body>
-  <div class="evaluation-container">
-    <!-- item list template -->
-    <%- include('../../evaluationMng/views/itemList.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <!-- sidebar -->
+    <%- include('sideBar.ejs') %>
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-          aria-selected="true">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-          aria-selected="false">Profile</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
-          aria-selected="false">Contact</a>
-      </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Raw denim you
-        probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master
-        cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro
-        keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip
-        placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi
-        qui.</div>
-      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Food truck fixie
-        locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit,
-        blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee.
-        Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum
-        PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS
-        salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit,
-        sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester
-        stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
-      <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Etsy mixtape
-        wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack
-        lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard
-        locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify
-        squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie
-        etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog
-        stumptown. Pitchfork sustainable tofu synth chambray yr.</div>
+    <div id="page-content-wrapper">
+      <!-- navbar -->
+      <%- include('navbar.ejs') %>
+
+       <!-- item list template -->
+  <%- include('itemList.ejs') %>
+  <div class="evaluation-container container" style="border: none; margin-top: 5%;">
+    <div class="row">
+      <div class="col">
+
+        <!-- card for tai san tham dinh -->
+        <div class="card text-center">
+          <div class="card-header">
+            Thong tin
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Thong tin tai san tham dinh</h5>
+            <p class="card-text">
+              <div class="item info-container">
+                <div id="item-evaluation"></div>
+              </div>
+            </p>
+
+            <h5 class="card-title">Thong tin tinh trang tai san</h5>
+            <p class="card-text">
+              <div class="item-status info-container">
+                <div id="item-status"></div>
+              </div>
+            </p>
+
+            <p class="card-text">
+              <div class="item-price" id="item-price">
+                <h5 class="card-title">Gia tien du kien: <span></span></h5>
+              </div>
+            </p>
+          </div>
+          
+        </div>
+
+      </div>
+
+      <!-- tabs -->
+      <div class="col-sm-4 side">
+        <div class="tabs-container">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                aria-selected="true">Tham dinh tai san</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                aria-selected="false">Tinh trang tai san</a>
+            </li>
+  
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"
+              style="overflow-y: auto;">
+              <div id="item-list-table-container"></div>
+            </div>
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"
+              style="overflow-y: auto;">
+              <div id="item-status-list-table-container"></div>
+            </div>
+  
+          </div>
+        </div>
+       
+      </div>
     </div>
+
+    </div>
+  </div>
 
   </div>
 
@@ -69,6 +125,113 @@
   <script src="/mdbootstrap/js/popper.min.js"></script>
   <script src="/mdbootstrap/js/bootstrap.min.js"></script>
   <script src="/mdbootstrap/js/mdb.min.js"></script>
+
+  <script type="module">
+    import { generateHTML } from '/generateHTML.js'
+
+    
+    var originItemList = <%- JSON.stringify(itemResults) %>;
+    var originItemStatusList = <%- JSON.stringify(itemStatusResults) %>;
+
+    const template = document.querySelector('#quan-ly-tham-dinh-gia')
+
+    var originalPrice = 0
+    var totalDiscount = 0
+
+    if (document.querySelector('#item-list-table-container').innerHTML) {
+      document.querySelector('#item-list-table-container').innerHTML = ""
+    }
+    if (document.querySelector('#item-status-list-table-container').innerHTML) {
+      document.querySelector('#item-status-list-table-container').innerHTML = ""
+    }
+
+    generateHTML(originItemList, template, 'item-list-table-container')
+    generateHTML(originItemStatusList, template, 'item-status-list-table-container')
+
+
+    document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
+      element.addEventListener('click', (event) => {
+        const cloneNode = event.target.parentNode.cloneNode(true)
+        cloneNode.C_DATA = event.target.parentNode.C_DATA
+        cloneNode.className = "object-div item"
+        originalPrice = parseInt(findNestedObj(cloneNode.C_DATA, 'name', 'Tham dinh gia').value)
+        if (document.querySelector("#item-evaluation")) {
+          document.querySelector("#item-evaluation").innerHTML = ''
+        }
+        document.querySelector("#item-evaluation").appendChild(cloneNode)
+        calculateEvaluatePrice(originalPrice, totalDiscount)
+      })
+    })
+
+    document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
+      element.addEventListener('click', (event) => {
+        const itemStatusDiv = document.querySelector("#item-status")
+        const cloneNode = event.target.parentNode.cloneNode(true)
+        cloneNode.C_DATA = event.target.parentNode.C_DATA
+        cloneNode.className = "object-div item-status"
+        totalDiscount = totalDiscount + parseInt(findNestedObj(cloneNode.C_DATA, 'name', 'giam(%)').value)
+
+
+        const removeButton = document.createElement('i')
+        removeButton.className = "fa fa-times"
+        removeButton.style.fontSize = "25px"
+        removeButton.style.margin = "12px"
+
+        removeButton.style.color = '#bdbdbd '
+
+        removeButton.addEventListener('click', (event) => {
+          totalDiscount = totalDiscount - parseInt(findNestedObj(event.target.closest('.object-div').C_DATA, 'name', 'giam(%)').value)
+          event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
+          calculateEvaluatePrice(originalPrice, totalDiscount)
+        
+        })
+        cloneNode.querySelector('div[class="mdc-data-table__header-row header-row-div"]').appendChild(removeButton)
+
+        // prevent duplicate 
+        var isChosen = false
+        if (itemStatusDiv.firstChild) {
+          itemStatusDiv.querySelectorAll('div[class="object-div"]').forEach(div => {
+            if (cloneNode.isEqualNode(div)) {
+              console.log('div: ', div)
+              isChosen = true
+
+              itemStatusDiv.removeChild(div)
+            }
+          })
+          if (!isChosen) {
+            itemStatusDiv.appendChild(cloneNode)
+            itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
+
+          }
+        } else {
+          itemStatusDiv.appendChild(cloneNode)
+          itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
+
+
+        }
+        calculateEvaluatePrice(originalPrice, totalDiscount)
+      })
+    })
+
+    function findNestedObj(entireObj, keyToFind, valToFind) {
+      let foundObj;
+      JSON.stringify(entireObj, (_, nestedValue) => {
+        if (nestedValue && nestedValue[keyToFind] === valToFind) {
+          foundObj = nestedValue;
+        }
+        return nestedValue;
+      });
+      return foundObj;
+    };
+
+    const calculateEvaluatePrice = (originalPrice, totalDiscount)=>{
+      var evaluatedPrice = originalPrice - (totalDiscount*originalPrice/100)
+      document.querySelector('#item-price').querySelector('span').innerHTML = evaluatedPrice
+      console.log('original price: ', originalPrice)
+      console.log('total discount: ', totalDiscount)
+      console.log('evaluated price: ', evaluatedPrice)
+    }
+  </script>
 </body>
 
 </html>

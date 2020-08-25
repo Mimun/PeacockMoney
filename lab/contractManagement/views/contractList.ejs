@@ -16,80 +16,14 @@
   <script src="/material-components-web/dist/material-components-web.min.js"></script>
   <link href="/font-awesome/css/font-awesome.min.css">
 
-
-  <style>
-    @import url("/font-awesome/css/font-awesome.min.css");
-
-    body {
-      padding: 0;
-    }
-
-
-    #wrapper {
-      overflow-x: hidden;
-    }
-
-    #sidebar-wrapper {
-      min-height: 100vh;
-      margin-left: -15rem;
-      -webkit-transition: margin .25s ease-out;
-      -moz-transition: margin .25s ease-out;
-      -o-transition: margin .25s ease-out;
-      transition: margin .25s ease-out;
-    }
-
-    #sidebar-wrapper .sidebar-heading {
-      padding: 0.875rem 1.25rem;
-      font-size: 1.2rem;
-    }
-
-    #sidebar-wrapper .list-group {
-      width: 15rem;
-    }
-
-    #page-content-wrapper {
-      min-width: 100vw;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-      margin-left: 0;
-    }
-
-    @media (min-width: 768px) {
-      #sidebar-wrapper {
-        margin-left: 0;
-      }
-
-      #page-content-wrapper {
-        min-width: 0;
-        width: 100%;
-      }
-
-      #wrapper.toggled #sidebar-wrapper {
-        margin-left: -15rem;
-      }
-    }
-
-    ul {
-      list-style-type: none;
-    }
-
-    .page-content {
-      margin: 2vh 0;
-    }
-
-    .md-form {
-      width: 80%;
-      margin: 2vh 1vw;
-    }
-  </style>
+  
 </head>
 
 <body>
   <div class="d-flex" id="wrapper">
-    <%- include('sideBar.ejs') %>
+    <%- include('../../evaluationMng/views/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <%- include('navbar.ejs')  %>
+      <%- include('../../evaluationMng/views/navbar.ejs')  %>
       <template id="contract-card-template">
         <style>
           .list-group-item:hover {
@@ -109,10 +43,7 @@
               </div>
               <div class="col" style="margin: auto;">
                 <p class="h4 mb-4 contract-title">Template title</p>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis totam, qui, omnis perspiciatis
-                  dicta
-                  laboriosam, enim voluptas fuga facilis eveniet mollitia nisi sunt iure quos odio similique molestiae.
-                  Voluptatibus, id!</p>
+                <div class="contract-info"></div>
               </div>
               <div class="col-2 btn-options" style="margin: auto;">
                 <button class="btn btn-primary btn-sm"></button>
@@ -217,22 +148,14 @@
           console.log('button: ', event.target.closest('.object-div'))
           // $.ajax({
           //   type: "PUT",
-          //   url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
+          //   url: 'contracts/' + event.target.closest('.object-div').C_DATA._id,
           //   contentType: 'application/json',
           //   data: JSON.stringify({ contractStatus: 'approved' }),
           //   success: result => {
           //     console.log(result)
           //   }
           // })
-          // $.ajax({
-          //   type: "PUT",
-          //   url: 'http://localhost:3000/contractMng/contracts/' + event.target.closest('.object-div').C_DATA._id,
-          //   contentType: 'application/json',
-          //   data: JSON.stringify({ contractStatus: 'approved' }),
-          //   success: result => {
-          //     console.log(result)
-          //   }
-          // })
+         
           event.target.closest('.object-div').setAttribute('data-status', 'approved')
           event.target.innerHTML = 'Complete'
           event.target.className = 'btn btn-default btn-sm'
@@ -240,16 +163,7 @@
           console.log('button: ', event.target.closest('.object-div').C_DATA)
           // $.ajax({
           //   type: "PUT",
-          //   url: '/contracts/' + event.target.closest('.object-div').C_DATA._id,
-          //   contentType: 'application/json',
-          //   data: JSON.stringify({ contractStatus: 'completed' }),
-          //   success: result => {
-          //     console.log(result)
-          //   }
-          // })
-          // $.ajax({
-          //   type: "PUT",
-          //   url: 'http://localhost:3000/contractMng/contracts/' + event.target.closest('.object-div').C_DATA._id,
+          //   url: 'contracts/' + event.target.closest('.object-div').C_DATA._id,
           //   contentType: 'application/json',
           //   data: JSON.stringify({ contractStatus: 'completed' }),
           //   success: result => {
@@ -288,6 +202,7 @@
       }
 
     })
+    
     const addClickEvent = () => {
       // handling contract onclick event (contract detail page)
       document.querySelectorAll('.object-div').forEach(element => {

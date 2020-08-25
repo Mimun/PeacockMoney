@@ -1,3 +1,76 @@
+<!-- Bootstrap core CSS -->
+<link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+<link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+<!-- material design.io -->
+<link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+<script src="/material-components-web/dist/material-components-web.min.js"></script>
+<link href="/font-awesome/css/font-awesome.min.css">
+<style>
+  @import url("/font-awesome/css/font-awesome.min.css");
+  body{
+    padding: 0;
+  }
+  #wrapper {
+    overflow-x: hidden;
+  }
+
+  #sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: -15rem;
+    -webkit-transition: margin .25s ease-out;
+    -moz-transition: margin .25s ease-out;
+    -o-transition: margin .25s ease-out;
+    transition: margin .25s ease-out;
+  }
+
+  #sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+  }
+
+  #sidebar-wrapper .list-group {
+    width: 15rem;
+  }
+
+  #page-content-wrapper {
+    min-width: 100vw;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+  }
+
+  @media (min-width: 768px) {
+    #sidebar-wrapper {
+      margin-left: 0;
+    }
+
+    #page-content-wrapper {
+      min-width: 0;
+      width: 100%;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: -15rem;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+  }
+
+  .page-content {
+    margin: 2vh 0;
+  }
+
+  .md-form {
+    width: 100%;
+    margin: 2vh 0vw;
+  }
+</style>
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
   <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-bars"></i></button>
 
@@ -29,3 +102,16 @@
     </ul>
   </div>
 </nav>
+
+
+<script src="/mdbootstrap/js/popper.min.js"></script>
+<script src="/mdbootstrap/js/jquery.min.js"></script>
+<script src="/mdbootstrap/js/popper.min.js"></script>
+<script src="/mdbootstrap/js/bootstrap.min.js"></script>
+<script src="/mdbootstrap/js/mdb.min.js"></script>
+<script>
+  $("#menu-toggle").click(function (e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+</script>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Contract Management</title>
+
+
+  <!-- Bootstrap core CSS -->
+  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
+
+
+  <!-- material design.io -->
+  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="/material-components-web/dist/material-components-web.min.js"></script>
+  <link href="/font-awesome/css/font-awesome.min.css">
+
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+
+</head>
+
+<body>
+  <div class="d-flex" id="wrapper">
+
+    <%- include('../../evaluationMng/views/sideBar.ejs') %>
+
+    <div id="page-content-wrapper">
+      <%- include('../../evaluationMng/views/navbar.ejs')  %>
+      <main style="padding: 5%;">
+        <template id="temp_contract">
+          <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
+          <link href="/font-awesome/css/font-awesome.min.css">
+
+          <!-- Column -->
+          <div class="col mb-4 d-flex align-items-stretch object-div" c_data="true" style="margin: 14px 0px;">
+            <!--Card-->
+            <div class="card" style="width: 100%;">
+
+              <!--Card image-->
+              <div class="view overlay">
+                <img class="card-img-top" alt="Card image cap">
+                <a href="#">
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
+
+              <!--Card content-->
+              <div class="card-body">
+                <!--Title-->
+                <h4 class="card-title"></h4>
+                <!--Text-->
+                <p class="card-text"></p>
+              </div>
+
+            </div>
+            <!--/.Card-->
+
+        </template>
+
+        <template id="contract_detail">
+          <%- include('templateDetailscopy.ejs') %>
+        </template>
+
+        <header>
+          <h2>
+            <b>Quản lý và Tạo mau hợp đồng</b>
+          </h2>
+        </header>
+        <submain>
+          <div id="template-handler" class="row row-cols-1 row-cols-md-3"></div>
+          <button type="button" class="btn btn-primary btn-sm" id="chooseTemplate">Choose contract template</button>
+          <button class="btn btn-default btn-sm" id="redirect-page">Contract List</button>
+        </submain>
+      </main>
+
+      <div class="container-fluid">
+        <!-- Modal -->
+
+        <!-- Central Modal Small -->
+        <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+          aria-hidden="true">
+
+          <!-- Change class .modal-sm to change the size of the modal -->
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title w-100 title" id="myModalLabel">Create new contract template</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <modal-body style="width: fit-content;">
+                  <!-- Adding dynamic content here -->
+                  <h2>I am going to add a dynamic content here</h2>
+                </modal-body>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary btn-sm" id="btn-confirm">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Central Modal Small -->
+      </div>
+
+
+    </div>
+  </div>
+
+  <script src="/mdbootstrap/js/popper.min.js"></script>
+  <script src="/mdbootstrap/js/jquery.min.js"></script>
+  <script src="/mdbootstrap/js/bootstrap.min.js"></script>
+  <script src="/mdbootstrap/js/mdb.min.js"></script>
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
+
+  <script type="module">
+    import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
+    import { ObjectId } from '/createMongooseID.js'
+
+    const types = <%- JSON.stringify(types) %>;
+    const payOptions = <%- JSON.stringify(payOptions) %>;
+    console.log('All types: ', types)
+    console.log('All types: ', payOptions)
+    var chosenType = ''
+    var chosenPayOption = ''
+
+    const contractTemplate = document.getElementById('temp_contract');
+
+    const createSelect = (itemObjs, elementName, variable)=>{
+      const select = document.createElement('select')
+      select.className = "browser-default custom-select"
+      select.id = variable
+      // "all" option
+      const option = document.createElement('option')
+      option.value = ""
+      option.innerHTML = "All"
+      option.setAttribute('selected', '')
+      select.appendChild(option)
+      itemObjs.forEach(itemObj => {
+        const option = document.createElement('option')
+        option.value = itemObj
+        option.innerHTML = itemObj.charAt(0).toUpperCase() + itemObj.slice(1)
+        select.appendChild(option)
+      })
+      select.addEventListener('change', (event) => {
+        console.log('event: ', event.target.value)
+        if(variable == "types"){
+          chosenType = event.target.value
+        } else {
+          chosenPayOption = event.target.value
+        }
+        // return event.target.value
+      })
+      document.querySelector(''+elementName+'').appendChild(select)
+
+    }
+    
+    // render selector
+    $("#centralModalSm").on('show.bs.modal', () => {
+      const containerFluid = document.querySelector('.container-fluid')
+      containerFluid.querySelector('.modal-title').innerHTML = "Choose your contract template"
+      document.querySelector('modal-body').innerHTML = ""
+
+      // create selector
+      createSelect(types, 'modal-body', 'types')
+      createSelect(payOptions, 'modal-body', 'payOptions')
+
+      const inputDiv = document.createElement('div')
+      inputDiv.className = "md-form"
+      inputDiv.innerHTML = `<input type="text" id="form1" class="form-control">
+        <label for="form1">Example label</label>`
+      document.querySelector('modal-body').appendChild(inputDiv)
+      
+      document.querySelector('#btn-confirm').addEventListener('click', (event) => {
+        console.log('chosen option: ', chosenPayOption)
+        console.log('chosen type: ', chosenType)
+
+
+        $.ajax({
+          type: 'POST',
+          url: 'findContractTemplates',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            chosenType: chosenType,
+            chosenPayOption: chosenPayOption,
+            amountOfMoney: parseInt(document.querySelector('modal-body').querySelector('input').value)
+          }),
+          success: results => {
+            console.log(results)
+            document.querySelector('#template-handler').innerHTML = ""
+            results.forEach(result => {
+              generateContractTemplateCard(result, contractTemplate, 'template-handler')
+            })
+            templateButtonOption()
+            $("#centralModalSm").modal('hide')
+          }
+        })
+      })
+
+
+    })
+    $("#centralModalSm").modal('show');
+
+
+    document.querySelector('#chooseTemplate').addEventListener('click', (event) => {
+      $("#centralModalSm").modal('show');
+
+    })
+
+    const templateButtonOption = ()=>{
+      // detail template info
+      document.querySelectorAll('.object-div').forEach(element => {
+        element.addEventListener('click', function () {
+          console.log('event abc: ', document.querySelector('modal-body'))
+          var modalBody = document.querySelector('modal-body')
+          modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
+            var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+            console.log('abc xyz: ', cData)
+            $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
+
+          })
+
+          modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
+            var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+            console.log('data to delete: ', JSON.stringify(findNestedObj(cData, 'name', 'image')))
+            $.ajax({
+              type: "DELETE",
+              url: 'deleteContractTemplate/' + cData._id,
+              contentType: 'application/json',
+              data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
+              success: (result) => {
+                console.log(result)
+                window.location.reload()
+              }
+
+            })
+          })
+
+        })
+      })
+    }
+
+    templateButtonOption()
+   
+    
+
+
+
+  </script>
+</body>
+
+</html>

@@ -18,81 +18,15 @@
 
   <link rel='stylesheet' href='/stylesheets/style.css' />
 
-  <style>
-    @import url("/font-awesome/css/font-awesome.min.css");
-
-    body {
-      padding: 0;
-    }
-
-
-    #wrapper {
-      overflow-x: hidden;
-    }
-
-    #sidebar-wrapper {
-      min-height: 100vh;
-      margin-left: -15rem;
-      -webkit-transition: margin .25s ease-out;
-      -moz-transition: margin .25s ease-out;
-      -o-transition: margin .25s ease-out;
-      transition: margin .25s ease-out;
-    }
-
-    #sidebar-wrapper .sidebar-heading {
-      padding: 0.875rem 1.25rem;
-      font-size: 1.2rem;
-    }
-
-    #sidebar-wrapper .list-group {
-      width: 15rem;
-    }
-
-    #page-content-wrapper {
-      min-width: 100vw;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-      margin-left: 0;
-    }
-
-    @media (min-width: 768px) {
-      #sidebar-wrapper {
-        margin-left: 0;
-      }
-
-      #page-content-wrapper {
-        min-width: 0;
-        width: 100%;
-      }
-
-      #wrapper.toggled #sidebar-wrapper {
-        margin-left: -15rem;
-      }
-    }
-
-    ul {
-      list-style-type: none;
-    }
-
-    .page-content {
-      margin: 2vh 0;
-    }
-
-    .md-form {
-      width: 80%;
-      margin: 2vh 1vw;
-    }
-  </style>
 </head>
 
-<body>
+<body style="padding: 0;">
   <div class="d-flex" id="wrapper">
 
-    <%- include('sideBar.ejs') %>
+    <%- include('../../evaluationMng/views/sideBar.ejs') %>
 
     <div id="page-content-wrapper">
-      <%- include('navbar.ejs')  %>
+      <%- include('../../evaluationMng/views/navbar.ejs')  %>
       <main style="padding: 5%;">
         <template id="temp_contract">
           <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -183,10 +117,7 @@
   <script type="module">
     import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
     import { ObjectId } from '/createMongooseID.js'
-    $("#menu-toggle").click(function (e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
+    
     const contractTemplate = document.getElementById('temp_contract');
     // card_handler = document.querySelector('template-handler')
     const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
@@ -202,21 +133,22 @@
         var modalBody = document.querySelector('modal-body')
         modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
           var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-          // console.log('abc xyz: ', event.target.closest('modal-body').querySelector('.object-div'))
-          // $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
-          $.redirect("http://localhost:3000/contractMng/createNewContract", { data: JSON.stringify(cData) }, "POST");
+          console.log('abc xyz: ', cData)
+          $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
 
         })
 
         modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
           var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-          console.log('data to delete: ', cData)
+          console.log('data to delete: ', JSON.stringify(findNestedObj(cData, 'name', 'image')))
           $.ajax({
             type: "DELETE",
-            url: 'http://localhost:3000/contractMng/deleteContractTemplate/' + cData._id,
+            url: 'deleteContractTemplate/' + cData._id,
+            contentType:'application/json',
+            data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
             success: (result) => {
               console.log(result)
-              window.location.href = 'http://localhost:3000/contractMng/'
+              window.location.reload()
             }
 
           })
@@ -224,6 +156,17 @@
 
       })
     })
+
+    function findNestedObj(entireObj, keyToFind, valToFind) {
+      let foundObj;
+      JSON.stringify(entireObj, (_, nestedValue) => {
+        if (nestedValue && nestedValue[keyToFind] === valToFind) {
+          foundObj = nestedValue;
+        }
+        return nestedValue;
+      });
+      return foundObj;
+    };
 
     // create new contract template button
     var addTemplateBtn = document.getElementById('addTemplate').addEventListener('click', (evt) => {
@@ -240,22 +183,15 @@
 
     // go to contract list button
     var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
-      // $.ajax({
-      //   type: 'GET',
-      //   url: '/contracts',
-      //   contentType: 'application/json',
-      //   success: (result) => {
-      //     window.location.href = "/contracts"
-      //   }
-      // })
       $.ajax({
         type: 'GET',
-        url: 'http://localhost:3000/contractMng/contracts',
+        url: 'contracts',
         contentType: 'application/json',
         success: (result) => {
-          window.location.href = "http://localhost:3000/contractMng/contracts"
+          window.location.href = "contracts"
         }
       })
+      
     })
 
 

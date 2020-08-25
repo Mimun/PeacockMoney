@@ -21,69 +21,6 @@
   <script src="/material-components-web/dist/material-components-web.min.js"></script>
   <link href="/font-awesome/css/font-awesome.min.css">
 
-  <!-- Custom styles for this template -->
-  <style>
-    @import url("/font-awesome/css/font-awesome.min.css");
-
-    #wrapper {
-      overflow-x: hidden;
-    }
-
-    #sidebar-wrapper {
-      min-height: 100vh;
-      margin-left: -15rem;
-      -webkit-transition: margin .25s ease-out;
-      -moz-transition: margin .25s ease-out;
-      -o-transition: margin .25s ease-out;
-      transition: margin .25s ease-out;
-    }
-
-    #sidebar-wrapper .sidebar-heading {
-      padding: 0.875rem 1.25rem;
-      font-size: 1.2rem;
-    }
-
-    #sidebar-wrapper .list-group {
-      width: 15rem;
-    }
-
-    #page-content-wrapper {
-      min-width: 100vw;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-      margin-left: 0;
-    }
-
-    @media (min-width: 768px) {
-      #sidebar-wrapper {
-        margin-left: 0;
-      }
-
-      #page-content-wrapper {
-        min-width: 0;
-        width: 100%;
-      }
-
-      #wrapper.toggled #sidebar-wrapper {
-        margin-left: -15rem;
-      }
-    }
-
-    ul {
-      list-style-type: none;
-    }
-
-    .page-content {
-      margin: 2vh 0;
-    }
-
-    .md-form {
-      width: 80%;
-      margin: 2vh 1vw;
-    }
-  </style>
-
 </head>
 
 <body>
@@ -102,7 +39,7 @@
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
-        <h1 class="mt-4">Quản lý thẩm định giá</h1>
+        <h1 class="mt-4">Quản lý tinh trang tai san</h1>
 
         <!-- template of list of items -->
         <%- include('itemList.ejs') %>
@@ -138,7 +75,7 @@
             <div class="custom-file">
               <input type="file" accept=".csv" id="csv-reader" lass="custom-file-input"
                 aria-describedby="inputGroupFileAddon01" />
-              <label class="custom-file-label" for="csv-reader">Chon file tham dinh gia</label>
+              <label class="custom-file-label" for="csv-reader">Chon file tinh trang tai san</label>
             </div>
 
           </div>
@@ -261,10 +198,6 @@
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { ObjectId } from '/createMongooseID.js'
-    $("#menu-toggle").click(function (e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
 
@@ -344,14 +277,6 @@
 
 
       if (itemObjs.length !== 0) {
-        // itemObjs = itemObjs.filter(item => {
-        //   var itemThatHasPrice = checkMustHaveInfos(item, "Tham dinh gia")
-        //   var itemThatHasName = checkMustHaveInfos(item, "Loai")
-        //   if (itemThatHasPrice && itemThatHasName) {
-        //     return item
-        //   }
-        // })
-
         // create pagination
         originItemList.forEach(obj1 => {
           itemObjs.forEach(obj2 => {
@@ -553,24 +478,16 @@
         submitBtn.style.margin = 'auto'
         submitBtn.addEventListener('click', () => {
           console.log('origin item list before submitting: ', originItemList)
-          // $.ajax({
-          //   type: 'POST',
-          //   data: JSON.stringify(originItemList),
-          //   contentType: 'application/json',
-          //   url: '/items',
-          //   success: (data) => {
-          //     console.log('Saved successfully!')
-          //   }
-          // })
           $.ajax({
             type: 'POST',
             data: JSON.stringify(originItemList),
             contentType: 'application/json',
-            url: 'http://localhost:3000/evaluationMng/itemStatus',
+            url: 'itemStatus',
             success: (data) => {
               console.log('Saved successfully!')
             }
           })
+          
         })
         buttonContainer.appendChild(submitBtn)
         check()
@@ -651,24 +568,16 @@
         _id: ObjectId()
       }
       originItemList.unshift(dataObj)
-      // $.ajax({
-      //   type: 'POST',
-      //   url: '/createItemStatus',
-      //   data: JSON.stringify(dataObj),
-      //   contentType: 'application/json',
-      //   success: (result) => {
-      //     console.log(result)
-      //   }
-      // })
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/evaluationMng/itemStatus/createItemStatus',
+        url: 'createItemStatus',
         data: JSON.stringify(dataObj),
         contentType: 'application/json',
         success: (result) => {
           console.log(result)
         }
       })
+     
       console.log('data obj: ', dataObj)
 
       createPagination(originItemList)
@@ -780,22 +689,9 @@
         console.log('origin item list befor editing: ', originItemList)
 
         console.log('item: ', itemObj)
-        // $.ajax({
-        //   type: "PUT",
-        //   url: '/items/' + itemObj._id,
-        //   contentType: 'application/json',
-        //   data: JSON.stringify(itemObj),
-        //   success: result => {
-        //     console.log(result.message)
-        //     if (result.isUpdated) {
-        //       originItemList.splice(originItemList.indexOf(cData), 1)
-        //       originItemList.unshift(itemObj)
-        //       createPagination(originItemList)
-
-        //     }
         $.ajax({
           type: "PUT",
-          url: 'http://localhost:3000/evaluationMng/itemStatus/' + itemObj._id,
+          url: 'itemStatus/' + itemObj._id,
           contentType: 'application/json',
           data: JSON.stringify(itemObj),
           success: result => {
@@ -808,6 +704,7 @@
             }
           }
         })
+        
         console.log('origin item list after editing: ', originItemList)
 
 
@@ -824,24 +721,9 @@
       var index = originItemList.indexOf(deleteCData)
       console.log('index: ', index)
 
-      // $.ajax({
-      //   type: 'DELETE',
-      //   url: '/items/' + deleteCData._id,
-      //   success: result => {
-      //     console.log(result.message)
-      //     if (result.isDeleted) {
-      //       if (index > -1) {
-      //         originItemList.splice(index, 1)
-      //         createPagination(originItemList)
-
-
-      //       }
-      //     }
-      //   }
-      // })
       $.ajax({
         type: 'DELETE',
-        url: 'http://localhost:3000/evaluationMng/itemStatus/' + deleteCData._id,
+        url: 'itemStatus/' + deleteCData._id,
         success: result => {
           console.log(result.message)
           if (result.isDeleted) {

@@ -7,20 +7,19 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
   clone.querySelector('img').setAttribute('src', contractTemplateImage)
 
   // title
-  clone.querySelector('.card-title').innerHTML = itemObj.metadata["template name"] ? itemObj.metadata["template name"].charAt(0).toUpperCase() + itemObj.metadata["template name"].slice(1) : "Template name"
+  const title = findNestedObj(itemObj, 'name', 'template name')
+  clone.querySelector('.card-title').innerHTML = title.value ? title.value.charAt(0).toUpperCase() + title.value.slice(1) : "Template name"
 
   // short info
   var cardText = clone.querySelector('.card-text')
-  for(var property in itemObj.metadata){
+  itemObj.templateMetadata.map(info=>{
     var cardTextClone = cardText.cloneNode(true)
-    cardTextClone.innerHTML = property.charAt(0).toUpperCase() + property.slice(1) + ": "+ itemObj.metadata[property]
+    cardTextClone.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1) + ": "+ info.value
     clone.querySelector('.card-body').appendChild(cardTextClone)
-  }
-
+  })
 
   clone.querySelector('.object-div').addEventListener('click', function (evt) {
-    console.log('Iam here', event.target)
-    $("#centralModalSm").modal();
+    $("#centralModalSm").modal('show');
     var modalBody = document.querySelector('modal-body')
 
     while (modalBody.firstChild) {
@@ -73,7 +72,6 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     cardClone.C_DATA = this.C_DATA
     cardClone.className = "d-flex align-items-stretch object-div"
     modalBody.querySelector('.template-preview').prepend(cardClone)
-    console.log('abc xyz ghi: ', this)
 
     const templateInfoContainer = document.createElement('div')
     templateInfoContainer.className = "template-info-container list-group"
@@ -81,7 +79,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     
 
     itemObj.infos.map(info=>{
-      if(info.name !== "image" && info.name !=="nguoi lap" && info.name !== "nguoi nhan"){
+      if(info.name !== "image"){
         const infoContainer = document.createElement('div')
         infoContainer.className = 'info-container list-group-item'
         infoContainer.style.display = 'flex'
@@ -104,21 +102,12 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
       
     })
     modalBody.querySelector('.template-info').appendChild(templateInfoContainer)
-    
-    
-    
 
-    console.log('modalBody', modalBody)
   })
-
-
-
 
   clone.querySelector('.object-div').C_DATA = itemObj
 
   // clone.setAttribute('id',i)
-
-
   document.body.querySelector('#' + elementName + '').appendChild(clone)
 
 

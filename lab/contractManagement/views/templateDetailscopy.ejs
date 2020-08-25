@@ -78,72 +78,92 @@
   </div>
 
   <!-- Step2: Template Metadata -->
-  <div class="tab md-tabs">Template metadata:
+  <div class="tab md-tabs template-metadata">Template metadata:
     <div class="md-form">
-      <input type="text" id="form1" class="form-control validate">
-      <label for="form1" data-error="Empty">Template name</label>
+      <input type="text" class="form-control validate">
+      <label data-error="Empty">Template name</label>
     </div>
     <div class="md-form">
-      <input type="text" id="form2" class="form-control validate">
-      <label for="form2" data-error="Empty">Category</label>
+      <input type="text" class="form-control validate">
+      <label data-error="Empty">Category</label>
     </div>
     <div class="md-form">
-      <input type="text" id="form3" class="form-control validate">
-      <label for="form3" data-error="Empty">Type</label>
+      <input type="text" class="form-control validate">
+      <label data-error="Empty">Type</label>
     </div>
     <div class="md-form">
-      <input type="text" id="form4" class="form-control validate">
-      <label for="form4" data-error="Empty">Nguoi lap</label>
+      <input type="text" class="form-control validate">
+      <label data-error="Empty">Loai tai san</label>
     </div>
-    <div class="md-form">
-      <input type="text" id="form5" class="form-control validate">
-      <label for="form5" data-error="Empty">Nguoi nhan</label>
-    </div>
-    <div class="md-form">
-      <input type="text" id="form6" class="form-control validate">
-      <label for="form6" data-error="Empty">So tien vay</label>
-    </div>
+    <select class="browser-default custom-select">
+      <option value="thanh toan lai">Phuong thuc thanh toan</option>
+      <option value="thanh toan lai">Chi thanh toan lai</option>
+      <option value="thanh toan goc lai">Thanh toan goc + lai</option>
+    </select>
+
   </div>
 
   <!-- Step 3: Contract metadata -->
-  <div class="tab md-tabs">Contract metadata:
+  <div class="tab md-tabs contract-metadata">Contract metadata:
+
     <div class="md-form">
-      <input type="text" id="form1" class="form-control validate" disabled>
-      <label for="form1" data-error="Empty">Loai tai san</label>
+      <input type="text" class="form-control validate">
+      <label data-error="Empty">Nguoi lap</label>
+    </div>
+    <div class="md-form">
+      <input type="text" class="form-control validate">
+      <label data-error="Empty">Nguoi nhan</label>
+    </div>
+    <div class="md-form">
+      <input type="number" class="form-control validate">
+      <label data-error="Empty">So tien vay</label>
     </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
           <div class="md-form">
-            <input type="number" id="form4" class="form-control validate">
-            <label for="form4" data-error="Empty">So tien min</label>
+            <input type="number" class="form-control validate" min="0" max="9999999999">
+            <label data-error="Empty">So tien min</label>
           </div>
         </div>
         <div class="col">
           <div class="md-form">
-            <input type="number" id="form5" class="form-control validate">
-            <label for="form5" data-error="Empty">So tien max</label>
+            <input type="number" class="form-control validate" min="0" max="9999999999">
+            <label data-error="Empty">So tien max</label>
           </div>
         </div>
 
       </div>
     </div>
     <div class="md-form">
-      <input type="date" id="form6" class="form-control validate" disabled>
-      <label for="form6" data-error="Empty">Ngay lap</label>
+      <input type="date" class="form-control validate">
+      <label data-error="Empty">Ngay lap</label>
     </div>
     <div class="md-form">
-      <input type="number" id="form7" class="form-control validate">
-      <label for="form7" data-error="Empty">Ti le lai theo ngay(%)</label>
+      <input type="number" class="form-control validate">
+      <label data-error="Empty">Thoi han vay toi thieu</label>
     </div>
     <div class="md-form">
-      <input type="number" id="form8" class="form-control validate">
-      <label for="form8" data-error="Empty">Ti le phat theo ngay(%)</label>
+      <input type="number" class="form-control validate">
+      <label data-error="Empty">Ti le lai theo ngay(%)</label>
     </div>
+    <div class="md-form">
+      <input type="number" class="form-control validate">
+      <label data-error="Empty">Ti le phat theo ngay(%)</label>
+    </div>
+    <div class="md-form">
+      <input type="number" class="form-control validate">
+      <label data-error="Empty">So ky thu</label>
+    </div>
+    <div class="md-form">
+      <input type="number" class="form-control validate">
+      <label data-error="Empty">So ngay cua 1 ky</label>
+    </div>
+
   </div>
 
   <!-- Step 4: Custom info -->
-  <div class="tab md-tabs">Custom info:
+  <div class="tab md-tabs custom-info">Custom info:
     <div class="input-group">
       <div class="custom-file">
         <input type="file" class="custom-file-input" id="inputTemplateFile" accept=".csv"
@@ -172,9 +192,8 @@
 
 
 </form>
+
 <script type="module" src="Components/cropper/cropper.js"></script>
-<link href="/mdbootstrap/js/popper.min.js">
-<!-- libs scripts -->
 <script src="/mdbootstrap/js/jquery.min.js"></script>
 <script src="/mdbootstrap/js/popper.min.js"></script>
 <script src="/mdbootstrap/js/bootstrap.min.js"></script>
@@ -185,14 +204,19 @@
   import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
   import { ObjectId } from '/createMongooseID.js'
   var currentTab = 0; // Current tab is set to be the first tab (0)
+  var payOption = {}
+
   showTab(currentTab); // Display the current tab
+
   const contractTemplate = document.getElementById('temp_contract')
+
   document.querySelector('#prevBtn').addEventListener('click', () => {
     nextPrev(-1)
   })
   document.querySelector('#nextBtn').addEventListener('click', () => {
     nextPrev(1)
   })
+
   function showTab(n) {
     // This function will display the specified tab of the form ...
     var x = document.getElementsByClassName("tab");
@@ -226,80 +250,92 @@
     // if you have reached the end of the form... :
     if (currentTab >= x.length) {
       //...the form gets submitted:
+
       var templateItem = {
-        metadata: {},
+        templateMetadata: [],
+        contractMetadata: [],
         infos: [],
         _id: ObjectId()
       }
-      console.log('object id: ', templateItem._id)
+
       var imgData = document.querySelector('cropper-wc').getImageData()
-      templateItem.infos.push({
+      templateItem.contractMetadata.push({
         name: 'image',
         value: imgData
       })
 
-      document.querySelectorAll('input').forEach(element => {
-        if (element.type !== 'file') {
-          var info = {}
+      // contract template metadata
+      document.querySelector('.template-metadata').querySelectorAll('input').forEach(element => {
+        if(element.closest('div[class="md-form"]')){
           var name = element.closest('div[class="md-form"]').querySelector('label').innerHTML.toLowerCase()
           var value = element.value.toLowerCase()
-          var type = element.type
-          console.log('type: ', type)
-          // console.log('name: ', name)
-          // console.log('value: ', value)
-          // console.log('---------------------------')
-          if (name == "type" || name == "category" || name == "template name") {
-            templateItem.metadata[name] = value
-          } else {
-            info["name"] = name
-            info["value"] = value
-            info["c_type"] = type
-            templateItem.infos.push(info)
-          }
+          templateItem.templateMetadata.push({
+            name: name,
+            value: value,
+            c_type: element.type
 
-        }
-
+          })
+        } 
       })
 
-      // $.ajax({
-      //   type: 'POST',
-      //   data: JSON.stringify(templateItem),
-      //   contentType: 'application/json',
-      //   url: '/createNewContractTemplate',
-      //   success: (result) => {
-      //     console.log(result)
-      //     displayTemplate(templateItem, contractTemplate, 'template-handler')
-      //   }
-      // })
+      // contract metadata
+      document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
+        var name = element.closest('div[class="md-form"]').querySelector('label').innerHTML.toLowerCase()
+        var value = element.value.toLowerCase()
+        templateItem.contractMetadata.push({
+          name: name,
+          value: value,
+          c_type: element.type
+        })
+      })
+
+      // custom info
+      // console.log('ghi', document.querySelector('.custom-info').querySelectorAll('input'))
+
+      document.querySelector('.custom-info').querySelectorAll('input').forEach(element => {
+        if (element.type !== 'file') {
+          var info = {}
+          var name = element.closest('.md-form').querySelector('label').innerHTML.toLowerCase()
+
+          var value = element.value.toLowerCase()
+          var type = element.type
+          
+          templateItem.infos.push({
+            name: name,
+            value: value,
+            c_type: type
+          })
+        }
+      })
+
+      payOption = {
+        name: 'kieu thanh toan',
+        value: document.querySelector('.custom-select').value
+      }
+      templateItem.templateMetadata.push(payOption)
+
+      console.log('template item: ', templateItem)
+
       $.ajax({
         type: 'POST',
         data: JSON.stringify(templateItem),
         contentType: 'application/json',
-        url: 'http://localhost:3000/contractMng/createNewContractTemplate',
+        url: 'createNewContractTemplate',
         success: (result) => {
           console.log(result)
-          displayTemplate(result.contractTemplateList, contractTemplate, 'template-handler')
+          displayTemplate(templateItem, contractTemplate, 'template-handler')
         }
       })
-      // $.redirect("/createNewContractTemplate", { data: JSON.stringify(templateItem) }, "POST");
+      $("#centralModalSm").modal('hide');
 
-      // var xhttp = new XMLHttpRequest()
-      // xhttp.open('POST', '/createNewContractTemplate', true)
-      // xhttp.onreadystatechange = function () {
-      //   if (xhttp.readyState === 4) {
-      //     console.log(decodeURIComponent(xhttp.response))
-      //   }
-      // }
-      // xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      // xhttp.send(encodeURIComponent(templateItem))
-      // console.log('def: ', templateItem)
-
-     
       return false;
     }
     // Otherwise, display the correct tab:
     showTab(currentTab);
   }
+
+ 
+  console.log('pay option: ', payOption)
 
   function validateForm() {
     // This function deals with validation of the form fields
@@ -351,43 +387,32 @@
       var modalBody = document.querySelector('modal-body')
       modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
         var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-        // console.log('abc xyz: ', event.target.closest('modal-body').querySelector('.object-div'))
-        // $.redirect("/createNewContract", { data: JSON.stringify(cData) }, "POST");
-        $.redirect("http://localhost:3000/contractMng/createNewContract", { data: JSON.stringify(cData) }, "POST");
-        
+        console.log('abc xyz: ', cData)
+        $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
+
       })
 
       modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
         var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
         console.log('data to delete: ', cData)
-        // $.ajax({
-        //   type: "DELETE",
-        //   url: '/deleteContractTemplate/' + cData._id,
-        //   success: (result) => {
-        //     console.log(result)
-        //     // window.location.reload()
-        //   }
-
-        // })
         $.ajax({
-          type: "DELETE",
-          url: 'http://localhost:3000/contractMng/deleteContractTemplate/' + cData._id,
-          success: (result) => {
-            console.log(result)
-            window.location.href = 'http://localhost:3000/contractMng/'
-          }
+            type: "DELETE",
+            url: 'deleteContractTemplate/' + cData._id,
+            contentType:'application/json',
+            data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
+            success: (result) => {
+              console.log(result)
+              window.location.reload()
+            }
 
-        })
+          })
+        
       })
 
     })
-    // document.querySelectorAll('.object-div').forEach(element => {
-    //   element.addEventListener('click', function (event) {
-
-    //   })
-    // })
 
   }
+
 
 </script>
 
@@ -403,9 +428,7 @@
       var csv = e.target.result
       console.log('result: ', csv)
       convertToArray(csv)
-      // if (document.querySelector('#contract-template-container').firstChild) {
-      //   document.querySelector('#contract-template-container').innerHTML = ''
-      // }
+     
     }
     fileReader.readAsText(file, 'ISO-8859-1')
   })
@@ -428,6 +451,7 @@
         j += 1
       }
       j = linesBreakPoint[i] + 1
+      console.log('array: ', array)
       generateCustomInfoTemplate(array, template, 'contract-template-container')
     }
 

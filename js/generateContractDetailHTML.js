@@ -1,12 +1,9 @@
 export const generateContractDetailHTML = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
-  console.log('contract detail: ', clone)
 
   const infoTemplate = document.querySelector('#info-template')
-  console.log('info template: ', infoTemplate)
 
   const contractDetail = itemObj;
-
 
   // contract image
   const image = findNestedObj(contractDetail, 'name', 'image')
@@ -29,41 +26,47 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   // contract infos
   // metadata
   for (const property in contractDetail.metadata) {
-    if (property.toLowerCase() !== "template name") {
+    const name = contractDetail.metadata[property].name
+    const value = contractDetail.metadata[property].value
+    if (name.toLowerCase() !== "template name" && name.toLowerCase() !== "image") {
       const infoTemplatelone = infoTemplate.content.cloneNode(true)
-      infoTemplatelone.querySelector('label').innerHTML = property.charAt(0).toUpperCase() + property.slice(1)
-      infoTemplatelone.querySelector('input').value = contractDetail.metadata[property]
+      infoTemplatelone.querySelector('label').innerHTML = name.charAt(0).toUpperCase() + name.slice(1)
+      infoTemplatelone.querySelector('input').value = value
       clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
 
     }
 
   }
   // info
-  contractDetail.infos.forEach(info => {
-    if (info.name !== "image" && info.name !== "nguoi lap" && info.name !== "nguoi nhan") {
+  contractDetail.items.forEach(item => {
+    const itemDiv = clone.querySelector('.item-info-container').querySelector('.section').cloneNode(true)
+
+    item.infos.forEach(info => {
       const infoTemplatelone = infoTemplate.content.cloneNode(true)
+      infoTemplatelone.querySelector('.form-group').className = "form-group"
       infoTemplatelone.querySelector('label').innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
       infoTemplatelone.querySelector('input').value = info.value
-      clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
-    }
-  })
 
-  // item
-  contractDetail.item.infos.forEach(info => {
-    const infoTemplatelone = infoTemplate.content.cloneNode(true)
-    infoTemplatelone.querySelector('label').innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
-    infoTemplatelone.querySelector('input').value = info.value
-    clone.querySelector('.item-info-container').querySelector('.item-info').appendChild(infoTemplatelone)
-  })
-
-  // item status
-  contractDetail.itemStatus.forEach(status => {
-    status.infos.forEach(info => {
-      const infoTemplatelone = infoTemplate.content.cloneNode(true)
-      infoTemplatelone.querySelector('label').innerHTML = info.name.toLowerCase() === "loai" ? "Tinh trang" : info.name.charAt(0).toUpperCase() + info.name.slice(1)
-      infoTemplatelone.querySelector('input').value = info.value
-      clone.querySelector('.item-info-container').querySelector('.item-status').appendChild(infoTemplatelone)
+      itemDiv.querySelector('.item-info').appendChild(infoTemplatelone)
+      // clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
     })
+
+    item.status.forEach(status => {
+      status.infos.forEach(info => {
+        const infoTemplatelone = infoTemplate.content.cloneNode(true)
+        infoTemplatelone.querySelector('.form-group').className = "form-group"
+
+        infoTemplatelone.querySelector('label').innerHTML = info.name.toLowerCase() === "loai" ? "Tinh trang" : info.name.charAt(0).toUpperCase() + info.name.slice(1)
+        infoTemplatelone.querySelector('input').value = info.value
+
+        itemDiv.querySelector('.item-status').appendChild(infoTemplatelone)
+
+      })
+    })
+
+    clone.querySelector('.item-info-container').appendChild(itemDiv)
+
+
   })
 
   // handle event click to pdf button
