@@ -20,10 +20,11 @@
 </head>
 
 <body>
+  <%- include('../../evaluationMng/views/navbar.ejs')  %>
+
   <div class="d-flex" id="wrapper">
     <%- include('../../evaluationMng/views/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <%- include('../../evaluationMng/views/navbar.ejs')  %>
       <template id="contract-card-template">
         <style>
           .list-group-item:hover {

@@ -17,6 +17,8 @@
   }
 
   #sidebar-wrapper {
+    padding-top: 3%;
+    position: relative;
     min-height: 100vh;
     margin-left: -15rem;
     -webkit-transition: margin .25s ease-out;
@@ -36,6 +38,7 @@
 
   #page-content-wrapper {
     min-width: 100vw;
+    padding: 7% 3%;
   }
 
   #wrapper.toggled #sidebar-wrapper {
@@ -69,6 +72,11 @@
     width: 80%;
     margin: 2vh 1vw;
   }
+  #sidebar-btn{
+    height: fit-content;
+    margin-top: 3%;
+  }
+
 </style>
 
 <!-- Sidebar -->
@@ -127,9 +135,20 @@
 
   </div>
 </div>
+<div id="sidebar-btn">
+  <button class="btn btn-default btn-sm px-2" id="menu-toggle"><i class="fa fa-angle-left" style="font-size: 20px;"></i></button>
+</div>
+
 <script src="/mdbootstrap/js/popper.min.js"></script>
 <script src="/mdbootstrap/js/jquery.min.js"></script>
 <script src="/mdbootstrap/js/popper.min.js"></script>
 <script src="/mdbootstrap/js/bootstrap.min.js"></script>
 <script src="/mdbootstrap/js/mdb.min.js"></script>
+<script>
+  $("#menu-toggle").click(function (e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+    
+  });
+</script>
 <!-- /#sidebar-wrapper -->

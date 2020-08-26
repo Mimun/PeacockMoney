@@ -24,6 +24,10 @@
     .tab-content::-webkit-scrollbar {
       display: none;
     }
+    .tabs{
+      position: fixed;
+      width: 100%;
+    }
   </style>
 </head>
 
@@ -34,21 +38,12 @@
   <!-- contract template -->
   <%- include("./contractPreviewTemplate.ejs") %>
 
-
+  <!-- navbar -->
+  <%- include('../../evaluationMng/views/navbar.ejs')  %>
   <div class="d-flex" id="wrapper">
     <%- include('../../evaluationMng/views/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <%- include('../../evaluationMng/views/navbar.ejs')  %>
       <style>
-        body {
-          overflow: auto;
-          -ms-overflow-style: none;
-        }
-
-        body::-webkit-scrollbar {
-          display: none;
-        }
-
         .col-sm.side {
           max-height: 100vh;
           overflow-y: auto;
@@ -111,28 +106,31 @@
 
           <!-- item list column -->
           <div class="col-sm-4 side-4">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-                  aria-selected="true">Tham dinh tai san</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                  aria-controls="profile" aria-selected="false">Tinh trang tai san</a>
-              </li>
-
-            </ul>
-            <div class="tab-content" id="myTabContent">
-              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"
-                style="overflow-y: auto;">
-                <div id="item-list-table-container"></div>
+            <div class="tabs">
+              <ul class="nav nav-tabs " id="myTab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                    aria-selected="true">Tham dinh tai san</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                    aria-controls="profile" aria-selected="false">Tinh trang tai san</a>
+                </li>
+  
+              </ul>
+              <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"
+                  style="overflow-y: auto;">
+                  <div id="item-list-table-container"></div>
+                </div>
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"
+                  style="overflow-y: auto;">
+                  <div id="item-status-list-table-container"></div>
+                </div>
+  
               </div>
-              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"
-                style="overflow-y: auto;">
-                <div id="item-status-list-table-container"></div>
-              </div>
-
             </div>
+            
           </div>
         </div>
       </div>
@@ -263,9 +261,9 @@
         if (prevDiv !== null && prevDiv.isSameNode(currentDiv) === false) {
           prevDiv.style.border = 'none'
 
-        }
-
-        console.log('event abc: ', currentDiv)
+        } 
+        console.log('prevDiv: ', prevDiv)
+        console.log('currentDiv: ', currentDiv)
       })
       document.querySelector('div[class="contract-item-container"]').appendChild(itemTemplateClone)
 
@@ -280,10 +278,10 @@
 
         }
         if (prevDiv !== null && prevDiv.isSameNode(currentDiv) === false) {
-          currentDiv.style.border = 'none'
+          prevDiv.style.border = 'none'
         }
-
-        console.log('event abc: ', currentDiv)
+        console.log('prevDiv: ', prevDiv)
+        console.log('currentDiv: ', currentDiv)
 
       })
     })
@@ -352,6 +350,17 @@
       })
     })
 
+    function findNestedObj(entireObj, keyToFind, valToFind) {
+      let foundObj;
+      JSON.stringify(entireObj, (_, nestedValue) => {
+        if (nestedValue && nestedValue[keyToFind] === valToFind) {
+          foundObj = nestedValue;
+        }
+        return nestedValue;
+      });
+      return foundObj;
+    };
+
     document.querySelector('button[id="btn-submit"]').addEventListener('click', (event) => {
       var data = {
         metadata: [],
@@ -361,9 +370,26 @@
 
       // metadata
       const contractInfoContainer = event.target.closest('#contract-info-container')
-      const cData = contractInfoContainer.querySelector('#contract-template-container').querySelector('.object-div').C_DATA
-      data.metadata = cData.contractMetadata
-
+      // contract image
+      const contractTemplateContainer = contractInfoContainer.querySelector('#contract-template-container').querySelector('.object-div')
+      const cData = contractTemplateContainer.C_DATA
+      
+      const image = findNestedObj(cData, 'name', 'image')
+      data.metadata.push({
+        name: 'image',
+        value: image.value,
+        
+      })
+      contractTemplateContainer.querySelectorAll('input').forEach(input=>{
+        var value = input.value
+        var name = input.closest('.md-form').querySelector('label').innerHTML.toLowerCase()
+        data.metadata.push({
+          name: name,
+          value: value,
+          c_type: input.type
+        })
+      })
+      
       // item info
       const contractItemContainer = contractInfoContainer.querySelector('.contract-item-container')
       contractItemContainer.querySelectorAll('.item-container').forEach(itemContainer => {

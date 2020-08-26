@@ -21,13 +21,12 @@
 </head>
 
 <body style="padding: 0;">
+  <%- include('../../evaluationMng/views/navbar.ejs')  %>
+
   <div class="d-flex" id="wrapper">
-
     <%- include('../../evaluationMng/views/sideBar.ejs') %>
-
     <div id="page-content-wrapper">
-      <%- include('../../evaluationMng/views/navbar.ejs')  %>
-      <main style="padding: 5%;">
+      <main>
         <template id="temp_contract">
           <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
           <link href="/font-awesome/css/font-awesome.min.css">

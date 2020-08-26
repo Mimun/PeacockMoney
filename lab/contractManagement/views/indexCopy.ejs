@@ -21,12 +21,11 @@
 </head>
 
 <body>
+  <%- include('../../evaluationMng/views/navbar.ejs')  %>
+
   <div class="d-flex" id="wrapper">
-
     <%- include('../../evaluationMng/views/sideBar.ejs') %>
-
     <div id="page-content-wrapper">
-      <%- include('../../evaluationMng/views/navbar.ejs')  %>
       <main style="padding: 5%;">
         <template id="temp_contract">
           <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -132,6 +131,7 @@
       const select = document.createElement('select')
       select.className = "browser-default custom-select"
       select.id = variable
+      select.style.margin = '0 0 2vh 0'
       // "all" option
       const option = document.createElement('option')
       option.value = ""
@@ -164,13 +164,21 @@
       document.querySelector('modal-body').innerHTML = ""
 
       // create selector
+      const typeTitle = document.createElement('p')
+      typeTitle.innerHTML = 'Loai tai san'
+      document.querySelector('modal-body').appendChild(typeTitle)
       createSelect(types, 'modal-body', 'types')
+
+      const payMethodTitle = document.createElement('p')
+      payMethodTitle.innerHTML = 'Kieu thanh toan'
+      document.querySelector('modal-body').appendChild(payMethodTitle)
       createSelect(payOptions, 'modal-body', 'payOptions')
 
       const inputDiv = document.createElement('div')
       inputDiv.className = "md-form"
-      inputDiv.innerHTML = `<input type="text" id="form1" class="form-control">
-        <label for="form1">Example label</label>`
+      inputDiv.innerHTML = `<input type="number" id="form1" class="form-control">
+        <label for="form1">So tien vay</label>`
+      inputDiv.style.margin = '0 0 2vh 0'
       document.querySelector('modal-body').appendChild(inputDiv)
       
       document.querySelector('#btn-confirm').addEventListener('click', (event) => {

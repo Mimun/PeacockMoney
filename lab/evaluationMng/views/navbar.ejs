@@ -8,100 +8,62 @@
 <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
 <script src="/material-components-web/dist/material-components-web.min.js"></script>
 <link href="/font-awesome/css/font-awesome.min.css">
-<style>
-  @import url("/font-awesome/css/font-awesome.min.css");
-  body{
-    padding: 0;
-  }
-  #wrapper {
-    overflow-x: hidden;
-  }
 
-  #sidebar-wrapper {
-    min-height: 100vh;
-    margin-left: -15rem;
-    -webkit-transition: margin .25s ease-out;
-    -moz-transition: margin .25s ease-out;
-    -o-transition: margin .25s ease-out;
-    transition: margin .25s ease-out;
-  }
+<!--Navbar-->
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark primary-color">
 
-  #sidebar-wrapper .sidebar-heading {
-    padding: 0.875rem 1.25rem;
-    font-size: 1.2rem;
-  }
+  <!-- Navbar brand -->
+  <a class="navbar-brand" href="#">Navbar</a>
 
-  #sidebar-wrapper .list-group {
-    width: 15rem;
-  }
-
-  #page-content-wrapper {
-    min-width: 100vw;
-  }
-
-  #wrapper.toggled #sidebar-wrapper {
-    margin-left: 0;
-  }
-
-  @media (min-width: 768px) {
-    #sidebar-wrapper {
-      margin-left: 0;
-    }
-
-    #page-content-wrapper {
-      min-width: 0;
-      width: 100%;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-      margin-left: -15rem;
-    }
-  }
-
-  ul {
-    list-style-type: none;
-  }
-
-  .page-content {
-    margin: 2vh 0;
-  }
-
-  .md-form {
-    width: 100%;
-    margin: 2vh 0vw;
-  }
-</style>
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-  <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-bars"></i></button>
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <!-- Collapse button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+  <!-- Collapsible content -->
+  <div class="collapse navbar-collapse" id="basicExampleNav">
+   
+    <!-- Links -->
+    <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="#">Home
+          <span class="sr-only">(current)</span>
+        </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Features</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Pricing</a>
+      </li>
+
+      <!-- Dropdown -->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Dropdown
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">Dropdown</a>
+        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="#">Action</a>
           <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
       </li>
+
     </ul>
+    <!-- Links -->
+
+    <form class="form-inline">
+      <div class="md-form my-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+      </div>
+    </form>
   </div>
+  <!-- Collapsible content -->
+
 </nav>
+<!--/.Navbar-->
+
+
 
 
 <script src="/mdbootstrap/js/popper.min.js"></script>
@@ -109,9 +71,3 @@
 <script src="/mdbootstrap/js/popper.min.js"></script>
 <script src="/mdbootstrap/js/bootstrap.min.js"></script>
 <script src="/mdbootstrap/js/mdb.min.js"></script>
-<script>
-  $("#menu-toggle").click(function (e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
-  });
-</script>

@@ -17,7 +17,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   clone.querySelector('.a-side-info-container').querySelector('div[class="section"]').appendChild(cloneASide)
 
   // b side info
-  var bSideInfo = findNestedObj(contractDetail, 'name', 'nguoi lap')
+  var bSideInfo = findNestedObj(contractDetail, 'name', 'nguoi nhan')
   const cloneBSide = infoTemplate.content.cloneNode(true)
   cloneBSide.querySelector('label').innerHTML = bSideInfo.name.charAt(0).toUpperCase() + bSideInfo.name.slice(1)
   cloneBSide.querySelector('input').value = bSideInfo.value
@@ -28,7 +28,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   for (const property in contractDetail.metadata) {
     const name = contractDetail.metadata[property].name
     const value = contractDetail.metadata[property].value
-    if (name.toLowerCase() !== "template name" && name.toLowerCase() !== "image") {
+    if (name.toLowerCase() !== "template name" && name.toLowerCase() !== "image" && name.toLowerCase() !== "nguoi lap" && name.toLowerCase() !== "nguoi nhan") {
       const infoTemplatelone = infoTemplate.content.cloneNode(true)
       infoTemplatelone.querySelector('label').innerHTML = name.charAt(0).toUpperCase() + name.slice(1)
       infoTemplatelone.querySelector('input').value = value
