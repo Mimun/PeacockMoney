@@ -22,7 +22,7 @@
   <script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
 
   <script>
-    const getQuill = () => {
+    var quill = (function(){
       var quill = new Quill('#editor-container', {
         modules: {
           toolbar: [
@@ -47,7 +47,7 @@
       // prevent multiple click
 
       return quill
-    }
+    })()
 
   </script>
 </body>

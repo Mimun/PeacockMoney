@@ -111,7 +111,7 @@
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
-
+    import { findNestedObj } from '/findNestedObj.js'
     
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(itemStatusResults) %>;
@@ -195,17 +195,6 @@
         calculateEvaluatePrice(originalPrice, totalDiscount)
       })
     })
-
-    function findNestedObj(entireObj, keyToFind, valToFind) {
-      let foundObj;
-      JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] === valToFind) {
-          foundObj = nestedValue;
-        }
-        return nestedValue;
-      });
-      return foundObj;
-    };
 
     const calculateEvaluatePrice = (originalPrice, totalDiscount)=>{
       var evaluatedPrice = originalPrice - (totalDiscount*originalPrice/100)

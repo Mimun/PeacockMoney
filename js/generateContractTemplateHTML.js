@@ -1,3 +1,4 @@
+import {findNestedObj} from './findNestedObj.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
@@ -97,17 +98,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
   document.body.querySelector('#' + elementName + '').appendChild(infoContainer)
 
 }
-
-function findNestedObj(entireObj, keyToFind, valToFind) {
-  let foundObj;
-  JSON.stringify(entireObj, (_, nestedValue) => {
-    if (nestedValue && nestedValue[keyToFind] === valToFind) {
-      foundObj = nestedValue;
-    }
-    return nestedValue;
-  });
-  return foundObj;
-};
 
 const displayInfoLang = (info) => {
   if (typeof info === "string") {

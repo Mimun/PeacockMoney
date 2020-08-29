@@ -99,7 +99,7 @@
           <div class="col-sm-4 side-4">
 
             <div class="tabs">
-             
+
               <ul class="nav nav-tabs " id="myTab" role="tablist">
                 <li class="nav-item">
                   <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
@@ -145,6 +145,8 @@
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { generateContractTemplateHTML } from '/generateContractTemplateHTML.js'
+    import { findNestedObj } from '/findNestedObj.js'
+    import { searchFunction } from '/searchFunction.js'
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
@@ -285,80 +287,77 @@
       })
     })
 
-    document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
-      element.addEventListener('click', (event) => {
+    const chooseItem = () => {
+      document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
+        element.addEventListener('click', (event) => {
 
 
-        console.log('element: ', this)
-        const cloneNode = event.target.parentNode.cloneNode(true)
-        cloneNode.C_DATA = event.target.parentNode.C_DATA
-        cloneNode.className = "object-div item"
-        if (currentDiv.querySelector("#item-evaluation")) {
-          currentDiv.querySelector("#item-evaluation").innerHTML = ''
-        }
-        currentDiv.querySelector("#item-evaluation").appendChild(cloneNode)
-      })
-    })
-
-    document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
-      element.addEventListener('click', (event) => {
-        const itemStatusDiv = currentDiv.querySelector("#item-status")
-        const cloneNode = event.target.parentNode.cloneNode(true)
-        cloneNode.C_DATA = event.target.parentNode.C_DATA
-        cloneNode.className = "object-div item-status"
-
-        const removeButton = document.createElement('i')
-        removeButton.className = "fa fa-times"
-        removeButton.style.fontSize = "25px"
-        removeButton.style.margin = "12px"
-
-        removeButton.style.color = '#bdbdbd '
-        // removeButton.className = "btn"
-        // removeButton.style.backgroundColor = "#e0e0e0"
-        // removeButton.innerHTML = '<i class="fa fa-times"></i>'
-
-        removeButton.addEventListener('click', (event) => {
-          console.log('event: ', event.target)
-          event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
-          // event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode)
+          console.log('element: ', this)
+          const cloneNode = event.target.parentNode.cloneNode(true)
+          cloneNode.C_DATA = event.target.parentNode.C_DATA
+          cloneNode.className = "object-div item"
+          if (currentDiv.querySelector("#item-evaluation")) {
+            currentDiv.querySelector("#item-evaluation").innerHTML = ''
+          }
+          currentDiv.querySelector("#item-evaluation").appendChild(cloneNode)
         })
-        cloneNode.querySelector('div[class="mdc-data-table__header-row header-row-div"]').appendChild(removeButton)
+      })
+    }
+    chooseItem()
+    const chooseItemStatus = () => {
+      document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
+        element.addEventListener('click', (event) => {
+          const itemStatusDiv = currentDiv.querySelector("#item-status")
+          const cloneNode = event.target.parentNode.cloneNode(true)
+          cloneNode.C_DATA = event.target.parentNode.C_DATA
+          cloneNode.className = "object-div item-status"
 
-        // prevent duplicate 
-        var isChosen = false
-        if (itemStatusDiv.firstChild) {
-          itemStatusDiv.querySelectorAll('div[class="object-div"]').forEach(div => {
-            if (cloneNode.isEqualNode(div)) {
-              console.log('div: ', div)
-              isChosen = true
+          const removeButton = document.createElement('i')
+          removeButton.className = "fa fa-times"
+          removeButton.style.fontSize = "25px"
+          removeButton.style.margin = "12px"
 
-              itemStatusDiv.removeChild(div)
-            }
+          removeButton.style.color = '#bdbdbd '
+          // removeButton.className = "btn"
+          // removeButton.style.backgroundColor = "#e0e0e0"
+          // removeButton.innerHTML = '<i class="fa fa-times"></i>'
+
+          removeButton.addEventListener('click', (event) => {
+            console.log('event: ', event.target)
+            event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
+            // event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode)
           })
-          if (!isChosen) {
+          cloneNode.querySelector('div[class="mdc-data-table__header-row header-row-div"]').appendChild(removeButton)
+
+          // prevent duplicate 
+          var isChosen = false
+          if (itemStatusDiv.firstChild) {
+            itemStatusDiv.querySelectorAll('div[class="object-div"]').forEach(div => {
+              if (cloneNode.isEqualNode(div)) {
+                console.log('div: ', div)
+                isChosen = true
+
+                itemStatusDiv.removeChild(div)
+              }
+            })
+            if (!isChosen) {
+              itemStatusDiv.appendChild(cloneNode)
+              itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
+
+            }
+          } else {
             itemStatusDiv.appendChild(cloneNode)
             itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
 
+
           }
-        } else {
-          itemStatusDiv.appendChild(cloneNode)
-          itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
-
-
-        }
+        })
       })
-    })
+    }
+    chooseItemStatus()
 
-    function findNestedObj(entireObj, keyToFind, valToFind) {
-      let foundObj;
-      JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] === valToFind) {
-          foundObj = nestedValue;
-        }
-        return nestedValue;
-      });
-      return foundObj;
-    };
+
+
 
     document.querySelector('button[id="btn-submit"]').addEventListener('click', (event) => {
       var data = {
@@ -442,46 +441,16 @@
       event.preventDefault()
       console.log('abc')
       if (originItemList) {
-        searchFunction(event.target.querySelector('input').value, originItemList, 'item')
-
+        searchFunction(event.target.querySelector('input').value, originItemList, template, 'item-list-table-container')
+        chooseItem()
       }
       if (originItemStatusList) {
-        searchFunction(event.target.querySelector('input').value, originItemStatusList, 'itemStatus')
-
+        searchFunction(event.target.querySelector('input').value, originItemStatusList, template, 'item-status-list-table-container')
+        chooseItemStatus()
       }
     })
 
-    const searchFunction = (itemValue, itemArray, type) => {
-      var foundItems = []
-      itemArray.map(obj => {
-        obj.infos.forEach(info => {
-          if (JSON.stringify(info.value.toLowerCase()) === JSON.stringify(itemValue.toLowerCase())) {
-            foundItems.push(obj)
-          }
-        })
-      })
-      if (type === "item") {
-        if (foundItems.length > 0) {
-          document.querySelector('#item-list-table-container').innerHTML = ''
-          generateHTML(foundItems, template, 'item-list-table-container')
-        } else {
-          document.querySelector('#item-list-table-container').innerHTML = ''
-          generateHTML(itemArray, template, 'item-list-table-container')
 
-        }
-      } else {
-        if (foundItems.length > 0) {
-          document.querySelector('#item-status-list-table-container').innerHTML = ''
-          generateHTML(foundItems, template, 'item-status-list-table-container')
-        } else {
-          document.querySelector('#item-status-list-table-container').innerHTML = ''
-          generateHTML(itemArray, template, 'item-status-list-table-container')
-
-        }
-      }
-
-
-    }
 
   </script>
 </body>

@@ -50,7 +50,8 @@
   <script src="/html2canvas/dist/html2canvas.js"></script>
   <script src="/html2pdf.js/dist/html2pdf.js"></script>
 
-  <script>
+  <script type="module">
+    import {findNestedObj} from '/findNestedObj.js'
     const convertDbObjToQuillObj = (object) => {
       const objectData = {}
       object.metadata.forEach(info => {
@@ -114,17 +115,6 @@
       };
       html2pdf().from(source).set(opt).save();
     }
-
-    function findNestedObj(entireObj, keyToFind, valToFind) {
-      let foundObj;
-      JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] === valToFind) {
-          foundObj = nestedValue;
-        }
-        return nestedValue;
-      });
-      return foundObj;
-    };
 
     const displayInfoLang = (info) => {
       if (typeof info === "string") {

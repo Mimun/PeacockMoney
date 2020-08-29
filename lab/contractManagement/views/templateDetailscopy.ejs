@@ -177,7 +177,7 @@
 
   <!-- Step 5: Quill editor -->
   <div class="tab md-tabs contract-content">Contract content:
-   <%- include('./quillEditor.ejs')  %> 
+    <%- include('./quillEditor.ejs')  %>
   </div>
 
   <div class="modal-footer" style="display: flex; flex-direction: column;">
@@ -208,11 +208,12 @@
 <script type="module">
   import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
   import { ObjectId } from '/createMongooseID.js'
+  import { findNestedObj } from '/findNestedObj.js'
 
   var currentTab = 0; // Current tab is set to be the first tab (0)
   var payOption = {}
   const contractTemplate = document.getElementById('temp_contract')
-
+ 
   showTab(currentTab); // Display the current tab
 
   document.querySelector('#prevBtn').addEventListener('click', () => {
@@ -285,7 +286,6 @@
       })
 
       // - quill contract content for contract metadata
-      var quill = getQuill()
       var contractContent = quill.root.innerHTML
       console.log('contract content: ', contractContent)
       templateItem.contractMetadata.push(getObj('contractContent', quill.root.innerHTML, 'text', 'noiDungHopDong', 'korean string'))
@@ -315,7 +315,7 @@
       })
 
       console.log('item is about to save: ', templateItem)
-      
+
 
       $.ajax({
         type: 'POST',
@@ -332,15 +332,13 @@
 
       return false;
     }
-    
-    if(currentTab === x.length-1){
-      var quill = getQuill()
+
+    if (currentTab === x.length - 1) {
       quill.on('text-change', (delta, source) => {
         // console.log('delta: ', delta)
         // console.log('source: ', source)
         console.log('output: ', quill.root.innerHTML)
       })
-
     }
     // Otherwise, display the correct tab:
     showTab(currentTab);
@@ -379,18 +377,6 @@
     //... and adds the "active" class to the current step:
     x[n].className += " active";
   }
-
-  // funtion to find an object based on values
-  function findNestedObj(entireObj, keyToFind, valToFind) {
-    let foundObj;
-    JSON.stringify(entireObj, (_, nestedValue) => {
-      if (nestedValue && nestedValue[keyToFind] === valToFind) {
-        foundObj = nestedValue;
-      }
-      return nestedValue;
-    });
-    return foundObj;
-  };
 
   const displayTemplate = (itemObj, template, elementName) => {
     generateContractTemplateCard(itemObj, template, elementName)

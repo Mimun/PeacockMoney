@@ -207,7 +207,7 @@
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { ObjectId } from '/createMongooseID.js'
-
+    import { findNestedObj } from '/findNestedObj.js'
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
 
@@ -686,18 +686,6 @@
       return info
 
     }
-
-    // edit button in modal
-    function findNestedObj(entireObj, keyToFind, valToFind) {
-      let foundObj;
-      JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] === valToFind) {
-          foundObj = nestedValue;
-        }
-        return nestedValue;
-      });
-      return foundObj;
-    };
 
     // edit button 
     document.querySelector('#edit-btn').addEventListener('click', (e) => {

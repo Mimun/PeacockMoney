@@ -1,3 +1,4 @@
+import {findNestedObj} from './findNestedObj.js'
 export const generateContractDetailHTML = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
 
@@ -97,19 +98,6 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
 
  
 }
-
-
-
-function findNestedObj(entireObj, keyToFind, valToFind) {
-  let foundObj;
-  JSON.stringify(entireObj, (_, nestedValue) => {
-    if (nestedValue && nestedValue[keyToFind] === valToFind) {
-      foundObj = nestedValue;
-    }
-    return nestedValue;
-  });
-  return foundObj;
-};
 
 const displayInfoLang = (info) => {
   if (typeof info === "string") {

@@ -1,3 +1,4 @@
+import {findNestedObj} from './findNestedObj.js'
 // used when rendering "Quan ly va Tao mau hop dong" page
 export const generateContractTemplateCard = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
@@ -44,20 +45,10 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createNewContractButton.id = 'btn-create-new-contract'
     createNewContractButton.className = "btn btn-primary btn-sm"
     createNewContractButton.innerHTML = "Create new contract"
-    // createNewContractButton.addEventListener('click', ()=>{
-    //   console.log('this is called from create new contract button')
-    //   fetch('http://localhost:3000/contractMng/createNewContract', {
-    //     method: "POST",
-    //     body: JSON.stringify(itemObj),
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     redirect: 'follow'
-    //   }).then(result=>{
-    //     console.log('result after posting: ', result)
-    //     window.location.href = result.url
-    //   })
-    // })
+    createNewContractButton.addEventListener('click', ()=>{
+      console.log('this is called from create new contract button')
+      $.redirect("createNewContract", { data: JSON.stringify(itemObj) }, "POST");
+    })
     buttonOptions.appendChild(createNewContractButton)
 
 
@@ -65,6 +56,18 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     deleteContractTemplateButton.id = 'btn-delete-contract-template'
     deleteContractTemplateButton.className = "btn btn-secondary btn-sm"
     deleteContractTemplateButton.innerHTML = "Delete template"
+    deleteContractTemplateButton.addEventListener('click', (event)=>{
+      $.ajax({
+        type: "DELETE",
+        url: 'deleteContractTemplate/' + itemObj._id,
+        contentType: 'application/json',
+        success: (result) => {
+          console.log(result)
+          window.location.reload()
+        }
+
+      })
+    })
     buttonOptions.appendChild(deleteContractTemplateButton)
     modalBody.querySelector('.template-preview').appendChild(buttonOptions)
 
@@ -112,17 +115,6 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
 
 
 }
-
-function findNestedObj(entireObj, keyToFind, valToFind) {
-  let foundObj;
-  JSON.stringify(entireObj, (_, nestedValue) => {
-    if (nestedValue && nestedValue[keyToFind] === valToFind) {
-      foundObj = nestedValue;
-    }
-    return nestedValue;
-  });
-  return foundObj;
-};
 
 const displayInfoLang = (info)=>{
   // uppercase the first letter

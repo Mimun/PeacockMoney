@@ -1,3 +1,4 @@
+import {findNestedObj} from './findNestedObj.js'
 // used for generating list of evaluation item
 export const generateHTML = (itemObjs, template, elementName) => {
   const clone = document.importNode(template.content, true)
@@ -129,17 +130,6 @@ export const generateHTML = (itemObjs, template, elementName) => {
 
 
 }
-
-function findNestedObj(entireObj, keyToFind, valToFind) {
-  let foundObj;
-  JSON.stringify(entireObj, (_, nestedValue) => {
-    if (nestedValue && nestedValue[keyToFind] === valToFind) {
-      foundObj = nestedValue;
-    }
-    return nestedValue;
-  });
-  return foundObj;
-};
 
 const displayInfoLang = (info) => {
   if (typeof info === "string") {

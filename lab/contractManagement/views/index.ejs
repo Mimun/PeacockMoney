@@ -70,7 +70,7 @@
           aria-hidden="true">
 
           <!-- Change class .modal-sm to change the size of the modal -->
-          <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-dialog modal-fluid" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title w-100" id="myModalLabel">Create new contract template</h4>
@@ -100,68 +100,29 @@
   <script type="module">
     import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
     import { ObjectId } from '/createMongooseID.js'
-    
+    import { findNestedObj } from '/findNestedObj.js'
+
     const contractTemplate = document.getElementById('temp_contract');
     // card_handler = document.querySelector('template-handler')
     const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
-
     for (var i = 0; i < contractTemplateList.length; i++) {
       generateContractTemplateCard(contractTemplateList[i], contractTemplate, 'template-handler')
     }
 
-    // detail template info
-    document.querySelectorAll('.object-div').forEach(element => {
-      element.addEventListener('click', function () {
-        console.log('event abc: ', document.querySelector('modal-body'))
-        var modalBody = document.querySelector('modal-body')
-        modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
-          var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-          console.log('abc xyz: ', cData)
-          $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
-
-        })
-
-        modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
-          var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-          console.log('data to delete: ', JSON.stringify(findNestedObj(cData, 'name', 'image')))
-          $.ajax({
-            type: "DELETE",
-            url: 'deleteContractTemplate/' + cData._id,
-            contentType:'application/json',
-            data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
-            success: (result) => {
-              console.log(result)
-              window.location.reload()
-            }
-
-          })
-        })
-
-      })
-    })
-
-    function findNestedObj(entireObj, keyToFind, valToFind) {
-      let foundObj;
-      JSON.stringify(entireObj, (_, nestedValue) => {
-        if (nestedValue && nestedValue[keyToFind] === valToFind) {
-          foundObj = nestedValue;
-        }
-        return nestedValue;
-      });
-      return foundObj;
-    };
-
     // create new contract template button
     var addTemplateBtn = document.getElementById('addTemplate').addEventListener('click', (evt) => {
-      var modalBody = document.querySelector('modal-body')
-      while (modalBody.firstChild) {
-        modalBody.removeChild(modalBody.lastChild)
-      }
-      var tmpContent = document.getElementById('contract_detail').content;
-      var clone = document.importNode(tmpContent, true);
-      modalBody.appendChild(clone)
+      $('#centralModalSm').on('show.bs.modal', () => {
+        var modalBody = document.querySelector('modal-body')
+        while (modalBody.firstChild) {
+          modalBody.removeChild(modalBody.lastChild)
+        }
+        var tmpContent = document.getElementById('contract_detail').content;
+        var clone = document.importNode(tmpContent, true);
+        modalBody.appendChild(clone)
+      })
+      $("#centralModalSm").modal('show');
 
-      $("#centralModalSm").modal();
+
     })
 
     // go to contract list button
@@ -174,7 +135,7 @@
           window.location.href = "contracts"
         }
       })
-      
+
     })
 
 
