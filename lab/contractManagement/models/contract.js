@@ -1,7 +1,13 @@
 const mongoose = require('mongoose')
 
 const contractSchema = new mongoose.Schema({
-  metadata: [{type: Object, required: true}],
+  metadata: [{
+    name: {type: String},
+    value: {type: String},
+    cType: {type: String, default: 'text'},
+    dataVie: {type: String},
+    dataKor: {type: String, default: 'korean string'}
+  }],
   items:[{
     infos: [{type: Object}],
     evaluationItem: {type: mongoose.Types.ObjectId, ref: 'Item'},

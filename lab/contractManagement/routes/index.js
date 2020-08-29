@@ -19,6 +19,7 @@ function findNestedObj(entireObj, keyToFind, valToFind) {
   return foundObj;
 };
 
+// CONTRACT TEMPLATE
 // contract template list for admin
 router.get('/', function (req, res, next) {
   ContractTemplate.find({}, (err, result) => {
@@ -28,17 +29,16 @@ router.get('/', function (req, res, next) {
   })
 })
 
-
 // contract template list for user
 router.get('/contractTemplates', (req, res, next) => {
   ContractTemplate.find({}, (err, results) => {
     if (err) throw err
 
-    var typeArray = [],payOptionArray = []
+    var typeArray = [], payOptionArray = []
 
     results.forEach(result => {
-      typeArray.push(findNestedObj(result, 'name', 'loai tai san').value)
-      payOptionArray.push(findNestedObj(result, 'name', 'kieu thanh toan').value)
+      typeArray.push(findNestedObj(result, 'name', 'itemType').value)
+      payOptionArray.push(findNestedObj(result, 'name', 'paymentMethod').value)
 
     })
     typeArray = typeArray.filter((item, pos) => {
@@ -52,22 +52,37 @@ router.get('/contractTemplates', (req, res, next) => {
 
 })
 
-// function to filter contract
-const filterContract = (value1, value2, value3, req, res) => {
+// function to filter contract template
+const filterContract = (value1, value2, value3, req, res, next) => {
   async.parallel({
     result1: (callback) => {
-      ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
+      try {
+        ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
+
+      } catch (err) {
+        next(err)
+      }
     },
     result2: (callback) => {
-      ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
+      try {
+        ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
+
+      } catch (err) {
+        next(err)
+      }
     },
-    result3: callback=>{
-      ContractTemplate.find({}).exec(callback)
+    result3: callback => {
+      try {
+        ContractTemplate.find({}).exec(callback)
+
+      } catch (err) {
+        next(err)
+      }
 
     }
   }, (err, result) => {
     if (err) throw err
-    var array1 = result.result1, array2 = result.result2, array3 = result.result3, array4=[]
+    var array1 = result.result1, array2 = result.result2, array3 = result.result3, array4 = []
     var array12 = []
     array1.map(item1 => {
       array2.map(item2 => {
@@ -76,19 +91,19 @@ const filterContract = (value1, value2, value3, req, res) => {
         }
       })
     })
-    array3 = array3.filter(item=>{
-      var min = parseInt(findNestedObj(item, 'name', 'so tien min').value)
-      var max = parseInt(findNestedObj(item, 'name', 'so tien max').value)
+    array3 = array3.filter(item => {
+      var min = parseInt(findNestedObj(item, 'name', 'min').value)
+      var max = parseInt(findNestedObj(item, 'name', 'max').value)
       console.log('min', min)
       console.log('max', max)
-      if(min <= value3 && value3 <= max){
+      if (min <= value3 && value3 <= max) {
         return item
       }
     })
-   
 
-    array12.map(item12=>{
-      array3.map(item3=>{
+
+    array12.map(item12 => {
+      array3.map(item3 => {
         if (JSON.stringify(item12) === JSON.stringify(item3)) {
           array4.push(item3)
         }
@@ -102,7 +117,7 @@ const filterContract = (value1, value2, value3, req, res) => {
 
     console.log('array 3: ', array3.length)
     console.log('array 4: ', array4.length)
-    
+
   })
 
 }
@@ -142,6 +157,7 @@ router.post('/createNewContractTemplate', (req, res, next) => {
   })
 })
 
+// CONTRACT
 // create new contract route
 router.post('/createNewContract', function (req, res, next) {
   Item.find({}, (err, itemResults) => {
@@ -217,11 +233,17 @@ router.put('/contracts/:id', (req, res) => {
 router.get('/contracts/:id', (req, res) => {
   console.log('id received', req.params.id)
   Contract.findById(req.params.id).populate([
-    { path: 'item', model: 'Item' },
-    { path: 'itemStatus', model: 'ItemStatus' }
-  ]).exec((err, result) => {
+    {
+      path: 'items.evaluationItem',
+      model: 'Item'
+    },
+    {
+      path: 'items.status',
+      model: 'ItemStatus'
+    }
+  ]).exec((err, contractResult) => {
     if (err) throw err
-    res.render('contractDetail', { contractDetail: result })
+    res.render('contractContent', { contractDetail: contractResult })
   })
 
 })

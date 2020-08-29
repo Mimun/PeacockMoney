@@ -10,14 +10,14 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   clone.querySelector('#contract-image').setAttribute('src', image.value)
 
   // a side info
-  var aSideInfo = findNestedObj(contractDetail, 'name', 'nguoi lap')
+  var aSideInfo = findNestedObj(contractDetail, 'name', 'creator')
   const cloneASide = infoTemplate.content.cloneNode(true)
   cloneASide.querySelector('label').innerHTML = aSideInfo.name.charAt(0).toUpperCase() + aSideInfo.name.slice(1)
   cloneASide.querySelector('input').value = aSideInfo.value
   clone.querySelector('.a-side-info-container').querySelector('div[class="section"]').appendChild(cloneASide)
 
   // b side info
-  var bSideInfo = findNestedObj(contractDetail, 'name', 'nguoi nhan')
+  var bSideInfo = findNestedObj(contractDetail, 'name', 'customer')
   const cloneBSide = infoTemplate.content.cloneNode(true)
   cloneBSide.querySelector('label').innerHTML = bSideInfo.name.charAt(0).toUpperCase() + bSideInfo.name.slice(1)
   cloneBSide.querySelector('input').value = bSideInfo.value
@@ -28,9 +28,10 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   for (const property in contractDetail.metadata) {
     const name = contractDetail.metadata[property].name
     const value = contractDetail.metadata[property].value
-    if (name.toLowerCase() !== "template name" && name.toLowerCase() !== "image" && name.toLowerCase() !== "nguoi lap" && name.toLowerCase() !== "nguoi nhan") {
+    const infoLang = contractDetail.metadata[property].dataVie
+    if (name.toLowerCase() !== "templateName" && name.toLowerCase() !== "image" && name.toLowerCase() !== "creator" && name.toLowerCase() !== "customer") {
       const infoTemplatelone = infoTemplate.content.cloneNode(true)
-      infoTemplatelone.querySelector('label').innerHTML = name.charAt(0).toUpperCase() + name.slice(1)
+      infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
       infoTemplatelone.querySelector('input').value = value
       clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
 
@@ -52,6 +53,14 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
     })
 
     item.status.forEach(status => {
+      const statusName = findNestedObj(status, 'name', 'type')
+      const infoTemplatelone = infoTemplate.content.cloneNode(true)
+      infoTemplatelone.querySelector('.form-group').className = "form-group"
+
+      infoTemplatelone.querySelector('label').innerHTML = statusName.name === "type"? displayInfoLang('tinhTrang'): displayInfoLang(statusName.dataVie)
+      infoTemplatelone.querySelector('input').value = statusName.value
+
+      itemDiv.querySelector('.item-status').appendChild(infoTemplatelone)
       status.infos.forEach(info => {
         const infoTemplatelone = infoTemplate.content.cloneNode(true)
         infoTemplatelone.querySelector('.form-group').className = "form-group"
@@ -72,24 +81,21 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   // handle event click to pdf button
   clone.querySelector('.get-pdf').addEventListener('click', (event) => {
     event.preventDefault()
-    PDF1()
+    $.ajax({
+      type: 'GET',
+      url: 'contracts/'+itemObj._id,
+      contentType: 'application/json',
+      success: result=>{
+        console.log(result)
+        window.location.href = 'contracts/' + itemObj._id
+      }
+    })
   })
 
 
   document.body.querySelector('#' + elementName + '').appendChild(clone)
 
-  const PDF1 = () => {
-    html2canvas(document.querySelector('.contract-detail-container'), {
-      scrollX: 0,
-      scrollY: 0
-    }).then(function (canvas) {
-      var doc = new jsPDF('p', 'mm', 'a4')
-      var image = canvas.toDataURL("image/jpeg")
-      doc.addImage(image, 'JPEG', 40, 20, 120, 270)
-      doc.save('contract.pdf')
-    })
-
-  }
+ 
 }
 
 
@@ -104,3 +110,18 @@ function findNestedObj(entireObj, keyToFind, valToFind) {
   });
   return foundObj;
 };
+
+const displayInfoLang = (info) => {
+  if (typeof info === "string") {
+    // // re-uppercase
+    // var infoLang = info.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    // uppercase the first letter
+    var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
+    // split based on uppercase letters
+    infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+    return infoLang
+
+  } 
+  return info
+
+}

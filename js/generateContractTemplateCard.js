@@ -7,14 +7,14 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
   clone.querySelector('img').setAttribute('src', contractTemplateImage)
 
   // title
-  const title = findNestedObj(itemObj, 'name', 'template name')
-  clone.querySelector('.card-title').innerHTML = title.value ? title.value.charAt(0).toUpperCase() + title.value.slice(1) : "Template name"
+  const title = findNestedObj(itemObj, 'name', 'templateName')
+  clone.querySelector('.card-title').innerHTML = title.value ? title.value : "Template name"
 
   // short info
   var cardText = clone.querySelector('.card-text')
   itemObj.templateMetadata.map(info=>{
     var cardTextClone = cardText.cloneNode(true)
-    cardTextClone.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1) + ": "+ info.value
+    cardTextClone.innerHTML = displayInfoLang(info.dataVie) + ": "+ info.value
     clone.querySelector('.card-body').appendChild(cardTextClone)
   })
 
@@ -123,3 +123,11 @@ function findNestedObj(entireObj, keyToFind, valToFind) {
   });
   return foundObj;
 };
+
+const displayInfoLang = (info)=>{
+  // uppercase the first letter
+  var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
+  // split based on uppercase letters
+  infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+  return infoLang
+}

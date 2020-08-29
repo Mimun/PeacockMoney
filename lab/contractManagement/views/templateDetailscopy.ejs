@@ -1,12 +1,5 @@
-<!-- Bootstrap core CSS -->
-<link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
-<link href="/mdbootstrap/css/style.css" rel="stylesheet">
-
-
-<!-- material design.io -->
-<link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
-<script src="/material-components-web/dist/material-components-web.min.js"></script>
+<!-- Theme included stylesheets -->
+<link href="http://cdn.quilljs.com/1.2.0/quill.snow.css" rel="stylesheet">
 <style>
   /* Style the form */
   #regForm {
@@ -71,34 +64,40 @@
       <div class=row>
         <cropper-wc title="abc"></cropper-wc>
       </div>
-      <!-- <div class=row>
-        <button id="SelectImg" class="btn btn-default">Confirm</button>
-      </div> -->
     </div>
   </div>
 
   <!-- Step2: Template Metadata -->
   <div class="tab md-tabs template-metadata">Template metadata:
     <div class="md-form">
-      <input type="text" class="form-control validate">
+      <input type="text" class="form-control validate" data-eng="templateName" data-vie="temMauHopDong">
       <label data-error="Empty">Template name</label>
     </div>
     <div class="md-form">
-      <input type="text" class="form-control validate">
+      <input type="text" class="form-control validate" data-eng="category" data-vie="phanLoai">
       <label data-error="Empty">Category</label>
     </div>
     <div class="md-form">
-      <input type="text" class="form-control validate">
+      <input type="text" class="form-control validate" data-eng="templateType" data-vie="loai">
       <label data-error="Empty">Type</label>
     </div>
     <div class="md-form">
-      <input type="text" class="form-control validate">
+      <input type="text" class="form-control validate" data-eng="itemType" data-vie="loaiTaiSan">
       <label data-error="Empty">Loai tai san</label>
     </div>
+    <div class="md-form">
+      <input type="number" class="form-control validate" data-eng="fee" data-vie="phiThu">
+      <label data-error="Empty">Phi thu</label>
+    </div>
+    <div class="md-form">
+      <input type="text" class="form-control validate" data-eng="anotherFee" data-vie="phiKhac">
+      <label data-error="Empty">Phi khac</label>
+    </div>
     <select class="browser-default custom-select">
-      <option value="thanh toan lai">Phuong thuc thanh toan</option>
-      <option value="thanh toan lai">Chi thanh toan lai</option>
-      <option value="thanh toan goc lai">Thanh toan goc + lai</option>
+      <option value="thanhToanLai" data-eng="interestPayment" data-vie="thanhToanLai">Phuong thuc thanh toan</option>
+      <option value="thanhToanLai" data-eng="interestPayment" data-vie="thanhToanLai">Chi thanh toan lai</option>
+      <option value="thanhToanGocLai" data-eng="originalProfitPayment" data-vie="thanhToanGocLai">Thanh toan goc +
+        lai</option>
     </select>
 
   </div>
@@ -107,28 +106,30 @@
   <div class="tab md-tabs contract-metadata">Contract metadata:
 
     <div class="md-form">
-      <input type="text" class="form-control validate">
+      <input type="text" class="form-control validate" data-eng="creator" data-vie="nguoiLap">
       <label data-error="Empty">Nguoi lap</label>
     </div>
     <div class="md-form">
-      <input type="text" class="form-control validate">
-      <label data-error="Empty">Nguoi nhan</label>
+      <input type="text" class="form-control validate" data-eng="customer" data-vie="khachHang">
+      <label data-error="Empty">Khach hang</label>
     </div>
     <div class="md-form">
-      <input type="number" class="form-control validate">
+      <input type="number" class="form-control validate" data-eng="loan" data-vie="soTienVay">
       <label data-error="Empty">So tien vay</label>
     </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
           <div class="md-form">
-            <input type="number" class="form-control validate" min="0" max="9999999999">
+            <input type="number" class="form-control validate" min="0" max="9999999999" data-eng="min"
+              data-vie="soTienMin">
             <label data-error="Empty">So tien min</label>
           </div>
         </div>
         <div class="col">
           <div class="md-form">
-            <input type="number" class="form-control validate" min="0" max="9999999999">
+            <input type="number" class="form-control validate" min="0" max="9999999999" data-eng="max"
+              data-vie="soTienMax">
             <label data-error="Empty">So tien max</label>
           </div>
         </div>
@@ -136,27 +137,27 @@
       </div>
     </div>
     <div class="md-form">
-      <input type="date" class="form-control validate">
+      <input type="date" class="form-control validate" data-eng="createdDate" data-vie="ngayLap">
       <label data-error="Empty">Ngay lap</label>
     </div>
     <div class="md-form">
-      <input type="number" class="form-control validate">
+      <input type="number" class="form-control validate" data-eng="minLoanTerm" data-vie="thoiHanVayToiThieu">
       <label data-error="Empty">Thoi han vay toi thieu</label>
     </div>
     <div class="md-form">
-      <input type="number" class="form-control validate">
+      <input type="number" class="form-control validate" data-eng="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
       <label data-error="Empty">Ti le lai theo ngay(%)</label>
     </div>
     <div class="md-form">
-      <input type="number" class="form-control validate">
+      <input type="number" class="form-control validate" data-eng="percentagePenaltyPerDay" data-vie="tiLePhatTheoNgay">
       <label data-error="Empty">Ti le phat theo ngay(%)</label>
     </div>
     <div class="md-form">
-      <input type="number" class="form-control validate">
+      <input type="number" class="form-control validate" data-eng="numberOfAcceptanceTerms" data-vie="soKyThu">
       <label data-error="Empty">So ky thu</label>
     </div>
     <div class="md-form">
-      <input type="number" class="form-control validate">
+      <input type="number" class="form-control validate" data-eng="numberOfDaysPerTerm" data-vie="soNgayMotKy">
       <label data-error="Empty">So ngay cua 1 ky</label>
     </div>
 
@@ -174,9 +175,15 @@
     <div id="contract-template-container"></div>
   </div>
 
+  <!-- Step 5: Quill editor -->
+  <div class="tab md-tabs contract-content">Contract content:
+   <%- include('./quillEditor.ejs')  %> 
+  </div>
+
   <div class="modal-footer" style="display: flex; flex-direction: column;">
     <!-- Circles which indicates the steps of the form: -->
     <div style="text-align:center;margin-top:40px;">
+      <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
@@ -193,22 +200,20 @@
 
 </form>
 
+
+<!-- <script src="/quill/dist/quill.js"></script>
+<script src="/quill/dist/quill.min.js"></script> -->
 <script type="module" src="Components/cropper/cropper.js"></script>
-<script src="/mdbootstrap/js/jquery.min.js"></script>
-<script src="/mdbootstrap/js/popper.min.js"></script>
-<script src="/mdbootstrap/js/bootstrap.min.js"></script>
-<script src="/mdbootstrap/js/mdb.min.js"></script>
-<script src="/jquery.redirect/jquery.redirect.js"></script>
 
 <script type="module">
   import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
   import { ObjectId } from '/createMongooseID.js'
+
   var currentTab = 0; // Current tab is set to be the first tab (0)
   var payOption = {}
+  const contractTemplate = document.getElementById('temp_contract')
 
   showTab(currentTab); // Display the current tab
-
-  const contractTemplate = document.getElementById('temp_contract')
 
   document.querySelector('#prevBtn').addEventListener('click', () => {
     nextPrev(-1)
@@ -217,6 +222,7 @@
     nextPrev(1)
   })
 
+  // function to display tabs
   function showTab(n) {
     // This function will display the specified tab of the form ...
     var x = document.getElementsByClassName("tab");
@@ -238,6 +244,7 @@
     fixStepIndicator(n)
   }
 
+  // function to handle next step button clicked
   function nextPrev(n) {
     // This function will figure out which tab to display
     var x = document.getElementsByClassName("tab");
@@ -250,7 +257,6 @@
     // if you have reached the end of the form... :
     if (currentTab >= x.length) {
       //...the form gets submitted:
-
       var templateItem = {
         templateMetadata: [],
         contractMetadata: [],
@@ -258,63 +264,58 @@
         _id: ObjectId()
       }
 
+      // contract template metadata
+      document.querySelector('.template-metadata').querySelectorAll('input').forEach(element => {
+        var name = element.getAttribute('data-eng')
+        var value = element.value
+        var type = element.type
+        var dataVie = element.getAttribute('data-vie')
+        templateItem.templateMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
+      })
+
+      // payment method for template metadata
+      templateItem.templateMetadata.push(getObj('paymentMethod', document.querySelector('.custom-select').value, 'text', document.querySelector('.custom-select').value))
+
+      // contract metadata:
+      // - contract image for contractMetadata
       var imgData = document.querySelector('cropper-wc').getImageData()
       templateItem.contractMetadata.push({
         name: 'image',
         value: imgData
       })
 
-      // contract template metadata
-      document.querySelector('.template-metadata').querySelectorAll('input').forEach(element => {
-        if(element.closest('div[class="md-form"]')){
-          var name = element.closest('div[class="md-form"]').querySelector('label').innerHTML.toLowerCase()
-          var value = element.value.toLowerCase()
-          templateItem.templateMetadata.push({
-            name: name,
-            value: value,
-            c_type: element.type
-
-          })
-        } 
-      })
-
-      // contract metadata
+      // - quill contract content for contract metadata
+      var quill = getQuill()
+      var contractContent = quill.root.innerHTML
+      console.log('contract content: ', contractContent)
+      templateItem.contractMetadata.push(getObj('contractContent', quill.root.innerHTML, 'text', 'noiDungHopDong', 'korean string'))
+      // - contract metadata
       document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
-        var name = element.closest('div[class="md-form"]').querySelector('label').innerHTML.toLowerCase()
-        var value = element.value.toLowerCase()
-        templateItem.contractMetadata.push({
-          name: name,
-          value: value,
-          c_type: element.type
-        })
+        var name = element.getAttribute('data-eng')
+        var value = element.value
+        var type = element.type
+        var dataVie = element.getAttribute('data-vie')
+        templateItem.contractMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
       })
 
       // custom info
-      // console.log('ghi', document.querySelector('.custom-info').querySelectorAll('input'))
-
       document.querySelector('.custom-info').querySelectorAll('input').forEach(element => {
         if (element.type !== 'file') {
           var info = {}
           var name = element.closest('.md-form').querySelector('label').innerHTML.toLowerCase()
-
-          var value = element.value.toLowerCase()
+          var value = element.value
           var type = element.type
-          
+
           templateItem.infos.push({
             name: name,
             value: value,
-            c_type: type
+            cType: type
           })
         }
       })
 
-      payOption = {
-        name: 'kieu thanh toan',
-        value: document.querySelector('.custom-select').value
-      }
-      templateItem.templateMetadata.push(payOption)
-
-      console.log('template item: ', templateItem)
+      console.log('item is about to save: ', templateItem)
+      
 
       $.ajax({
         type: 'POST',
@@ -323,20 +324,29 @@
         url: 'createNewContractTemplate',
         success: (result) => {
           console.log(result)
-          displayTemplate(templateItem, contractTemplate, 'template-handler')
+          // displayTemplate(templateItem, contractTemplate, 'template-handler')
+          window.location.reload()
         }
       })
-      $("#centralModalSm").modal('hide');
+      // $("#centralModalSm").modal('hide');
 
       return false;
+    }
+    
+    if(currentTab === x.length-1){
+      var quill = getQuill()
+      quill.on('text-change', (delta, source) => {
+        // console.log('delta: ', delta)
+        // console.log('source: ', source)
+        console.log('output: ', quill.root.innerHTML)
+      })
+
     }
     // Otherwise, display the correct tab:
     showTab(currentTab);
   }
 
- 
-  console.log('pay option: ', payOption)
-
+  // function to validate form
   function validateForm() {
     // This function deals with validation of the form fields
     var x, y, i, valid = true;
@@ -359,6 +369,7 @@
     return valid; // return the valid status
   }
 
+  // function to display step indicator
   function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...
     var i, x = document.getElementsByClassName("step");
@@ -369,6 +380,7 @@
     x[n].className += " active";
   }
 
+  // funtion to find an object based on values
   function findNestedObj(entireObj, keyToFind, valToFind) {
     let foundObj;
     JSON.stringify(entireObj, (_, nestedValue) => {
@@ -382,6 +394,7 @@
 
   const displayTemplate = (itemObj, template, elementName) => {
     generateContractTemplateCard(itemObj, template, elementName)
+
     document.querySelector('#template-handler').lastChild.addEventListener('click', (event) => {
       console.log('event abc: ', document.querySelector('modal-body'))
       var modalBody = document.querySelector('modal-body')
@@ -396,23 +409,32 @@
         var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
         console.log('data to delete: ', cData)
         $.ajax({
-            type: "DELETE",
-            url: 'deleteContractTemplate/' + cData._id,
-            contentType:'application/json',
-            data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
-            success: (result) => {
-              console.log(result)
-              window.location.reload()
-            }
+          type: "DELETE",
+          url: 'deleteContractTemplate/' + cData._id,
+          contentType: 'application/json',
+          data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
+          success: (result) => {
+            console.log(result)
+            window.location.reload()
+          }
 
-          })
-        
+        })
+
       })
 
     })
 
   }
 
+  const getObj = (name, value, type, dataVie, dataKor) => {
+    return {
+      name: name,
+      value: value,
+      cType: type,
+      dataVie: dataVie,
+      dataKor: dataKor
+    }
+  }
 
 </script>
 
@@ -428,7 +450,7 @@
       var csv = e.target.result
       console.log('result: ', csv)
       convertToArray(csv)
-     
+
     }
     fileReader.readAsText(file, 'ISO-8859-1')
   })

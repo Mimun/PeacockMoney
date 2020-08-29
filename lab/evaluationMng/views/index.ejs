@@ -10,28 +10,11 @@
 
   <title>Simple Sidebar - Start Bootstrap Template</title>
 
-  <!-- Bootstrap core CSS -->
-  <!-- <link rel="stylesheet" href="../../../node_modules/mdbootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../node_modules/mdbootstrap/css/mdb.min.css">
-  <link rel="stylesheet" href="../../../node_modules/mdbootstrap//css/style.css"> -->
-  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
-  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
-
-
-  <!-- material design.io -->
-  <!-- <link rel="stylesheet" href="../../../node_modules/material-components-web/dist/material-components-web.min.css">
-  <script src="../../../node_modules/material-components-web/dist/material-components-web.min.js"></script>
-  <link rel="stylesheet" href="../../../node_modules/font-awesome/css/font-awesome.min.css"> -->
-  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
-  <script src="/material-components-web/dist/material-components-web.min.js"></script>
-  <link href="/font-awesome/css/font-awesome.min.css">
-
 </head>
 
 <body>
- <!-- navbar -->
- <%- include('navbar.ejs') %>
+  <!-- navbar -->
+  <%- include('navbar.ejs') %>
   <div class="d-flex" id="wrapper">
 
     <!-- sidebar -->
@@ -41,7 +24,7 @@
     <!-- Page Content -->
     <div id="page-content-wrapper">
 
-     
+
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
@@ -138,33 +121,74 @@
               <div class="modal-body">
                 <div class="row-div">
                   <div id="data-fields-container">
-                    <div id="data-field-container-metadata" style="display: flex;">
-                      <div class="md-form">
-                        <input type="text" id="type" class="form-control" required>
-                        <label for="name">Type</label>
-                      </div>
-                      <div class="md-form">
-                        <input type="text" id="category" class="form-control" required>
-                        <label for="category">Category</label>
-                      </div>
-                      <button type="button" class="close" style="visibility: hidden;">
-                        <i class="fa fa-times"></i>
-                      </button>
+                    <div class="data-fields-metadata">
+                      <!-- item type -->
+                      <div class="data-field-container-metadata" style="display: flex;">
+                        <div class="md-form">
+                          <input type="text" obj_property="name" class="form-control cell-div" value="Loai Tai San"
+                            required data-eng="itemType" data-vie="loaiTaiSan">
+                          <label for="name">Ten Truong</label>
+                        </div>
+                        <div class="md-form">
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                          <label for="value">Gia Tri</label>
+                        </div>
+                        <button type="button" class="close" style="visibility: hidden;">
+                          <i class="fa fa-times"></i>
+                        </button>
 
-                    </div>
-                    <div class="data-field-container" style="display: flex;">
-                      <div class="md-form">
-                        <input type="text" obj_property="name" class="form-control cell-div" value="Loai" required>
-                        <label for="name">Ten Truong</label>
                       </div>
-                      <div class="md-form">
-                        <input type="text" obj_property="value" class="form-control cell-div" required>
-                        <label for="value">Gia Tri</label>
+
+                      <!-- item category -->
+                      <div class="data-field-container-metadata" style="display: flex;">
+                        <div class="md-form">
+                          <input type="text" obj_property="name" class="form-control cell-div" value="Phan Loai Tai San"
+                            required data-eng="itemCategory" data-vie="phanLoaiTaiSan">
+                          <label for="name">Ten Truong</label>
+                        </div>
+                        <div class="md-form">
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                          <label for="value">Gia Tri</label>
+                        </div>
+                        <button type="button" class="close" style="visibility: hidden;">
+                          <i class="fa fa-times"></i>
+                        </button>
                       </div>
-                      <button type="button" class="close" style="visibility: hidden;">
-                        <i class="fa fa-times"></i>
-                      </button>
+
+                      <!-- evaluating price -->
+                      <div class="data-field-container-metadata" style="display: flex;">
+                        <div class="md-form">
+                          <input type="text" obj_property="name" class="form-control cell-div" value="Tham Dinh Gia"
+                            required data-eng="evaluatingPrice" data-vie="thamDinhGia">
+                          <label for="name">Ten Truong</label>
+                        </div>
+                        <div class="md-form">
+                          <input type="number" obj_property="value" class="form-control cell-div" required>
+                          <label for="value">Gia Tri</label>
+                        </div>
+                        <button type="button" class="close" style="visibility: hidden;">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+
+                      <!-- type -->
+                      <div class="data-field-container-metadata" style="display: flex;">
+                        <div class="md-form">
+                          <input type="text" obj_property="name" class="form-control cell-div" value="Loai" required
+                            data-eng="type" data-vie="loai">
+                          <label for="name">Ten Truong</label>
+                        </div>
+                        <div class="md-form">
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                          <label for="value">Gia Tri</label>
+                        </div>
+                        <button type="button" class="close" style="visibility: hidden;">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
                     </div>
+
+
                     <div id="cell-divs-container"></div>
                   </div>
 
@@ -195,16 +219,11 @@
 
 
   </div>
-  <script src="/mdbootstrap/js/popper.min.js"></script>
-  <script src="/mdbootstrap/js/jquery.min.js"></script>
-  <script src="/mdbootstrap/js/popper.min.js"></script>
-  <script src="/mdbootstrap/js/bootstrap.min.js"></script>
-  <script src="/mdbootstrap/js/mdb.min.js"></script>
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { ObjectId } from '/createMongooseID.js'
-  
+
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
 
@@ -231,47 +250,60 @@
       })
     }
 
-    const checkMustHaveInfos = (item, propName) => {
-      var isHaving = false
-      item.infos.forEach(info => {
-        if (info["name"] == propName) {
-          isHaving = true
-        }
-      })
-      return isHaving
-    }
-
     const convertToJSON = (csv) => {
       const lines = csv.split('\n')
       var resultsInJSON = {}
       var itemObjs = []
+      const labels = lines[0].split(",")
 
-      const type = lines[0].split(",")[0]
-      const category = lines[0].split(",")[1]
-      const typeValue = lines[1].split(",")[0]
-      const categoryValue = lines[1].split(",")[1]
-      const labels = lines[2].split(",")
 
-      for (var i = 3; i < lines.length - 1; i++) {
+      for (var i = 1; i < lines.length - 1; i++) {
         const line = lines[i].split(",")
-        var itemObj = {}
-        var infos = []
+        var itemObj = {
+          metadata: [],
+          infos: [],
+        }
+        // metadata
+        for (var j = 0; j <= 3; j++) {
+          var dataVie, cType = 'text'
+          switch (j) {
+            case 0:
+              dataVie = 'loaiTaiSan'
+              break
+            case 1:
+              dataVie = 'phanLoaiTaiSan'
+              break
 
-        for (var j = 0; j < line.length; j++) {
-          var infoObj = {}
+            case 2:
+              dataVie = 'thamDinhGia'
+              cType = 'number'
+              break
+
+            case 3:
+              dataVie = 'loai'
+              break
+            default:
+              dataVie = 'none'
+          }
+          itemObj.metadata.push({
+            name: labels[j],
+            value: line[j],
+            cType: cType,
+            dataVie: dataVie
+          })
+        }
+
+        for (var j = 4; j < line.length; j++) {
           if (line[j] !== "") {
-            infoObj["name"] = labels[j]
-            infoObj["value"] = line[j]
-            infos.push(infoObj)
+            itemObj.infos.push({
+              name: labels[j],
+              value: line[j]
+            })
           }
 
         }
-        itemObj["infos"] = infos
-        itemObj["metadata"] = {
-          type: typeValue,
-          category: categoryValue
-        }
-        if(itemObj._id===null || itemObj._id === undefined){
+
+        if (itemObj._id === null || itemObj._id === undefined) {
           itemObj._id = ObjectId()
         }
         resultsInJSON[i - 1] = itemObj
@@ -279,18 +311,23 @@
 
       }
       itemObjs = Object.values(resultsInJSON)
+      console.log('initial item objs: ', itemObjs)
 
       // check must have props
 
 
       if (itemObjs.length !== 0) {
         itemObjs = itemObjs.filter(item => {
-          var itemThatHasPrice = checkMustHaveInfos(item, "Tham dinh gia")
-          var itemThatHasName = checkMustHaveInfos(item, "Loai")
-          if (itemThatHasPrice && itemThatHasName) {
+          var itemThatHasItemType = findNestedObj(item, 'name', "itemType").value
+          var itemThatHasItemCategory = findNestedObj(item, 'name', "itemCategory").value
+          var itemThatHasEvaluatingPrice = findNestedObj(item, 'name', "evaluatingPrice").value
+          var itemThatHasType = findNestedObj(item, 'name', "type").value
+          if (itemThatHasItemType && itemThatHasItemCategory && itemThatHasEvaluatingPrice && itemThatHasType) {
             return item
           }
         })
+        console.log('item objs after filtering: ', itemObjs)
+
 
         // create pagination
         originItemList.forEach(obj1 => {
@@ -502,7 +539,7 @@
               console.log('Saved successfully!')
             }
           })
-         
+
         })
         buttonContainer.appendChild(submitBtn)
         check()
@@ -558,30 +595,43 @@
     // create new item button
     const createItemButtom = document.querySelector('#add-item-button')
     createItemButtom.addEventListener('click', () => {
-      var dataObj = {}
-      const typeDiv = document.querySelector('#data-fields-container').querySelector('input[id="type"]')
-      var type = typeDiv.value
-
-      const categoryDiv = document.querySelector('#data-fields-container').querySelector('input[id="category"]')
-      var category = categoryDiv.value
-
-      var infos = []
-      document.querySelector('#data-fields-container').querySelectorAll('div[class="data-field-container"]').forEach(data => {
-        var infoObj = {}
-        var cellDivs = data.querySelectorAll('input[class="form-control cell-div"]').forEach(element => {
-          infoObj[element.getAttribute('obj_property')] = element.value
-        })
-        infos.push(infoObj)
-
-      })
-      dataObj = {
-        metadata: {
-          'type': type,
-          'category': category
-        },
-        infos: infos,
+      var dataObj = {
+        metadata: [],
+        infos: [],
         _id: ObjectId()
       }
+
+      // metadata
+      document.querySelector('#data-fields-container').querySelectorAll('.data-fields-metadata').forEach(element => {
+        element.querySelectorAll('.data-field-container-metadata').forEach(element => {
+          var inputs = element.querySelectorAll('input')
+          var name = inputs[0].getAttribute('data-eng')
+          var value = inputs[1].value
+          var cType = inputs[1].type
+          var dataVie = inputs[0].getAttribute('data-vie')
+          dataObj.metadata.push({
+            name: name,
+            value: value,
+            cType: cType,
+            dataVie: dataVie
+          })
+        })
+      })
+      // const typeDiv = document.querySelector('#data-fields-container').querySelector('input[id="type"]')
+      // var type = typeDiv.value
+
+      // const categoryDiv = document.querySelector('#data-fields-container').querySelector('input[id="category"]')
+      // var category = categoryDiv.value
+
+      document.querySelector('#data-fields-container').querySelector('#cell-divs-container').querySelectorAll('div[class="data-field-container"]').forEach(data => {
+        var infoObj = {}
+        var cellDivs = data.querySelectorAll('input').forEach(element => {
+          infoObj[element.getAttribute('obj_property')] = element.value
+        })
+        dataObj.infos.push(infoObj)
+
+      })
+
       originItemList.unshift(dataObj)
       $.ajax({
         type: 'POST',
@@ -592,7 +642,7 @@
           console.log(result)
         }
       })
-     
+
       console.log('data obj: ', dataObj)
 
       createPagination(originItemList)
@@ -604,6 +654,7 @@
       const cloneDiv = sourceNode.cloneNode()
       cloneDiv.C_DATA = sourceNode.C_DATA
       document.body.querySelector('#item-info-container').appendChild(cloneDiv)
+
 
       cloneDiv.C_DATA.infos.forEach(info => {
         const dataFieldTemplate = document.querySelector('#data-field-template')
@@ -629,6 +680,19 @@
 
     }
 
+    // function to modify info apperance
+    const displayInfoLang = (info) => {
+      if (typeof info === "string") {
+        // uppercase the first letter
+        var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
+        // split based on uppercase letters
+        infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+        return infoLang
+
+      }
+      return info
+
+    }
 
     // edit button in modal
     function findNestedObj(entireObj, keyToFind, valToFind) {
@@ -701,7 +765,6 @@
           infos.push(info)
         })
         itemObj = { ...itemObj, infos: infos }
-        console.log('origin item list befor editing: ', originItemList)
 
         console.log('item: ', itemObj)
         $.ajax({
@@ -719,7 +782,7 @@
             }
           }
         })
-        
+
         console.log('origin item list after editing: ', originItemList)
 
 
@@ -751,7 +814,7 @@
           }
         }
       })
-      
+
 
     })
 
@@ -765,6 +828,7 @@
 
       }
     })
+    
     const searchFunction = (itemValue, itemArray) => {
       var foundItems = []
       itemArray.map(obj => {

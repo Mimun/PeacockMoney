@@ -45,7 +45,6 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.static(path.join(__dirname, '../../js')));
 app.use(express.static(path.join(__dirname, '../../styles')));
 app.use(compress())
-
 // app.use(bodyParser.urlencoded({limit: '50mb'}));
 
 app.use(express.static(path.join(__dirname, '../evaluationMng/views')));

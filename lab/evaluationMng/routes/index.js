@@ -99,6 +99,11 @@ router.get('/itemStatus', function (req, res, next) {
 
 router.post('/itemStatus', (req, res) => {
   var itemObjsArray = req.body
+  itemObjsArray.forEach(item=>{
+    console.log('array: ', JSON.stringify(item))
+
+  })
+
   var array = []
   itemObjsArray.map(itemObj => {
     ItemStatus.findOneAndUpdate({ _id: itemObj._id }, { $set: { "infos": itemObj.infos } }, (err, result) => {
@@ -109,7 +114,8 @@ router.post('/itemStatus', (req, res) => {
       } else {
         var item = new ItemStatus({
           metadata: itemObj.metadata,
-          infos: itemObj.infos
+          infos: itemObj.infos,
+          _id: itemObj._id
         })
         array.push(item)
 
@@ -125,21 +131,20 @@ router.post('/itemStatus', (req, res) => {
     })
 
   })
-  console.log('array: ', array)
 })
 
 router.post('/createItemStatus', (req, res) => {
   console.log(req.body)
   var item = new ItemStatus(req.body)
-  // item.save((err, result) => {
-  //   if (err) throw err
-  //   if (result) {
-  //     res.send('Saved new item successfully')
+  item.save((err, result) => {
+    if (err) throw err
+    if (result) {
+      res.send('Saved new item successfully')
 
-  //   } else {
-  //     res.send('Failed to save new item')
-  //   }
-  // })
+    } else {
+      res.send('Failed to save new item')
+    }
+  })
 })
 
 router.delete('/itemStatus/:id', (req, res)=>{

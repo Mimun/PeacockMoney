@@ -4,17 +4,23 @@ const contractTemplateSchema = new mongoose.Schema({
   templateMetadata: [{
     name: {type: String},
     value: {type: String},
-    c_type: {type: String}
+    cType: {type: String, default: 'text'},
+    dataVie: {type: String},
+    dataKor: {type: String, default: 'korean string'}
   }],
   contractMetadata: [{
     name: {type: String},
     value: {type: String}, 
-    c_type: {type: String, default: 'default value'}
+    cType: {type: String, default: 'text'},
+    dataVie: {type: String},
+    dataKor: {type: String, default: 'korean string'}
   }],
   infos: [{
     name: {type: String},
     value: {type: String}, 
-    c_type: {type: String, default: 'default value'}
+    cType: {type: String, default: 'text'},
+    dataVie: {type: String},
+    dataKor: {type: String, default: 'korean string'}
   }],
 })
 

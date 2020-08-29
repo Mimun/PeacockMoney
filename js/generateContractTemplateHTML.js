@@ -25,48 +25,48 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
 
   // contract metadata
   itemObj.contractMetadata.map(info => {
-    if(info.name !== 'image'){
+    if (info.name !== 'image' && info.name !== 'contractContent') {
       const clone = document.importNode(template.content, true)
 
       var input = clone.querySelector('input')
+
       if (info.value === null || info.value === "") {
         input.removeAttribute('disabled')
-  
+
       } else {
         input.value = info.value
-  
+
       }
-      input.type = info.c_type
-  
+      input.type = info.cType
+      input.setAttribute('data-eng', info.name)
+      input.setAttribute('data-vie', info.dataVie)
+
+
       var label = clone.querySelector('label')
-      label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
+      label.innerHTML = displayInfoLang(info.dataVie)
       infoContainer.appendChild(clone)
     }
-    
+
   })
 
   // contract template metadata
-  itemObj.templateMetadata.map(info=>{
-    if(info.name !== 'image'){
+  itemObj.templateMetadata.map(info => {
+    if (info.name !== 'image') {
       const clone = document.importNode(template.content, true)
 
       var input = clone.querySelector('input')
       if (info.value === null || info.value === "") {
         input.removeAttribute('disabled')
-  
-      } else {
-        input.value = info.value.charAt(0).toUpperCase() + info.value.slice(1)
-  
-      }
-      if(info.c_type && info.c_type !== "default value"){
-        input.type = info.c_type
 
       } else {
-        input.type = "text"
+        input.value = info.value
       }
-  
+      input.type = info.cType
+      input.setAttribute('data-eng', info.name)
+      input.setAttribute('data-vie', info.dataVie)
+
       var label = clone.querySelector('label')
-      label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
+      label.innerHTML = displayInfoLang(info.dataVie)
       infoContainer.appendChild(clone)
     }
   })
@@ -84,7 +84,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
         input.value = info.value
 
       }
-      input.type = info.c_type
+      input.type = info.cType
 
       var label = clone.querySelector('label')
       label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
@@ -108,3 +108,16 @@ function findNestedObj(entireObj, keyToFind, valToFind) {
   });
   return foundObj;
 };
+
+const displayInfoLang = (info) => {
+  if (typeof info === "string") {
+    // uppercase the first letter
+    var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
+    // split based on uppercase letters
+    infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+    return infoLang
+
+  } 
+  return info
+
+}

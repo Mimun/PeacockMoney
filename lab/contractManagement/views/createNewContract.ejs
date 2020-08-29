@@ -5,28 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <!-- Bootstrap core CSS -->
-  <link href="/mdbootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/mdbootstrap/css/mdb.min.css" rel="stylesheet">
-  <link href="/mdbootstrap/css/style.css" rel="stylesheet">
-
-
-  <!-- material design.io -->
-  <link href="/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
-  <script src="/material-components-web/dist/material-components-web.min.js"></script>
-  <link href="/font-awesome/css/font-awesome.min.css">
 
   <style>
-    .tab-content{
+    .tab-content {
       max-height: 550px;
       overflow-y: scroll;
     }
+
     .tab-content::-webkit-scrollbar {
       display: none;
     }
-    .tabs{
+
+    .tabs {
       position: fixed;
-      width: 100%;
     }
   </style>
 </head>
@@ -106,18 +97,29 @@
 
           <!-- item list column -->
           <div class="col-sm-4 side-4">
+
             <div class="tabs">
+             
               <ul class="nav nav-tabs " id="myTab" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-                    aria-selected="true">Tham dinh tai san</a>
+                  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                    aria-controls="home" aria-selected="true">Tham dinh tai san</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
                     aria-controls="profile" aria-selected="false">Tinh trang tai san</a>
                 </li>
-  
+
               </ul>
+              <div class="search">
+                <form class="input-group form-sm form-2 pl-0" id="search">
+                  <input class="form-control my-0 py-1" type="text" placeholder="Search" aria-label="Search">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text cyan lighten-3" id="basic-text1"><i class="fa fa-search text-grey"
+                        aria-hidden="true"></i></span>
+                  </div>
+                </form>
+              </div>
               <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"
                   style="overflow-y: auto;">
@@ -127,32 +129,29 @@
                   style="overflow-y: auto;">
                   <div id="item-status-list-table-container"></div>
                 </div>
-  
+
               </div>
             </div>
-            
+
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="/mdbootstrap/js/popper.min.js"></script>
   <script src="/mdbootstrap/js/jquery.min.js"></script>
-  <script src="/mdbootstrap/js/bootstrap.min.js"></script>
-  <script src="/mdbootstrap/js/mdb.min.js"></script>
   <script src="/jquery.redirect/jquery.redirect.js"></script>
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
     import { generateContractTemplateHTML } from '/generateContractTemplateHTML.js'
-    
+
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
     var originItemStatusList = <%- JSON.stringify(statusResults) %>;
 
 
-      console.log('origin contract template: ', originContractTemplate)
+    console.log('origin contract template: ', originContractTemplate)
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
@@ -248,8 +247,8 @@
       itemTemplateClone.querySelector('#item-evaluation').innerHTML = ''
       itemTemplateClone.querySelector('#item-status').innerHTML = ''
       itemTemplateClone.style.border = 'none'
-      console.log('last child: ', )
-      itemTemplateClone.querySelector('span').innerHTML = parseInt(document.querySelectorAll('.item-container')[document.querySelectorAll('.item-container').length -1].querySelector('span').innerHTML)+1
+      console.log('last child: ',)
+      itemTemplateClone.querySelector('span').innerHTML = parseInt(document.querySelectorAll('.item-container')[document.querySelectorAll('.item-container').length - 1].querySelector('span').innerHTML) + 1
 
       itemTemplateClone.addEventListener('click', (event) => {
         prevDiv = currentDiv
@@ -261,7 +260,7 @@
         if (prevDiv !== null && prevDiv.isSameNode(currentDiv) === false) {
           prevDiv.style.border = 'none'
 
-        } 
+        }
         console.log('prevDiv: ', prevDiv)
         console.log('currentDiv: ', currentDiv)
       })
@@ -365,31 +364,40 @@
       var data = {
         metadata: [],
         items: [],
-       
+
       }
 
       // metadata
       const contractInfoContainer = event.target.closest('#contract-info-container')
-      // contract image
       const contractTemplateContainer = contractInfoContainer.querySelector('#contract-template-container').querySelector('.object-div')
       const cData = contractTemplateContainer.C_DATA
-      
+
+      // contract image
       const image = findNestedObj(cData, 'name', 'image')
       data.metadata.push({
         name: 'image',
         value: image.value,
-        
+
       })
-      contractTemplateContainer.querySelectorAll('input').forEach(input=>{
+
+      // contract content
+      const contractContent = findNestedObj(cData, 'name', 'contractContent')
+      data.metadata.push(contractContent)
+
+      contractTemplateContainer.querySelectorAll('input').forEach(input => {
+        var name = input.getAttribute('data-eng')
         var value = input.value
-        var name = input.closest('.md-form').querySelector('label').innerHTML.toLowerCase()
+        var type = input.type
+        var dataVie = input.getAttribute('data-vie')
+
         data.metadata.push({
           name: name,
           value: value,
-          c_type: input.type
+          cType: type,
+          dataVie: dataVie
         })
       })
-      
+
       // item info
       const contractItemContainer = contractInfoContainer.querySelector('.contract-item-container')
       contractItemContainer.querySelectorAll('.item-container').forEach(itemContainer => {
@@ -419,7 +427,7 @@
         if (itemStatus) {
           itemStatus = itemStatus.forEach(element => itemInfo.status.push(element.C_DATA._id))
         }
-        
+
         data.items.push(itemInfo)
       })
 
@@ -428,6 +436,53 @@
 
       console.log('data: ', data)
     })
+
+    // search function
+    document.querySelector('#search').addEventListener('submit', () => {
+      event.preventDefault()
+      console.log('abc')
+      if (originItemList) {
+        searchFunction(event.target.querySelector('input').value, originItemList, 'item')
+
+      }
+      if (originItemStatusList) {
+        searchFunction(event.target.querySelector('input').value, originItemStatusList, 'itemStatus')
+
+      }
+    })
+
+    const searchFunction = (itemValue, itemArray, type) => {
+      var foundItems = []
+      itemArray.map(obj => {
+        obj.infos.forEach(info => {
+          if (JSON.stringify(info.value.toLowerCase()) === JSON.stringify(itemValue.toLowerCase())) {
+            foundItems.push(obj)
+          }
+        })
+      })
+      if (type === "item") {
+        if (foundItems.length > 0) {
+          document.querySelector('#item-list-table-container').innerHTML = ''
+          generateHTML(foundItems, template, 'item-list-table-container')
+        } else {
+          document.querySelector('#item-list-table-container').innerHTML = ''
+          generateHTML(itemArray, template, 'item-list-table-container')
+
+        }
+      } else {
+        if (foundItems.length > 0) {
+          document.querySelector('#item-status-list-table-container').innerHTML = ''
+          generateHTML(foundItems, template, 'item-status-list-table-container')
+        } else {
+          document.querySelector('#item-status-list-table-container').innerHTML = ''
+          generateHTML(itemArray, template, 'item-status-list-table-container')
+
+        }
+      }
+
+
+    }
+
   </script>
 </body>
 

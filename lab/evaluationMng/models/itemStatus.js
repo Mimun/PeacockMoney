@@ -1,8 +1,20 @@
 const mongoose = require('mongoose')
 
 const itemStatusSchema = new mongoose.Schema({
-  metadata: {type: Object, required: true},
-  infos: [{type: Object, required: false}]
+  metadata: [{
+    name: { type: String },
+    value: { type: String },
+    cType: { type: String, default: 'text' },
+    dataVie: { type: String },
+    dataKor: { type: String, default: 'korean string' }
+  }],
+  infos: [{
+    name: { type: String },
+    value: { type: String },
+    cType: { type: String, default: 'text' },
+    dataVie: { type: String },
+    dataKor: { type: String, default: 'korean string' }
+  }]
 })
 
 module.exports = mongoose.model('ItemStatus', itemStatusSchema)

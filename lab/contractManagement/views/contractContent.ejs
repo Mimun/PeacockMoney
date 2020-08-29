@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/quill/dist/quill.snow.css">
+  <link rel="stylesheet" href="/quill/dist/quill.core.css">
+  <style>
+    .ql-align-center {
+      text-align: center;
+    }
+    .ql-align-justify {
+      text-align: justify;
+    }
+    .ql-align-right {
+      text-align: right;
+    }
+    .ql-editor {
+      white-space: normal!important;
+    }
+    #page-content-wrapper{
+      display: flex;
+    }
+    .contract-content-container{
+      margin: auto;
+      padding: 5%;
+    }
+    #contract-content{
+      width: 595px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="d-flex" id="wrapper">
+    <button class="btn btn-primary btn-sm get-pdf" style="position: fixed; top: 50px; left: 50px;">Get PDF</button>
+
+    <div id="page-content-wrapper">
+      <div class="contract-content-container">
+        <div id="contract-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.js"></script>
+  <script src="/html2pdf.js/dist/html2pdf.js"></script>
+
+  <script>
+    const convertDbObjToQuillObj = (object) => {
+      const objectData = {}
+      object.metadata.forEach(info => {
+        if (info) {
+          if (info.name && info.name !== "image" && info.name !== "contractContent") {
+            objectData[info.name] = info.value
+          }
+        }
+
+      })
+
+      for (var i = 0; i < object.items.length; i++) {
+        console.log('item: ', object.items[i])
+        var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type')
+        if (itemName) {
+          objectData["item" + (i + 1) + ""] = itemName.value
+
+        }
+        var statusArr = []
+        object.items[i].status.forEach(status => {
+          var status = findNestedObj(status, 'name', 'type')
+          if(status){
+            statusArr.push(status.value)
+
+          }
+
+        })
+        objectData["item" + (i + 1) + "Status"] = statusArr.join(", ")
+
+      }
+
+      return objectData
+    }
+
+    var contractDetail = <%- JSON.stringify(contractDetail) %>;
+    console.log('contract detail: ', contractDetail)
+
+    var contractContent = findNestedObj(contractDetail, 'name', 'contractContent').value
+
+    var contract = convertDbObjToQuillObj(contractDetail)
+    console.log('data converted: ', contract)
+
+    let tpl = eval('`' + contractContent + '`');
+    document.querySelector('#contract-content').innerHTML = tpl
+
+    document.querySelector('.get-pdf').addEventListener('click', (event) => {
+      PDF1()
+    })
+
+    const PDF1 = ()=>{
+      console.log('defghi')
+      const doc = new jsPDF('p', 'pt', 'a4');
+      var source = $('#contract-content')[0]
+
+      var opt = {
+        margin: [1.2, 1, 1.2, 1],
+        filename: 'myfile.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().from(source).set(opt).save();
+    }
+
+    function findNestedObj(entireObj, keyToFind, valToFind) {
+      let foundObj;
+      JSON.stringify(entireObj, (_, nestedValue) => {
+        if (nestedValue && nestedValue[keyToFind] === valToFind) {
+          foundObj = nestedValue;
+        }
+        return nestedValue;
+      });
+      return foundObj;
+    };
+
+    const displayInfoLang = (info) => {
+      if (typeof info === "string") {
+        // // re-uppercase
+        // var infoLang = info.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+        // uppercase the first letter
+        var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
+        // split based on uppercase letters
+        infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+        return infoLang
+
+      }
+      return info
+
+    }
+
+  </script>
+</body>
+
+</html>
