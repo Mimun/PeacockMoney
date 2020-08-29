@@ -46,7 +46,6 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createNewContractButton.className = "btn btn-primary btn-sm"
     createNewContractButton.innerHTML = "Create new contract"
     createNewContractButton.addEventListener('click', ()=>{
-      console.log('this is called from create new contract button')
       $.redirect("createNewContract", { data: JSON.stringify(itemObj) }, "POST");
     })
     buttonOptions.appendChild(createNewContractButton)
@@ -93,27 +92,16 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
         label.style.fontWeight = 'bold'
         label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1) + ": "+ info.value
         infoContainer.appendChild(label)
-  
-        // const value = document.createElement('div')
-        // value.className = 'value'
-        // value.innerHTML = info.value
-        // infoContainer.appendChild(value)
-        
         templateInfoContainer.appendChild(infoContainer)
       }
-
-      
     })
     modalBody.querySelector('.template-info').appendChild(templateInfoContainer)
-
   })
 
   clone.querySelector('.object-div').C_DATA = itemObj
 
   // clone.setAttribute('id',i)
   document.body.querySelector('#' + elementName + '').appendChild(clone)
-
-
 }
 
 const displayInfoLang = (info)=>{

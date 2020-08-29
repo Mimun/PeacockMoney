@@ -46,7 +46,6 @@
         </template>
 
         <template id="contract_detail">
-          <!-- <%- include('templateDetails.ejs') %>  -->
           <%- include('templateDetailscopy.ejs') %>
         </template>
 
@@ -57,7 +56,7 @@
         </header>
         <submain>
           <div id="template-handler" class="row row-cols-1 row-cols-md-3"></div>
-          <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Add Contract Template</button>
+          <button type="button" class="btn btn-primary btn-sm" id="addTemplate" data-toggle="modal" data-target = "#centralModalSm" >Add Contract Template</button>
           <button class="btn btn-default btn-sm" id="redirect-page">Contract List</button>
         </submain>
       </main>
@@ -70,7 +69,7 @@
           aria-hidden="true">
 
           <!-- Change class .modal-sm to change the size of the modal -->
-          <div class="modal-dialog modal-fluid" role="document">
+          <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title w-100" id="myModalLabel">Create new contract template</h4>
@@ -111,6 +110,7 @@
 
     // create new contract template button
     var addTemplateBtn = document.getElementById('addTemplate').addEventListener('click', (evt) => {
+      console.log('abc xyz: ')
       $('#centralModalSm').on('show.bs.modal', () => {
         var modalBody = document.querySelector('modal-body')
         while (modalBody.firstChild) {
@@ -120,8 +120,7 @@
         var clone = document.importNode(tmpContent, true);
         modalBody.appendChild(clone)
       })
-      $("#centralModalSm").modal('show');
-
+      // $("#centralModalSm").modal('show');
 
     })
 

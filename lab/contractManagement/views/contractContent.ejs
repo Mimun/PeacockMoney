@@ -17,15 +17,14 @@
     .ql-align-right {
       text-align: right;
     }
-    .ql-editor {
-      white-space: normal!important;
+    p {
+      white-space: pre-wrap !important;
     }
     #page-content-wrapper{
       display: flex;
     }
     .contract-content-container{
       margin: auto;
-      padding: 5%;
     }
     #contract-content{
       width: 595px;
@@ -107,7 +106,7 @@
       var source = $('#contract-content')[0]
 
       var opt = {
-        margin: [1.2, 1, 1.2, 1],
+        margin: 1,
         filename: 'myfile.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },

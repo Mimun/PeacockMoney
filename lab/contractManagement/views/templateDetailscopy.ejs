@@ -200,9 +200,6 @@
 
 </form>
 
-
-<!-- <script src="/quill/dist/quill.js"></script>
-<script src="/quill/dist/quill.min.js"></script> -->
 <script type="module" src="Components/cropper/cropper.js"></script>
 
 <script type="module">
@@ -316,7 +313,6 @@
 
       console.log('item is about to save: ', templateItem)
 
-
       $.ajax({
         type: 'POST',
         data: JSON.stringify(templateItem),
@@ -328,7 +324,6 @@
           window.location.reload()
         }
       })
-      // $("#centralModalSm").modal('hide');
 
       return false;
     }
