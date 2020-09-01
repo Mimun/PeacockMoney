@@ -1,4 +1,4 @@
-import {findNestedObj} from './findNestedObj.js'
+import { findNestedObj } from './findNestedObj.js'
 export const generateContractListHTML = (itemObj, template, elementName) => {
   console.log('item obj from contract list: ', itemObj)
   const clone = template.content.cloneNode(true)
@@ -16,8 +16,8 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
   clone.querySelector('.contract-title').innerHTML = contractName ? contractName : "Contract name"
 
   // contract info
-  itemObj["metadata"].forEach(item=>{
-    if(item.name === "nguoi lap" || item.name === "nguoi nhan" || item.name === "ngay lap"){
+  itemObj["metadata"].forEach(item => {
+    if (item.name === "nguoi lap" || item.name === "nguoi nhan" || item.name === "ngay lap") {
       const infoDiv = document.createElement('div')
       infoDiv.innerHTML = item.name.charAt(0).toUpperCase() + item.name.slice(1) + ': ' + item.value
       clone.querySelector('.contract-info').appendChild(infoDiv)
@@ -35,9 +35,40 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
     button.id = 'btn-complete'
     button.className = 'btn btn-default btn-sm'
     button.innerHTML = 'Complete'
-  } else if(contractStatus === "completed"){
+  } else if (contractStatus === "completed") {
     clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))
   }
+
+  button.addEventListener('click', (event) => {
+    let textContent = event.target.textContent
+    if (textContent.toLowerCase() === "approve") {
+      $.ajax({
+        type: "PUT",
+        url: 'contracts/' + itemObj._id,
+        contentType: 'application/json',
+        data: JSON.stringify({ contractStatus: 'approved' }),
+        success: result => {
+          console.log(result)
+        }
+      })
+      event.target.closest('.object-div').setAttribute('data-status', 'approved')
+      event.target.innerHTML = 'Complete'
+      event.target.className = 'btn btn-default btn-sm'
+    } else if (textContent.toLowerCase() === "complete") {
+      $.ajax({
+        type: "PUT",
+        url: 'contracts/' + itemObj._id,
+        contentType: 'application/json',
+        data: JSON.stringify({ contractStatus: 'completed' }),
+        success: result => {
+          console.log(result)
+        }
+      })
+      event.target.closest('.object-div').setAttribute('data-status', 'completed')
+      event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
+    }
+    event.stopPropagation()
+  })
 
   document.body.querySelector('#' + elementName + '').appendChild(clone)
 }

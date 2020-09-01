@@ -211,23 +211,7 @@
             $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
 
           })
-
-          modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
-            var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-            console.log('data to delete: ', JSON.stringify(findNestedObj(cData, 'name', 'image')))
-            $.ajax({
-              type: "DELETE",
-              url: 'deleteContractTemplate/' + cData._id,
-              contentType: 'application/json',
-              data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
-              success: (result) => {
-                console.log(result)
-                window.location.reload()
-              }
-
-            })
-          })
-
+          modalBody.querySelector('.btn-options').removeChild(modalBody.querySelector('#btn-delete-contract-template'))
         })
       })
     }

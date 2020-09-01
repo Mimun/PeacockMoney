@@ -11,23 +11,49 @@
     .ql-align-center {
       text-align: center;
     }
+
     .ql-align-justify {
       text-align: justify;
     }
+
     .ql-align-right {
       text-align: right;
     }
+
     p {
       white-space: pre-wrap !important;
     }
-    #page-content-wrapper{
+
+    #wrapper {
+      -webkit-print-color-adjust: exact !important;
+    }
+
+    #page-content-wrapper {
       display: flex;
     }
-    .contract-content-container{
+
+    .contract-content-container {
       margin: auto;
     }
-    #contract-content{
+
+    #contract-content {
       width: 595px;
+      position: relative;
+      z-index: 5;
+    }
+
+    #contract-background {
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      opacity: .1;
+      width: 100%;
+      height: 100%;
+      background-size: 400px 400px !important;
+
     }
   </style>
 </head>
@@ -38,7 +64,10 @@
 
     <div id="page-content-wrapper">
       <div class="contract-content-container">
-        <div id="contract-content"></div>
+        <div id="contract-content">
+          <div id="contract-background"></div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -50,7 +79,7 @@
   <script src="/html2pdf.js/dist/html2pdf.js"></script>
 
   <script type="module">
-    import {findNestedObj} from '/findNestedObj.js'
+    import { findNestedObj } from '/findNestedObj.js'
     const convertDbObjToQuillObj = (object) => {
       const objectData = {}
       object.metadata.forEach(info => {
@@ -72,7 +101,7 @@
         var statusArr = []
         object.items[i].status.forEach(status => {
           var status = findNestedObj(status, 'name', 'type')
-          if(status){
+          if (status) {
             statusArr.push(status.value)
 
           }
@@ -87,6 +116,19 @@
 
     var contractDetail = <%- JSON.stringify(contractDetail) %>;
     console.log('contract detail: ', contractDetail)
+    switch (contractDetail.contractStatus) {
+      case "waiting":
+        document.querySelector('#contract-background').style.background = "url('/images/waiting.jpg') center center"
+        break
+      case "approved":
+        document.querySelector('#contract-background').style.background = "url('/images/approved.jpg') center center"
+        break
+      case "completed":
+        document.querySelector('#contract-background').style.background = "none"
+
+        break
+      default:
+    }
 
     var contractContent = findNestedObj(contractDetail, 'name', 'contractContent').value
 
@@ -94,13 +136,15 @@
     console.log('data converted: ', contract)
 
     let tpl = eval('`' + contractContent + '`');
-    document.querySelector('#contract-content').innerHTML = tpl
+    const div = document.createElement('div')
+    div.innerHTML = tpl
+    document.querySelector('#contract-content').appendChild(div)
 
-    document.querySelector('.get-pdf').addEventListener('click', (event) => {
-      PDF1()
-    })
+    // document.querySelector('.get-pdf').addEventListener('click', (event) => {
+    //   PDF1()
+    // })
 
-    const PDF1 = ()=>{
+    const PDF1 = () => {
       console.log('defghi')
       const doc = new jsPDF('p', 'pt', 'a4');
       var source = $('#contract-content')[0]

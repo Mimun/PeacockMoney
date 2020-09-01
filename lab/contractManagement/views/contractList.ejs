@@ -125,44 +125,6 @@
       generateContractListHTML(contract, template, 'list-container')
     })
 
-    // handling button onclick event
-    document.querySelectorAll('button').forEach(button => {
-      button.addEventListener('click', (event) => {
-
-        if (event.target.textContent.toLowerCase() === "approve") {
-          console.log('button: ', event.target.closest('.object-div'))
-          // $.ajax({
-          //   type: "PUT",
-          //   url: 'contracts/' + event.target.closest('.object-div').C_DATA._id,
-          //   contentType: 'application/json',
-          //   data: JSON.stringify({ contractStatus: 'approved' }),
-          //   success: result => {
-          //     console.log(result)
-          //   }
-          // })
-         
-          event.target.closest('.object-div').setAttribute('data-status', 'approved')
-          event.target.innerHTML = 'Complete'
-          event.target.className = 'btn btn-default btn-sm'
-        } else if (event.target.textContent.toLowerCase() === "complete") {
-          console.log('button: ', event.target.closest('.object-div').C_DATA)
-          // $.ajax({
-          //   type: "PUT",
-          //   url: 'contracts/' + event.target.closest('.object-div').C_DATA._id,
-          //   contentType: 'application/json',
-          //   data: JSON.stringify({ contractStatus: 'completed' }),
-          //   success: result => {
-          //     console.log(result)
-          //   }
-          // })
-          event.target.closest('.object-div').setAttribute('data-status', 'completed')
-          event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
-        }
-        event.stopPropagation()
-
-      })
-    })
-
     // handling selector onclick event
     document.querySelector('div[class="filter-boxes"]').addEventListener('change', (event) => {
       var newArray = contractList.filter(contract => {
