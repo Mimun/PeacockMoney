@@ -114,6 +114,30 @@
       <label data-error="Empty">Khach hang</label>
     </div>
     <div class="md-form">
+      <input type="text" class="form-control validate" data-eng="customerId" data-vie="cmnd">
+      <label data-error="Empty">CMND</label>
+    </div>
+    <div class="md-form">
+      <input type="text" class="form-control validate" data-eng="customerIdProvidingPlace" data-vie="noiCap">
+      <label data-error="Empty">Noi cap</label>
+    </div>
+    <div class="md-form">
+      <input type="date" class="form-control validate" data-eng="customerIdProvidingDate" data-vie="ngayCap">
+      <label data-error="Empty">Ngay cap</label>
+    </div>
+    <div class="md-form">
+      <input type="text" class="form-control validate" data-eng="customerAddress" data-vie="diaChi">
+      <label data-error="Empty">Dia chi</label>
+    </div>
+    <div class="md-form">
+      <input type="number" class="form-control validate" data-eng="customerPhoneNumber" data-vie="soDienThoai">
+      <label data-error="Empty">So dien thoai</label>
+    </div>
+    <div class="md-form">
+      <input type="text" class="form-control validate" data-eng="customerFamilyRegister" data-vie="soHoKhau">
+      <label data-error="Empty">Ho khau thuong tru</label>
+    </div>
+    <div class="md-form">
       <input type="number" class="form-control validate" data-eng="loan" data-vie="soTienVay">
       <label data-error="Empty">So tien vay</label>
     </div>
@@ -455,6 +479,7 @@
       }
       j = linesBreakPoint[i] + 1
       console.log('array: ', array)
+      document.querySelector('#contract-template-container').innerHTML = ""
       generateCustomInfoTemplate(array, template, 'contract-template-container')
     }
 

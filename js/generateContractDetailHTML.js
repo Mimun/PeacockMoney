@@ -17,12 +17,13 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   cloneASide.querySelector('input').value = aSideInfo.value
   clone.querySelector('.a-side-info-container').querySelector('div[class="section"]').appendChild(cloneASide)
 
-  // b side info
-  var bSideInfo = findNestedObj(contractDetail, 'name', 'customer')
-  const cloneBSide = infoTemplate.content.cloneNode(true)
-  cloneBSide.querySelector('label').innerHTML = bSideInfo.name.charAt(0).toUpperCase() + bSideInfo.name.slice(1)
-  cloneBSide.querySelector('input').value = bSideInfo.value
-  clone.querySelector('.b-side-info-container').querySelector('div[class="section"]').appendChild(cloneBSide)
+  // // b side info
+  // var bSideInfo = findNestedObj(contractDetail, 'name', 'customer')
+  // var bSideId = findNestedObj(contractDetail, 'name', 'customerId')
+  // var bSideIdProvidingPlace = findNestedObj(contractDetail, 'name', 'customerIdProvidingPlace')
+  // var bSideIdProvidingDate = findNestedObj(contractDetail, 'name', 'customerIdProvidingDate')
+
+  
 
   // contract infos
   // metadata
@@ -30,13 +31,21 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
     const name = contractDetail.metadata[property].name
     const value = contractDetail.metadata[property].value
     const infoLang = contractDetail.metadata[property].dataVie
-    if (name.toLowerCase() !== "templateName" && name.toLowerCase() !== "image" && name.toLowerCase() !== "creator" && name.toLowerCase() !== "customer") {
-      const infoTemplatelone = infoTemplate.content.cloneNode(true)
-      infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
-      infoTemplatelone.querySelector('input').value = value
-      clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
-
+    if(name === "customer" || name === "customerId" || name === "customerIdProvidingPlace" || name === "customerIdProvidingDate" || name === "customerAddress" || name === "customerPhoneNumber" || name === "customerFamilyRegister"){
+      const cloneBSide = infoTemplate.content.cloneNode(true)
+      cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+      cloneBSide.querySelector('input').value = value
+      clone.querySelector('.b-side-info-container').querySelector('div[class="section"]').appendChild(cloneBSide)
+    } else {
+      if (name.toLowerCase() !== "templateName" && name.toLowerCase() !== "image" && name.toLowerCase() !== "creator" && name.toLowerCase() !== "customer" && name !== "contractContent") {
+        const infoTemplatelone = infoTemplate.content.cloneNode(true)
+        infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
+        infoTemplatelone.querySelector('input').value = value
+        clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
+  
+      }
     }
+    
 
   }
   // info
