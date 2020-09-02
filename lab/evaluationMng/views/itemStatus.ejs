@@ -809,11 +809,21 @@
     // search bar
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
-      console.log('abc')
-      if (originItemList) {
-        searchFunction(event.target.querySelector('input').value, originItemList)
-
-      }
+      var searchValue = event.target.querySelector('input').value
+      $.ajax({
+        type: 'POST',
+        url: 'itemStatus/search',
+        contentType:"application/json",
+        data: JSON.stringify({data: event.target.querySelector('input').value}),
+        success:result=>{
+          console.log('results after searching: ', result.itemStatusResults)
+          if(result.itemStatusResults){
+            createPagination(result.itemStatusResults)
+          } else {
+            createPagination(originItemList)
+          }
+        }
+      })
     })
 
     const searchFunction = (itemValue, itemArray) => {

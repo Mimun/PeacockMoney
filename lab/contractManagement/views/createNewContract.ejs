@@ -153,7 +153,7 @@
     var originItemStatusList = <%- JSON.stringify(statusResults) %>;
 
 
-    console.log('origin contract template: ', originContractTemplate)
+    console.log('origin contract template: ', originItemList.length)
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
@@ -304,6 +304,7 @@
       })
     }
     chooseItem()
+
     const chooseItemStatus = () => {
       document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
@@ -356,14 +357,10 @@
     }
     chooseItemStatus()
 
-
-
-
     document.querySelector('button[id="btn-submit"]').addEventListener('click', (event) => {
       var data = {
         metadata: [],
         items: [],
-
       }
 
       // metadata
@@ -439,15 +436,22 @@
     // search function
     document.querySelector('#search').addEventListener('submit', () => {
       event.preventDefault()
-      console.log('abc')
-      if (originItemList) {
-        searchFunction(event.target.querySelector('input').value, originItemList, template, 'item-list-table-container')
-        chooseItem()
-      }
-      if (originItemStatusList) {
-        searchFunction(event.target.querySelector('input').value, originItemStatusList, template, 'item-status-list-table-container')
-        chooseItemStatus()
-      }
+      $.ajax({
+        type: 'POST',
+        url: 'search',
+        contentType: 'application/json',
+        data: JSON.stringify({ data: event.target.querySelector('input').value }),
+        success: result => {
+          console.log('result: ', result)
+          searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
+          chooseItem()
+
+          searchFunction(originItemStatusList, result.itemStatusResults, template, 'item-status-list-table-container')
+          chooseItemStatus()
+         
+        }
+      })
+    
     })
 
 

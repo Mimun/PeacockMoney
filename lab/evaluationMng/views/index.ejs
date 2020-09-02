@@ -810,29 +810,20 @@
     // search bar
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
-      console.log('abc')
-      if (originItemList) {
-        searchFunction(event.target.querySelector('input').value, originItemList)
-
-      }
-    })
-    
-    const searchFunction = (itemValue, itemArray) => {
-      var foundItems = []
-      itemArray.map(obj => {
-        obj.infos.forEach(info => {
-          if (JSON.stringify(info.value.toLowerCase()) === JSON.stringify(itemValue.toLowerCase())) {
-            foundItems.push(obj)
+      $.ajax({
+        type: 'POST',
+        url: 'items/search',
+        contentType:"application/json",
+        data: JSON.stringify({data: event.target.querySelector('input').value}),
+        success:result=>{
+          if(result.itemResults){
+            createPagination(result.itemResults)
+          } else {
+            createPagination(originItemList)
           }
-        })
+        }
       })
-      if (foundItems.length > 0) {
-        createPagination(foundItems)
-      } else {
-        createPagination(itemArray)
-      }
-
-    }
+    })
 
     // check duplicate when loading from db
     const checkDuplicate = (itemArray1, itemArray2) => {

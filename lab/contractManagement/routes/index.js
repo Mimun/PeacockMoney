@@ -19,6 +19,10 @@ function findNestedObj(entireObj, keyToFind, valToFind) {
   return foundObj;
 };
 
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 // CONTRACT TEMPLATE
 // contract template list for admin
 router.get('/', function (req, res, next) {
@@ -111,12 +115,6 @@ const filterContract = (value1, value2, value3, req, res, next) => {
     })
 
     res.send(array4)
-    console.log('array 1: ', array1.length)
-    console.log('array 2: ', array2.length)
-    console.log('array 12: ', array12.length)
-
-    console.log('array 3: ', array3.length)
-    console.log('array 4: ', array4.length)
 
   })
 
@@ -169,6 +167,33 @@ router.post('/createNewContract', function (req, res, next) {
 
   })
 });
+
+// search item || itemstatus
+router.post('/search', (req, res, next) => {
+  console.log('req.body: ', req.body)
+  const regex = new RegExp(escapeRegex(req.body.data), 'gi')
+  async.parallel({
+    itemResults: (callback) => {
+      try {
+        Item.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+      } catch (err) {
+        next(err)
+      }
+    },
+    itemStatusResults: (callback) => {
+      try {
+        ItemStatus.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+
+      } catch (err) {
+        next(err)
+      }
+    }
+  }, (err, result)=>{
+    if(err) throw (err)
+    res.send({itemResults: result.itemResults, itemStatusResults: result.itemStatusResults})
+  })
+  
+})
 
 // delete contract template route
 router.delete('/deleteContractTemplate/:id', (req, res) => {
