@@ -816,7 +816,7 @@
         contentType:"application/json",
         data: JSON.stringify({data: event.target.querySelector('input').value}),
         success:result=>{
-          if(result.itemResults){
+          if(result.itemResults.length !==0){
             createPagination(result.itemResults)
           } else {
             createPagination(originItemList)

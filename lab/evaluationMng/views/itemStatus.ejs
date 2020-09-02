@@ -817,7 +817,7 @@
         data: JSON.stringify({data: event.target.querySelector('input').value}),
         success:result=>{
           console.log('results after searching: ', result.itemStatusResults)
-          if(result.itemStatusResults){
+          if(result.itemStatusResults.length !==0){
             createPagination(result.itemStatusResults)
           } else {
             createPagination(originItemList)
@@ -825,23 +825,6 @@
         }
       })
     })
-
-    const searchFunction = (itemValue, itemArray) => {
-      var foundItems = []
-      itemArray.map(obj => {
-        obj.infos.forEach(info => {
-          if (JSON.stringify(info.value.toLowerCase()) === JSON.stringify(itemValue.toLowerCase())) {
-            foundItems.push(obj)
-          }
-        })
-      })
-      if (foundItems.length > 0) {
-        createPagination(foundItems)
-      } else {
-        createPagination(itemArray)
-      }
-
-    }
 
     // check duplicate when loading from db
     const checkDuplicate = (itemArray1, itemArray2) => {
