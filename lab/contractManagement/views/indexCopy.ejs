@@ -106,10 +106,15 @@
     console.log('All types: ', payOptions)
     var chosenType = ''
     var chosenPayOption = ''
+    if(document.referrer !== "http://localhost:3000/evaluationMng/"){
+      console.log('prev url 1: ', document.referrer)
+      window.localStorage.removeItem('evaluatingItem')
+    } 
+
 
     const contractTemplate = document.getElementById('temp_contract');
 
-    const createSelect = (itemObjs, elementName, variable)=>{
+    const createSelect = (itemObjs, elementName, variable) => {
       const select = document.createElement('select')
       select.className = "browser-default custom-select"
       select.id = variable
@@ -128,17 +133,17 @@
       })
       select.addEventListener('change', (event) => {
         console.log('event: ', event.target.value)
-        if(variable == "types"){
+        if (variable == "types") {
           chosenType = event.target.value
         } else {
           chosenPayOption = event.target.value
         }
         // return event.target.value
       })
-      document.querySelector(''+elementName+'').appendChild(select)
+      document.querySelector('' + elementName + '').appendChild(select)
 
     }
-    
+
     // render selector
     $("#centralModalSm").on('show.bs.modal', () => {
       const containerFluid = document.querySelector('.container-fluid')
@@ -162,7 +167,7 @@
         <label for="form1">So tien vay</label>`
       inputDiv.style.margin = '0 0 2vh 0'
       document.querySelector('modal-body').appendChild(inputDiv)
-      
+
       document.querySelector('#btn-confirm').addEventListener('click', (event) => {
         console.log('chosen option: ', chosenPayOption)
         console.log('chosen type: ', chosenType)
@@ -205,20 +210,20 @@
         element.addEventListener('click', function () {
           console.log('event abc: ', document.querySelector('modal-body'))
           var modalBody = document.querySelector('modal-body')
-          modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
-            var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-            console.log('abc xyz: ', cData)
-            $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
+          // modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
+          //   var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
+          //   console.log('abc xyz: ', cData)
+          //   $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
 
-          })
+          // })
           modalBody.querySelector('.btn-options').removeChild(modalBody.querySelector('#btn-delete-contract-template'))
         })
       })
     }
 
     templateButtonOption()
-   
-    
+
+
 
 
 

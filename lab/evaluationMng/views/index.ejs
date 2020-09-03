@@ -98,6 +98,7 @@
               </div>
 
               <div class="modal-footer">
+                <button class="btn btn-default" id="create-contract" style="position: relative; float: right;">Create contract</button>
                 <button class="btn btn-primary" id="edit-btn" style="position: relative; float: right;">Edit</button>
                 <button class="btn btn-danger" id="delete-btn" style="position: relative; float: right;"
                   data-dismiss="modal">Delete</button>
@@ -804,6 +805,23 @@
       })
 
 
+    })
+
+    // create button
+    document.querySelector('#create-contract').addEventListener('click', (event)=>{
+      var evaluatingItem = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.object-div').C_DATA
+      window.localStorage.setItem('evaluatingItem', JSON.stringify(evaluatingItem))
+      console.log('window local storage: ', JSON.parse(window.localStorage.getItem('evaluatingItem')))
+      // $.ajax({
+      //   type: "GET",
+      //   url: "http://localhost:3000/contractMng/contractTemplates",
+      //   contentType: 'application/json',
+      //   success: result=>{
+      //     console.log('result: ', result)
+      //   }
+      // })
+      $.redirect("../contractMng/contractTemplates", {}, "GET");
+      
     })
 
     // search function

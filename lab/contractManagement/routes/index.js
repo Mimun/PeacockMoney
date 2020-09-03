@@ -162,7 +162,7 @@ router.post('/createNewContract', function (req, res, next) {
     if (err) throw err
     ItemStatus.find({}, (err, statusResults) => {
       if (err) throw err
-      res.render('createNewContract', { itemResults: itemResults, statusResults: statusResults, contractInfo: JSON.parse(req.body.data) });
+      res.render('createNewContract', { itemResults: itemResults, statusResults: statusResults, contractInfo: JSON.parse(req.body.data), evaluatingItem: JSON.parse(req.body.evaluatingItem) });
     })
 
   })
@@ -188,11 +188,11 @@ router.post('/search', (req, res, next) => {
         next(err)
       }
     }
-  }, (err, result)=>{
-    if(err) throw (err)
-    res.send({itemResults: result.itemResults, itemStatusResults: result.itemStatusResults})
+  }, (err, result) => {
+    if (err) throw (err)
+    res.send({ itemResults: result.itemResults, itemStatusResults: result.itemStatusResults })
   })
-  
+
 })
 
 // delete contract template route

@@ -149,15 +149,23 @@
     import { searchFunction } from '/searchFunction.js'
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
-    var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
     var originItemStatusList = <%- JSON.stringify(statusResults) %>;
+    var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
+    var evaluatingItem = <%- JSON.stringify(evaluatingItem) %>
+    console.log('evaluating item from local storage: ', evaluatingItem)
 
+ 
 
-    console.log('origin contract template: ', originItemList.length)
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
-
+    if(evaluatingItem){
+      generateHTML([evaluatingItem], template, "item-evaluation")
+      var clone = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').cloneNode(true)
+      clone.C_DATA = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').C_DATA
+      document.querySelector('#item-evaluation').innerHTML = ''
+      document.querySelector('#item-evaluation').appendChild(clone)
+    }
     var currentDiv = null
     var prevDiv = null
 
@@ -290,9 +298,6 @@
     const chooseItem = () => {
       document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
-
-
-          console.log('element: ', this)
           const cloneNode = event.target.parentNode.cloneNode(true)
           cloneNode.C_DATA = event.target.parentNode.C_DATA
           cloneNode.className = "object-div item"
@@ -453,7 +458,6 @@
       })
     
     })
-
 
 
   </script>

@@ -46,7 +46,9 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createNewContractButton.className = "btn btn-primary btn-sm"
     createNewContractButton.innerHTML = "Create new contract"
     createNewContractButton.addEventListener('click', ()=>{
-      $.redirect("createNewContract", { data: JSON.stringify(itemObj) }, "POST");
+      var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
+      $.redirect("createNewContract", { data: JSON.stringify(itemObj), evaluatingItem: JSON.stringify(evaluatingItem) }, "POST");
+      window.localStorage.removeItem('evaluatingItem')
     })
     buttonOptions.appendChild(createNewContractButton)
 
