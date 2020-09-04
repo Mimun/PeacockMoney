@@ -104,19 +104,16 @@
     const payOptions = <%- JSON.stringify(payOptions) %>;
     console.log('All types: ', types)
     console.log('All types: ', payOptions)
-    var chosenType = ''
-    var chosenPayOption = ''
-    if(document.referrer !== "http://localhost:3000/evaluationMng/"){
-      console.log('prev url 1: ', document.referrer)
-      window.localStorage.removeItem('evaluatingItem')
-    } 
 
+    // if (document.referrer !== "http://localhost:3000/evaluationMng/") {
+    //   window.localStorage.removeItem('evaluatingItem')
+    // }
 
     const contractTemplate = document.getElementById('temp_contract');
 
     const createSelect = (itemObjs, elementName, variable) => {
       const select = document.createElement('select')
-      select.className = "browser-default custom-select"
+      select.className = `browser-default custom-select ${variable}`
       select.id = variable
       select.style.margin = '0 0 2vh 0'
       // "all" option
@@ -130,15 +127,6 @@
         option.value = itemObj
         option.innerHTML = itemObj.charAt(0).toUpperCase() + itemObj.slice(1)
         select.appendChild(option)
-      })
-      select.addEventListener('change', (event) => {
-        console.log('event: ', event.target.value)
-        if (variable == "types") {
-          chosenType = event.target.value
-        } else {
-          chosenPayOption = event.target.value
-        }
-        // return event.target.value
       })
       document.querySelector('' + elementName + '').appendChild(select)
 
@@ -166,9 +154,24 @@
       inputDiv.innerHTML = `<input type="number" id="form1" class="form-control">
         <label for="form1">So tien vay</label>`
       inputDiv.style.margin = '0 0 2vh 0'
+      inputDiv.style.width = '100%'
       document.querySelector('modal-body').appendChild(inputDiv)
 
+      if (JSON.parse(window.localStorage.getItem('evaluatingItem'))) {
+        var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
+        console.log('evaluating item: ', evaluatingItem)
+        var evaluatingItemType = findNestedObj(evaluatingItem, 'name', 'itemType').value
+        if(types.includes(evaluatingItemType)){
+          document.querySelector('.types').value = evaluatingItemType
+          document.querySelector('.types').disabled = true
+        } else {
+          document.querySelector('.types').disabled = false
+        }
+      }
+
       document.querySelector('#btn-confirm').addEventListener('click', (event) => {
+        var chosenType = document.querySelector('.types').value
+        var chosenPayOption = document.querySelector('.payOptions').value
         console.log('chosen option: ', chosenPayOption)
         console.log('chosen type: ', chosenType)
         // console.log('chosen amount of money: ', parseInt(document.querySelector('modal-body').querySelector('input').value)
@@ -204,18 +207,12 @@
 
     })
 
-    const templateButtonOption = ()=>{
+    const templateButtonOption = () => {
       // detail template info
       document.querySelectorAll('.object-div').forEach(element => {
         element.addEventListener('click', function () {
           console.log('event abc: ', document.querySelector('modal-body'))
           var modalBody = document.querySelector('modal-body')
-          // modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
-          //   var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-          //   console.log('abc xyz: ', cData)
-          //   $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
-
-          // })
           modalBody.querySelector('.btn-options').removeChild(modalBody.querySelector('#btn-delete-contract-template'))
         })
       })

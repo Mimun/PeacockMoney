@@ -101,12 +101,79 @@ router.put('/items/:id', (req, res) => {
 // search items
 router.post('/items/search', (req, res) => {
   console.log('req.body: ', req.body)
-  const regex = new RegExp(escapeRegex(req.body.data), 'gi')
-  console.log('search: ', regex)
-  Item.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec((err, itemResults) => {
-    if (err) throw err
-    res.send({ itemResults: itemResults })
+  const arrayValue = req.body.data
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'infos.value': regex })
   })
+  console.log('array metadata condition: ', arrayMetadataConditions)
+  console.log('array infos condition: ', arrayInfosConditions)
+  Item.find({ $or: [{ $and: arrayMetadataConditions }, { $and: arrayInfosConditions }] }).exec((err, results) => {
+    if (err) throw err
+    res.send({ itemResults: results })
+
+  })
+
+  // var resultArray = []
+  // for (var i = 0; i < arrayValue.length; i++) {
+  //   const regex = new RegExp(escapeRegex(arrayValue[i]), 'gi')
+  //   console.log('search: ', regex)
+  //   Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec((err, results)=>{
+  //     if(err) throw err
+  //   })
+  // }
+  // async.parallel({
+  //   itemResults1: callback => {
+  //     const regex = new RegExp(escapeRegex(arrayValue[0]), 'gi')
+  //     console.log('search: ', regex)
+  //     Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+  //   },
+  //   itemResults2: callback => {
+  //     const regex = new RegExp(escapeRegex(arrayValue[1]), 'gi')
+  //     console.log('search: ', regex)
+  //     Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+  //   },
+  //   itemResults3: callback => {
+  //     const regex = new RegExp(escapeRegex(arrayValue[2]), 'gi')
+  //     console.log('search: ', regex)
+  //     Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+  //   }
+
+  // }, (err, result) => {
+  //   if (err) throw err
+  //   var array1 = result.itemResults1, array2 = result.itemResults2, array3 = result.itemResults3, array4 = []
+  //   console.log('array 1: ', array1.length)
+  //   console.log('array 2: ', array2.length)
+  //   console.log('array 3: ', array3.length)
+
+  //   var array12 = []
+  //   array1.map(item1 => {
+  //     array2.map(item2 => {
+  //       if (JSON.stringify(item1) === JSON.stringify(item2)) {
+  //         array12.push(item2)
+  //       }
+  //     })
+  //   })
+  //   console.log('array 12: ', array12.length)
+
+  //   array12.map(item12 => {
+  //     array3.map(item3 => {
+  //       if (JSON.stringify(item12) === JSON.stringify(item3)) {
+  //         array4.push(item3)
+  //       }
+  //     })
+  //   })
+  //   console.log(array4)
+  //   res.send({itemResults: array4})
+  // })
+
+
+  // const regex = new RegExp(escapeRegex(req.body.data), 'gi')
+
 
 })
 
@@ -247,11 +314,11 @@ router.post('/search', (req, res, next) => {
         next(err)
       }
     }
-  }, (err, result)=>{
-    if(err) throw (err)
-    res.send({itemResults: result.itemResults, itemStatusResults: result.itemStatusResults})
+  }, (err, result) => {
+    if (err) throw (err)
+    res.send({ itemResults: result.itemResults, itemStatusResults: result.itemStatusResults })
   })
-  
+
 })
 
 module.exports = router;

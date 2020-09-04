@@ -44,6 +44,10 @@
         .col-sm.side::-webkit-scrollbar {
           display: none;
         }
+
+        strong{
+          font-size: 20px;
+        }
       </style>
 
       <!-- page content -->
@@ -62,7 +66,7 @@
 
               <!-- contract item  -->
               <div class="contract-item">
-                <p class="h4 mb-4">Thong tin tai san</p>
+                <strong>IV. Thong tin tai san</strong>
 
                 <!-- custom info -->
                 <div class="contract-item-container">
@@ -96,7 +100,7 @@
           </div>
 
           <!-- item list column -->
-          <div class="col-sm-4 side-4">
+          <div class="col-sm-5 side-5">
 
             <div class="tabs">
 
@@ -153,6 +157,7 @@
     var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
     var evaluatingItem = <%- JSON.stringify(evaluatingItem) %>
     console.log('evaluating item from local storage: ', evaluatingItem)
+    console.log('prev url: ', document.referrer)
 
  
 

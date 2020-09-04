@@ -71,6 +71,8 @@
           <div id="search-container">
             <form class="input-group form-sm form-2 pl-0" id="search">
               <input class="form-control my-0 py-1" type="text" placeholder="Search" aria-label="Search">
+              <!-- <input class="form-control my-0 py-1" type="text" placeholder="Search" aria-label="Search">
+              <input class="form-control my-0 py-1" type="text" placeholder="Search" aria-label="Search"> -->
               <div class="input-group-prepend">
                 <span class="input-group-text cyan lighten-3" id="basic-text1"><i class="fa fa-search text-grey"
                     aria-hidden="true"></i></span>
@@ -98,7 +100,8 @@
               </div>
 
               <div class="modal-footer">
-                <button class="btn btn-default" id="create-contract" style="position: relative; float: right;">Create contract</button>
+                <button class="btn btn-default" id="create-contract" style="position: relative; float: right;">Create
+                  contract</button>
                 <button class="btn btn-primary" id="edit-btn" style="position: relative; float: right;">Edit</button>
                 <button class="btn btn-danger" id="delete-btn" style="position: relative; float: right;"
                   data-dismiss="modal">Delete</button>
@@ -205,7 +208,7 @@
         </div>
 
         <!-- list of items container -->
-        <div id="table-container" style="width: 80vw; margin: 2%"></div>
+        <div id="table-container"></div>
 
         <!-- add item button -->
         <div id="add-item-button-container" style="display: flex; margin: 2vh;"></div>
@@ -808,31 +811,46 @@
     })
 
     // create button
-    document.querySelector('#create-contract').addEventListener('click', (event)=>{
+    document.querySelector('#create-contract').addEventListener('click', (event) => {
       var evaluatingItem = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.object-div').C_DATA
       window.localStorage.setItem('evaluatingItem', JSON.stringify(evaluatingItem))
       console.log('window local storage: ', JSON.parse(window.localStorage.getItem('evaluatingItem')))
-      // $.ajax({
-      //   type: "GET",
-      //   url: "http://localhost:3000/contractMng/contractTemplates",
-      //   contentType: 'application/json',
-      //   success: result=>{
-      //     console.log('result: ', result)
-      //   }
-      // })
       $.redirect("../contractMng/contractTemplates", {}, "GET");
-      
+
     })
 
     // search function
     // search bar
+    // document.querySelector('#search').querySelector('.input-group-prepend').addEventListener('click', (event) => {
+    //   event.preventDefault()
+    //   var array = []
+    //   event.target.closest('#search').querySelectorAll('input').forEach(input => {
+    //     array.push(input.value)
+    //   })
+    //   console.log('event: ', array)
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'items/search',
+    //     contentType: "application/json",
+    //     data: JSON.stringify({ data: array }),
+    //     success: result => {
+    //       if (result.itemResults.length !== 0) {
+    //         createPagination(result.itemResults)
+    //       } else {
+    //         createPagination(originItemList)
+    //       }
+    //     }
+    //   })
+
+    // })
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
+      var array = event.target.querySelector('input').value.split(" ")
       $.ajax({
         type: 'POST',
         url: 'items/search',
         contentType:"application/json",
-        data: JSON.stringify({data: event.target.querySelector('input').value}),
+        data: JSON.stringify({data: array}),
         success:result=>{
           if(result.itemResults.length !==0){
             createPagination(result.itemResults)

@@ -1,13 +1,8 @@
-import {findNestedObj} from './findNestedObj.js'
+import { findNestedObj } from './findNestedObj.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
   const infoContainer = document.createElement('div')
-  infoContainer.className = 'object-div'
-  infoContainer.setAttribute('c_data', true)
-  infoContainer.C_DATA = itemObj
-
-
   // contract image 
   const imageInfo = findNestedObj(itemObj, 'name', 'image')
   console.log('image: ', imageInfo)
@@ -23,6 +18,29 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
   img.alt = imageInfo.value
   imgContainer.appendChild(img)
   infoContainer.appendChild(imgContainer)
+
+  infoContainer.className = 'object-div'
+  infoContainer.setAttribute('c_data', true)
+  infoContainer.C_DATA = itemObj
+
+  const aSideInfoDiv = document.createElement('div')
+  aSideInfoDiv.className = 'a-side-info'
+  aSideInfoDiv.innerHTML = `<strong>I. Thong tin ben A</strong>`
+  infoContainer.appendChild(aSideInfoDiv)
+
+  const bSideInfoDiv = document.createElement('div')
+  bSideInfoDiv.className = 'b-side-info'
+  bSideInfoDiv.innerHTML = `<strong>II. Thong tin ben B</strong>`
+
+  infoContainer.appendChild(bSideInfoDiv)
+
+  const contractInfoDiv = document.createElement('div')
+  contractInfoDiv.className = 'contract-info'
+  contractInfoDiv.innerHTML = `<strong>III. Thong tin hop dong</strong>`
+
+  infoContainer.appendChild(contractInfoDiv)
+
+
 
   // contract metadata
   itemObj.contractMetadata.map(info => {
@@ -45,7 +63,14 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
 
       var label = clone.querySelector('label')
       label.innerHTML = displayInfoLang(info.dataVie)
-      infoContainer.appendChild(clone)
+
+      if (info.name === 'creator') {
+        aSideInfoDiv.appendChild(clone)
+      } else if (info.name === 'customer' || info.name === 'customerId' || info.name === 'customerIdProvidingPlace' || info.name === 'customerIdProvidingDate' || info.name === 'customerAddress' || info.name === 'customerPhoneNumber' || info.name === 'customerFamilyRegister') {
+        bSideInfoDiv.appendChild(clone)
+      } else {
+        contractInfoDiv.appendChild(clone)
+      }
     }
 
   })
@@ -107,7 +132,7 @@ const displayInfoLang = (info) => {
     infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
     return infoLang
 
-  } 
+  }
   return info
 
 }

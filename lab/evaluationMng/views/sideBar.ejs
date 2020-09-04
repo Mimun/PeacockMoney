@@ -1,10 +1,11 @@
 <style>
-
   @import url("/font-awesome/css/font-awesome.min.css");
-  body{
+
+  body {
     padding: 0;
     margin: 0;
   }
+
   #wrapper {
     overflow-x: hidden;
   }
@@ -13,11 +14,26 @@
     padding-top: 3%;
     position: relative;
     min-height: 100vh;
+    width: 100%;
+    max-width: 13vw;
     margin-left: -15rem;
     -webkit-transition: margin .25s ease-out;
     -moz-transition: margin .25s ease-out;
     -o-transition: margin .25s ease-out;
     transition: margin .25s ease-out;
+  }
+
+  #sidebar-wrapper .sidebar-container{
+    position: fixed;
+    display: inline-block;
+    max-width: inherit;
+    height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 15%;
+  }
+
+  #sidebar-wrapper .sidebar-container::-webkit-scrollbar{
+    display: none;
   }
 
   #sidebar-wrapper .sidebar-heading {
@@ -62,81 +78,108 @@
   }
 
   .md-form {
-    width: 80%;
     margin: 2vh 1vw;
   }
-  #sidebar-btn{
+
+  #sidebar-btn {
     height: fit-content;
+    width: fit-content;
     margin-top: 3%;
+    position: relative;
+    float: right;
+    
+  }
+  #menu-toggle{
+    position: fixed;
   }
 
+  #table-container{
+    padding: 5% 7%;
+  }
 </style>
 
 <!-- Sidebar -->
-<div class="bg-light border-right" id="sidebar-wrapper">
-  <div class="sidebar-heading">Happy Money </div>
-  <div class="list-group list-group-flush">
-    <a href="#" class="list-group-item list-group-item-action bg-light">Dashboard</a>
+<div id="sidebar-wrapper">
+  <div class="sidebar-container bg-light">
+    <div class="sidebar-heading">Happy Money </div>
+    <div class="list-group list-group-flush">
+      <a href="#" class="list-group-item list-group-item-action bg-light">Dashboard</a>
 
-    <!-- Nhac nho -->
-    <a href="#" data-toggle="collapse" data-target="#contract-list"
-      class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
-        Nhac nho </span> <span class="fa fa-chevron-left pull-right"></span> </a>
-    <ul class="sub-menu collapse" id="contract-list">
-      <li class="active"><a href="#" class="list-group-item list-group-item-action bg-light">Hop dong cho</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu qua han</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu sap phai thuc hien</a></li>
-    </ul>
+      <!-- Nhac nho -->
+      <a href="#" data-toggle="collapse" data-target="#contract-list"
+        class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
+          Nhac nho </span> <span class="fa fa-chevron-left pull-right"></span> </a>
+      <ul class="sub-menu collapse" id="contract-list">
+        <li class="active"><a href="#" class="list-group-item list-group-item-action bg-light">Hop dong cho</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu qua han</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu sap phai thuc hien</a></li>
+      </ul>
 
-    <!-- Quan ly hop dong -->
-    <a href="http://localhost:3000/contractMng/contracts" class="list-group-item list-group-item-action bg-light">Quan ly hop dong</a>
+      <!-- Quan ly hop dong -->
+      <a href="http://localhost:3000/contractMng/contracts" class="list-group-item list-group-item-action bg-light">Quan
+        ly hop dong</a>
 
-    <!-- Quan ly tham dinh gia -->
-    <a href="http://localhost:3000/evaluationMng/evaluation" class="list-group-item list-group-item-action bg-light">Tham dinh gia</a>
+      <!-- Quan ly tham dinh gia -->
+      <a href="http://localhost:3000/evaluationMng/evaluation"
+        class="list-group-item list-group-item-action bg-light">Tham dinh gia</a>
 
-    <!-- Tao moi hop dong -->
-    <a href="http://localhost:3000/contractMng/contractTemplates" class="list-group-item list-group-item-action bg-light">Tao moi hop dong</a>
+      <!-- Tao moi hop dong -->
+      <a href="http://localhost:3000/contractMng/contractTemplates"
+        class="list-group-item list-group-item-action bg-light">Tao moi hop dong</a>
 
-    <!-- Quan ly tai san -->
-    <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a>
+      <!-- Quan ly tai san -->
+      <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a>
 
-    <!-- Thong ke bao cao -->
-    <a href="#" class="list-group-item list-group-item-action bg-light">Thong ke/Bao cao</a>
+      <!-- Thong ke bao cao -->
+      <a href="#" class="list-group-item list-group-item-action bg-light">Thong ke/Bao cao</a>
 
-    <!-- Quan ly he thong -->
-    <a href="#" data-toggle="collapse" data-target="#contract-type-list"
-      class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
-        Quan ly he thong </span> <span class="fa fa-chevron-left pull-right"></span> </a>
-    <ul class="collapse" id="contract-type-list" style="padding: 0; margin: 0;">
-      <li><a href="http://localhost:3000/contractMng" class="list-group-item list-group-item-action bg-light">Danh sach mau hop dong</a></li>
-      <li><a href="http://localhost:3000/contractMng" class="list-group-item list-group-item-action bg-light">Tao mau hop dong</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau phieu</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau phieu</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly khach hang</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
-      <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly mau thong ke</a></li>
-      <li><a href="http://localhost:3000/evaluationMng/itemStatus" class="list-group-item list-group-item-action bg-light">Quan ly tinh trang tai san</a></li>
-      <li><a href="http://localhost:3000/evaluationMng/" class="list-group-item list-group-item-action bg-light">Quan ly tham
-          dinh gia</a></li>
+      <!-- Quan ly he thong -->
+      <a href="#" data-toggle="collapse" data-target="#contract-type-list"
+        class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
+          Quan ly he thong </span> <span class="fa fa-chevron-left pull-right"></span> </a>
+      <ul class="collapse" id="contract-type-list" style="padding: 0; margin: 0;">
+        <li><a href="http://localhost:3000/contractMng" class="list-group-item list-group-item-action bg-light">Danh
+            sach
+            mau hop dong</a></li>
+        <li><a href="http://localhost:3000/contractMng" class="list-group-item list-group-item-action bg-light">Tao mau
+            hop dong</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau phieu</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau phieu</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly khach hang</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
+        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly mau thong ke</a></li>
+        <li><a href="http://localhost:3000/evaluationMng/itemStatus"
+            class="list-group-item list-group-item-action bg-light">Quan ly tinh trang tai san</a></li>
+        <li><a href="http://localhost:3000/evaluationMng/" class="list-group-item list-group-item-action bg-light">Quan
+            ly
+            tham
+            dinh gia</a></li>
 
-    </ul>
+      </ul>
 
 
 
+    </div>
+  </div>
+  <div id="sidebar-btn">
+    <button class="btn btn-default btn-sm px-2" id="menu-toggle"><i class="fa fa-angle-left"
+        style="font-size: 20px;"></i></button>
   </div>
 </div>
-<div id="sidebar-btn">
-  <button class="btn btn-default btn-sm px-2" id="menu-toggle"><i class="fa fa-angle-left" style="font-size: 20px;"></i></button>
-</div>
+
 
 <script>
   $("#menu-toggle").click(function (e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
-    
+
   });
+  document.querySelector('a[href="http://localhost:3000/contractMng/contractTemplates"]').addEventListener('click', (event) => {
+    window.localStorage.removeItem('evaluatingItem')
+
+  })
 </script>
 <!-- /#sidebar-wrapper -->

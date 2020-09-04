@@ -13,7 +13,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   // a side info
   var aSideInfo = findNestedObj(contractDetail, 'name', 'creator')
   const cloneASide = infoTemplate.content.cloneNode(true)
-  cloneASide.querySelector('label').innerHTML = aSideInfo.name.charAt(0).toUpperCase() + aSideInfo.name.slice(1)
+  cloneASide.querySelector('label').innerHTML = displayInfoLang(aSideInfo.dataVie)
   cloneASide.querySelector('input').value = aSideInfo.value
   clone.querySelector('.a-side-info-container').querySelector('div[class="section"]').appendChild(cloneASide)
 
