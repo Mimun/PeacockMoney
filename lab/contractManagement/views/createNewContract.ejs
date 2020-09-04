@@ -444,13 +444,15 @@
     })
 
     // search function
-    document.querySelector('#search').addEventListener('submit', () => {
+    document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
+      var array = event.target.querySelector('input').value.split(" ")
+
       $.ajax({
         type: 'POST',
         url: 'search',
         contentType: 'application/json',
-        data: JSON.stringify({ data: event.target.querySelector('input').value }),
+        data: JSON.stringify({ data: array }),
         success: result => {
           console.log('result: ', result)
           searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')

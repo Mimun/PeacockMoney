@@ -809,14 +809,13 @@
     // search bar
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
-      var searchValue = event.target.querySelector('input').value
+      var array = event.target.querySelector('input').value.split(" ")
       $.ajax({
         type: 'POST',
         url: 'itemStatus/search',
         contentType:"application/json",
-        data: JSON.stringify({data: event.target.querySelector('input').value}),
+        data: JSON.stringify({data: array}),
         success:result=>{
-          console.log('results after searching: ', result.itemStatusResults)
           if(result.itemStatusResults.length !==0){
             createPagination(result.itemStatusResults)
           } else {

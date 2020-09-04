@@ -274,11 +274,21 @@ router.put('/itemStatus/:id', (req, res) => {
 // search item statuses
 router.post('/itemStatus/search', (req, res) => {
   console.log('req.body: ', req.body)
-  const regex = new RegExp(escapeRegex(req.body.data), 'gi')
-  console.log('search: ', regex)
-  ItemStatus.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec((err, itemStatusResults) => {
+  const arrayValue = req.body.data
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'infos.value': regex })
+  })
+  console.log('array metadata condition: ', arrayMetadataConditions)
+  console.log('array infos condition: ', arrayInfosConditions)
+  ItemStatus.find({ $or: [{ $and: arrayMetadataConditions }, { $or: arrayInfosConditions }] }).exec((err, results) => {
     if (err) throw err
-    res.send({ itemStatusResults: itemStatusResults })
+    res.send({ itemStatusResults: results })
+
   })
 })
 

@@ -171,18 +171,26 @@ router.post('/createNewContract', function (req, res, next) {
 // search item || itemstatus
 router.post('/search', (req, res, next) => {
   console.log('req.body: ', req.body)
-  const regex = new RegExp(escapeRegex(req.body.data), 'gi')
+  const arrayValue = req.body.data
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'infos.value': regex })
+  })
   async.parallel({
     itemResults: (callback) => {
       try {
-        Item.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+        Item.find({ $or: [{ $and: arrayMetadataConditions }, { $and: arrayInfosConditions }] }).exec(callback)
       } catch (err) {
         next(err)
       }
     },
     itemStatusResults: (callback) => {
       try {
-        ItemStatus.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+        ItemStatus.find({ $or: [{ $and: arrayMetadataConditions }, { $and: arrayInfosConditions }] }).exec(callback)
 
       } catch (err) {
         next(err)
