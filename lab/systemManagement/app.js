@@ -6,19 +6,11 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const bodyParser = require('body-parser');
-const { validateToken } = require('./Libs/Authentication/auth');
-
-const evaluationMng = require('./lab/evaluationMng/app')
-const contractMng = require('./lab/contractManagement/app')
-const systemMng = require('./lab/systemManagement/app')
+var bodyParser = require('body-parser')
+var mongoose = require('mongoose')
 
 var app = express();
-app.use(bodyParser({limit: '50mb'}))
-app.use(express.json());
-require ('./Libs/autoload');
-
-
+app.use(bodyParser.json({limit: '50mb'}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,26 +20,21 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-app.use(bodyParser.json())
-
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'node_modules')));
-app.use(express.static(path.join(__dirname, 'js')));
-app.use(express.static(path.join(__dirname, 'styles')));
-app.use(express.static(path.join(__dirname, 'lab/contractManagement/Components')));
-console.log('dir name: ', path.join(__dirname))
+app.use(express.static(path.join(__dirname, '../../node_modules')))
+app.use(express.static(path.join(__dirname, '../../public')))
+app.use(express.static(path.join(__dirname, '../../js')))
+app.use(express.static(path.join(__dirname, '../../styles')))
 
 
+const mongooseUrl = 'mongodb://localhost:27017/systemMng'
+mongoose.connect(mongooseUrl, {useNewUrlParser: true})
+var db = mongoose.connection
+db.on('open', ()=>{
+  console.log('Connected to database systemMng successfully!')
+})
 
-
-
-
-
-app.use('/',validateToken, indexRouter);
-app.use('/evaluationMng', evaluationMng)
-app.use('/contractMng', contractMng)
-app.use('/systemMng', systemMng)
+app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
