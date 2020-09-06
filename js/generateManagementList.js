@@ -26,7 +26,7 @@ const script = document.createElement('script')
 script.src = '/mdbootstrap/js/mdb.min.js'
 detailInfoTemplate.prepend(script)
 
-export const generateManagementList = (itemObjs, template, elementName) => {
+export const generateManagementList = (itemObjs, template, elementName, routerName) => {
 
   itemObjs.forEach(itemObj => {
     const clone = template.content.cloneNode(true)
@@ -65,26 +65,26 @@ export const generateManagementList = (itemObjs, template, elementName) => {
         })
 
         // edit button
-        detailTemplate.querySelector('.modal-footer').querySelector('#btn-edit').addEventListener('click', event=>{
-          switch(event.target.textContent){
+        detailTemplate.querySelector('.modal-footer').querySelector('#btn-edit').addEventListener('click', event => {
+          switch (event.target.textContent) {
             case "Edit":
-              modalBody.querySelectorAll('input').forEach(input=>{
+              modalBody.querySelectorAll('input').forEach(input => {
                 input.removeAttribute('disabled')
               })
               break
             case "Update":
-              var updateObj = {...itemObj, metadata: []}
-              modalBody.querySelectorAll('input').forEach(input=>{
+              var updateObj = { ...itemObj, metadata: [] }
+              modalBody.querySelectorAll('input').forEach(input => {
                 input.setAttribute('disabled', true)
                 updateObj.metadata.push(getInfo(input))
               })
               console.log('update obj: ', updateObj)
               $.ajax({
                 type: "PUT",
-                url: "employees/"+ itemObj._id,
+                url: routerName + "/" + itemObj._id,
                 contentType: 'application/json',
                 data: JSON.stringify(updateObj),
-                success: result=>{
+                success: result => {
                   console.log('result: ', result)
                   window.location.reload()
                 }
@@ -93,18 +93,18 @@ export const generateManagementList = (itemObjs, template, elementName) => {
             default:
 
           }
-          event.target.textContent = event.target.textContent === "Edit"? event.target.textContent = "Update" : event.target.textContent = "Edit"
+          event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
-         
+
         })
 
         // delete button
-        detailTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event=>{
+        detailTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event => {
           $.ajax({
             type: "DELETE",
-            url: 'employees/'+itemObj._id,
+            url: routerName + '/' + itemObj._id,
             contentType: 'application/json',
-            success: result=>{
+            success: result => {
               console.log('result: ', result)
               window.location.reload()
             }
@@ -132,9 +132,9 @@ const displayInfoLang = (info) => {
     // uppercase the first letter
     var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
     // split based on uppercase letters
-    if(infoLang.match(/[A-Z][a-z]+|[0-9]+/g) !== null){
+    if (infoLang.match(/[A-Z][a-z]+|[0-9]+/g) !== null) {
       infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
-    } 
+    }
     return infoLang
 
   }
@@ -142,7 +142,7 @@ const displayInfoLang = (info) => {
 
 }
 
-const getInfo = (input)=>{
+const getInfo = (input) => {
   return {
     cType: input.type,
     dataKor: input.getAttribute('data-kor'),
@@ -152,7 +152,7 @@ const getInfo = (input)=>{
   }
 }
 
-const setInfo = (data, inputDiv)=>{
+const setInfo = (data, inputDiv) => {
   inputDiv.type = data.cType
   inputDiv.value = data.value
   inputDiv.setAttribute('name', data.name)

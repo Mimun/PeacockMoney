@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    
     .info-container{
       border: 1px solid lightgrey;
       padding: 1% 0%;
@@ -29,10 +28,10 @@
 </head>
 
 <body>
-  <!-- create employee template for modal -->
-  <template id="create-employee-template">
+  <!-- create warehouse template for modal -->
+  <template id="create-warehouse-template">
     <div class="modal-header text-center">
-      <h4 class="modal-title w-100 font-weight-bold">Tao moi nhan vien</h4>
+      <h4 class="modal-title w-100 font-weight-bold">Tao moi kho</h4>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -40,27 +39,12 @@
     <div class="modal-body mx-3">
       <div class="md-form mb-5">
         <input type="text" class="form-control validate" name="fullName" data-vie="hoTen" data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Ho ten</label>
+        <label data-error="wrong" data-success="right">Ten kho</label>
       </div>
 
       <div class="md-form mb-5">
         <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
         <label data-error="wrong" data-success="right">Dia chi</label>
-      </div>
-
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Cmnd</label>
-      </div>
-
-      <div class="md-form mb-5">
-        <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap" data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Ngay cap</label>
-      </div>
-
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap" data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Noi cap</label>
       </div>
 
       <div class="md-form mb-5">
@@ -80,13 +64,13 @@
 
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      <button class="btn btn-unique" id="btn-create-employee">Create</button>
+      <button class="btn btn-unique" id="btn-create-warehouse">Create</button>
     </div>
 
   </template>
 
-  <!-- employee list -->
-  <template id="employee-list">
+  <!-- warehouse list -->
+  <template id="warehouse-list">
     <div class="info-container">
       <div class="container">
         <div class="row">
@@ -112,12 +96,11 @@
   <div class="d-flex" id="wrapper">
     <%- include('../../evaluationMng/views/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h2>This is list of employees</h2>
-      <div id="employee-list-container"></div>
-      <button class="btn btn-default btn-sm" id="create-new-employee">Launch
-        Modal Contact Form</button>
+      <h2>This is list of warehouse</h2>
+      <div id="warehouse-list-container"></div>
+      <button class="btn btn-default btn-sm" id="create-new-warehouse">Create new warehouse</button>
 
-      <!-- modal to create new employee -->
+      <!-- modal to create new warehouse -->
       <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -133,24 +116,24 @@
 
   <script type="module">
     import {generateManagementList} from '/generateManagementList.js'
-    const employeeList = <%- JSON.stringify(employeeList) %>;
-    console.log('employee list: ', employeeList)
+    const warehouseList = <%- JSON.stringify(warehouseList) %>;
+    console.log('warehouse list: ', warehouseList)
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
-    const employeeListTemplate = document.querySelector('#employee-list')
+    const warehouseListTemplate = document.querySelector('#warehouse-list')
 
-    generateManagementList(employeeList, employeeListTemplate, 'employee-list-container', 'employees')
+    generateManagementList(warehouseList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
 
-    // create new employee button
-    document.querySelector('#create-new-employee').addEventListener('click', (event)=>{
+    // create new warehouse button
+    document.querySelector('#create-new-warehouse').addEventListener('click', (event)=>{
       $("#modalContactForm").on('show.bs.modal', ()=>{
-        const createEmployee = document.querySelector('#create-employee-template').content.cloneNode(true)
-        createEmployee.querySelector("#btn-create-employee").addEventListener('click', (event)=>{
-          var employeeObj = {
+        const createwarehouse = document.querySelector('#create-warehouse-template').content.cloneNode(true)
+        createwarehouse.querySelector("#btn-create-warehouse").addEventListener('click', (event)=>{
+          var warehouseObj = {
             metadata: [],
             infos: []
           }
           event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input=>{
-            employeeObj.metadata.push({
+            warehouseObj.metadata.push({
               cType: input.type,
               dataKor: input.getAttribute('data-kor'),
               name: input.getAttribute('name'),
@@ -159,12 +142,12 @@
             })
 
           })
-          console.log('input: ', employeeObj)
+          console.log('input: ', warehouseObj)
           $.ajax({
             type: 'POST',
-            url: 'employees',
+            url: 'warehouses',
             contentType: 'application/json',
-            data: JSON.stringify(employeeObj),
+            data: JSON.stringify(warehouseObj),
             success: result=>{
               console.log('result: ', result)
               $("#modalContactForm").modal('hide')
@@ -174,7 +157,7 @@
 
         })
         modalContent.innerHTML = ''
-        modalContent.appendChild(createEmployee)
+        modalContent.appendChild(createwarehouse)
       })
 
       $("#modalContactForm").modal('show')
