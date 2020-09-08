@@ -6,22 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .info-container{
+    .info-container {
       border: 1px solid lightgrey;
       padding: 1% 0%;
     }
-    .info-container p{
+
+    .info-container p {
       margin: 0;
     }
-    .info-container:hover{
+
+    .info-container:hover {
       cursor: pointer;
       background-color: lightgrey;
     }
-    .name{
+
+    .name {
       font-weight: bold;
       font-size: larger;
     }
-    .phone-number .email .id{
+
+    .phone-number .email .id {
       font-size: smaller;
     }
   </style>
@@ -38,7 +42,7 @@
     </div>
     <div class="modal-body mx-3">
       <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="fullName" data-vie="hoTen" data-kor="koreanString">
+        <input type="text" class="form-control validate" name="storeName" data-vie="tenCuaHang" data-kor="koreanString">
         <label data-error="wrong" data-success="right">Ten cua hang</label>
       </div>
 
@@ -48,25 +52,34 @@
       </div>
 
       <div class="md-form mb-5">
-        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai" data-kor="koreanString">
+        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
+          data-kor="koreanString">
         <label data-error="wrong" data-success="right">So dien thoai</label>
       </div>
 
       <div class="md-form mb-5">
         <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
-        <label data-error="wrong" data-success="right" >Email</label>
+        <label data-error="wrong" data-success="right">Email</label>
       </div>
+
 
       <div class="md-form mb-5">
         <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
-        <label data-error="wrong" data-success="right" >Ghi chu</label>
+        <label data-error="wrong" data-success="right">Ghi chu</label>
       </div>
 
     </div>
     <div class="modal-footer d-flex justify-content-center">
+      <button class="btn btn-default" id="btn-add-representative">Add representative</button>
       <button class="btn btn-unique" id="btn-create-store">Create</button>
     </div>
 
+  </template>
+
+  <template id="store-representative-select-template">
+    <select class="browser-default custom-select">
+      <option value="">No employee</option>
+    </select>
   </template>
 
   <!-- store list -->
@@ -88,7 +101,7 @@
           </div>
         </div>
       </div>
-      
+
     </div>
   </template>
 
@@ -105,7 +118,7 @@
         aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
-            
+
 
           </div>
         </div>
@@ -115,24 +128,49 @@
   </div>
 
   <script type="module">
-    import {generateManagementList} from '/generateManagementList.js'
+    import { generateStoreManagementList } from '/generateStoreManagementList.js'
     const storeList = <%- JSON.stringify(storeList) %>;
+    const employeeList = <%- JSON.stringify(employeeList) %>;
     console.log('store list: ', storeList)
+    console.log('employee list: ', employeeList)
+
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
     const storeListTemplate = document.querySelector('#store-list')
 
-    generateManagementList(storeList, storeListTemplate, 'store-list-container', 'stores')
+    // create representative select box
+    var storeRepresentativeSelect = document.querySelector('#store-representative-select-template').content.cloneNode(true)
+    employeeList.forEach(employee => {
+      var option = document.createElement('option')
+      option.value = employee._id
+      option.innerHTML = employee.fullName + ' - ' + employee.role
+      storeRepresentativeSelect.querySelector('select').appendChild(option)
+    })
+
+    generateStoreManagementList(storeList, employeeList, storeListTemplate, 'store-list-container', 'stores')
 
     // create new store button
-    document.querySelector('#create-new-store').addEventListener('click', (event)=>{
-      $("#modalContactForm").on('show.bs.modal', ()=>{
+    document.querySelector('#create-new-store').addEventListener('click', (event) => {
+      $("#modalContactForm").on('show.bs.modal', () => {
+        modalContent.innerHTML = ''
+
         const createstore = document.querySelector('#create-store-template').content.cloneNode(true)
-        createstore.querySelector("#btn-create-store").addEventListener('click', (event)=>{
+
+        // must have one select representative box as default
+        const storeRepresentativeSelectClone = storeRepresentativeSelect.cloneNode(true)
+
+        // for adding representatives button
+        createstore.querySelector('#btn-add-representative').addEventListener('click', (event) => {
+          let storeRepresentativeSelectClone = storeRepresentativeSelect.cloneNode(true)
+          event.target.closest('.modal-content').querySelector('.modal-body').appendChild(storeRepresentativeSelectClone)
+        })
+
+        createstore.querySelector("#btn-create-store").addEventListener('click', (event) => {
           var storeObj = {
             metadata: [],
-            infos: []
+            infos: [],
+            representatives: []
           }
-          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input=>{
+          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
             storeObj.metadata.push({
               cType: input.type,
               dataKor: input.getAttribute('data-kor'),
@@ -142,13 +180,20 @@
             })
 
           })
+
+          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('select').forEach(select => {
+            if (select.value) {
+              storeObj.representatives.push(select.value)
+
+            }
+          })
           console.log('input: ', storeObj)
           $.ajax({
             type: 'POST',
             url: 'stores',
             contentType: 'application/json',
             data: JSON.stringify(storeObj),
-            success: result=>{
+            success: result => {
               console.log('result: ', result)
               $("#modalContactForm").modal('hide')
               window.location.reload()
@@ -156,7 +201,7 @@
           })
 
         })
-        modalContent.innerHTML = ''
+        createstore.querySelector('.modal-body').appendChild(storeRepresentativeSelectClone)
         modalContent.appendChild(createstore)
       })
 

@@ -6,23 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    
-    .info-container{
+    .info-container {
       border: 1px solid lightgrey;
       padding: 1% 0%;
     }
-    .info-container p{
+
+    .info-container p {
       margin: 0;
     }
-    .info-container:hover{
+
+    .info-container:hover {
       cursor: pointer;
       background-color: lightgrey;
     }
-    .name{
+
+    .name {
       font-weight: bold;
       font-size: larger;
     }
-    .phone-number .email .id{
+
+    .phone-number .email .id {
       font-size: smaller;
     }
   </style>
@@ -54,28 +57,41 @@
       </div>
 
       <div class="md-form mb-5">
-        <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap" data-kor="koreanString">
+        <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap"
+          data-kor="koreanString">
         <label data-error="wrong" data-success="right">Ngay cap</label>
       </div>
 
       <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap" data-kor="koreanString">
+        <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap"
+          data-kor="koreanString">
         <label data-error="wrong" data-success="right">Noi cap</label>
       </div>
 
       <div class="md-form mb-5">
-        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai" data-kor="koreanString">
+        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
+          data-kor="koreanString">
         <label data-error="wrong" data-success="right">So dien thoai</label>
       </div>
 
       <div class="md-form mb-5">
         <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
-        <label data-error="wrong" data-success="right" >Email</label>
+        <label data-error="wrong" data-success="right">Email</label>
       </div>
+
+      <select class="browser-default custom-select select-role">
+        <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
+        <option name="role" value="admin" data-vie="chucVu" data-kor="koreanString">Admin</option>
+        <option name="role" value="superAdmin" data-vie="chucVu" data-kor="koreanString">Super Admin</option>
+        <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
+
+      </select>
+
+      <select class="browser-default custom-select select-store"></select>
 
       <div class="md-form mb-5">
         <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
-        <label data-error="wrong" data-success="right" >Ghi chu</label>
+        <label data-error="wrong" data-success="right">Ghi chu</label>
       </div>
 
     </div>
@@ -104,7 +120,7 @@
           </div>
         </div>
       </div>
-      
+
     </div>
   </template>
 
@@ -122,7 +138,7 @@
         aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
-            
+
 
           </div>
         </div>
@@ -132,24 +148,44 @@
   </div>
 
   <script type="module">
-    import {generateManagementList} from '/generateManagementList.js'
+    import { generateEmployeeManagementList } from '/generateEmployeeManagementList.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;
+    const storeList = <%- JSON.stringify(storeList) %>;
+
     console.log('employee list: ', employeeList)
+    console.log('store list: ', storeList)
+
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
     const employeeListTemplate = document.querySelector('#employee-list')
 
-    generateManagementList(employeeList, employeeListTemplate, 'employee-list-container', 'employees')
+    generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees')
 
     // create new employee button
-    document.querySelector('#create-new-employee').addEventListener('click', (event)=>{
-      $("#modalContactForm").on('show.bs.modal', ()=>{
+    document.querySelector('#create-new-employee').addEventListener('click', (event) => {
+      $("#modalContactForm").on('show.bs.modal', () => {
         const createEmployee = document.querySelector('#create-employee-template').content.cloneNode(true)
-        createEmployee.querySelector("#btn-create-employee").addEventListener('click', (event)=>{
+        if (storeList.length === 0) {
+          var option = document.createElement('option')
+          option.value = ''
+          option.innerHTML = 'No store'
+          createEmployee.querySelector('.select-store').appendChild(option)
+
+        } else {
+          storeList.forEach(store => {
+            var option = document.createElement('option')
+            option.value = store._id
+            option.innerHTML = store.fullName + "-" + store.address
+            createEmployee.querySelector('.select-store').appendChild(option)
+          })
+        }
+
+        createEmployee.querySelector("#btn-create-employee").addEventListener('click', (event) => {
           var employeeObj = {
             metadata: [],
-            infos: []
+            infos: [],
+            store: null
           }
-          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input=>{
+          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
             employeeObj.metadata.push({
               cType: input.type,
               dataKor: input.getAttribute('data-kor'),
@@ -159,13 +195,26 @@
             })
 
           })
+
+          var select = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-role')
+          var selectOption = select.options[select.selectedIndex]
+          employeeObj.metadata.push({
+            name: selectOption.getAttribute('name'),
+            value: selectOption.getAttribute('value'),
+            cType: 'select',
+            dataVie: selectOption.getAttribute('data-vie'),
+            dataKor: selectOption.getAttribute('data-kor')
+          })
+
+          var selectedStore = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-store')
+          employeeObj.store = selectedStore.value
           console.log('input: ', employeeObj)
           $.ajax({
             type: 'POST',
             url: 'employees',
             contentType: 'application/json',
             data: JSON.stringify(employeeObj),
-            success: result=>{
+            success: result => {
               console.log('result: ', result)
               $("#modalContactForm").modal('hide')
               window.location.reload()

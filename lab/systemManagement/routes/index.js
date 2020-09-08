@@ -3,6 +3,7 @@ var router = express.Router();
 var Employee = require('../models/employee')
 var Store = require('../models/store')
 var Warehouse = require('../models/warehouse')
+var async = require('async');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -13,9 +14,30 @@ router.get('/', function(req, res, next) {
 // EMPLOYEES
 // get all employees
 router.get('/employees', (req, res, next)=>{
-  Employee.find({}, (err, results)=>{
+  async.parallel({
+    stores: callback=>{
+      Store.find({}).exec(callback)
+    },
+    employees: callback=>{
+      Employee.find({}).populate([
+        {
+          path: 'store',
+          model: 'Store'
+        }
+      ]).exec(callback)
+    }
+  }, (err, results)=>{
     if(err) throw err
-    res.render('employees', {employeeList: results})
+    var storeList = results.stores.map(store=>{
+      var fullName = findNestedObj(store, 'name', 'storeName').value
+      var address = findNestedObj(store, 'name', 'address').value
+      return {
+        _id: store._id,
+        fullName,
+        address
+      }
+    })
+    res.render('employees', {employeeList: results.employees, storeList})
   })
 })
 
@@ -35,7 +57,7 @@ router.post('/employees', (req, res, next)=>{
 // upate employee
 router.put('/employees/:id', (req, res, next)=>{
   console.log('id: ', req.params.id)
-  Employee.findByIdAndUpdate({_id: req.params.id}, {$set: {'metadata': req.body.metadata}}, (err, result)=>{
+  Employee.findByIdAndUpdate({_id: req.params.id}, {$set: {'metadata': req.body.metadata, 'store': req.body.store}}, (err, result)=>{
     if(err) throw err
     res.send('Update successfully!')
   })
@@ -53,10 +75,27 @@ router.delete('/employees/:id', (req, res, next)=>{
 // STORES
 // get all stores
 router.get('/stores', (req, res, next)=>{
-  Store.find({}, (err, result)=>{
+  async.parallel({
+    stores: callback=>{
+      Store.find({}).exec(callback)
+    },
+    employees: callback=>{
+      Employee.find({}).exec(callback)
+    }
+  }, (err, results)=>{
     if(err) throw err
-    res.render('stores', {storeList: result})
+    var employeeList = results.employees.map(employee=>{
+      var fullName = findNestedObj(employee, 'name', 'fullName').value
+      var role = findNestedObj(employee, 'name', 'role').value
+      return {
+        _id: employee._id,
+        fullName,
+        role
+      }
+    })
+    res.render('stores', {storeList: results.stores, employeeList})
   })
+ 
 })
 
 // create new store
@@ -72,7 +111,7 @@ router.post('/stores', (req, res, next)=>{
 // update store
 router.put('/stores/:id', (req, res, next)=>{
   console.log('id: ', req.params.id)
-  Store.findByIdAndUpdate({_id: req.params.id}, {$set: {"metadata": req.body.metadata}}, (err, result)=>{
+  Store.findByIdAndUpdate({_id: req.params.id}, {$set: {"metadata": req.body.metadata, "representatives": req.body.representatives}}, (err, result)=>{
     if(err) throw err
     res.status(200).send("Update successfully!")
   })
@@ -90,9 +129,25 @@ router.delete('/stores/:id', (req, res, next)=>{
 // WAREHOUSE
 // get all warehouses
 router.get('/warehouses', (req, res, next)=>{
-  Warehouse.find({}, (err, result)=>{
+  async.parallel({
+    warehouses: callback=>{
+      Warehouse.find({}).exec(callback)
+    },
+    employees: callback=>{
+      Employee.find({}).exec(callback)
+    }
+  }, (err, results)=>{
     if(err) throw err
-    res.render('warehouses', {warehouseList: result})
+    var employeeList = results.employees.map(employee=>{
+      var fullName = findNestedObj(employee, 'name', 'fullName').value
+      var role = findNestedObj(employee, 'name', 'role').value
+      return {
+        _id: employee._id,
+        fullName,
+        role
+      }
+    })
+    res.render('warehouses', {warehouseList: results.warehouses, employeeList})
   })
 })
 
@@ -109,7 +164,7 @@ router.post('/warehouses', (req, res, next)=>{
 // update warehouse
 router.put('/warehouses/:id', (req, res, next)=>{
   console.log('id: ', req.params.id)
-  Warehouse.findByIdAndUpdate({_id: req.params.id}, {$set: {"metadata": req.body.metadata}}, (err, result)=>{
+  Warehouse.findByIdAndUpdate({_id: req.params.id}, {$set: {"metadata": req.body.metadata,  "representatives": req.body.representatives}}, (err, result)=>{
     if(err) throw err
     res.status(200).send("Update successfully!")
   })
@@ -124,5 +179,15 @@ router.delete('/warehouses/:id', (req, res, next)=>{
   })
 })
 
+const findNestedObj = (entireObj, keyToFind, valToFind)=>{
+  let foundObj;
+  JSON.stringify(entireObj, (_, nestedValue) => {
+    if (nestedValue && nestedValue[keyToFind] === valToFind) {
+      foundObj = nestedValue;
+    }
+    return nestedValue;
+  });
+  return foundObj;
+}
 
 module.exports = router;

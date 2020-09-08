@@ -12,7 +12,8 @@ const storeSchema = new mongoose.Schema({
     name: {type: String},
     value: {type: String},
     cType: {type: String, default: 'text'}
-  }]
+  }],
+  representatives: [{type: Object}]
 })
 
 module.exports = mongoose.model('Store', storeSchema)
