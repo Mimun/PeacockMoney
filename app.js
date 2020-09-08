@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use(express.static(path.join(__dirname, 'js')));
 app.use(express.static(path.join(__dirname, 'styles')));
-app.use(express.static(path.join(__dirname, 'lab/contractManagement/Components')));
+app.use(express.static(path.join(__dirname, 'Components')));
 console.log('dir name: ', path.join(__dirname))
 
 

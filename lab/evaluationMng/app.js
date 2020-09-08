@@ -12,7 +12,7 @@ var app = express();
 const mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, '../../Components')]);
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
@@ -22,6 +22,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use(express.static(path.join(__dirname, '../../js')));
+app.use(express.static(path.join(__dirname, '../../Components')));
+
 
 console.log('dir name: ', __dirname)
 

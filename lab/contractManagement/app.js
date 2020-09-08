@@ -21,7 +21,8 @@ db.on('open', ()=>{
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, '../../Components')]);
+
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
@@ -45,6 +46,8 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.static(path.join(__dirname, '../../js')));
 app.use(express.static(path.join(__dirname, '../../styles')));
 app.use(express.static(path.join(__dirname, '../../public')));
+app.use(express.static(path.join(__dirname, '../../Components')));
+
 
 app.use(compress())
 // app.use(bodyParser.urlencoded({limit: '50mb'}));

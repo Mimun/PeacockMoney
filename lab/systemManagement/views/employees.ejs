@@ -41,6 +41,7 @@
       </button>
     </div>
     <div class="modal-body mx-3">
+      <cropper-wc title="abc"></cropper-wc>
       <div class="md-form mb-5">
         <input type="text" class="form-control validate" name="fullName" data-vie="hoTen" data-kor="koreanString">
         <label data-error="wrong" data-success="right">Ho ten</label>
@@ -124,9 +125,9 @@
     </div>
   </template>
 
-  <%- include('../../evaluationMng/views/navbar.ejs')  %>
+ <%- include('../Components/navbar.ejs') %> 
   <div class="d-flex" id="wrapper">
-    <%- include('../../evaluationMng/views/sideBar.ejs') %>
+    <%- include('../Components/sideBar.ejs') %> 
     <div id="page-content-wrapper">
       <h2>This is list of employees</h2>
       <div id="employee-list-container"></div>
@@ -146,7 +147,6 @@
     </div>
   </div>
   </div>
-
   <script type="module">
     import { generateEmployeeManagementList } from '/generateEmployeeManagementList.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;

@@ -13,7 +13,7 @@ var app = express();
 app.use(bodyParser.json({limit: '50mb'}))
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, '../../Components')]);
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
@@ -25,6 +25,8 @@ app.use(express.static(path.join(__dirname, '../../node_modules')))
 app.use(express.static(path.join(__dirname, '../../public')))
 app.use(express.static(path.join(__dirname, '../../js')))
 app.use(express.static(path.join(__dirname, '../../styles')))
+app.use(express.static(path.join(__dirname, '../../Components')));
+
 
 
 const mongooseUrl = 'mongodb://localhost:27017/systemMng'
