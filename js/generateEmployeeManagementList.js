@@ -24,8 +24,14 @@ detailInfoTemplate.innerHTML = `
 
 
 // select
+var selectContainer = document.createElement('div')
+selectContainer.className = 'select-container'
+
 var select = document.createElement('select')
 select.className = "browser-default custom-select"
+
+var selectLabel = document.createElement('label')
+
 
 var employeeSelectOptions = `
   <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
@@ -34,6 +40,7 @@ var employeeSelectOptions = `
   <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
 
 `
+
 
 var storeSelectOptions = `
   <option></option> 
@@ -70,7 +77,15 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
         modalBody.innerHTML = ''
         detailEmployeeTemplate.querySelector('#btn-edit').textContent = "Edit"
         cData.metadata.forEach(data => {
-          if (data.cType !== 'select') {
+          if (data.cType === 'select') {
+            createSelect(select, data.value, 'employee-select', 'select-role', employeeSelectOptions, selectLabel, 'Phan quyen', selectContainer)
+          } else if (data.cType === 'image') {
+            var imageContainer = document.createElement('div')
+            imageContainer.className = 'img-container avatar-container'
+            imageContainer.innerHTML = `<img src="${data.value}">`
+            modalBody.appendChild(imageContainer)
+
+          } else {
             const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
             var inputDiv = detailInfoTemplateClone.querySelector('input')
             var labelDiv = detailInfoTemplateClone.querySelector('label')
@@ -80,27 +95,14 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
             script.src = '/mdbootstrap/js/mdb.min.js'
             detailInfoTemplateClone.prepend(script)
             modalBody.appendChild(detailInfoTemplateClone)
-          } else {
-            var employeeSelect = select.cloneNode(true)
-            employeeSelect.innerHTML = employeeSelectOptions
-            employeeSelect.value = data.value
-            employeeSelect.classList.add("select-role")
-            employeeSelect.disabled = true
-            modalBody.appendChild(employeeSelect)
           }
         })
-        var storeSelect = select.cloneNode(true)
-        selectList.forEach(select => {
-          var optionClone = document.createElement('option')
-          optionClone.innerHTML = select.fullName + '-' + select.address
-          optionClone.value = select._id
-          storeSelect.appendChild(optionClone)
+        var storeSelectOptions = selectList.map(select => {
+          var option = `<option value=${select._id}>${select.fullName} - ${select.address}</option>`
+          return option
         })
-        storeSelect.value = cData.store._id
-        storeSelect.classList.add("select-store")
-        storeSelect.disabled = true
-        modalBody.appendChild(storeSelect)
-
+        
+        createSelect(select, cData.store._id, 'store-select', 'select-store', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
         modalContent.appendChild(detailEmployeeTemplate)
 
       })
@@ -119,12 +121,20 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
         modalBody.querySelectorAll('input').forEach(input => {
           input.removeAttribute('disabled')
         })
-        modalBody.querySelectorAll('select').forEach(select=>{
+        modalBody.querySelectorAll('select').forEach(select => {
           select.disabled = false
         })
         break
       case "Update":
         var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [] }
+        updateObj.metadata.push({
+          cType: 'image',
+          dataKor: 'koreanString',
+          name: 'avatar',
+          value: modalBody.querySelector('img').getAttribute('src'),
+          dataVie: 'anhDaiDien'
+        })
+
         modalBody.querySelectorAll('input').forEach(input => {
           input.setAttribute('disabled', true)
           updateObj.metadata.push(getInfo(input))
@@ -207,4 +217,23 @@ const setInfo = (data, inputDiv) => {
   inputDiv.setAttribute('name', data.name)
   inputDiv.setAttribute('data-vie', data.dataVie)
   inputDiv.setAttribute('data-kor', data.dataKor)
+}
+
+const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, selectOptions, labelTemplate, labelContent, selectContainer) => {
+  var select = selectTemplate.cloneNode(true)
+  select.id = selectId
+  select.innerHTML = selectOptions
+  select.value = selecteValue
+  select.classList.add(selectClassName)
+  select.disabled = true
+
+  var selectLabel = labelTemplate.cloneNode(true)
+  selectLabel.setAttribute('for', selectId)
+  selectLabel.innerHTML = labelContent
+
+  var selectContainerClone = selectContainer.cloneNode(true)
+  selectContainerClone.appendChild(selectLabel)
+  selectContainerClone.appendChild(select)
+  modalBody.appendChild(selectContainerClone)
+
 }

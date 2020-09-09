@@ -21,25 +21,28 @@ detailInfoTemplate.innerHTML = `
   <input type="text" class="form-control" disabled>
   <label data-error="wrong" data-success="right" ></label>
 `
+var selectContainer = document.createElement('div')
+selectContainer.className = 'select-container'
+
+var select = document.createElement('select')
+select.className = "browser-default custom-select"
+
+var selectLabel = document.createElement('label')
 
 const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 const modalBody = detailStoreTemplate.querySelector('.modal-body')
-
+const modalFooter = detailStoreTemplate.querySelector('.modal-footer')
 
 
 
 export const generateStoreManagementList = (mainList, selectList, template, elementName, routerName) => {
-  var representativeSelect = document.createElement('select')
-  representativeSelect.className = 'browser-default custom-select select-representative'
-  representativeSelect.disabled = true
-  representativeSelect.innerHTML = `<option value="">No employee</option>`
-  selectList.forEach(select => {
-    console.log('select id: ', typeof select._id)
-    var option = document.createElement('option')
-    option.value = select._id
-    option.innerHTML = select.fullName + ' - ' + select.role
-    representativeSelect.appendChild(option)
+  var representativeSelectOptions = selectList.map(select => {
+    var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
+    return option
   })
+  representativeSelectOptions.push('<option value="">None</option>')
+  console.log('represnetative option: ', representativeSelectOptions)
+
   mainList.forEach(itemObj => {
     const clone = template.content.cloneNode(true)
     clone.querySelector('.info-container').C_DATA = itemObj
@@ -80,20 +83,20 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
         })
         if (cData.representatives.length !== 0) {
           cData.representatives.forEach(representative => {
-            console.log('representative: ', representative === selectList[0]._id)
-            var representativeSelectClone = representativeSelect.cloneNode(true)
-            representativeSelectClone.value = representative
-            modalBody.appendChild(representativeSelectClone)
+            createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
           })
 
         }
-
-
         modalContent.appendChild(detailStoreTemplate)
 
       })
       $("#modalContactForm").modal('show')
-
+      $('#modalContactForm').on('hidden.bs.modal', ()=>{
+        console.log('this is called befor hidding')
+        if(modalFooter.querySelector('#btn-add-representative')){
+          modalFooter.removeChild(modalFooter.querySelector('#btn-add-representative'))
+        }
+      })
     })
     document.querySelector('#' + elementName + '').appendChild(clone)
 
@@ -101,22 +104,25 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
   })
 
   // edit button
-  detailStoreTemplate.querySelector('.modal-footer').querySelector('#btn-edit').addEventListener('click', event => {
+  modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
     switch (event.target.textContent) {
       case "Edit":
         modalBody.querySelectorAll('input').forEach(input => {
           input.removeAttribute('disabled')
         })
         if (modalBody.querySelectorAll('select').length === 0) {
-          var representativeSelectClone = representativeSelect.cloneNode(true)
-          representativeSelectClone.value = ''
-          representativeSelectClone.disabled = false
-          modalBody.appendChild(representativeSelectClone)
-        } else {
-          modalBody.querySelectorAll('select').forEach(select => {
-            select.disabled = false
-          })
+          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
         }
+        modalBody.querySelectorAll('select').forEach(select => {
+          select.disabled = false
+        })
+        var addRepresentativeButton = event.target.cloneNode(true)
+        addRepresentativeButton.classList.replace('btn-default', 'btn-primary')
+        addRepresentativeButton.id = 'btn-add-representative'
+        addRepresentativeButton.innerHTML = "Add representative"
+        modalFooter.prepend(addRepresentativeButton)
+        addEventForAddRepresentativeButton()
 
         break
       case "Update":
@@ -152,7 +158,7 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
   })
 
   // delete button
-  detailStoreTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event => {
+  modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
     $.ajax({
       type: "DELETE",
       url: routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
@@ -163,6 +169,16 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
       }
     })
   })
+
+  // add representative button
+  const addEventForAddRepresentativeButton = ()=>{
+    modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event)=>{
+      console.log('Event: ', event.target)
+      var clone = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-container').cloneNode(true)
+      clone.querySelector('select').value = ""
+      modalBody.appendChild(clone)
+    })
+  }
 
 }
 
@@ -199,4 +215,23 @@ const setInfo = (data, inputDiv) => {
   inputDiv.setAttribute('name', data.name)
   inputDiv.setAttribute('data-vie', data.dataVie)
   inputDiv.setAttribute('data-kor', data.dataKor)
+}
+
+const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, selectOptions, labelTemplate, labelContent, selectContainer) => {
+  var select = selectTemplate.cloneNode(true)
+  select.id = selectId
+  select.innerHTML = selectOptions
+  select.value = selecteValue
+  select.classList.add(selectClassName)
+  select.disabled = true
+
+  var selectLabel = labelTemplate.cloneNode(true)
+  selectLabel.setAttribute('for', selectId)
+  selectLabel.innerHTML = labelContent
+
+  var selectContainerClone = selectContainer.cloneNode(true)
+  selectContainerClone.appendChild(selectLabel)
+  selectContainerClone.appendChild(select)
+  modalBody.appendChild(selectContainerClone)
+
 }

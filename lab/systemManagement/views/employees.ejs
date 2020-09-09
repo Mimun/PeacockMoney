@@ -185,6 +185,13 @@
             infos: [],
             store: null
           }
+          employeeObj.metadata.push({
+            cType: 'image',
+            dataKor: 'koreanString',
+            name: 'avatar',
+            value: event.target.closest('.modal-content').querySelector('.modal-body').querySelector('cropper-wc').getImageData(),
+            dataVie: 'anhDaiDien'
+          })
           event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
             employeeObj.metadata.push({
               cType: input.type,

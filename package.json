@@ -8,7 +8,9 @@
   "dependencies": {
     "ajax": "0.0.4",
     "async": "^3.2.0",
+    "atob": "^2.1.2",
     "body-parser": "^1.19.0",
+    "btoa": "^1.2.1",
     "cookie-parser": "~1.4.4",
     "cropperjs": "^1.5.7",
     "debug": "~2.6.9",

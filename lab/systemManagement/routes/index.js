@@ -4,6 +4,10 @@ var Employee = require('../models/employee')
 var Store = require('../models/store')
 var Warehouse = require('../models/warehouse')
 var async = require('async');
+var atob = require('atob')
+var btoa = require('btoa')
+var fs = require('fs');
+const { checkbox } = require('material-components-web');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -44,14 +48,26 @@ router.get('/employees', (req, res, next)=>{
 // create new employee
 router.post('/employees', (req, res, next)=>{
   console.log('req.body: ', req.body)
-  var employee = new Employee(req.body)
-  employee.save((err, result)=>{
-    if(err) throw err
-    if(result){
-      res.send('Saved successfully!')
+  var avatar = findNestedObj(req.body, 'name', 'avatar').value
+  let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
+  let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
+  var fullName = findNestedObj(req.body, 'name', 'fullName').value
 
-    }
+  fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err)=>{
+    if(err) console.error(err)
+    findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+    var employee = new Employee(req.body)
+    console.log('employee: ', employee)
+    employee.save((err, result)=>{
+      if(err) throw err
+      if(result){
+        res.send('Saved successfully!')
+  
+      }
+    })
+
   })
+  
 })
 
 // upate employee
@@ -188,6 +204,18 @@ const findNestedObj = (entireObj, keyToFind, valToFind)=>{
     return nestedValue;
   });
   return foundObj;
+}
+
+const checkBase64 = (str) => {
+  if (str === '' || str.trim() === '') { return false; }
+  try {
+      console.log('test result from checkBase64 1: ', btoa(atob(str)) == str)
+      return btoa(atob(str)) == str;
+  } catch (err) {
+      console.log('test result from checkBase64 2: ', false)
+
+      return false;
+  }
 }
 
 module.exports = router;
