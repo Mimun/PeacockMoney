@@ -6,27 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .info-container {
-      border: 1px solid lightgrey;
-      padding: 1% 0%;
-    }
-
-    .info-container p {
-      margin: 0;
-    }
-
-    .info-container:hover {
-      cursor: pointer;
-      background-color: lightgrey;
-    }
-
-    .name {
-      font-weight: bold;
-      font-size: larger;
-    }
-
-    .phone-number .email .id {
-      font-size: smaller;
+    img{
+      max-width: 250px;
     }
   </style>
 </head>
@@ -40,59 +21,71 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="modal-body mx-3">
-      <cropper-wc title="abc"></cropper-wc>
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="fullName" data-vie="hoTen" data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Ho ten</label>
+    <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
+      <div class="cropper-container" style="width: 100%; padding: 0 18%;">
+        <cropper-wc title="abc" ></cropper-wc>
+
+      </div>
+      <div class="form-group">
+        <label class="active" data-error="wrong" data-success="right">Ho ten</label>
+        <input type="text" class="form-control validate active" name="fullName" data-vie="hoTen" data-kor="koreanString" placeholder="abc">
       </div>
 
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Dia chi</label>
+        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
+        
       </div>
 
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Cmnd</label>
+        <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
       </div>
 
-      <div class="md-form mb-5">
+      <div class="form-group">
+        <label data-error="wrong" data-success="right">Ngay cap</label>
         <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap"
           data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Ngay cap</label>
       </div>
 
-      <div class="md-form mb-5">
+      <div class="form-group">
+        <label data-error="wrong" data-success="right">Noi cap</label>
         <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap"
           data-kor="koreanString">
-        <label data-error="wrong" data-success="right">Noi cap</label>
       </div>
 
-      <div class="md-form mb-5">
+      <div class="form-group">
+        <label data-error="wrong" data-success="right">So dien thoai</label>
         <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
           data-kor="koreanString">
-        <label data-error="wrong" data-success="right">So dien thoai</label>
       </div>
 
-      <div class="md-form mb-5">
-        <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Email</label>
+        <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
       </div>
 
-      <select class="browser-default custom-select select-role">
-        <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
-        <option name="role" value="admin" data-vie="chucVu" data-kor="koreanString">Admin</option>
-        <option name="role" value="superAdmin" data-vie="chucVu" data-kor="koreanString">Super Admin</option>
-        <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
+      <div class="select-container">
+        <label>Phan quyen</label>
+        <select class="browser-default custom-select select-role">
+          <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
+          <option name="role" value="admin" data-vie="chucVu" data-kor="koreanString">Admin</option>
+          <option name="role" value="superAdmin" data-vie="chucVu" data-kor="koreanString">Super Admin</option>
+          <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
 
-      </select>
+        </select>
+      </div>
 
-      <select class="browser-default custom-select select-store"></select>
+      <div class="select-container">
+        <label>Chon Cua hang</label>
+        <select class="browser-default custom-select select-store">
+        </select>
+      </div>
 
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
+
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Ghi chu</label>
+        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
       </div>
 
     </div>
@@ -111,6 +104,9 @@
             <p class="name"></p>
           </div>
           <div class="col">
+            <p class="role"></p>
+          </div>
+          <div class="col">
             <p class="phone-number"></p>
           </div>
           <div class="col">
@@ -125,22 +121,29 @@
     </div>
   </template>
 
- <%- include('../Components/navbar.ejs') %> 
+  <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %> 
+    <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>This is list of employees</h2>
-      <div id="employee-list-container"></div>
+      <!-- Search form -->
+      <div class="search-container">
+        <form class="form-inline active-cyan-4" id="form-search">
+          <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search" id="search"
+            aria-label="Search">
+          <i class="fa fa-search" aria-hidden="true"></i>
+        </form>
+      </div>
+
+      <div id="employee-list-container" class="list-container"></div>
       <button class="btn btn-default btn-sm" id="create-new-employee">Launch
         Modal Contact Form</button>
 
       <!-- modal to create new employee -->
       <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
-
-
           </div>
         </div>
       </div>
@@ -234,6 +237,31 @@
       })
 
       $("#modalContactForm").modal('show')
+    })
+
+    document.querySelector('#form-search').addEventListener('submit', (event) => {
+      console.log('event: ', event.target)
+      event.preventDefault()
+      var searchValueArray = event.target.querySelector('input').value.split(' ')
+      console.log('search array: ', searchValueArray)
+      $.ajax({
+        type: 'POST',
+        url: 'employees/search',
+        contentType: 'application/json',
+        data: JSON.stringify({ data: searchValueArray }),
+        success: result => {
+          console.log('result: ', result)
+          document.querySelector('#employee-list-container').innerHTML = ''
+          if (result.employeeList.length !== 0) {
+            generateEmployeeManagementList(result.employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees')
+
+          } else {
+            generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees')
+
+          }
+
+        }
+      })
     })
   </script>
 

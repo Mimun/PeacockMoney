@@ -23,7 +23,7 @@
     transition: margin .25s ease-out;
   }
 
-  #sidebar-wrapper .sidebar-container{
+  #sidebar-wrapper .sidebar-container {
     position: fixed;
     display: inline-block;
     max-width: inherit;
@@ -32,7 +32,7 @@
     padding-bottom: 15%;
   }
 
-  #sidebar-wrapper .sidebar-container::-webkit-scrollbar{
+  #sidebar-wrapper .sidebar-container::-webkit-scrollbar {
     display: none;
   }
 
@@ -77,8 +77,13 @@
     margin: 2vh 0;
   }
 
-  .md-form {
-    margin: 2vh 1vw;
+  .form-group{
+    width: 18vw;
+  }
+
+  .select-container{
+    width: 18vw;
+    margin-bottom: 1rem;
   }
 
   #sidebar-btn {
@@ -87,23 +92,132 @@
     margin-top: 3%;
     position: relative;
     float: right;
-    
+
   }
-  #menu-toggle{
+
+  #menu-toggle {
     position: fixed;
   }
 
-  #table-container{
+  #table-container {
     padding: 5% 7%;
   }
-  .img-container{
+
+  .img-container {
     width: 100%;
     padding: 5%;
+    display: flex;
   }
-  img{
+
+  img {
     width: 100%;
+   
+    margin: auto;
     height: auto;
   }
+
+  /* search */
+  .active-pink-2 input[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #f48fb1;
+    box-shadow: 0 1px 0 0 #f48fb1;
+  }
+
+  .active-pink input[type=text] {
+    border-bottom: 1px solid #f48fb1;
+    box-shadow: 0 1px 0 0 #f48fb1;
+  }
+
+  .active-purple-2 input[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #ce93d8;
+    box-shadow: 0 1px 0 0 #ce93d8;
+  }
+
+  .active-purple input[type=text] {
+    border-bottom: 1px solid #ce93d8;
+    box-shadow: 0 1px 0 0 #ce93d8;
+  }
+
+  .active-cyan-2 input[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #4dd0e1;
+    box-shadow: 0 1px 0 0 #4dd0e1;
+  }
+
+  .active-cyan input[type=text] {
+    border-bottom: 1px solid #4dd0e1;
+    box-shadow: 0 1px 0 0 #4dd0e1;
+  }
+
+  .active-cyan .fa,
+  .active-cyan-2 .fa {
+    color: #4dd0e1;
+  }
+
+  .active-purple .fa,
+  .active-purple-2 .fa {
+    color: #ce93d8;
+  }
+
+  .active-pink .fa,
+  .active-pink-2 .fa {
+    color: #f48fb1;
+  }
+
+  .search-container {
+    width: fit-content;
+    position: relative;
+    float: right;
+  }
+
+  /* list css */
+  .info-container p {
+    margin: 0;
+  }
+
+  .info-container:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+  }
+
+  .name {
+    font-weight: bold;
+    font-size: larger;
+  }
+
+  .phone-number .email .id {
+    font-size: smaller;
+  }
+
+  .list-container {
+    padding: 5%;
+  }
+
+  .info-container .row {
+    padding: 1%;
+  }
+
+  /* .list-container .info-container {
+    border: 1px solid blue;
+    font-weight: bolder;
+  } */
+
+  .list-container .info-container:first-child {
+    border-top: 1px solid lightgrey;
+    border-right: 1px solid lightgrey;
+    border-left: 1px solid lightgrey;
+
+  }
+
+  .list-container .info-container:last-child {
+    border: 1px solid lightgrey;
+  }
+
+  .list-container .info-container:not(:first-child):not(:last-child) {
+    border-top: 1px solid lightgrey;
+    border-right: 1px solid lightgrey;
+    border-left: 1px solid lightgrey;
+    /* border-top: 1px solid lightgrey; */
+  }
+
 </style>
 
 <!-- Sidebar -->
@@ -124,15 +238,15 @@
       </ul>
 
       <!-- Quan ly hop dong -->
-      <a href="http://localhost:3000/contractMng/contracts" class="list-group-item list-group-item-action bg-light">Quan
+      <a href="/contractMng/contracts" class="list-group-item list-group-item-action bg-light">Quan
         ly hop dong</a>
 
       <!-- Quan ly tham dinh gia -->
-      <a href="http://localhost:3000/evaluationMng/evaluation"
+      <a href="/evaluationMng/evaluation"
         class="list-group-item list-group-item-action bg-light">Tham dinh gia</a>
 
       <!-- Tao moi hop dong -->
-      <a href="http://localhost:3000/contractMng/contractTemplates"
+      <a href="/contractMng/contractTemplates"
         class="list-group-item list-group-item-action bg-light">Tao moi hop dong</a>
 
       <!-- Quan ly tai san -->
@@ -146,22 +260,25 @@
         class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
           Quan ly he thong </span> <span class="fa fa-chevron-left pull-right"></span> </a>
       <ul class="collapse" id="contract-type-list" style="padding: 0; margin: 0;">
-        <li><a href="http://localhost:3000/contractMng" class="list-group-item list-group-item-action bg-light">Danh
+        <li><a href="/contractMng" class="list-group-item list-group-item-action bg-light">Danh
             sach
             mau hop dong</a></li>
-        <li><a href="http://localhost:3000/contractMng" class="list-group-item list-group-item-action bg-light">Tao mau
+        <li><a href="/contractMng" class="list-group-item list-group-item-action bg-light">Tao mau
             hop dong</a></li>
         <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau phieu</a></li>
         <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau phieu</a></li>
         <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a></li>
-        <li><a href="http://localhost:3000/systemMng/stores" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a></li>
-        <li><a href="http://localhost:3000/systemMng/employees" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a></li>
-        <li><a href="http://localhost:3000/systemMng/customers" class="list-group-item list-group-item-action bg-light">Quan ly khach hang</a></li>
-        <li><a href="http://localhost:3000/systemMng/warehouses" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
+        <li><a href="/systemMng/stores" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a>
+        </li>
+        <li><a href="/systemMng/employees" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a>
+        </li>
+        <li><a href="/systemMng/customers" class="list-group-item list-group-item-action bg-light">Quan ly khach
+            hang</a></li>
+        <li><a href="/systemMng/warehouses" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
         <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly mau thong ke</a></li>
-        <li><a href="http://localhost:3000/evaluationMng/itemStatus"
-            class="list-group-item list-group-item-action bg-light">Quan ly tinh trang tai san</a></li>
-        <li><a href="http://localhost:3000/evaluationMng/" class="list-group-item list-group-item-action bg-light">Quan
+        <li><a href="/evaluationMng/itemStatus" class="list-group-item list-group-item-action bg-light">Quan ly tinh
+            trang tai san</a></li>
+        <li><a href="/evaluationMng/" class="list-group-item list-group-item-action bg-light">Quan
             ly
             tham
             dinh gia</a></li>

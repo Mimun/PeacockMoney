@@ -8,7 +8,7 @@ detailEmployeeTemplate.innerHTML = `
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<div class="modal-body mx-3 object-div">
+<div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
 </div>
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-default btn-sm" id="btn-edit">Edit</button>
@@ -16,12 +16,17 @@ detailEmployeeTemplate.innerHTML = `
 </div>`
 
 const detailInfoTemplate = document.createElement('div')
-detailInfoTemplate.className = 'md-form form-group mb-5'
-detailInfoTemplate.innerHTML = `
-  <input type="text" class="form-control" disabled>
-  <label data-error="wrong" data-success="right" ></label>
-`
+// detailInfoTemplate.className = 'form-group md-form'
+// detailInfoTemplate.innerHTML = `
+//   <input type="text" class="form-control" disabled placeholder="abc">
+//   <label data-error="wrong" data-success="right" ></label>
 
+// `
+detailInfoTemplate.className = 'form-group'
+detailInfoTemplate.innerHTML = `
+  <label data-error="wrong" data-success="right" ></label>
+  <input type="text" class="form-control" disabled placeholder="abc">
+`
 
 // select
 var selectContainer = document.createElement('div')
@@ -41,16 +46,10 @@ var employeeSelectOptions = `
 
 `
 
-
-var storeSelectOptions = `
-  <option></option> 
-`
 const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 const modalBody = detailEmployeeTemplate.querySelector('.modal-body')
 
-
 export const generateEmployeeManagementList = (mainList, selectList, template, elementName, routerName) => {
-
   mainList.forEach(itemObj => {
     const clone = template.content.cloneNode(true)
     clone.querySelector('.info-container').C_DATA = itemObj
@@ -60,12 +59,13 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
     let phoneNumber = findNestedObj(itemObj.metadata, 'name', 'phoneNumber').value
     let email = findNestedObj(itemObj.metadata, 'name', 'email').value
     let id = itemObj._id
+    let role = findNestedObj(itemObj.metadata, 'name', 'role').value
 
     clone.querySelector('.name').innerHTML = name
     clone.querySelector('.phone-number').innerHTML = phoneNumber
     clone.querySelector('.email').innerHTML = email
     clone.querySelector('.id').innerHTML = id
-
+    clone.querySelector('.role').innerHTML = role
 
     clone.querySelector('.info-container').addEventListener('click', (event) => {
       const cData = event.target.closest('.info-container').C_DATA
@@ -91,9 +91,9 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
             var labelDiv = detailInfoTemplateClone.querySelector('label')
             setInfo(data, inputDiv)
             labelDiv.innerHTML = displayInfoLang(data.dataVie)
-            const script = document.createElement('script')
-            script.src = '/mdbootstrap/js/mdb.min.js'
-            detailInfoTemplateClone.prepend(script)
+            // const script = document.createElement('script')
+            // script.src = '/mdbootstrap/js/mdb.min.js'
+            // detailInfoTemplateClone.prepend(script)
             modalBody.appendChild(detailInfoTemplateClone)
           }
         })
@@ -101,17 +101,19 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
           var option = `<option value=${select._id}>${select.fullName} - ${select.address}</option>`
           return option
         })
-        
+
         createSelect(select, cData.store._id, 'store-select', 'select-store', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
         modalContent.appendChild(detailEmployeeTemplate)
 
       })
       $("#modalContactForm").modal('show')
+      $("#modalContactForm").on('hidden.bs.modal', ()=>{
+
+      })
+
 
     })
     document.querySelector('#' + elementName + '').appendChild(clone)
-
-
   })
 
   // edit button
@@ -165,8 +167,6 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
 
     }
     event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
-
-
   })
 
   // delete button
@@ -182,12 +182,12 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
     })
   })
 
+  
+
 }
 
 const displayInfoLang = (info) => {
   if (typeof info === "string") {
-    // // re-uppercase
-    // var infoLang = info.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
     // uppercase the first letter
     var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
     // split based on uppercase letters

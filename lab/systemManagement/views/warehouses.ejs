@@ -6,27 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .info-container {
-      border: 1px solid lightgrey;
-      padding: 1% 0%;
+    .form-group{
+      width: 100% !important;
     }
-
-    .info-container p {
-      margin: 0;
-    }
-
-    .info-container:hover {
-      cursor: pointer;
-      background-color: lightgrey;
-    }
-
-    .name {
-      font-weight: bold;
-      font-size: larger;
-    }
-
-    .phone-number .email .id {
-      font-size: smaller;
+    .select-container{
+      width: 100% !important;
     }
   </style>
 </head>
@@ -40,32 +24,33 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="modal-body mx-3">
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="warehouseName" data-vie="tenCuaHang" data-kor="koreanString">
+    <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Ten kho</label>
+        <input type="text" class="form-control validate" name="warehouseName" data-vie="tenCuaHang"
+          data-kor="koreanString">
       </div>
 
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Dia chi</label>
+        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
       </div>
 
-      <div class="md-form mb-5">
+      <div class="form-group">
+        <label data-error="wrong" data-success="right">So dien thoai</label>
         <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
           data-kor="koreanString">
-        <label data-error="wrong" data-success="right">So dien thoai</label>
       </div>
 
-      <div class="md-form mb-5">
-        <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Email</label>
+        <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
       </div>
 
 
-      <div class="md-form mb-5">
-        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Ghi chu</label>
+        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
       </div>
 
     </div>
@@ -77,9 +62,13 @@
   </template>
 
   <template id="warehouse-representative-select-template">
-    <select class="browser-default custom-select">
-      <option value="">No employee</option>
-    </select>
+    <div class="select-container">
+      <label>Thu kho</label>
+      <select class="browser-default custom-select">
+        <option value="">No employee</option>
+      </select>
+    </div>
+    
   </template>
 
   <!-- warehouse list -->
@@ -105,12 +94,20 @@
     </div>
   </template>
 
- <%- include('../Components/navbar.ejs') %> 
+  <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %> 
+    <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>This is list of warehouse</h2>
-      <div id="warehouse-list-container"></div>
+      <div class="search-container">
+        <form class="form-inline active-cyan-4" id="form-search">
+          <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search" id="search"
+            aria-label="Search">
+          <i class="fa fa-search" aria-hidden="true"></i>
+        </form>
+      </div>
+      
+      <div id="warehouse-list-container" class="list-container"></div>
       <button class="btn btn-default btn-sm" id="create-new-warehouse">Create new warehouse</button>
 
       <!-- modal to create new warehouse -->
@@ -207,6 +204,33 @@
 
       $("#modalContactForm").modal('show')
     })
+
+    document.querySelector('#form-search').addEventListener('submit', (event) => {
+      console.log('event: ', event.target)
+      event.preventDefault()
+      var searchValueArray = event.target.querySelector('input').value.split(' ')
+      console.log('search array: ', searchValueArray)
+      $.ajax({
+        type: 'POST',
+        url: 'warehouses/search',
+        contentType: 'application/json',
+        data: JSON.stringify({ data: searchValueArray }),
+        success: result => {
+          console.log('result: ', result)
+          document.querySelector('#warehouse-list-container').innerHTML = ''
+          if (result.warehouseList.length !== 0) {
+            generateWarehouseManagementList(result.warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+
+          } else {
+            generateWarehouseManagementList(warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+
+
+          }
+
+        }
+      })
+    })
+
   </script>
 
 </body>

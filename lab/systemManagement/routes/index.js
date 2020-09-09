@@ -9,20 +9,24 @@ var btoa = require('btoa')
 var fs = require('fs');
 const { checkbox } = require('material-components-web');
 
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   // res.render('index', { title: 'Express' });
   res.redirect('employees')
 });
 
 // EMPLOYEES
 // get all employees
-router.get('/employees', (req, res, next)=>{
+router.get('/employees', (req, res, next) => {
   async.parallel({
-    stores: callback=>{
+    stores: callback => {
       Store.find({}).exec(callback)
     },
-    employees: callback=>{
+    employees: callback => {
       Employee.find({}).populate([
         {
           path: 'store',
@@ -30,9 +34,9 @@ router.get('/employees', (req, res, next)=>{
         }
       ]).exec(callback)
     }
-  }, (err, results)=>{
-    if(err) throw err
-    var storeList = results.stores.map(store=>{
+  }, (err, results) => {
+    if (err) throw err
+    var storeList = results.stores.map(store => {
       var fullName = findNestedObj(store, 'name', 'storeName').value
       var address = findNestedObj(store, 'name', 'address').value
       return {
@@ -41,66 +45,83 @@ router.get('/employees', (req, res, next)=>{
         address
       }
     })
-    res.render('employees', {employeeList: results.employees, storeList})
+    res.render('employees', { employeeList: results.employees, storeList })
   })
 })
 
 // create new employee
-router.post('/employees', (req, res, next)=>{
+router.post('/employees', (req, res, next) => {
   console.log('req.body: ', req.body)
   var avatar = findNestedObj(req.body, 'name', 'avatar').value
   let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
   let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
   var fullName = findNestedObj(req.body, 'name', 'fullName').value
 
-  fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err)=>{
-    if(err) console.error(err)
+  fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
+    if (err) console.error(err)
     findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
     var employee = new Employee(req.body)
     console.log('employee: ', employee)
-    employee.save((err, result)=>{
-      if(err) throw err
-      if(result){
+    employee.save((err, result) => {
+      if (err) throw err
+      if (result) {
         res.send('Saved successfully!')
-  
+
       }
     })
 
   })
-  
+
 })
 
 // upate employee
-router.put('/employees/:id', (req, res, next)=>{
+router.put('/employees/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Employee.findByIdAndUpdate({_id: req.params.id}, {$set: {'metadata': req.body.metadata, 'store': req.body.store}}, (err, result)=>{
-    if(err) throw err
+  Employee.findByIdAndUpdate({ _id: req.params.id }, { $set: { 'metadata': req.body.metadata, 'store': req.body.store } }, (err, result) => {
+    if (err) throw err
     res.send('Update successfully!')
   })
 })
 
 // delete employee
-router.delete('/employees/:id', (req, res, next)=>{
+router.delete('/employees/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Employee.findByIdAndDelete({_id: req.params.id}, (err, result)=>{
-    if(err) throw err
+  Employee.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
+    if (err) throw err
     res.send('Delete successfully!')
   })
 })
 
+// search
+router.post('/employees/search', (req, res, next) => {
+  console.log('req.body: ', req.body)
+  const arrayValue = req.body.data
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+  })
+  Employee.find({ $and: arrayMetadataConditions }).exec((err, results)=>{
+    if(err) throw err
+    res.status(200).send({employeeList: results})
+  })
+
+})
+
 // STORES
 // get all stores
-router.get('/stores', (req, res, next)=>{
+router.get('/stores', (req, res, next) => {
   async.parallel({
-    stores: callback=>{
+    stores: callback => {
       Store.find({}).exec(callback)
     },
-    employees: callback=>{
+    employees: callback => {
       Employee.find({}).exec(callback)
     }
-  }, (err, results)=>{
-    if(err) throw err
-    var employeeList = results.employees.map(employee=>{
+  }, (err, results) => {
+    if (err) throw err
+    var employeeList = results.employees.map(employee => {
       var fullName = findNestedObj(employee, 'name', 'fullName').value
       var role = findNestedObj(employee, 'name', 'role').value
       return {
@@ -109,52 +130,69 @@ router.get('/stores', (req, res, next)=>{
         role
       }
     })
-    res.render('stores', {storeList: results.stores, employeeList})
+    res.render('stores', { storeList: results.stores, employeeList })
   })
- 
+
 })
 
 // create new store
-router.post('/stores', (req, res, next)=>{
+router.post('/stores', (req, res, next) => {
   console.log('req.body: ', req.body)
   var store = new Store(req.body)
-  store.save((err, result)=>{
-    if(err) throw err
+  store.save((err, result) => {
+    if (err) throw err
     res.send('Saved successfully!')
   })
 })
 
 // update store
-router.put('/stores/:id', (req, res, next)=>{
+router.put('/stores/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Store.findByIdAndUpdate({_id: req.params.id}, {$set: {"metadata": req.body.metadata, "representatives": req.body.representatives}}, (err, result)=>{
-    if(err) throw err
+  Store.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, (err, result) => {
+    if (err) throw err
     res.status(200).send("Update successfully!")
   })
 })
 
 // delete store
-router.delete('/stores/:id', (req, res, next)=>{
+router.delete('/stores/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Store.findByIdAndDelete({_id: req.params.id}, (err, result)=>{
-    if(err) throw err
+  Store.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
+    if (err) throw err
     res.status(200).send("Delete successfully!")
   })
 })
 
+// search store
+router.post('/stores/search', (req, res, next) => {
+  console.log('req.body: ', req.body)
+  const arrayValue = req.body.data
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+  })
+  Store.find({ $and: arrayMetadataConditions }).exec((err, results)=>{
+    if(err) throw err
+    res.status(200).send({storeList: results})
+  })
+
+})
+
 // WAREHOUSE
 // get all warehouses
-router.get('/warehouses', (req, res, next)=>{
+router.get('/warehouses', (req, res, next) => {
   async.parallel({
-    warehouses: callback=>{
+    warehouses: callback => {
       Warehouse.find({}).exec(callback)
     },
-    employees: callback=>{
+    employees: callback => {
       Employee.find({}).exec(callback)
     }
-  }, (err, results)=>{
-    if(err) throw err
-    var employeeList = results.employees.map(employee=>{
+  }, (err, results) => {
+    if (err) throw err
+    var employeeList = results.employees.map(employee => {
       var fullName = findNestedObj(employee, 'name', 'fullName').value
       var role = findNestedObj(employee, 'name', 'role').value
       return {
@@ -163,39 +201,56 @@ router.get('/warehouses', (req, res, next)=>{
         role
       }
     })
-    res.render('warehouses', {warehouseList: results.warehouses, employeeList})
+    res.render('warehouses', { warehouseList: results.warehouses, employeeList })
   })
 })
 
 // create new warehouse
-router.post('/warehouses', (req, res, next)=>{
+router.post('/warehouses', (req, res, next) => {
   console.log('req.body: ', req.body)
   var warehouse = new Warehouse(req.body)
-  warehouse.save((err, result)=>{
-    if(err) throw err
+  warehouse.save((err, result) => {
+    if (err) throw err
     res.send('Saved successfully!')
   })
 })
 
 // update warehouse
-router.put('/warehouses/:id', (req, res, next)=>{
+router.put('/warehouses/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Warehouse.findByIdAndUpdate({_id: req.params.id}, {$set: {"metadata": req.body.metadata,  "representatives": req.body.representatives}}, (err, result)=>{
-    if(err) throw err
+  Warehouse.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, (err, result) => {
+    if (err) throw err
     res.status(200).send("Update successfully!")
   })
 })
 
 // delete warehouse
-router.delete('/warehouses/:id', (req, res, next)=>{
+router.delete('/warehouses/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Warehouse.findByIdAndDelete({_id: req.params.id}, (err, result)=>{
-    if(err) throw err
+  Warehouse.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
+    if (err) throw err
     res.status(200).send("Delete successfully!")
   })
 })
 
-const findNestedObj = (entireObj, keyToFind, valToFind)=>{
+// search warehouse
+router.post('/warehouses/search', (req, res, next) => {
+  console.log('req.body: ', req.body)
+  const arrayValue = req.body.data
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+  })
+  Warehouse.find({ $and: arrayMetadataConditions }).exec((err, results)=>{
+    if(err) throw err
+    res.status(200).send({warehouseList: results})
+  })
+
+})
+
+const findNestedObj = (entireObj, keyToFind, valToFind) => {
   let foundObj;
   JSON.stringify(entireObj, (_, nestedValue) => {
     if (nestedValue && nestedValue[keyToFind] === valToFind) {
@@ -209,12 +264,12 @@ const findNestedObj = (entireObj, keyToFind, valToFind)=>{
 const checkBase64 = (str) => {
   if (str === '' || str.trim() === '') { return false; }
   try {
-      console.log('test result from checkBase64 1: ', btoa(atob(str)) == str)
-      return btoa(atob(str)) == str;
+    console.log('test result from checkBase64 1: ', btoa(atob(str)) == str)
+    return btoa(atob(str)) == str;
   } catch (err) {
-      console.log('test result from checkBase64 2: ', false)
+    console.log('test result from checkBase64 2: ', false)
 
-      return false;
+    return false;
   }
 }
 

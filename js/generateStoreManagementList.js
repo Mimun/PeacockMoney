@@ -8,7 +8,7 @@ detailStoreTemplate.innerHTML = `
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<div class="modal-body mx-3 object-div">
+<div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
 </div>
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-default btn-sm" id="btn-edit">Edit</button>
@@ -16,10 +16,10 @@ detailStoreTemplate.innerHTML = `
 </div>`
 
 const detailInfoTemplate = document.createElement('div')
-detailInfoTemplate.className = 'md-form form-group mb-5'
+detailInfoTemplate.className = 'form-group'
 detailInfoTemplate.innerHTML = `
-  <input type="text" class="form-control" disabled>
   <label data-error="wrong" data-success="right" ></label>
+  <input type="text" class="form-control" disabled>
 `
 var selectContainer = document.createElement('div')
 selectContainer.className = 'select-container'
@@ -83,7 +83,21 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
         })
         if (cData.representatives.length !== 0) {
           cData.representatives.forEach(representative => {
-            createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+            var isInSelectList = false
+            selectList.forEach(selectOption=>{
+              if(representative === selectOption._id){
+                isInSelectList = true
+
+              } 
+            
+            })
+            if(isInSelectList){
+              createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
+            } else {
+              createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
+            }
           })
 
         }
