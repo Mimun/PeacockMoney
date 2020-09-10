@@ -177,6 +177,14 @@ router.post('/items/search', (req, res) => {
 
 })
 
+// delete many
+router.delete('/items', (req, res)=>{
+  Item.deleteMany({}, (err, result)=>{
+    if(err) throw err
+    res.send('Delete many successfully')
+  })
+})
+
 // item status
 
 // get all item status

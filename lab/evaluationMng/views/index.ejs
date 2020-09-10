@@ -540,7 +540,26 @@
           })
 
         })
+        const deleteManyBtn = document.createElement('button')
+        deleteManyBtn.className = 'btn btn-default'
+        deleteManyBtn.id = 'delete-many-button'
+        deleteManyBtn.innerHTML = 'Delete many'
+        deleteManyBtn.style.margin = 'auto'
+        deleteManyBtn.addEventListener('click', (event)=>{
+          $.ajax({
+            type: 'DELETE',
+            url: 'items',
+            contentType: 'application/json',
+            success: result=>{
+              console.log('result: ', result)
+              window.location.reload()
+            }
+          })
+        })
+
+
         buttonContainer.appendChild(submitBtn)
+        buttonContainer.appendChild(deleteManyBtn)
         check()
 
       }
@@ -814,30 +833,7 @@
 
     })
 
-    // search function
-    // search bar
-    // document.querySelector('#search').querySelector('.input-group-prepend').addEventListener('click', (event) => {
-    //   event.preventDefault()
-    //   var array = []
-    //   event.target.closest('#search').querySelectorAll('input').forEach(input => {
-    //     array.push(input.value)
-    //   })
-    //   console.log('event: ', array)
-    //   $.ajax({
-    //     type: 'POST',
-    //     url: 'items/search',
-    //     contentType: "application/json",
-    //     data: JSON.stringify({ data: array }),
-    //     success: result => {
-    //       if (result.itemResults.length !== 0) {
-    //         createPagination(result.itemResults)
-    //       } else {
-    //         createPagination(originItemList)
-    //       }
-    //     }
-    //   })
-
-    // })
+    
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
       var array = event.target.querySelector('input').value.split(" ")
