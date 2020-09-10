@@ -247,7 +247,7 @@ router.post('/contracts', (req, res) => {
   console.log('data: ', contract)
   contract.save((err, result) => {
     if (err) throw err
-    res.redirect('http://localhost:3000/contractMng/contracts')
+    res.redirect('contracts')
   })
 
 })

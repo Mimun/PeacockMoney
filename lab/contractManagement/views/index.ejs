@@ -3,9 +3,6 @@
 
 <head>
   <title>Contract Management</title>
-
-  <link rel='stylesheet' href='/stylesheets/style.css' />
-
 </head>
 
 <body>
@@ -53,7 +50,7 @@
         </header>
         <submain>
           <div id="template-handler" class="row row-cols-1 row-cols-md-3"></div>
-          <button type="button" class="btn btn-primary btn-sm" id="addTemplate" data-toggle="modal" data-target = "#centralModalSm" >Add Contract Template</button>
+          <button type="button" class="btn btn-primary btn-sm" id="addTemplate" data-toggle="modal" data-target="#centralModalSm">Add Contract Template</button>
           <button class="btn btn-default btn-sm" id="redirect-page">Contract List</button>
         </submain>
       </main>
@@ -75,10 +72,8 @@
                 </button>
               </div>
               <div class="modal-body">
-                <modal-body style="width: fit-content;">
                   <!-- Adding dynamic content here -->
                   <h2>I am going to add a dynamic content here</h2>
-                </modal-body>
               </div>
               <!-- <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
@@ -106,10 +101,10 @@
     }
 
     // create new contract template button
-    var addTemplateBtn = document.getElementById('addTemplate').addEventListener('click', (evt) => {
+    document.getElementById('addTemplate').addEventListener('click', (evt) => {
       console.log('abc xyz: ')
       $('#centralModalSm').on('show.bs.modal', () => {
-        var modalBody = document.querySelector('modal-body')
+        var modalBody = document.querySelector('.modal-body')
         while (modalBody.firstChild) {
           modalBody.removeChild(modalBody.lastChild)
         }

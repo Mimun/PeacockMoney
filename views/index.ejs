@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+
+<head>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+
+    <div id="page-content-wrapper">
+      <h1><%= title %></h1>
+      <p>Welcome to <%= title %></p>
+    </div>
+  </div>
+
+</body>
+
 </html>

@@ -261,6 +261,14 @@ router.delete('/itemStatus/:id', (req, res) => {
   })
 })
 
+// delete many
+router.delete('/itemstatus', (req, res)=>{
+  ItemStatus.deleteMany({}, (err, result)=>{
+    if(err) throw err
+    res.send('Delete many successfully!')
+  })
+})
+
 // update item status
 router.put('/itemStatus/:id', (req, res) => {
   console.log('id: ', req.params.id)

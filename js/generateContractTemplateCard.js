@@ -21,7 +21,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
 
   clone.querySelector('.object-div').addEventListener('click', function (evt) {
     $("#centralModalSm").modal('show');
-    var modalBody = document.querySelector('modal-body')
+    var modalBody = document.querySelector('.modal-body')
 
     while (modalBody.firstChild) {
       modalBody.removeChild(modalBody.lastChild)

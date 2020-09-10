@@ -15,7 +15,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   const cloneASide = infoTemplate.content.cloneNode(true)
   cloneASide.querySelector('label').innerHTML = displayInfoLang(aSideInfo.dataVie)
   cloneASide.querySelector('input').value = aSideInfo.value
-  clone.querySelector('.a-side-info-container').querySelector('div[class="section"]').appendChild(cloneASide)
+  clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
 
   // // b side info
   // var bSideInfo = findNestedObj(contractDetail, 'name', 'customer')
@@ -35,13 +35,13 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
       const cloneBSide = infoTemplate.content.cloneNode(true)
       cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
       cloneBSide.querySelector('input').value = value
-      clone.querySelector('.b-side-info-container').querySelector('div[class="section"]').appendChild(cloneBSide)
+      clone.querySelector('.b-side-info-container').querySelector('.section').appendChild(cloneBSide)
     } else {
       if (name.toLowerCase() !== "templateName" && name.toLowerCase() !== "image" && name.toLowerCase() !== "creator" && name.toLowerCase() !== "customer" && name !== "contractContent") {
         const infoTemplatelone = infoTemplate.content.cloneNode(true)
         infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
         infoTemplatelone.querySelector('input').value = value
-        clone.querySelector('.contract-info-container').querySelector('div[class="section"]').appendChild(infoTemplatelone)
+        clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
   
       }
     }

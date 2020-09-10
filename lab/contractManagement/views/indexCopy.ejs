@@ -102,10 +102,6 @@
     console.log('All types: ', types)
     console.log('All types: ', payOptions)
 
-    // if (document.referrer !== "http://localhost:3000/evaluationMng/") {
-    //   window.localStorage.removeItem('evaluatingItem')
-    // }
-
     const contractTemplate = document.getElementById('temp_contract');
 
     const createSelect = (itemObjs, elementName, variable) => {
@@ -162,6 +158,7 @@
           document.querySelector('.types').value = evaluatingItemType
           document.querySelector('.types').disabled = true
         } else {
+          document.querySelector('.types').value = ''
           document.querySelector('.types').disabled = false
         }
       }
@@ -197,6 +194,11 @@
 
     })
     $("#centralModalSm").modal('show');
+    // $("#centralModalSm").on('hidden.bs.modal', ()=>{
+    //   document.querySelector('.types').value = ''
+    //   window.localStorage.removeItem('evaluatingItem')
+
+    // });
 
 
     document.querySelector('#chooseTemplate').addEventListener('click', (event) => {
@@ -207,10 +209,12 @@
     const templateButtonOption = () => {
       // detail template info
       document.querySelectorAll('.object-div').forEach(element => {
-        element.addEventListener('click', function () {
-          console.log('event abc: ', document.querySelector('modal-body'))
-          var modalBody = document.querySelector('modal-body')
+        element.addEventListener('click', function (event) {
+          console.log('modal body: ', document.querySelector('.modal-body'))
+          var modalBody = document.querySelector('.modal-body')
           modalBody.querySelector('.btn-options').removeChild(modalBody.querySelector('#btn-delete-contract-template'))
+          var modalFooter = modalBody.closest('.modal-content').querySelector('.modal-footer')
+          modalFooter.removeChild(modalFooter.querySelector('#btn-confirm'))
         })
       })
     }
