@@ -101,13 +101,19 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
           var option = `<option value=${select._id}>${select.fullName} - ${select.address}</option>`
           return option
         })
+        storeSelectOptions.unshift('<option value="">No store</option>')
+        if (cData.store) {
+          createSelect(select, cData.store._id, 'store-select', 'select-store', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
 
-        createSelect(select, cData.store._id, 'store-select', 'select-store', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
+        } else {
+          createSelect(select, '', 'store-select', 'select-store', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
+
+        }
         modalContent.appendChild(detailEmployeeTemplate)
 
       })
       $("#modalContactForm").modal('show')
-      $("#modalContactForm").on('hidden.bs.modal', ()=>{
+      $("#modalContactForm").on('hidden.bs.modal', () => {
 
       })
 
@@ -116,75 +122,73 @@ export const generateEmployeeManagementList = (mainList, selectList, template, e
     document.querySelector('#' + elementName + '').appendChild(clone)
   })
 
-  // edit button
-  detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-edit').addEventListener('click', event => {
-    switch (event.target.textContent) {
-      case "Edit":
-        modalBody.querySelectorAll('input').forEach(input => {
-          input.removeAttribute('disabled')
-        })
-        modalBody.querySelectorAll('select').forEach(select => {
-          select.disabled = false
-        })
-        break
-      case "Update":
-        var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [] }
-        updateObj.metadata.push({
-          cType: 'image',
-          dataKor: 'koreanString',
-          name: 'avatar',
-          value: modalBody.querySelector('img').getAttribute('src'),
-          dataVie: 'anhDaiDien'
-        })
-
-        modalBody.querySelectorAll('input').forEach(input => {
-          input.setAttribute('disabled', true)
-          updateObj.metadata.push(getInfo(input))
-        })
-        var roleSelect = modalBody.querySelector('.select-role')
-        var roleOption = roleSelect.options[roleSelect.selectedIndex]
-        updateObj.metadata.push({ ...getInfo(roleOption), cType: 'select' })
-        roleSelect.disabled = true
-
-        var storeSelect = modalBody.querySelector('.select-store')
-        var storeOption = storeSelect.options[storeSelect.selectedIndex]
-        updateObj.store = storeOption.value
-        storeSelect.disabled = true
-
-        console.log('update obj: ', updateObj)
-        $.ajax({
-          type: "PUT",
-          url: routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-          contentType: 'application/json',
-          data: JSON.stringify(updateObj),
-          success: result => {
-            console.log('result: ', result)
-            window.location.reload()
-          }
-        })
-        break
-      default:
-
-    }
-    event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
-  })
-
-  // delete button
-  detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event => {
-    $.ajax({
-      type: "DELETE",
-      url: routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      contentType: 'application/json',
-      success: result => {
-        console.log('result: ', result)
-        window.location.reload()
-      }
-    })
-  })
-
-  
-
 }
+
+// edit button
+detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-edit').addEventListener('click', event => {
+  switch (event.target.textContent) {
+    case "Edit":
+      modalBody.querySelectorAll('input').forEach(input => {
+        input.removeAttribute('disabled')
+      })
+      modalBody.querySelectorAll('select').forEach(select => {
+        select.disabled = false
+      })
+      break
+    case "Update":
+      var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [] }
+      updateObj.metadata.push({
+        cType: 'image',
+        dataKor: 'koreanString',
+        name: 'avatar',
+        value: modalBody.querySelector('img').getAttribute('src'),
+        dataVie: 'anhDaiDien'
+      })
+
+      modalBody.querySelectorAll('input').forEach(input => {
+        input.setAttribute('disabled', true)
+        updateObj.metadata.push(getInfo(input))
+      })
+      var roleSelect = modalBody.querySelector('.select-role')
+      var roleOption = roleSelect.options[roleSelect.selectedIndex]
+      updateObj.metadata.push({ ...getInfo(roleOption), cType: 'select' })
+      roleSelect.disabled = true
+
+      var storeSelect = modalBody.querySelector('.select-store')
+      var storeOption = storeSelect.options[storeSelect.selectedIndex]
+      updateObj.store = storeOption.value
+      storeSelect.disabled = true
+
+      console.log('update obj: ', updateObj)
+      $.ajax({
+        type: "PUT",
+        url: routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+        contentType: 'application/json',
+        data: JSON.stringify(updateObj),
+        success: result => {
+          console.log('result: ', result)
+          window.location.reload()
+        }
+      })
+      break
+    default:
+
+  }
+  event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
+})
+
+// delete button
+detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event => {
+  $.ajax({
+    type: "DELETE",
+    url: routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+    contentType: 'application/json',
+    success: result => {
+      console.log('result: ', result)
+      window.location.reload()
+    }
+  })
+})
 
 const displayInfoLang = (info) => {
   if (typeof info === "string") {

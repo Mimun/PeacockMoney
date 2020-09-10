@@ -40,7 +40,7 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
     var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
     return option
   })
-  representativeSelectOptions.push('<option value="">None</option>')
+  representativeSelectOptions.unshift('<option value="">No representative</option>')
   console.log('represnetative option: ', representativeSelectOptions)
 
   mainList.forEach(itemObj => {
@@ -84,14 +84,14 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
         if (cData.representatives.length !== 0) {
           cData.representatives.forEach(representative => {
             var isInSelectList = false
-            selectList.forEach(selectOption=>{
-              if(representative === selectOption._id){
+            selectList.forEach(selectOption => {
+              if (representative === selectOption._id) {
                 isInSelectList = true
 
-              } 
-            
+              }
+
             })
-            if(isInSelectList){
+            if (isInSelectList) {
               createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
 
             } else {
@@ -100,14 +100,17 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
             }
           })
 
+        } else {
+          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
         }
         modalContent.appendChild(detailStoreTemplate)
 
       })
       $("#modalContactForm").modal('show')
-      $('#modalContactForm').on('hidden.bs.modal', ()=>{
+      $('#modalContactForm').on('hidden.bs.modal', () => {
         console.log('this is called befor hidding')
-        if(modalFooter.querySelector('#btn-add-representative')){
+        if (modalFooter.querySelector('#btn-add-representative')) {
           modalFooter.removeChild(modalFooter.querySelector('#btn-add-representative'))
         }
       })
@@ -185,8 +188,8 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
   })
 
   // add representative button
-  const addEventForAddRepresentativeButton = ()=>{
-    modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event)=>{
+  const addEventForAddRepresentativeButton = () => {
+    modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event) => {
       console.log('Event: ', event.target)
       var clone = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-container').cloneNode(true)
       clone.querySelector('select').value = ""

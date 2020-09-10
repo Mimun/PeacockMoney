@@ -40,7 +40,7 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
     var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
     return option
   })
-  representativeSelectOptions.push('<option value="">None</option>')
+  representativeSelectOptions.unshift('<option value="">No representative</option>')
   console.log('represnetative option: ', representativeSelectOptions)
 
   mainList.forEach(itemObj => {
@@ -83,8 +83,25 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
         })
         if (cData.representatives.length !== 0) {
           cData.representatives.forEach(representative => {
-            createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+            var isInSelectList = false
+            selectList.forEach(selectOption => {
+              if (representative === selectOption._id) {
+                isInSelectList = true
+
+              }
+
+            })
+            if (isInSelectList) {
+              createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
+            } else {
+              createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
+            }
           })
+
+        } else {
+          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
 
         }
         modalContent.appendChild(detailWarehouseTemplate)

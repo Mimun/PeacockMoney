@@ -22,17 +22,29 @@ router.get('/', function (req, res, next) {
 // EMPLOYEES
 // get all employees
 router.get('/employees', (req, res, next) => {
+  
   async.parallel({
     stores: callback => {
-      Store.find({}).exec(callback)
+      // try catch to prevent "store" field id is null
+      try{
+        Store.find({}).exec(callback)
+
+      } catch(err){
+        console.error(err)
+      }
     },
     employees: callback => {
-      Employee.find({}).populate([
-        {
-          path: 'store',
-          model: 'Store'
-        }
-      ]).exec(callback)
+      try{
+        Employee.find({}).populate([
+          {
+            path: 'store',
+            model: 'Store'
+          }
+        ]).exec(callback)
+      } catch(err){
+        console.error(err)
+      }
+      
     }
   }, (err, results) => {
     if (err) throw err
@@ -52,25 +64,35 @@ router.get('/employees', (req, res, next) => {
 // create new employee
 router.post('/employees', (req, res, next) => {
   console.log('req.body: ', req.body)
-  var avatar = findNestedObj(req.body, 'name', 'avatar').value
-  let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
-  let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
-  var fullName = findNestedObj(req.body, 'name', 'fullName').value
-
-  fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
-    if (err) console.error(err)
-    findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
-    var employee = new Employee(req.body)
-    console.log('employee: ', employee)
-    employee.save((err, result) => {
-      if (err) throw err
-      if (result) {
-        res.send('Saved successfully!')
-
+  if(req.body.store){
+    var avatar = findNestedObj(req.body, 'name', 'avatar').value
+    let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
+    let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
+    var fullName = findNestedObj(req.body, 'name', 'fullName').value
+  
+    fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
+      if (err) console.error(err)
+      findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+      var employee = new Employee(req.body)
+      console.log('employee: ', employee)
+      try{
+        employee.save((err, result) => {
+          if (err) throw err
+          if (result) {
+            res.send('Saved successfully!')
+    
+          }
+        })
+      } catch(err){
+        console.error(err)
       }
+      
+  
     })
-
-  })
+  } else {
+    res.send("Saved failed")
+  }
+  
 
 })
 
@@ -102,7 +124,12 @@ router.post('/employees/search', (req, res, next) => {
     const regex = new RegExp(escapeRegex(value), 'gi')
     arrayMetadataConditions.push({ 'metadata.value': regex })
   })
-  Employee.find({ $and: arrayMetadataConditions }).exec((err, results)=>{
+  Employee.find({ $and: arrayMetadataConditions }).populate([
+    {
+      path: 'store',
+      model: 'Store'
+    }
+  ]).exec((err, results)=>{
     if(err) throw err
     res.status(200).send({employeeList: results})
   })
