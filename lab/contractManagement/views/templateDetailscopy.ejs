@@ -1,5 +1,12 @@
 <!-- Theme included stylesheets -->
 <link href="http://cdn.quilljs.com/1.2.0/quill.snow.css" rel="stylesheet">
+<!-- Material Design for Bootstrap fonts and icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+
+<!-- Material Design for Bootstrap CSS -->
+<link rel="stylesheet"
+  href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+  integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 <style>
   /* Style the form */
   #regForm {
@@ -69,29 +76,29 @@
 
   <!-- Step2: Template Metadata -->
   <div class="tab md-tabs template-metadata">Template metadata:
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Template name</label>
       <input type="text" class="form-control validate" data-eng="templateName" data-vie="temMauHopDong">
-      <label data-error="Empty">Template name</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Category</label>
       <input type="text" class="form-control validate" data-eng="category" data-vie="phanLoai">
-      <label data-error="Empty">Category</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Type</label>
       <input type="text" class="form-control validate" data-eng="templateType" data-vie="loai">
-      <label data-error="Empty">Type</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Loai tai san</label>
       <input type="text" class="form-control validate" data-eng="itemType" data-vie="loaiTaiSan">
-      <label data-error="Empty">Loai tai san</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Phi thu</label>
       <input type="number" class="form-control validate" data-eng="fee" data-vie="phiThu">
-      <label data-error="Empty">Phi thu</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Phi khac</label>
       <input type="text" class="form-control validate" data-eng="anotherFee" data-vie="phiKhac">
-      <label data-error="Empty">Phi khac</label>
     </div>
     <select class="browser-default custom-select">
       <option value="thanhToanLai" data-eng="interestPayment" data-vie="thanhToanLai">Phuong thuc thanh toan</option>
@@ -105,96 +112,93 @@
   <!-- Step 3: Contract metadata -->
   <div class="tab md-tabs contract-metadata">Contract metadata:
 
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Nguoi lap</label>
       <input type="text" class="form-control validate" data-eng="creator" data-vie="nguoiLap">
-      <label data-error="Empty">Nguoi lap</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Khach hang</label>
       <input type="text" class="form-control validate" data-eng="customer" data-vie="khachHang">
-      <label data-error="Empty">Khach hang</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">CMND</label>
       <input type="text" class="form-control validate" data-eng="customerId" data-vie="cmnd">
-      <label data-error="Empty">CMND</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Noi cap</label>
       <input type="text" class="form-control validate" data-eng="customerIdProvidingPlace" data-vie="noiCap">
-      <label data-error="Empty">Noi cap</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Ngay cap</label>
       <input type="date" class="form-control validate" data-eng="customerIdProvidingDate" data-vie="ngayCap">
-      <label data-error="Empty">Ngay cap</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Dia chi</label>
       <input type="text" class="form-control validate" data-eng="customerAddress" data-vie="diaChi">
-      <label data-error="Empty">Dia chi</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">So dien thoai</label>
       <input type="number" class="form-control validate" data-eng="customerPhoneNumber" data-vie="soDienThoai">
-      <label data-error="Empty">So dien thoai</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Ho khau thuong tru</label>
       <input type="text" class="form-control validate" data-eng="customerFamilyRegister" data-vie="soHoKhau">
-      <label data-error="Empty">Ho khau thuong tru</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">So tien vay</label>
       <input type="number" class="form-control validate" data-eng="loan" data-vie="soTienVay">
-      <label data-error="Empty">So tien vay</label>
     </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
-          <div class="md-form">
+          <div class="form-group">
+            <label class="bmd-label-floating" data-error="Empty">So tien min</label>
             <input type="number" class="form-control validate" min="0" max="9999999999" data-eng="min"
               data-vie="soTienMin">
-            <label data-error="Empty">So tien min</label>
           </div>
         </div>
         <div class="col">
-          <div class="md-form">
+          <div class="form-group">
+            <label class="bmd-label-floating" data-error="Empty">So tien max</label>
             <input type="number" class="form-control validate" min="0" max="9999999999" data-eng="max"
               data-vie="soTienMax">
-            <label data-error="Empty">So tien max</label>
           </div>
         </div>
 
       </div>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Ngay lap</label>
       <input type="date" class="form-control validate" data-eng="createdDate" data-vie="ngayLap">
-      <label data-error="Empty">Ngay lap</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Thoi han vay toi thieu</label>
       <input type="number" class="form-control validate" data-eng="minLoanTerm" data-vie="thoiHanVayToiThieu">
-      <label data-error="Empty">Thoi han vay toi thieu</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Ti le lai theo ngay(%)</label>
       <input type="number" class="form-control validate" data-eng="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
-      <label data-error="Empty">Ti le lai theo ngay(%)</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Ti le phat theo ngay(%)</label>
       <input type="number" class="form-control validate" data-eng="percentagePenaltyPerDay" data-vie="tiLePhatTheoNgay">
-      <label data-error="Empty">Ti le phat theo ngay(%)</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">So ky thu</label>
       <input type="number" class="form-control validate" data-eng="numberOfAcceptanceTerms" data-vie="soKyThu">
-      <label data-error="Empty">So ky thu</label>
     </div>
-    <div class="md-form">
+    <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">So ngay cua 1 ky</label>
       <input type="number" class="form-control validate" data-eng="numberOfDaysPerTerm" data-vie="soNgayMotKy">
-      <label data-error="Empty">So ngay cua 1 ky</label>
     </div>
 
   </div>
 
   <!-- Step 4: Custom info -->
   <div class="tab md-tabs custom-info">Custom info:
-    <div class="input-group">
-      <div class="custom-file">
-        <input type="file" class="custom-file-input" id="inputTemplateFile" accept=".csv"
-          aria-describedby="inputGroupFileAddon01">
-        <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
-      </div>
+    <div class="form-group">
+      <label for="exampleInputFile" class="bmd-label-floating">File input</label>
+      <input type="file" class="form-control-file" id="inputTemplateFile" accept=".csv">
     </div>
     <div id="contract-template-container"></div>
   </div>
@@ -214,8 +218,8 @@
       <span class="step"></span>
     </div>
     <div style="float:right;">
-      <button type="button" class="btn btn-default btn-sm" id="prevBtn">Previous</button>
-      <button type="button" class="btn btn-default btn-sm" id="nextBtn">Next</button>
+      <button type="button" class="btn btn-raised btn-primary btn-sm" id="prevBtn">Previous</button>
+      <button type="button" class="btn btn-raised btn-primary btn-sm" id="nextBtn">Next</button>
     </div>
 
   </div>
@@ -224,8 +228,12 @@
 
 </form>
 
-<!-- <script type="module" src="/cropper/cropper.js"></script> -->
-
+<script src="/jquery/dist/jquery.min.js"></script>
+<!-- <script src="/jquery/dist/jquery.slim.js"></script> -->
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+  integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+  integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
 <script type="module">
   import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
   import { ObjectId } from '/createMongooseID.js'
@@ -234,7 +242,7 @@
   var currentTab = 0; // Current tab is set to be the first tab (0)
   var payOption = {}
   const contractTemplate = document.getElementById('temp_contract')
- 
+
   showTab(currentTab); // Display the current tab
 
   document.querySelector('#prevBtn').addEventListener('click', () => {
@@ -323,7 +331,7 @@
       document.querySelector('.custom-info').querySelectorAll('input').forEach(element => {
         if (element.type !== 'file') {
           var info = {}
-          var name = element.closest('.md-form').querySelector('label').innerHTML.toLowerCase()
+          var name = element.closest('.form-group').querySelector('label').innerHTML.toLowerCase()
           var value = element.value
           var type = element.type
 

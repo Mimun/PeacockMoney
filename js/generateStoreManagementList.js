@@ -11,7 +11,7 @@ detailStoreTemplate.innerHTML = `
 <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
 </div>
 <div class="modal-footer d-flex justify-content-center">
-  <button class="btn btn-default btn-sm" id="btn-edit">Edit</button>
+  <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
   <button class="btn btn-danger btn-sm" id="btn-delete">Delete</button>
 </div>`
 
@@ -135,7 +135,7 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
           select.disabled = false
         })
         var addRepresentativeButton = event.target.cloneNode(true)
-        addRepresentativeButton.classList.replace('btn-default', 'btn-primary')
+        addRepresentativeButton.classList.replace('btn-raised btn-primary', 'btn-primary')
         addRepresentativeButton.id = 'btn-add-representative'
         addRepresentativeButton.innerHTML = "Add representative"
         modalFooter.prepend(addRepresentativeButton)

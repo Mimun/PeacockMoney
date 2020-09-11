@@ -10,9 +10,11 @@
 
   <title>Simple Sidebar - Start Bootstrap Template</title>
   <style>
-    .md-form{
+    #table-container .bmd-form-group{
       width: 100%;
+      padding: 0 !important;
     }
+    
   </style>
 </head>
 
@@ -39,16 +41,14 @@
 
         <!-- template of data field -->
         <template id="data-field-template">
-          <script src="/mdbootstrap/js/mdb.min.js"></script>
           <div class="data-field-container" style="display: flex;">
-
-            <div class="md-form">
+            <div class="form-group">
+              <label for="name" class="bmd-label-floating">Ten Truong</label>
               <input type="text" obj_property="name" class="form-control cell-div">
-              <label for="name">Ten Truong</label>
             </div>
-            <div class="md-form">
+            <div class="form-group">
+              <label for="value" class="bmd-label-floating">Gia Tri</label>
               <input type="text" obj_property="value" class="form-control cell-div">
-              <label for="value">Gia Tri</label>
             </div>
             <!-- <button id="remove-field-button" type="button" class="btn btn-primary px-3"><i
                 class="fa fa-minus"></i></button> -->
@@ -61,10 +61,9 @@
         <!-- search bar -->
         <div id="input-search-container" style="display: flex; justify-content: space-between;">
           <div id="input-container">
-            <div class="custom-file">
-              <input type="file" accept=".csv" id="csv-reader" lass="custom-file-input"
-                aria-describedby="inputGroupFileAddon01" />
-              <label class="custom-file-label" for="csv-reader">Chon file tham dinh gia</label>
+            <div class="form-group">
+              <label for="exampleInputFile" class="bmd-label-floating">File input</label>
+              <input type="file" accept=".csv" id="csv-reader" class="form-control-file" id="exampleInputFile">
             </div>
 
           </div>
@@ -124,14 +123,14 @@
                     <div class="data-fields-metadata">
                       <!-- item type -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
+                        <div class="form-group">
+                          <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Loai Tai San"
                             required data-eng="itemType" data-vie="loaiTaiSan">
-                          <label for="name">Ten Truong</label>
                         </div>
-                        <div class="md-form">
-                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -141,14 +140,14 @@
 
                       <!-- item category -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
-                          <input type="text" obj_property="name" class="form-control cell-div" value="Phan Loai Tai San"
-                            required data-eng="itemCategory" data-vie="phanLoaiTaiSan">
+                        <div class="form-group">
                           <label for="name">Ten Truong</label>
+                          <input type="text" obj_property="name" class="form-control cell-div" value="Phan loai"
+                            required data-eng="itemType" data-vie="loaiTaiSan">
                         </div>
-                        <div class="md-form">
-                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -157,14 +156,14 @@
 
                       <!-- type -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
+                        <div class="form-group">
+                          <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Loai" required
                             data-eng="type" data-vie="loai">
-                          <label for="name">Ten Truong</label>
                         </div>
-                        <div class="md-form">
-                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -501,7 +500,7 @@
 
         document.querySelectorAll('div[class="mdc-data-table__header-row header-row-div"]').forEach(element => {
           element.addEventListener('click', (event) => {
-            itemModal(event.target.parentNode)
+            itemModal(event.target.closest('.object-div'))
           })
         })
         // submit button
@@ -528,7 +527,7 @@
 
         })
         const deleteManyBtn = document.createElement('button')
-        deleteManyBtn.className = 'btn btn-default'
+        deleteManyBtn.className = 'btn btn-raised btn-primary'
         deleteManyBtn.id = 'delete-many-button'
         deleteManyBtn.innerHTML = "Delete many"
         deleteManyBtn.style.margin = 'auto'
@@ -572,10 +571,10 @@
         addItemButtonContainer.innerHTML = ''
       }
       const addItemButton = document.createElement('button')
-      addItemButton.className = 'btn btn-primary px-3 '
+      addItemButton.className = 'btn btn-primary bmd-btn-fab '
       addItemButton.setAttribute('data-toggle', 'modal')
       addItemButton.setAttribute('data-target', '#addItemModal')
-      addItemButton.innerHTML = `<i class="fa fa-plus" aria-hidden="true"></i>`
+      addItemButton.innerHTML = `<span class="material-icons" aria-hidden="true">add</span>`
       addItemButton.style.margin = 'auto'
       addItemButtonContainer.appendChild(addItemButton)
       addItemButton.addEventListener('click', () => {

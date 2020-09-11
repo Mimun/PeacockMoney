@@ -11,7 +11,7 @@ detailEmployeeTemplate.innerHTML = `
 <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
 </div>
 <div class="modal-footer d-flex justify-content-center">
-  <button class="btn btn-default btn-sm" id="btn-edit">Edit</button>
+  <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
   <button class="btn btn-danger btn-sm" id="btn-delete">Delete</button>
 </div>`
 

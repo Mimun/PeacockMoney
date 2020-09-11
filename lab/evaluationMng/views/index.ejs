@@ -10,9 +10,11 @@
 
   <title>Simple Sidebar - Start Bootstrap Template</title>
   <style>
-    .md-form{
+    #table-container .bmd-form-group{
       width: 100%;
+      padding: 0 !important;
     }
+
   </style>
 </head>
 
@@ -27,9 +29,6 @@
 
     <!-- Page Content -->
     <div id="page-content-wrapper">
-
-
-
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
         <h1 class="mt-4">Quản lý thẩm định giá</h1>
@@ -39,19 +38,15 @@
 
         <!-- template of data field -->
         <template id="data-field-template">
-          <script src="/mdbootstrap/js/mdb.min.js"></script>
           <div class="data-field-container" style="display: flex;">
-
-            <div class="md-form">
-              <input type="text" obj_property="name" class="form-control cell-div">
-              <label for="name">Ten Truong</label>
+            <div class="form-group">
+              <label class="bmd-label-floating">Ten truong</label>
+              <input type="text" class="form-control cell-div" obj_property="name">
             </div>
-            <div class="md-form">
-              <input type="text" obj_property="value" class="form-control cell-div">
-              <label for="value">Gia Tri</label>
+            <div class="form-group">
+              <label class="bmd-label-floating">Gia tri</label>
+              <input type="text" class="form-control cell-div" obj_property="value">
             </div>
-            <!-- <button id="remove-field-button" type="button" class="btn btn-primary px-3"><i
-                class="fa fa-minus"></i></button> -->
             <button id="remove-field-button" type="button" class="close">
               <i class="fa fa-times"></i>
             </button>
@@ -60,10 +55,14 @@
         <!-- search bar -->
         <div id="input-search-container" style="display: flex; justify-content: space-between;">
           <div id="input-container">
-            <div class="custom-file">
+            <!-- <div class="custom-file">
               <input type="file" accept=".csv" id="csv-reader" lass="custom-file-input"
                 aria-describedby="inputGroupFileAddon01" />
               <label class="custom-file-label" for="csv-reader">Chon file tham dinh gia</label>
+            </div> -->
+            <div class="form-group">
+              <label for="exampleInputFile" class="bmd-label-floating">File input</label>
+              <input type="file" accept=".csv" id="csv-reader" class="form-control-file" id="exampleInputFile">
             </div>
 
           </div>
@@ -84,7 +83,7 @@
         <!-- detail item modal when clicking to an item -->
         <div class="modal fade" id="itemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
           aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="modal-title">Chi Tiet Tai San</h5>
@@ -99,7 +98,7 @@
               </div>
 
               <div class="modal-footer">
-                <button class="btn btn-default" id="create-contract" style="position: relative; float: right;">Create
+                <button class="btn btn-raised btn-primary" id="create-contract" style="position: relative; float: right;">Create
                   contract</button>
                 <button class="btn btn-primary" id="edit-btn" style="position: relative; float: right;">Edit</button>
                 <button class="btn btn-danger" id="delete-btn" style="position: relative; float: right;"
@@ -127,14 +126,14 @@
                     <div class="data-fields-metadata">
                       <!-- item type -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
+                        <div class="form-group">
+                          <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Loai Tai San"
                             required data-eng="itemType" data-vie="loaiTaiSan">
-                          <label for="name">Ten Truong</label>
                         </div>
-                        <div class="md-form">
-                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -144,14 +143,14 @@
 
                       <!-- item category -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
+                        <div class="form-group">
+                          <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Phan Loai Tai San"
                             required data-eng="itemCategory" data-vie="phanLoaiTaiSan">
-                          <label for="name">Ten Truong</label>
                         </div>
-                        <div class="md-form">
-                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -160,14 +159,14 @@
 
                       <!-- evaluating price -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
+                        <div class="form-group">
+                          <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Tham Dinh Gia"
                             required data-eng="evaluatingPrice" data-vie="thamDinhGia">
-                          <label for="name">Ten Truong</label>
                         </div>
-                        <div class="md-form">
-                          <input type="number" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="number" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -176,14 +175,14 @@
 
                       <!-- type -->
                       <div class="data-field-container-metadata" style="display: flex;">
-                        <div class="md-form">
+                        <div class="form-group">
+                          <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Loai" required
                             data-eng="type" data-vie="loai">
-                          <label for="name">Ten Truong</label>
                         </div>
-                        <div class="md-form">
-                          <input type="text" obj_property="value" class="form-control cell-div" required>
+                        <div class="form-group">
                           <label for="value">Gia Tri</label>
+                          <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
                           <i class="fa fa-times"></i>
@@ -199,7 +198,7 @@
               </div>
               <!-- footer of modal -->
               <div class="modal-footer">
-                <button id="add-field-button" type="button" class="btn btn-primary">Them Truong Du Lieu</button>
+                <button id="add-field-button" type="button" class="btn btn-primary">Them Truong</button>
                 <button id="add-item-button" type="button" class="btn btn-primary" data-dismiss="modal">Tao Moi</button>
               </div>
             </div>
@@ -518,7 +517,8 @@
 
         document.querySelectorAll('div[class="mdc-data-table__header-row header-row-div"]').forEach(element => {
           element.addEventListener('click', (event) => {
-            itemModal(event.target.parentNode)
+            console.log('event: ', event.target.closest('.object-div'))
+            itemModal(event.target.closest('.object-div'))
           })
         })
         // submit button
@@ -545,7 +545,7 @@
 
         })
         const deleteManyBtn = document.createElement('button')
-        deleteManyBtn.className = 'btn btn-default'
+        deleteManyBtn.className = 'btn btn-raised btn-primary'
         deleteManyBtn.id = 'delete-many-button'
         deleteManyBtn.innerHTML = 'Delete many'
         deleteManyBtn.style.margin = 'auto'
@@ -590,10 +590,10 @@
         addItemButtonContainer.innerHTML = ''
       }
       const addItemButton = document.createElement('button')
-      addItemButton.className = 'btn btn-primary px-3 '
+      addItemButton.className = 'btn btn-primary bmd-btn-fab '
       addItemButton.setAttribute('data-toggle', 'modal')
       addItemButton.setAttribute('data-target', '#addItemModal')
-      addItemButton.innerHTML = `<i class="fa fa-plus" aria-hidden="true"></i>`
+      addItemButton.innerHTML = `<span class="material-icons" aria-hidden="true">add</span>`
       addItemButton.style.margin = 'auto'
       addItemButtonContainer.appendChild(addItemButton)
       addItemButton.addEventListener('click', () => {

@@ -1,95 +1,75 @@
 <style>
-  @import url("/font-awesome/css/font-awesome.min.css");
-
-  body {
-    padding: 0;
-    margin: 0;
-  }
-
-  #wrapper {
-    overflow-x: hidden;
-  }
-
   #sidebar-wrapper {
-    padding-top: 3%;
     position: relative;
-    min-height: 100vh;
+    max-width: 15vw;
     width: 100%;
-    max-width: 13vw;
-    margin-left: -15rem;
     -webkit-transition: margin .25s ease-out;
     -moz-transition: margin .25s ease-out;
     -o-transition: margin .25s ease-out;
     transition: margin .25s ease-out;
+    margin: 60px 0;
   }
 
-  #sidebar-wrapper .sidebar-container {
-    position: fixed;
-    display: inline-block;
+  .sidebar-container {
     max-width: inherit;
-    height: 100vh;
-    overflow-y: auto;
-    padding-bottom: 15%;
+    width: 13vw;
+    position: fixed;
+    overflow: auto;
+    max-height: 100vh;
+  }
+
+  .sidebar-container .list-group {
+    padding-top: 0;
+    margin-bottom: 5rem;
+
   }
 
   #sidebar-wrapper .sidebar-container::-webkit-scrollbar {
     display: none;
   }
 
-  #sidebar-wrapper .sidebar-heading {
-    padding: 0.875rem 1.25rem;
-    font-size: 1.2rem;
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
   }
 
-  #sidebar-wrapper .list-group {
-    width: 15rem;
+  #sidebar-toggle-btn {
+    height: fit-content;
+    width: fit-content;
+    position: relative;
+    float: right;
+  }
+
+  .list-group-item-light {
+    color: black;
+    border: none;
+  }
+
+  .list-group-item-secondary {
+    border: none;
+    font-size:14px;
+  }
+
+  .rotate {
+    -moz-transition: all .25s linear;
+    -webkit-transition: all .25s linear;
+    transition: all .25s linear;
+  }
+
+  .rotate.down {
+    -moz-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+  }
+
+  .rotate.right {
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
   }
 
   #page-content-wrapper {
-    min-width: 100vw;
-    padding: 7% 3%;
-  }
-
-  #wrapper.toggled #sidebar-wrapper {
-    margin-left: 0;
-  }
-
-  @media (min-width: 768px) {
-    #sidebar-wrapper {
-      margin-left: 0;
-    }
-
-    #page-content-wrapper {
-      min-width: 0;
-      width: 100%;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-      margin-left: -15rem;
-    }
-  }
-
-  ul {
-    list-style-type: none;
-  }
-
-  .page-content {
-    margin: 2vh 0;
-  }
-
-  
-
-  #sidebar-btn {
-    height: fit-content;
-    width: fit-content;
-    margin-top: 3%;
-    position: relative;
-    float: right;
-
-  }
-
-  #menu-toggle {
-    position: fixed;
+    padding: 5% 3%;
+    width: 100%;
   }
 
   #table-container {
@@ -104,62 +84,12 @@
 
   img {
     width: 100%;
-   
+
     margin: auto;
     height: auto;
   }
 
-  /* search */
-  .active-pink-2 input[type=text]:focus:not([readonly]) {
-    border-bottom: 1px solid #f48fb1;
-    box-shadow: 0 1px 0 0 #f48fb1;
-  }
 
-  .active-pink input[type=text] {
-    border-bottom: 1px solid #f48fb1;
-    box-shadow: 0 1px 0 0 #f48fb1;
-  }
-
-  .active-purple-2 input[type=text]:focus:not([readonly]) {
-    border-bottom: 1px solid #ce93d8;
-    box-shadow: 0 1px 0 0 #ce93d8;
-  }
-
-  .active-purple input[type=text] {
-    border-bottom: 1px solid #ce93d8;
-    box-shadow: 0 1px 0 0 #ce93d8;
-  }
-
-  .active-cyan-2 input[type=text]:focus:not([readonly]) {
-    border-bottom: 1px solid #4dd0e1;
-    box-shadow: 0 1px 0 0 #4dd0e1;
-  }
-
-  .active-cyan input[type=text] {
-    border-bottom: 1px solid #4dd0e1;
-    box-shadow: 0 1px 0 0 #4dd0e1;
-  }
-
-  .active-cyan .fa,
-  .active-cyan-2 .fa {
-    color: #4dd0e1;
-  }
-
-  .active-purple .fa,
-  .active-purple-2 .fa {
-    color: #ce93d8;
-  }
-
-  .active-pink .fa,
-  .active-pink-2 .fa {
-    color: #f48fb1;
-  }
-
-  .search-container {
-    width: fit-content;
-    position: relative;
-    float: right;
-  }
 
   /* list css */
   .info-container p {
@@ -210,94 +140,110 @@
     border-left: 1px solid lightgrey;
     /* border-top: 1px solid lightgrey; */
   }
-
 </style>
 
 <!-- Sidebar -->
 <div id="sidebar-wrapper">
-  <div class="sidebar-container bg-light">
-    <!-- <div class="sidebar-heading">Happy Money </div> -->
-    <div class="list-group list-group-flush">
-      <a href="#" class="list-group-item list-group-item-action bg-light">Dashboard</a>
-
-      <!-- Nhac nho -->
-      <a href="#" data-toggle="collapse" data-target="#contract-list"
-        class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
-          Nhac nho </span> <span class="fa fa-chevron-left pull-right"></span> </a>
-      <ul class="sub-menu collapse" id="contract-list">
-        <li class="active"><a href="#" class="list-group-item list-group-item-action bg-light">Hop dong cho</a></li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu qua han</a></li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Khoan thu sap phai thuc hien</a></li>
-      </ul>
-
-      <!-- Quan ly hop dong -->
-      <a href="/contractMng/contracts" class="list-group-item list-group-item-action bg-light">Quan
-        ly hop dong</a>
-
-      <!-- Quan ly tham dinh gia -->
-      <a href="/evaluationMng/evaluation"
-        class="list-group-item list-group-item-action bg-light">Tham dinh gia</a>
-
-      <!-- Tao moi hop dong -->
-      <a href="/contractMng/contractTemplates"
-        class="list-group-item list-group-item-action bg-light">Tao moi hop dong</a>
-
-      <!-- Quan ly tai san -->
-      <a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a>
-
-      <!-- Thong ke bao cao -->
-      <a href="#" class="list-group-item list-group-item-action bg-light">Thong ke/Bao cao</a>
-
-      <!-- Quan ly he thong -->
-      <a href="#" data-toggle="collapse" data-target="#contract-type-list"
-        class="list-group-item list-group-item-action bg-light"> <span class="nav-label">
-          Quan ly he thong </span> <span class="fa fa-chevron-left pull-right"></span> </a>
-      <ul class="collapse" id="contract-type-list" style="padding: 0; margin: 0;">
-        <li><a href="/contractMng" class="list-group-item list-group-item-action bg-light">Danh
-            sach
-            mau hop dong</a></li>
-        <li><a href="/contractMng" class="list-group-item list-group-item-action bg-light">Tao mau
-            hop dong</a></li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Danh sach mau phieu</a></li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Tao mau phieu</a></li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly tai san</a></li>
-        <li><a href="/systemMng/stores" class="list-group-item list-group-item-action bg-light">Quan ly cua hang</a>
-        </li>
-        <li><a href="/systemMng/employees" class="list-group-item list-group-item-action bg-light">Quan ly nhan vien</a>
-        </li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly khach
-            hang</a></li>
-        <li><a href="/systemMng/warehouses" class="list-group-item list-group-item-action bg-light">Quan ly kho</a></li>
-        <li><a href="#" class="list-group-item list-group-item-action bg-light">Quan ly mau thong ke</a></li>
-        <li><a href="/evaluationMng/itemStatus" class="list-group-item list-group-item-action bg-light">Quan ly tinh
-            trang tai san</a></li>
-        <li><a href="/evaluationMng/" class="list-group-item list-group-item-action bg-light">Quan
-            ly
-            tham
-            dinh gia</a></li>
-
-      </ul>
-
-
-
+  <div class="sidebar-container">
+    <div class="list-group list-group-flush justify-content-center">
+      <a href="#" class="list-group-item list-group-item-action list-group-item-light">Dashboard</a>
+      <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
+        data-toggle="collapse" data-target="#reminding-item">
+        Nhac nho
+        <span class="material-icons rotate">chevron_left</span>
+      </a>
+      <div class="collapse" id="reminding-item">
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Hop dong cho</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu qua han</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu sap phai thuc
+          hien</a>
+      </div>
+      <a href="/contractMng/contracts" class="list-group-item list-group-item-action list-group-item-light">Quan ly hop
+        dong</a>
+      <a href="/evaluationMng/evaluation" class="list-group-item list-group-item-action list-group-item-light">Tham dinh
+        gia</a>
+      <a href="/contractMng/contractTemplates" class="list-group-item list-group-item-action list-group-item-light">Tao
+        moi hop dong</a>
+      <a href="#" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
+      <a href="#" class="list-group-item list-group-item-action list-group-item-light">Thong ke/Bao cao</a>
+      <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
+        data-toggle="collapse" data-target="#management-item">
+        Quan ly he thong
+        <span class="material-icons rotate">chevron_left</span>
+      </a>
+      <div class="collapse" id="management-item">
+        <a href="/contractMng" class="list-group-item list-group-item-action list-group-item-secondary">Danh sach mau
+          hop
+          dong</a>
+        <a href="/contractMng" class="list-group-item list-group-item-action list-group-item-secondary">Tao mau hop
+          dong</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Danh sach mau phieu</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Tao mau phieu</a>
+        <a href="/systemMng/stores" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly cua
+          hang</a>
+        <a href="/systemMng/warehouses" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+          kho</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tai san</a>
+        <a href="/evaluationMng/itemStatus"
+          class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tinh trang tai
+          san</a>
+        <a href="/systemMng/employees" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+          nhan vien</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly khach hang</a>
+        <a href="/evaluationMng/" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tham
+          dinh
+          gia</a>
+      </div>
     </div>
   </div>
-  <div id="sidebar-btn">
-    <button class="btn btn-default btn-sm px-2" id="menu-toggle"><i class="fa fa-angle-left"
-        style="font-size: 20px;"></i></button>
+  <div class="btn-toggle-container">
+    <button class="btn btn-primary btn-sm rotate-btn px-2" id="sidebar-toggle-btn"><span class="material-icons rotate">
+        chevron_left
+      </span></button>
   </div>
 </div>
 
 
 <script>
-  $("#menu-toggle").click(function (e) {
+  // $("#menu-toggle").click(function (e) {
+  //   e.preventDefault();
+  //   $("#wrapper").toggleClass("toggled");
+
+  // });
+  // document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
+  //   window.localStorage.removeItem('evaluatingItem')
+
+  // })
+  // hide sidebar onclick
+  $("#sidebar-toggle-btn").click(function (e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
-
   });
-  document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
-    window.localStorage.removeItem('evaluatingItem')
 
+  // rotate icon of list-group-item having sublist
+  $(".rotate-list-item").click(function () {
+    $(this).find(".rotate").toggleClass("down");
+  })
+
+  // rotate icon of toggle sidebar button when clicking
+  $(".rotate-btn").click(function () {
+    $(this).find(".rotate").toggleClass("right")
+  })
+
+  // css for sublist menu
+  $(".collapse").on('show.bs.collapse', () => {
+    console.log('abc', $(this))
+    $(".collapse").find(".list-group-item").css('justify-content', 'center')
+    $(".collapse").find(".list-group-item").css('text-align', 'center')
+
+  })
+
+  // css for all list-group-item not having icon 
+  document.querySelector('.sidebar-container').querySelectorAll(".list-group-item").forEach(element => {
+    element.style.justifyContent = 'flex-start'
+
+    // if(element.querySelector('span') === null){
+    // }
   })
 </script>
 <!-- /#sidebar-wrapper -->

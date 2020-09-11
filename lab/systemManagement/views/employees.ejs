@@ -35,41 +35,46 @@
 
       </div>
       <div class="form-group">
-        <label class="active" data-error="wrong" data-success="right">Ho ten</label>
+        <label for="exampleInputEmail1" class="bmd-label-floating">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1">
+        <span class="bmd-help">We'll never share your email with anyone else.</span>
+      </div>
+      <div class="form-group">
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ho ten</label>
         <input type="text" class="form-control validate active" name="fullName" data-vie="hoTen" data-kor="koreanString" placeholder="abc">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Dia chi</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Dia chi</label>
         <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
         
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Cmnd</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Cmnd</label>
         <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Ngay cap</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngay cap</label>
         <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Noi cap</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Noi cap</label>
         <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">So dien thoai</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">So dien thoai</label>
         <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Email</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Email</label>
         <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
       </div>
 
@@ -93,7 +98,7 @@
 
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Ghi chu</label>
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ghi chu</label>
         <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
       </div>
 
@@ -145,7 +150,7 @@
       </div>
 
       <div id="employee-list-container" class="list-container"></div>
-      <button class="btn btn-default btn-sm" id="create-new-employee">Create new employee</button>
+      <button class="btn btn-raised btn-primary btn-sm" id="create-new-employee">Create new employee</button>
 
       <!-- modal to create new employee -->
       <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"

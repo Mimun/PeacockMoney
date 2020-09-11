@@ -55,7 +55,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
 
     const deleteContractTemplateButton = document.createElement('button')
     deleteContractTemplateButton.id = 'btn-delete-contract-template'
-    deleteContractTemplateButton.className = "btn btn-secondary btn-sm"
+    deleteContractTemplateButton.className = "btn btn-outline-danger btn-sm"
     deleteContractTemplateButton.innerHTML = "Delete template"
     deleteContractTemplateButton.addEventListener('click', (event)=>{
       $.ajax({

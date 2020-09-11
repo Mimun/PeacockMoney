@@ -33,7 +33,7 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
     // clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button[id="btn-complete"]'))
   } else if (contractStatus === "approved") {
     button.id = 'btn-complete'
-    button.className = 'btn btn-default btn-sm'
+    button.className = 'btn btn-raised btn-primary btn-sm'
     button.innerHTML = 'Complete'
   } else if (contractStatus === "completed") {
     clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))
@@ -53,7 +53,7 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
       })
       event.target.closest('.object-div').setAttribute('data-status', 'approved')
       event.target.innerHTML = 'Complete'
-      event.target.className = 'btn btn-default btn-sm'
+      event.target.className = 'btn btn-raised btn-primary btn-sm'
     } else if (textContent.toLowerCase() === "complete") {
       $.ajax({
         type: "PUT",

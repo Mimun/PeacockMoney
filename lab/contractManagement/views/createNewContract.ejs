@@ -19,8 +19,9 @@
     .tabs {
       position: fixed;
     }
-    .md-form{
+    #item-evaluation .bmd-form-group, #item-status .bmd-form-group, .tabs .bmd-form-group{
       width: 100%;
+      padding: 0 !important;
     }
   </style>
 </head>
@@ -60,7 +61,7 @@
           <div class="col-sm" id="contract-info-container" style="padding: 5%;">
             <!-- contract form -->
             <!-- Default form contact -->
-            <form class="text-center " action="" style="width: 100%;">
+            <form action="" style="width: 100%;">
 
               <p class="h4 mb-4">Tao Moi Hop Dong</p>
 
@@ -90,7 +91,7 @@
 
             </form>
 
-            <button class="btn btn-default" id="btn-add-item">Add new item</button>
+            <button class="btn btn-raised btn-primary" id="btn-add-item">Add new item</button>
 
             <!-- Send button -->
             <button class="btn btn-primary" id="btn-submit">Create</button>
@@ -141,8 +142,7 @@
     </div>
   </div>
 
-  <script src="/mdbootstrap/js/jquery.min.js"></script>
-  <script src="/jquery.redirect/jquery.redirect.js"></script>
+
 
   <script type="module">
     import { generateHTML } from '/generateHTML.js'
@@ -301,8 +301,9 @@
     const chooseItem = () => {
       document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
-          const cloneNode = event.target.parentNode.cloneNode(true)
-          cloneNode.C_DATA = event.target.parentNode.C_DATA
+          console.log('click: ', event.target.closest('.object-div'))
+          const cloneNode = event.target.closest('.object-div').cloneNode(true)
+          cloneNode.C_DATA = event.target.closest('.object-div').C_DATA
           cloneNode.className = "object-div item"
           if (currentDiv.querySelector("#item-evaluation")) {
             currentDiv.querySelector("#item-evaluation").innerHTML = ''
@@ -317,8 +318,8 @@
       document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
           const itemStatusDiv = currentDiv.querySelector("#item-status")
-          const cloneNode = event.target.parentNode.cloneNode(true)
-          cloneNode.C_DATA = event.target.parentNode.C_DATA
+          const cloneNode = event.target.closest('.object-div').cloneNode(true)
+          cloneNode.C_DATA =event.target.closest('.object-div').C_DATA
           cloneNode.className = "object-div item-status"
 
           const removeButton = document.createElement('i')

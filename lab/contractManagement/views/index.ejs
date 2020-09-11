@@ -12,31 +12,19 @@
     <%- include('../Components/sideBar.ejs') %> 
     <div id="page-content-wrapper">
       <main>
+ 
+
         <template id="temp_contract">
-          <!-- Column -->
-          <div class="col mb-4 d-flex align-items-stretch object-div" c_data="true" style="margin: 14px 0px;">
-            <!--Card-->
-            <div class="card" style="width: 100%;">
-
-              <!--Card image-->
-              <div class="view overlay">
-                <img class="card-img-top" alt="Card image cap">
-                <a href="#">
-                  <div class="mask rgba-white-slight"></div>
-                </a>
-              </div>
-
-              <!--Card content-->
+          <div class="align-items-stretch object-div" c-data="true">
+            <div class="card object-div" c-data="true" style="width: 24rem; margin-bottom: 15px;">
+              <img class="card-img-top" src="" alt="Card image cap">
               <div class="card-body">
-                <!--Title-->
-                <h4 class="card-title"></h4>
-                <!--Text-->
+                <h5 class="card-title"></h5>
                 <p class="card-text"></p>
               </div>
-
             </div>
-            <!--/.Card-->
-
+          </div>
+          
         </template>
 
         <template id="contract_detail">
@@ -49,9 +37,9 @@
           </h2>
         </header>
         <submain>
-          <div id="template-handler" class="row row-cols-1 row-cols-md-3"></div>
+          <div id="template-handler" class="card-deck"></div>
           <button type="button" class="btn btn-primary btn-sm" id="addTemplate" data-toggle="modal" data-target="#centralModalSm">Add Contract Template</button>
-          <button class="btn btn-default btn-sm" id="redirect-page">Contract List</button>
+          <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Contract List</button>
         </submain>
       </main>
 
@@ -76,7 +64,7 @@
                   <h2>I am going to add a dynamic content here</h2>
               </div>
               <!-- <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary btn-sm">Create new Contract</button>
               </div> -->
             </div>
