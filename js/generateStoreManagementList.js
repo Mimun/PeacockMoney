@@ -75,9 +75,9 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
             var labelDiv = detailInfoTemplateClone.querySelector('label')
             setInfo(data, inputDiv)
             labelDiv.innerHTML = displayInfoLang(data.dataVie)
-            const script = document.createElement('script')
-            script.src = '/mdbootstrap/js/mdb.min.js'
-            detailInfoTemplateClone.prepend(script)
+            // const script = document.createElement('script')
+            // script.src = '/mdbootstrap/js/mdb.min.js'
+            // detailInfoTemplateClone.prepend(script)
             modalBody.appendChild(detailInfoTemplateClone)
           }
         })
@@ -135,7 +135,8 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
           select.disabled = false
         })
         var addRepresentativeButton = event.target.cloneNode(true)
-        addRepresentativeButton.classList.replace('btn-raised btn-primary', 'btn-primary')
+        addRepresentativeButton.classList.remove('btn-raised', 'btn-primary')
+        addRepresentativeButton.classList.add('btn-outline-primary')
         addRepresentativeButton.id = 'btn-add-representative'
         addRepresentativeButton.innerHTML = "Add representative"
         modalFooter.prepend(addRepresentativeButton)

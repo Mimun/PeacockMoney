@@ -225,7 +225,7 @@ router.delete('/deleteContractTemplate/:id', (req, res) => {
 
 // contract list
 router.get('/contracts', (req, res) => {
-  Contract.find({}).populate([
+  Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
     {
       path: 'items.evaluationItem',
       model: 'Item'

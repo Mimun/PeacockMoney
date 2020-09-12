@@ -135,7 +135,9 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
           select.disabled = false
         })
         var addRepresentativeButton = event.target.cloneNode(true)
-        addRepresentativeButton.classList.replace('btn-raised btn-primary', 'btn-primary')
+        addRepresentativeButton.classList.remove('btn-raised', 'btn-primary')
+        addRepresentativeButton.classList.add('btn-outline-primary')
+
         addRepresentativeButton.id = 'btn-add-representative'
         addRepresentativeButton.innerHTML = "Add representative"
         modalFooter.prepend(addRepresentativeButton)

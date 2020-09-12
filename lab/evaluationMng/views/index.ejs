@@ -48,7 +48,7 @@
               <input type="text" class="form-control cell-div" obj_property="value">
             </div>
             <button id="remove-field-button" type="button" class="close">
-              <i class="fa fa-times"></i>
+              <span class="material-icons">clear</span>
             </button>
           </div>
         </template>
@@ -111,7 +111,7 @@
         <!-- add item modal when clicking to an add item button -->
         <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
           aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="modal-title">Tao moi tai san</h5>
@@ -136,7 +136,7 @@
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
 
                       </div>
@@ -153,7 +153,7 @@
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
                       </div>
 
@@ -169,7 +169,7 @@
                           <input type="number" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
                       </div>
 
@@ -185,7 +185,7 @@
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
                       </div>
                     </div>
@@ -731,7 +731,7 @@
           removeButton.id = 'remove-field-button'
           removeButton.type = 'button'
           removeButton.className = 'close'
-          removeButton.innerHTML = `<i class="fa fa-times"></i>`
+          removeButton.innerHTML = `<span class="material-icons">clear</span>`
           removeButton.addEventListener('click', (event) => {
             event.target.closest('div[class="object-div"]').removeChild(event.target.closest('div[class="data-field-container"]'))
           })

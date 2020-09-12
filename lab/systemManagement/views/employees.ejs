@@ -6,146 +6,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    img{
+    img {
       max-width: 250px;
     }
-  .form-group{
-    width: 18vw;
-  }
 
-  .select-container{
-    width: 18vw;
-    margin-bottom: 1rem;
-  }
+    .form-group {
+      width: 18vw;
+    }
+
+    .select-container {
+      width: 18vw;
+      margin-bottom: 1rem;
+    }
+
+    .modal-content .modal-footer .btn{
+      margin: 0 8px;
+    }
   </style>
 </head>
 
 <body>
-  <!-- create employee template for modal -->
-  <template id="create-employee-template">
-    <div class="modal-header text-center">
-      <h4 class="modal-title w-100 font-weight-bold">Tao moi nhan vien</h4>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
-      <div class="cropper-container" style="width: 100%; padding: 0 18%;">
-        <cropper-wc title="abc" ></cropper-wc>
-
-      </div>
-      <div class="form-group">
-        <label for="exampleInputEmail1" class="bmd-label-floating">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1">
-        <span class="bmd-help">We'll never share your email with anyone else.</span>
-      </div>
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ho ten</label>
-        <input type="text" class="form-control validate active" name="fullName" data-vie="hoTen" data-kor="koreanString" placeholder="abc">
-      </div>
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Dia chi</label>
-        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
-        
-      </div>
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Cmnd</label>
-        <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
-      </div>
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngay cap</label>
-        <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap"
-          data-kor="koreanString">
-      </div>
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Noi cap</label>
-        <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap"
-          data-kor="koreanString">
-      </div>
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">So dien thoai</label>
-        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
-          data-kor="koreanString">
-      </div>
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Email</label>
-        <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
-      </div>
-
-      <div class="select-container">
-        <label>Phan quyen</label>
-        <select class="browser-default custom-select select-role">
-          <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
-          <option name="role" value="admin" data-vie="chucVu" data-kor="koreanString">Admin</option>
-          <option name="role" value="superAdmin" data-vie="chucVu" data-kor="koreanString">Super Admin</option>
-          <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
-
-        </select>
-      </div>
-
-      <div class="select-container">
-        <label>Chon Cua hang</label>
-        <select class="browser-default custom-select select-store">
-          <option value="">No store</option>
-        </select>
-      </div>
-
-
-      <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ghi chu</label>
-        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
-      </div>
-
-    </div>
-    <div class="modal-footer d-flex justify-content-center">
-      <button class="btn btn-unique" id="btn-create-employee">Create</button>
-    </div>
-
-  </template>
-
-  <!-- employee list -->
-  <template id="employee-list">
-    <div class="info-container">
-      <div class="container">
-        <div class="row">
-          <div class="col">
-            <p class="name"></p>
-          </div>
-          <div class="col">
-            <p class="role"></p>
-          </div>
-          <div class="col">
-            <p class="phone-number"></p>
-          </div>
-          <div class="col">
-            <p class="email"></p>
-          </div>
-          <div class="col">
-            <p class="id"></p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </template>
-
   <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
+    <!-- create employee template for modal -->
+    <template id="create-employee-template">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Tao moi nhan vien</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
+        <div class="cropper-container" style="width: 100%; padding: 0 18%;">
+          <cropper-wc title="abc"></cropper-wc>
+
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail1" class="bmd-label-floating">Email address</label>
+          <input type="email" class="form-control" id="exampleInputEmail1">
+          <span class="bmd-help">We'll never share your email with anyone else.</span>
+        </div>
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Ho ten</label>
+          <input type="text" class="form-control validate active" name="fullName" data-vie="hoTen"
+            data-kor="koreanString" placeholder="abc">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Dia chi</label>
+          <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
+
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Cmnd</label>
+          <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngay cap</label>
+          <input type="date" class="form-control validate" name="providingDate" data-vie="ngayCap"
+            data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Noi cap</label>
+          <input type="text" class="form-control validate" name="providingPlace" data-vie="noiCap"
+            data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">So dien thoai</label>
+          <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
+            data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Email</label>
+          <input type="email" class="form-control validate" name="email" data-vie="email" data-kor="koreanString">
+        </div>
+
+        <div class="select-container">
+          <label>Phan quyen</label>
+          <select class="browser-default custom-select select-role">
+            <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
+            <option name="role" value="admin" data-vie="chucVu" data-kor="koreanString">Admin</option>
+            <option name="role" value="superAdmin" data-vie="chucVu" data-kor="koreanString">Super Admin</option>
+            <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
+
+          </select>
+        </div>
+
+        <div class="select-container">
+          <label>Chon Cua hang</label>
+          <select class="browser-default custom-select select-store">
+            <option value="">No store</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Ghi chu</label>
+          <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
+        </div>
+
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-outline-primary" id="btn-create-employee">Create</button>
+      </div>
+
+    </template>
+
+    <!-- employee list -->
+    <template id="employee-list">
+      <div class="info-container">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <p class="name"></p>
+            </div>
+            <div class="col">
+              <p class="role"></p>
+            </div>
+            <div class="col">
+              <p class="phone-number"></p>
+            </div>
+            <div class="col">
+              <p class="email"></p>
+            </div>
+            <div class="col">
+              <p class="id"></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </template>
     <div id="page-content-wrapper">
       <h2>This is list of employees</h2>
       <!-- Search form -->
       <div class="search-container">
-        <form class="form-inline active-cyan-4" id="form-search">
-          <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search" id="search"
-            aria-label="Search">
-          <i class="fa fa-search" aria-hidden="true"></i>
+        <form id="form-search">
+          <div class="form-group">
+            <input type="text" class="form-control" id="search" placeholder="Search...">
+          </div>
         </form>
       </div>
 
@@ -248,6 +253,7 @@
         modalContent.innerHTML = ''
         modalContent.appendChild(createEmployee)
       })
+
 
       $("#modalContactForm").modal('show')
     })

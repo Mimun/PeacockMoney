@@ -34,7 +34,7 @@
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
-        <h1 class="mt-4">Quản lý thẩm định giá</h1>
+        <h1 class="mt-4">Quan ly tinh trang tai san</h1>
 
         <!-- template of list of items -->
         <%- include('itemList.ejs') %>
@@ -53,7 +53,7 @@
             <!-- <button id="remove-field-button" type="button" class="btn btn-primary px-3"><i
                 class="fa fa-minus"></i></button> -->
             <button id="remove-field-button" type="button" class="close">
-              <i class="fa fa-times"></i>
+              <span class="material-icons">clear</span>
             </button>
           </div>
         </template>
@@ -108,7 +108,7 @@
         <!-- add item modal when clicking to an add item button -->
         <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
           aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="modal-title">Tao moi tai san</h5>
@@ -133,7 +133,7 @@
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
 
                       </div>
@@ -143,14 +143,14 @@
                         <div class="form-group">
                           <label for="name">Ten Truong</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Phan loai"
-                            required data-eng="itemType" data-vie="loaiTaiSan">
+                            required data-eng="itemCategory" data-vie="loaiTaiSan">
                         </div>
                         <div class="form-group">
                           <label for="value">Gia Tri</label>
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
                       </div>
 
@@ -166,7 +166,7 @@
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
-                          <i class="fa fa-times"></i>
+                          <span class="material-icons">clear</span>
                         </button>
                       </div>
                     </div>
@@ -719,7 +719,7 @@
           removeButton.id = 'remove-field-button'
           removeButton.type = 'button'
           removeButton.className = 'close'
-          removeButton.innerHTML = `<i class="fa fa-times"></i>`
+          removeButton.innerHTML = `<span class="material-icons">clear</span>`
           removeButton.addEventListener('click', (event) => {
             event.target.closest('div[class="object-div"]').removeChild(event.target.closest('div[class="data-field-container"]'))
           })

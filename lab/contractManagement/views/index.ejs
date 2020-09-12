@@ -96,9 +96,10 @@
         while (modalBody.firstChild) {
           modalBody.removeChild(modalBody.lastChild)
         }
-        var tmpContent = document.getElementById('contract_detail').content;
-        var clone = document.importNode(tmpContent, true);
-        modalBody.appendChild(clone)
+        var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
+        modalBody.appendChild(tmpContent)
+        $(tmpContent).bootstrapMaterialDesign()
+
       })
       // $("#centralModalSm").modal('show');
 

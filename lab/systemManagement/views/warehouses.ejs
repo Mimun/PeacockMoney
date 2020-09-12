@@ -6,19 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .form-group{
-      width: 100% !important;
-    }
-    .select-container{
-      width: 100% !important;
-    }
-    .form-group{
+    .search-container .form-group {
       width: 18vw;
     }
 
-    .select-container{
-      width: 18vw;
+    .form-group{
+      width: 100%;
+    }
+
+    .select-container {
+      width: 100%;
       margin-bottom: 1rem;
+    }
+
+    .modal-content .modal-footer .btn{
+      margin: 0 8px !important;
     }
   </style>
 </head>
@@ -76,7 +78,7 @@
         <option value="">No employee</option>
       </select>
     </div>
-    
+
   </template>
 
   <!-- warehouse list -->
@@ -107,14 +109,15 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>This is list of warehouses</h2>
+      <!-- Search form -->
       <div class="search-container">
-        <form class="form-inline active-cyan-4" id="form-search">
-          <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search" id="search"
-            aria-label="Search">
-          <i class="fa fa-search" aria-hidden="true"></i>
+        <form id="form-search">
+          <div class="form-group">
+            <input type="text" class="form-control" id="search" placeholder="Search...">
+          </div>
         </form>
       </div>
-      
+
       <div id="warehouse-list-container" class="list-container"></div>
       <button class="btn btn-raised btn-primary btn-sm" id="create-new-warehouse">Create new warehouse</button>
 

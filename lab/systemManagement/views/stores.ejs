@@ -6,21 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .form-group {
-      width: 100% !important;
-    }
-
-    .select-container {
-      width: 100% !important;
-    }
-
-    .form-group {
+    .search-container .form-group {
       width: 18vw;
     }
 
+    .form-group{
+      width: 100%;
+    }
+
     .select-container {
-      width: 18vw;
+      width: 100%;
       margin-bottom: 1rem;
+    }
+    
+    .modal-content .modal-footer .btn{
+      margin: 0 8px !important;
     }
   </style>
 </head>
@@ -64,8 +64,8 @@
 
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      <button class="btn btn-raised btn-primary" id="btn-add-representative">Add representative</button>
-      <button class="btn btn-unique" id="btn-create-store">Create</button>
+      <button class="btn btn-raised btn-primary btn-sm" id="btn-add-representative">Add representative</button>
+      <button class="btn btn-outline-primary btn-sm" id="btn-create-store">Create</button>
     </div>
 
   </template>
@@ -108,10 +108,12 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>This is list of stores</h2>
+      <!-- Search form -->
       <div class="search-container">
-        <form class="form-inline active-cyan-4" id="form-search">
-          <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search" id="search"
-            aria-label="Search"><span class="material-icons">search</span>
+        <form id="form-search">
+          <div class="form-group">
+            <input type="text" class="form-control" id="search" placeholder="Search...">
+          </div>
         </form>
       </div>
 
