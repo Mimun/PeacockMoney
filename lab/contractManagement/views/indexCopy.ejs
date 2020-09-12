@@ -15,8 +15,8 @@
     <div id="page-content-wrapper">
       <main style="padding: 5%;">
         <template id="temp_contract">
-          <div class="col mb-4 d-flex align-items-stretch object-div" c-data="true">
-            <div class="card" style="width: 24rem;">
+          <div class="align-items-stretch object-div" c-data="true">
+            <div class="card object-div" c-data="true" style="width: 24rem; margin-bottom: 15px;">
               <img class="card-img-top" src="" alt="Card image cap">
               <div class="card-body">
                 <h5 class="card-title"></h5>
@@ -24,7 +24,7 @@
               </div>
             </div>
           </div>
-
+          
         </template>
 
         <template id="contract_detail">
@@ -37,7 +37,7 @@
           </h2>
         </header>
         <submain>
-          <div id="template-handler" class="row row-cols-1 row-cols-md-3"></div>
+          <div id="template-handler" class="card-deck"></div>
           <button type="button" class="btn btn-primary btn-sm" id="chooseTemplate">Choose contract template</button>
           <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Contract List</button>
         </submain>

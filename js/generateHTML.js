@@ -8,20 +8,6 @@ export const generateHTML = (itemObjs, template, elementName) => {
     itemListContainer.innerHTML = ''
   }
 
-  // for item metadata
-  const metadataContainer = clone.querySelector('.metadata-container')
-  if (metadataContainer.firstChild) {
-    metadataContainer.innerHTML = ''
-  }
-
-  const itemType = findNestedObj(itemObjs[0], 'name', 'itemType')
-  const itemCategory = findNestedObj(itemObjs[0], 'name', 'itemCategory')
-  const keyDiv = document.createElement('div')
-  keyDiv.style.margin = '5px'
-  keyDiv.style.fontWeight = 'bold'
-  keyDiv.innerHTML = itemType.dataVie + ": " + itemType.value + ', ' + itemCategory.dataVie + ': ' + itemCategory.value
-  metadataContainer.appendChild(keyDiv)
-
   // item list
   itemObjs.map(itemObj => {
     // item container

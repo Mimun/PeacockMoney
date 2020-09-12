@@ -1,4 +1,5 @@
 <style>
+  /* Begin: sidebar css */
   #sidebar-wrapper {
     position: relative;
     max-width: 15vw;
@@ -10,10 +11,11 @@
     margin: 60px 0;
   }
 
-  .sidebar-container {
+  #sidebar-wrapper .sidebar-container {
+    position: fixed;
+    display: inline-block;
     max-width: inherit;
     width: 13vw;
-    position: fixed;
     overflow: auto;
     max-height: 100vh;
   }
@@ -32,11 +34,11 @@
     margin-left: -15rem;
   }
 
-  #sidebar-toggle-btn {
+  .btn-toggle-container {
     height: fit-content;
     width: fit-content;
-    position: relative;
-    float: right;
+    position: absolute;
+    left: 13vw;
   }
 
   .list-group-item-light {
@@ -71,6 +73,7 @@
     padding: 5% 3%;
     width: 100%;
   }
+  /* End: sidebar css */
 
   #table-container {
     padding: 5% 7%;
@@ -88,8 +91,6 @@
     margin: auto;
     height: auto;
   }
-
-
 
   /* list css */
   .info-container p {
@@ -193,10 +194,10 @@
       </div>
     </div>
   </div>
-  <div class="btn-toggle-container">
-    <button class="btn btn-primary btn-sm rotate-btn px-2" id="sidebar-toggle-btn"><span class="material-icons rotate">
-        chevron_left
-      </span></button>
+  <div class="btn-toggle-container sticky-top">
+    <button class="btn btn-primary btn-sm rotate-btn px-2 " id="sidebar-toggle-btn">
+      <span class="material-icons rotate">chevron_left</span>
+    </button>
   </div>
 </div>
 

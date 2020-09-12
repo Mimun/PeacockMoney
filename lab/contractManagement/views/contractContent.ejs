@@ -82,34 +82,37 @@
     import { findNestedObj } from '/findNestedObj.js'
     const convertDbObjToQuillObj = (object) => {
       const objectData = {}
-      object.metadata.forEach(info => {
-        if (info) {
-          if (info.name && info.name !== "image" && info.name !== "contractContent") {
-            objectData[info.name] = info.value
-          }
-        }
-
-      })
-
-      for (var i = 0; i < object.items.length; i++) {
-        console.log('item: ', object.items[i])
-        var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type')
-        if (itemName) {
-          objectData["item" + (i + 1) + ""] = itemName.value
-
-        }
-        var statusArr = []
-        object.items[i].status.forEach(status => {
-          var status = findNestedObj(status, 'name', 'type')
-          if (status) {
-            statusArr.push(status.value)
-
+      if (object.contractMetadata.length !== 0) {
+        object.contractMetadata.forEach(info => {
+          if (info) {
+            if (info.name && info.name !== "image" && info.name !== "contractContent") {
+              objectData[info.name] = info.value
+            }
           }
 
         })
-        objectData["item" + (i + 1) + "Status"] = statusArr.join(", ")
 
+        for (var i = 0; i < object.items.length; i++) {
+          console.log('item: ', object.items[i])
+          var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type')
+          if (itemName) {
+            objectData["item" + (i + 1) + ""] = itemName.value
+
+          }
+          var statusArr = []
+          object.items[i].status.forEach(status => {
+            var status = findNestedObj(status, 'name', 'type')
+            if (status) {
+              statusArr.push(status.value)
+
+            }
+
+          })
+          objectData["item" + (i + 1) + "Status"] = statusArr.join(", ")
+
+        }
       }
+
 
       return objectData
     }

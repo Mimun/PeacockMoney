@@ -22,29 +22,24 @@ router.get('/', function (req, res, next) {
 // EMPLOYEES
 // get all employees
 router.get('/employees', (req, res, next) => {
-  
+
   async.parallel({
     stores: callback => {
       // try catch to prevent "store" field id is null
-      try{
+      try {
         Store.find({}).exec(callback)
 
-      } catch(err){
+      } catch (err) {
         console.error(err)
       }
     },
     employees: callback => {
-      try{
-        Employee.find({}).populate([
-          {
-            path: 'store',
-            model: 'Store'
-          }
-        ]).exec(callback)
-      } catch(err){
+      try {
+        Employee.find({}).exec(callback)
+      } catch (err) {
         console.error(err)
       }
-      
+
     }
   }, (err, results) => {
     if (err) throw err
@@ -64,35 +59,35 @@ router.get('/employees', (req, res, next) => {
 // create new employee
 router.post('/employees', (req, res, next) => {
   console.log('req.body: ', req.body)
-  if(req.body.store){
+  if (req.body.store) {
     var avatar = findNestedObj(req.body, 'name', 'avatar').value
     let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
     let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
     var fullName = findNestedObj(req.body, 'name', 'fullName').value
-  
+
     fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
       if (err) console.error(err)
       findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
       var employee = new Employee(req.body)
       console.log('employee: ', employee)
-      try{
+      try {
         employee.save((err, result) => {
           if (err) throw err
           if (result) {
             res.send('Saved successfully!')
-    
+
           }
         })
-      } catch(err){
+      } catch (err) {
         console.error(err)
       }
-      
-  
+
+
     })
   } else {
     res.send("Saved failed")
   }
-  
+
 
 })
 
@@ -129,9 +124,9 @@ router.post('/employees/search', (req, res, next) => {
       path: 'store',
       model: 'Store'
     }
-  ]).exec((err, results)=>{
-    if(err) throw err
-    res.status(200).send({employeeList: results})
+  ]).exec((err, results) => {
+    if (err) throw err
+    res.status(200).send({ employeeList: results })
   })
 
 })
@@ -141,10 +136,20 @@ router.post('/employees/search', (req, res, next) => {
 router.get('/stores', (req, res, next) => {
   async.parallel({
     stores: callback => {
-      Store.find({}).exec(callback)
+      try {
+        Store.find({}).exec(callback)
+
+      } catch (err) {
+        console.error(err)
+      }
     },
     employees: callback => {
-      Employee.find({}).exec(callback)
+      try {
+        Employee.find({}).exec(callback)
+      } catch (err) {
+        console.error(err)
+      }
+      
     }
   }, (err, results) => {
     if (err) throw err
@@ -200,9 +205,9 @@ router.post('/stores/search', (req, res, next) => {
     const regex = new RegExp(escapeRegex(value), 'gi')
     arrayMetadataConditions.push({ 'metadata.value': regex })
   })
-  Store.find({ $and: arrayMetadataConditions }).exec((err, results)=>{
-    if(err) throw err
-    res.status(200).send({storeList: results})
+  Store.find({ $and: arrayMetadataConditions }).exec((err, results) => {
+    if (err) throw err
+    res.status(200).send({ storeList: results })
   })
 
 })
@@ -212,10 +217,18 @@ router.post('/stores/search', (req, res, next) => {
 router.get('/warehouses', (req, res, next) => {
   async.parallel({
     warehouses: callback => {
-      Warehouse.find({}).exec(callback)
+      try {
+        Warehouse.find({}).exec(callback)
+      } catch (err) {
+        console.error(err)
+      }
     },
     employees: callback => {
-      Employee.find({}).exec(callback)
+      try {
+        Employee.find({}).exec(callback)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }, (err, results) => {
     if (err) throw err
@@ -270,9 +283,9 @@ router.post('/warehouses/search', (req, res, next) => {
     const regex = new RegExp(escapeRegex(value), 'gi')
     arrayMetadataConditions.push({ 'metadata.value': regex })
   })
-  Warehouse.find({ $and: arrayMetadataConditions }).exec((err, results)=>{
-    if(err) throw err
-    res.status(200).send({warehouseList: results})
+  Warehouse.find({ $and: arrayMetadataConditions }).exec((err, results) => {
+    if (err) throw err
+    res.status(200).send({ warehouseList: results })
   })
 
 })

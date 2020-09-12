@@ -1,19 +1,27 @@
 const mongoose = require('mongoose')
 
 const contractSchema = new mongoose.Schema({
-  metadata: [{
+  contractStatus: {type: String, required: false, default: 'waiting'},
+  contractMetadata: [{
     name: {type: String},
     value: {type: String},
     cType: {type: String, default: 'text'},
     dataVie: {type: String},
     dataKor: {type: String, default: 'korean string'}
   }],
+  infos: [{type: Object}],
   items:[{
     infos: [{type: Object}],
     evaluationItem: {type: mongoose.Types.ObjectId, ref: 'Item'},
     status: [{type: mongoose.Types.ObjectId, ref: 'ItemStatus'}]
   }],
-  contractStatus: {type: String, required: false, default: 'waiting'},
+  templateMetadata: [{
+    name: {type: String},
+    value: {type: String},
+    cType: {type: String, default: 'text'},
+    dataVie: {type: String},
+    dataKor: {type: String, default: 'korean string'}
+  }]
 
   // item: {type: mongoose.Types.ObjectId, ref: 'Item', required: false},
   // itemStatus: [{type: mongoose.Types.ObjectId, ref: 'ItemStatus', required: false}],

@@ -26,12 +26,14 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   
 
   // contract infos
-  // metadata
-  for (const property in contractDetail.metadata) {
-    const name = contractDetail.metadata[property].name
-    const value = contractDetail.metadata[property].value
-    const infoLang = contractDetail.metadata[property].dataVie
-    if(name === "customer" || name === "customerId" || name === "customerIdProvidingPlace" || name === "customerIdProvidingDate" || name === "customerAddress" || name === "customerPhoneNumber" || name === "customerFamilyRegister"){
+  // contractMetadata
+  for (const property in contractDetail.contractMetadata) {
+    const name = contractDetail.contractMetadata[property].name
+    const value = contractDetail.contractMetadata[property].value
+    const infoLang = contractDetail.contractMetadata[property].dataVie
+    if(name === "customer" || name === "customerId" || name === "customerIdProvidingPlace" 
+    || name === "customerIdProvidingDate" || name === "customerAddress" 
+    || name === "customerPhoneNumber" || name === "customerFamilyRegister"){
       const cloneBSide = infoTemplate.content.cloneNode(true)
       cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
       cloneBSide.querySelector('input').value = value
@@ -110,15 +112,15 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
 
 const displayInfoLang = (info) => {
   if (typeof info === "string") {
-    // // re-uppercase
-    // var infoLang = info.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
     // uppercase the first letter
     var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
     // split based on uppercase letters
-    infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+    if (infoLang.match(/[A-Z][a-z]+|[0-9]+/g) !== null) {
+      infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+    }
     return infoLang
 
-  } 
+  }
   return info
 
 }

@@ -12,12 +12,12 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
   clone.querySelector('img').setAttribute('src', contractImage.value)
 
   // contract name
-  var contractName = itemObj["metadata"]["template name"]
-  clone.querySelector('.contract-title').innerHTML = contractName ? contractName : "Contract name"
+  var contractName = findNestedObj(itemObj, 'name', 'templateName')
+  clone.querySelector('.contract-title').innerHTML = contractName ? contractName.value : "Contract name"
 
   // contract info
-  itemObj["metadata"].forEach(item => {
-    if (item.name === "nguoi lap" || item.name === "nguoi nhan" || item.name === "ngay lap") {
+  itemObj.contractMetadata.forEach(item => {
+    if (item.name === "creator" || item.name === "customer" || item.name === "createdDate") {
       const infoDiv = document.createElement('div')
       infoDiv.innerHTML = item.name.charAt(0).toUpperCase() + item.name.slice(1) + ': ' + item.value
       clone.querySelector('.contract-info').appendChild(infoDiv)

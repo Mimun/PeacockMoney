@@ -13,7 +13,7 @@ const employeeSchema = new mongoose.Schema({
     value: {type: String},
     cType: {type: String, default: 'text'}
   }],
-  store: {type: mongoose.Types.ObjectId, ref: 'Store'}
+  store: {type: Object}
 })
 
 module.exports = mongoose.model('Employee', employeeSchema)

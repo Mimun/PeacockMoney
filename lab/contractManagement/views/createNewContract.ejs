@@ -157,9 +157,6 @@
     console.log('evaluating item from local storage: ', evaluatingItem)
     console.log('prev url: ', document.referrer)
 
- 
-
-
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
     if(evaluatingItem){
@@ -247,8 +244,14 @@
       document.querySelector('#contract-template-container').innerHTML = ""
     }
 
-    generateHTML(originItemList, template, 'item-list-table-container')
-    generateHTML(originItemStatusList, template, 'item-status-list-table-container')
+    if(originItemList.length !==0){
+      generateHTML(originItemList, template, 'item-list-table-container')
+
+    } 
+    if(originItemStatusList.length !==0){
+      generateHTML(originItemStatusList, template, 'item-status-list-table-container')
+
+    }
     generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container')
 
     document.querySelector('#btn-add-item').addEventListener('click', (event) => {
@@ -274,10 +277,10 @@
           prevDiv.style.border = 'none'
 
         }
-        console.log('prevDiv: ', prevDiv)
-        console.log('currentDiv: ', currentDiv)
+        
       })
       document.querySelector('div[class="contract-item-container"]').appendChild(itemTemplateClone)
+      $(itemTemplateClone).bootstrapMaterialDesign()
 
     })
 
@@ -292,9 +295,6 @@
         if (prevDiv !== null && prevDiv.isSameNode(currentDiv) === false) {
           prevDiv.style.border = 'none'
         }
-        console.log('prevDiv: ', prevDiv)
-        console.log('currentDiv: ', currentDiv)
-
       })
     })
 
@@ -366,36 +366,31 @@
     }
     chooseItemStatus()
 
+    // create new contract button
     document.querySelector('button[id="btn-submit"]').addEventListener('click', (event) => {
-      var data = {
-        metadata: [],
-        items: [],
-      }
+      // var data = {
+      //   contractMetadata: [],
+      //   templateMetadata: [],
+      //   items: [],
+      // }
 
       // metadata
       const contractInfoContainer = event.target.closest('#contract-info-container')
       const contractTemplateContainer = contractInfoContainer.querySelector('#contract-template-container').querySelector('.object-div')
       const cData = contractTemplateContainer.C_DATA
+      console.log('cdata: ', cData)
 
-      // contract image
-      const image = findNestedObj(cData, 'name', 'image')
-      data.metadata.push({
-        name: 'image',
-        value: image.value,
+      var data = {...cData, contractMetadata: [], infos: [], items: []}
+      console.log('cdata 2: ', data)
 
-      })
-
-      // contract content
-      const contractContent = findNestedObj(cData, 'name', 'contractContent')
-      data.metadata.push(contractContent)
-
+      // // contract content
       contractTemplateContainer.querySelectorAll('input').forEach(input => {
-        var name = input.getAttribute('data-eng')
+        var name = input.getAttribute('name')
         var value = input.value
         var type = input.type
         var dataVie = input.getAttribute('data-vie')
 
-        data.metadata.push({
+        data.contractMetadata.push({
           name: name,
           value: value,
           cType: type,
@@ -412,7 +407,7 @@
           status: []
         }
         // custom info
-        itemContainer.querySelectorAll('.md-form').forEach(element => {
+        itemContainer.querySelectorAll('.form-group').forEach(element => {
           var input = {}
           const label = element.querySelector('label').innerHTML
           const value = element.querySelector('input').value
@@ -435,11 +430,9 @@
 
         data.items.push(itemInfo)
       })
-
-
+      console.log('data: ', data)
       $.redirect("contracts", { data: JSON.stringify(data) }, "POST");
 
-      console.log('data: ', data)
     })
 
     // search function

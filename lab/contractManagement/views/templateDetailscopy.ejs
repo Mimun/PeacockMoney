@@ -78,32 +78,32 @@
   <div class="tab md-tabs template-metadata">Template metadata:
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Template name</label>
-      <input type="text" class="form-control validate" data-eng="templateName" data-vie="temMauHopDong">
+      <input type="text" class="form-control validate" name="templateName" data-vie="temMauHopDong">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Category</label>
-      <input type="text" class="form-control validate" data-eng="category" data-vie="phanLoai">
+      <input type="text" class="form-control validate" name="category" data-vie="phanLoai">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Type</label>
-      <input type="text" class="form-control validate" data-eng="templateType" data-vie="loai">
+      <input type="text" class="form-control validate" name="templateType" data-vie="loai">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Loai tai san</label>
-      <input type="text" class="form-control validate" data-eng="itemType" data-vie="loaiTaiSan">
+      <input type="text" class="form-control validate" name="itemType" data-vie="loaiTaiSan">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Phi thu</label>
-      <input type="number" class="form-control validate" data-eng="fee" data-vie="phiThu">
+      <input type="number" class="form-control validate" name="fee" data-vie="phiThu">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Phi khac</label>
-      <input type="text" class="form-control validate" data-eng="anotherFee" data-vie="phiKhac">
+      <input type="text" class="form-control validate" name="anotherFee" data-vie="phiKhac">
     </div>
     <select class="browser-default custom-select">
-      <option value="thanhToanLai" data-eng="interestPayment" data-vie="thanhToanLai">Phuong thuc thanh toan</option>
-      <option value="thanhToanLai" data-eng="interestPayment" data-vie="thanhToanLai">Chi thanh toan lai</option>
-      <option value="thanhToanGocLai" data-eng="originalProfitPayment" data-vie="thanhToanGocLai">Thanh toan goc +
+      <option value="thanhToanLai" name="interestPayment" data-vie="thanhToanLai">Phuong thuc thanh toan</option>
+      <option value="thanhToanLai" name="interestPayment" data-vie="thanhToanLai">Chi thanh toan lai</option>
+      <option value="thanhToanGocLai" name="originalProfitPayment" data-vie="thanhToanGocLai">Thanh toan goc +
         lai</option>
     </select>
 
@@ -113,55 +113,57 @@
   <div class="tab md-tabs contract-metadata">Contract metadata:
 
     <div class="form-group">
+      <label class="bmd-label-floating" data-error="Empty">Cua hang</label>
+      <input type="text" class="form-control validate" name="store" data-vie="cuaHang">
+    </div>
+    <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Nguoi lap</label>
-      <input type="text" class="form-control validate" data-eng="creator" data-vie="nguoiLap">
+      <input type="text" class="form-control validate" name="creator" data-vie="nguoiLap" disabled>
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Khach hang</label>
-      <input type="text" class="form-control validate" data-eng="customer" data-vie="khachHang">
+      <input type="text" class="form-control validate" name="customer" data-vie="khachHang" disabled>
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">CMND</label>
-      <input type="text" class="form-control validate" data-eng="customerId" data-vie="cmnd">
+      <input type="text" class="form-control validate" name="customerId" data-vie="cmnd">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Noi cap</label>
-      <input type="text" class="form-control validate" data-eng="customerIdProvidingPlace" data-vie="noiCap">
+      <input type="text" class="form-control validate" name="customerIdProvidingPlace" data-vie="noiCap">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ngay cap</label>
-      <input type="date" class="form-control validate" data-eng="customerIdProvidingDate" data-vie="ngayCap">
+      <input type="date" class="form-control validate" name="customerIdProvidingDate" data-vie="ngayCap">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Dia chi</label>
-      <input type="text" class="form-control validate" data-eng="customerAddress" data-vie="diaChi">
+      <input type="text" class="form-control validate" name="customerAddress" data-vie="diaChi">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">So dien thoai</label>
-      <input type="number" class="form-control validate" data-eng="customerPhoneNumber" data-vie="soDienThoai">
+      <input type="number" class="form-control validate" name="customerPhoneNumber" data-vie="soDienThoai">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ho khau thuong tru</label>
-      <input type="text" class="form-control validate" data-eng="customerFamilyRegister" data-vie="soHoKhau">
+      <input type="text" class="form-control validate" name="customerFamilyRegister" data-vie="soHoKhau">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">So tien vay</label>
-      <input type="number" class="form-control validate" data-eng="loan" data-vie="soTienVay">
+      <input type="number" class="form-control validate" name="loan" data-vie="soTienVay">
     </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">So tien min</label>
-            <input type="number" class="form-control validate" min="0" max="9999999999" data-eng="min"
-              data-vie="soTienMin">
+            <input type="number" class="form-control validate" min="0" max="9999999999" name="min" data-vie="soTienMin">
           </div>
         </div>
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">So tien max</label>
-            <input type="number" class="form-control validate" min="0" max="9999999999" data-eng="max"
-              data-vie="soTienMax">
+            <input type="number" class="form-control validate" min="0" max="9999999999" name="max" data-vie="soTienMax">
           </div>
         </div>
 
@@ -169,27 +171,27 @@
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ngay lap</label>
-      <input type="date" class="form-control validate" data-eng="createdDate" data-vie="ngayLap">
+      <input type="date" class="form-control validate" name="createdDate" data-vie="ngayLap">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Thoi han vay toi thieu</label>
-      <input type="number" class="form-control validate" data-eng="minLoanTerm" data-vie="thoiHanVayToiThieu">
+      <input type="number" class="form-control validate" name="minLoanTerm" data-vie="thoiHanVayToiThieu">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ti le lai theo ngay(%)</label>
-      <input type="number" class="form-control validate" data-eng="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
+      <input type="number" class="form-control validate" name="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ti le phat theo ngay(%)</label>
-      <input type="number" class="form-control validate" data-eng="percentagePenaltyPerDay" data-vie="tiLePhatTheoNgay">
+      <input type="number" class="form-control validate" name="percentagePenaltyPerDay" data-vie="tiLePhatTheoNgay">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">So ky thu</label>
-      <input type="number" class="form-control validate" data-eng="numberOfAcceptanceTerms" data-vie="soKyThu">
+      <input type="number" class="form-control validate" name="numberOfAcceptanceTerms" data-vie="soKyThu">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">So ngay cua 1 ky</label>
-      <input type="number" class="form-control validate" data-eng="numberOfDaysPerTerm" data-vie="soNgayMotKy">
+      <input type="number" class="form-control validate" name="numberOfDaysPerTerm" data-vie="soNgayMotKy">
     </div>
 
   </div>
@@ -295,32 +297,33 @@
       }
 
       // contract template metadata
+      // - contract template image for contractMetadata
+      var imgData = document.querySelector('cropper-wc').getImageData()
+      templateItem.templateMetadata.push({
+        name: 'image',
+        value: imgData
+      })
+      // - quill contract content for contract metadata
+      var contractContent = quill.root.innerHTML
+      console.log('contract content: ', contractContent)
+      templateItem.templateMetadata.push(getObj('contractContent', quill.root.innerHTML, 'text', 'noiDungHopDong', 'korean string'))
+
+      // - metadata for template
       document.querySelector('.template-metadata').querySelectorAll('input').forEach(element => {
-        var name = element.getAttribute('data-eng')
+        var name = element.getAttribute('name')
         var value = element.value
-        var type = element.type
+        var type = element.getAttribute('type')
         var dataVie = element.getAttribute('data-vie')
         templateItem.templateMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
       })
 
       // payment method for template metadata
-      templateItem.templateMetadata.push(getObj('paymentMethod', document.querySelector('.custom-select').value, 'text', document.querySelector('.custom-select').value))
+      templateItem.templateMetadata.push(getObj('paymentMethod', document.querySelector('.custom-select').value, 'text', 'kieuThanhToan', 'koreanString'))
 
       // contract metadata:
-      // - contract image for contractMetadata
-      var imgData = document.querySelector('cropper-wc').getImageData()
-      templateItem.contractMetadata.push({
-        name: 'image',
-        value: imgData
-      })
-
-      // - quill contract content for contract metadata
-      var contractContent = quill.root.innerHTML
-      console.log('contract content: ', contractContent)
-      templateItem.contractMetadata.push(getObj('contractContent', quill.root.innerHTML, 'text', 'noiDungHopDong', 'korean string'))
       // - contract metadata
       document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
-        var name = element.getAttribute('data-eng')
+        var name = element.getAttribute('name')
         var value = element.value
         var type = element.type
         var dataVie = element.getAttribute('data-vie')
@@ -360,13 +363,13 @@
       return false;
     }
 
-    if (currentTab === x.length - 1) {
-      quill.on('text-change', (delta, source) => {
-        // console.log('delta: ', delta)
-        // console.log('source: ', source)
-        console.log('output: ', quill.root.innerHTML)
-      })
-    }
+    // if (currentTab === x.length - 1) {
+    //   quill.on('text-change', (delta, source) => {
+    //     // console.log('delta: ', delta)
+    //     // console.log('source: ', source)
+    //     console.log('output: ', quill.root.innerHTML)
+    //   })
+    // }
     // Otherwise, display the correct tab:
     showTab(currentTab);
   }

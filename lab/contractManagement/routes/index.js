@@ -61,7 +61,12 @@ const filterContract = (value1, value2, value3, req, res, next) => {
   async.parallel({
     result1: (callback) => {
       try {
-        ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
+        if(value1 !== ''){
+          ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
+
+        } else {
+          ContractTemplate.find({}).exec(callback)
+        }
 
       } catch (err) {
         next(err)
@@ -69,7 +74,12 @@ const filterContract = (value1, value2, value3, req, res, next) => {
     },
     result2: (callback) => {
       try {
-        ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
+        if(value2 !== ''){
+          ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
+
+        } else {
+          ContractTemplate.find({}).exec(callback)
+        }
 
       } catch (err) {
         next(err)

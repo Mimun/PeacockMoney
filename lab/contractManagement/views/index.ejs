@@ -12,8 +12,6 @@
     <%- include('../Components/sideBar.ejs') %> 
     <div id="page-content-wrapper">
       <main>
- 
-
         <template id="temp_contract">
           <div class="align-items-stretch object-div" c-data="true">
             <div class="card object-div" c-data="true" style="width: 24rem; margin-bottom: 15px;">
@@ -98,6 +96,7 @@
         }
         var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
         modalBody.appendChild(tmpContent)
+        // execute jquery script for material design bootstrap again
         $(tmpContent).bootstrapMaterialDesign()
 
       })

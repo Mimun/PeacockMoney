@@ -23,6 +23,10 @@
     .tab-content::-webkit-scrollbar {
       display: none;
     }
+    #item-evaluation .bmd-form-group, #item-status .bmd-form-group, .tab-content .bmd-form-group{
+      width: 100%;
+      padding: 0 !important;
+    }
   </style>
 
 
@@ -34,10 +38,7 @@
   <div class="d-flex" id="wrapper">
     <!-- sidebar -->
     <%- include('sideBar.ejs') %>
-
     <div id="page-content-wrapper">
-
-
       <!-- item list template -->
       <%- include('itemList.ejs') %>
       <div class="evaluation-container container" style="border: none; margin-top: 5%;">
@@ -126,7 +127,7 @@
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(itemStatusResults) %>;
-
+    console.log('origin item list: ', originItemList)
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
 
     var originalPrice = 0
@@ -138,16 +139,21 @@
     if (document.querySelector('#item-status-list-table-container').innerHTML) {
       document.querySelector('#item-status-list-table-container').innerHTML = ""
     }
+    if(originItemList.length !==0){
+      generateHTML(originItemList, template, 'item-list-table-container')
 
-    generateHTML(originItemList, template, 'item-list-table-container')
-    generateHTML(originItemStatusList, template, 'item-status-list-table-container')
+    } 
+    if(originItemStatusList.length !== 0){
+      generateHTML(originItemStatusList, template, 'item-status-list-table-container')
+
+    }
 
     const chooseItem = () => {
       document.querySelector('#item-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
-          const cloneNode = event.target.parentNode.cloneNode(true)
-          cloneNode.C_DATA = event.target.parentNode.C_DATA
-          cloneNode.className = "object-div item"
+          const cloneNode = event.target.closest('.object-div').cloneNode(true)
+          cloneNode.C_DATA = event.target.closest('.object-div').C_DATA
+          cloneNode.classList.add('item')
           originalPrice = parseInt(findNestedObj(cloneNode.C_DATA, 'name', 'evaluatingPrice').value)
           if (document.querySelector("#item-evaluation")) {
             document.querySelector("#item-evaluation").innerHTML = ''
@@ -163,20 +169,19 @@
 
       document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
+          
           const itemStatusDiv = document.querySelector("#item-status")
-          const cloneNode = event.target.parentNode.cloneNode(true)
-          cloneNode.C_DATA = event.target.parentNode.C_DATA
-          cloneNode.className = "object-div item-status"
+          console.log('event target: ', event.target.closest('.object-div').C_DATA)
+          const cloneNode = event.target.closest('.object-div').cloneNode(true)
+          cloneNode.C_DATA = event.target.closest('.object-div').C_DATA
+          cloneNode.classList.add('item-status')
           totalDiscount = totalDiscount + parseInt(findNestedObj(cloneNode.C_DATA, 'name', 'reduce(%)').value)
-
 
           const removeButton = document.createElement('i')
           removeButton.className = "fa fa-times"
           removeButton.style.fontSize = "25px"
           removeButton.style.margin = "12px"
-
           removeButton.style.color = '#bdbdbd '
-
           removeButton.addEventListener('click', (event) => {
             totalDiscount = totalDiscount - parseInt(findNestedObj(event.target.closest('.object-div').C_DATA, 'name', 'reduce(%)').value)
             event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
@@ -192,29 +197,22 @@
               if (cloneNode.isEqualNode(div)) {
                 console.log('div: ', div)
                 isChosen = true
-
                 itemStatusDiv.removeChild(div)
               }
             })
             if (!isChosen) {
               itemStatusDiv.appendChild(cloneNode)
               itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
-
             }
           } else {
             itemStatusDiv.appendChild(cloneNode)
             itemStatusDiv.querySelector('div[class="mdc-data-table__header-row header-row-div"]').removeEventListener('click', () => { })
-
-
           }
           calculateEvaluatePrice(originalPrice, totalDiscount)
         })
       })
     }
     chooseItemStatus()
-
-
-
 
     // search function
     document.querySelector('#search').addEventListener('submit', () => {

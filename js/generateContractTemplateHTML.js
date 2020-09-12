@@ -3,7 +3,7 @@ import { findNestedObj } from './findNestedObj.js'
 export const generateContractTemplateHTML = (itemObj, template, elementName) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
   const infoContainer = document.createElement('div')
-  // contract image 
+  // contract template image 
   const imageInfo = findNestedObj(itemObj, 'name', 'image')
   console.log('image: ', imageInfo)
   var imgContainer = document.createElement('div')
@@ -23,17 +23,19 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
   infoContainer.setAttribute('c_data', true)
   infoContainer.C_DATA = itemObj
 
+  // contract A side
   const aSideInfoDiv = document.createElement('div')
   aSideInfoDiv.className = 'a-side-info'
   aSideInfoDiv.innerHTML = `<strong>I. Thong tin ben A</strong>`
   infoContainer.appendChild(aSideInfoDiv)
 
+  // contract B side
   const bSideInfoDiv = document.createElement('div')
   bSideInfoDiv.className = 'b-side-info'
   bSideInfoDiv.innerHTML = `<strong>II. Thong tin ben B</strong>`
-
   infoContainer.appendChild(bSideInfoDiv)
 
+  // contract Info 
   const contractInfoDiv = document.createElement('div')
   contractInfoDiv.className = 'contract-info'
   contractInfoDiv.innerHTML = `<strong>III. Thong tin hop dong</strong>`
@@ -57,14 +59,14 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
 
       }
       input.type = info.cType
-      input.setAttribute('data-eng', info.name)
+      input.setAttribute('name', info.name)
       input.setAttribute('data-vie', info.dataVie)
-
+      input.setAttribute('data-kor', info.dataKor)
 
       var label = clone.querySelector('label')
       label.innerHTML = displayInfoLang(info.dataVie)
 
-      if (info.name === 'creator') {
+      if (info.name === 'creator' || info.name === 'store') {
         aSideInfoDiv.appendChild(clone)
       } else if (info.name === 'customer' || info.name === 'customerId' || info.name === 'customerIdProvidingPlace' || info.name === 'customerIdProvidingDate' || info.name === 'customerAddress' || info.name === 'customerPhoneNumber' || info.name === 'customerFamilyRegister') {
         bSideInfoDiv.appendChild(clone)
@@ -76,49 +78,53 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
   })
 
   // contract template metadata
-  itemObj.templateMetadata.map(info => {
-    if (info.name !== 'image') {
-      const clone = document.importNode(template.content, true)
+  // itemObj.templateMetadata.map(info => {
+  //   if (info.name !== 'image') {
+  //     const clone = document.importNode(template.content, true)
 
-      var input = clone.querySelector('input')
-      if (info.value === null || info.value === "") {
-        input.removeAttribute('disabled')
+  //     var input = clone.querySelector('input')
+  //     if (info.value === null || info.value === "") {
+  //       input.removeAttribute('disabled')
 
-      } else {
-        input.value = info.value
-      }
-      input.type = info.cType
-      input.setAttribute('data-eng', info.name)
-      input.setAttribute('data-vie', info.dataVie)
+  //     } else {
+  //       input.value = info.value
+  //     }
+  //     input.type = info.cType
+  //     input.setAttribute('name', info.name)
+  //     input.setAttribute('data-vie', info.dataVie)
 
-      var label = clone.querySelector('label')
-      label.innerHTML = displayInfoLang(info.dataVie)
-      infoContainer.appendChild(clone)
-    }
-  })
+  //     var label = clone.querySelector('label')
+  //     label.innerHTML = displayInfoLang(info.dataVie)
+  //     infoContainer.appendChild(clone)
+  //   }
+  // })
 
   // contract custom infos
-  itemObj.infos.map(info => {
-    if (info.name !== "image") {
-      const clone = document.importNode(template.content, true)
-      var input = clone.querySelector('input')
+  if (itemObj.infos.length != 0) {
+    itemObj.infos.map(info => {
+      if (info.name !== "image") {
+        const clone = document.importNode(template.content, true)
+        var input = clone.querySelector('input')
 
-      if (info.value === null || info.value === "") {
-        input.removeAttribute('disabled')
+        if (info.value === null || info.value === "") {
+          input.removeAttribute('disabled')
 
-      } else {
-        input.value = info.value
+        } else {
+          input.value = info.value
 
+        }
+        // cannot add dataVie|dataKor because custom infos depends on what user import to
+        input.type = info.cType
+
+        var label = clone.querySelector('label')
+        label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
+        document.querySelector('.contract-item-container').querySelector('span').innerHTML = "1"
+        document.querySelector('#custom-info').appendChild(clone)
       }
-      input.type = info.cType
 
-      var label = clone.querySelector('label')
-      label.innerHTML = info.name.charAt(0).toUpperCase() + info.name.slice(1)
-      document.querySelector('.contract-item-container').querySelector('span').innerHTML = "1"
-      document.querySelector('#custom-info').appendChild(clone)
-    }
+    })
+  }
 
-  })
 
   document.body.querySelector('#' + elementName + '').appendChild(infoContainer)
 
@@ -129,7 +135,9 @@ const displayInfoLang = (info) => {
     // uppercase the first letter
     var infoLang = info.charAt(0).toUpperCase() + info.slice(1)
     // split based on uppercase letters
-    infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+    if (infoLang.match(/[A-Z][a-z]+|[0-9]+/g) !== null) {
+      infoLang = infoLang.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
+    }
     return infoLang
 
   }
