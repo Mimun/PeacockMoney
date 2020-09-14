@@ -3,6 +3,7 @@ var router = express.Router();
 var Employee = require('../models/employee')
 var Store = require('../models/store')
 var Warehouse = require('../models/warehouse')
+var Property = require('../models/property')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -284,6 +285,15 @@ router.post('/warehouses/search', (req, res, next) => {
     res.status(200).send({ warehouseList: results })
   })
 
+})
+
+// PROPERTIES
+// get all properties
+router.get('/properties', (req, res, next) => {
+  Property.find({}).exec((err, results) => {
+    if (err) throw err
+    res.render('properties',{ propertyList: results })
+  })
 })
 
 const findNestedObj = (entireObj, keyToFind, valToFind) => {

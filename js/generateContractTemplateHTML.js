@@ -88,8 +88,10 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
     } else if (info.name === 'store') {
       var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang', 'koreanString', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
       aSideInfoDiv.appendChild(selectContainerClone)
-  
-      
+      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien', 'koreanString', [], selectLabel, 'Nhan vien', selectContainer)
+      selectContainerClone2.querySelector('#employee').disabled = true
+      aSideInfoDiv.appendChild(selectContainerClone2)
+
       aSideInfoDiv.querySelector('#store').addEventListener('change', (event) => {
         console.log('event: ', event.target.value)
         $.ajax({
@@ -100,9 +102,9 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
           success: result => {
             console.log('result: ', result)
 
-            if(aSideInfoDiv.querySelector('#employee')){
-              aSideInfoDiv.removeChild(aSideInfoDiv.querySelector('#employee').parentNode)
-            }
+            // if(aSideInfoDiv.querySelector('#employee')){
+            //   aSideInfoDiv.removeChild(aSideInfoDiv.querySelector('#employee').parentNode)
+            // }
             var employeeSelectOptions = []
             employeeSelectOptions.unshift('<option value="">No employee</option>')
             if(result.employeeList.length !==0){
@@ -113,8 +115,9 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
                 employeeSelectOptions.push(option)
               })
             } 
-            var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien', 'koreanString', employeeSelectOptions, selectLabel, 'Nhan vien', selectContainer)
-            aSideInfoDiv.appendChild(selectContainerClone2)
+            aSideInfoDiv.querySelector('#employee').innerHTML = employeeSelectOptions
+            aSideInfoDiv.querySelector('#employee').disabled = false
+           
             
           }
         })

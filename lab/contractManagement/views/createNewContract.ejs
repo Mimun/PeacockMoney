@@ -23,6 +23,19 @@
       width: 100%;
       padding: 0 !important;
     }
+    .col-sm.side {
+      max-height: 100vh;
+      overflow-y: auto;
+      -ms-overflow-style: none;
+    }
+
+    .col-sm.side::-webkit-scrollbar {
+      display: none;
+    }
+
+    strong{
+      font-size: 20px;
+    }
   </style>
 </head>
 
@@ -38,22 +51,6 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %> 
     <div id="page-content-wrapper">
-      <style>
-        .col-sm.side {
-          max-height: 100vh;
-          overflow-y: auto;
-          -ms-overflow-style: none;
-        }
-
-        .col-sm.side::-webkit-scrollbar {
-          display: none;
-        }
-
-        strong{
-          font-size: 20px;
-        }
-      </style>
-
       <!-- page content -->
       <div class="container" style="margin: 0; border: none;">
         <div class="row" style="width: 100vw; height: 100%;">
@@ -161,6 +158,8 @@
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
+
+    // display chosen evaluating item if user chose from 'evaluating' page
     if(evaluatingItem){
       generateHTML([evaluatingItem], template, "item-evaluation")
       var clone = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').cloneNode(true)
@@ -168,6 +167,7 @@
       document.querySelector('#item-evaluation').innerHTML = ''
       document.querySelector('#item-evaluation').appendChild(clone)
     }
+
     var currentDiv = null
     var prevDiv = null
 
@@ -248,11 +248,9 @@
 
     if(originItemList.length !==0){
       generateHTML(originItemList, template, 'item-list-table-container')
-
     } 
     if(originItemStatusList.length !==0){
       generateHTML(originItemStatusList, template, 'item-status-list-table-container')
-
     }
     generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container', stores)
 

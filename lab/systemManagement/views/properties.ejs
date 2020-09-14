@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .form-group{
+      width: fit-content;
+    }
+  </style>
+</head>
+
+<body>
+  <template id="property-list">
+    <div class="info-container">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <p class="name"></p>
+          </div>
+          <div class="col">
+            <p class="itemType"></p>
+          </div>
+          <div class="col">
+            <p class="status"></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </template>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>This is list of properties</h2>
+      <div class="form-group">
+        <input type="text" class="form-control" id="search" placeholder="Search...">
+      </div>
+      <div id="property-list-container" class="list-container"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {generatePropertyManagementList} from '/generatePropertyManagementList.js'
+    var propertyList = <%- JSON.stringify(propertyList) %>;
+    console.log('property list: ', propertyList)
+    const propertyListTemplate = document.querySelector('#property-list')
+    propertyList.forEach(property=>{
+      generatePropertyManagementList(property, propertyListTemplate, 'property-list-container')
+    })
+  </script>
+</body>
+
+</html>

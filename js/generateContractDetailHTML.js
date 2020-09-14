@@ -1,4 +1,4 @@
-import {findNestedObj} from './findNestedObj.js'
+import { findNestedObj } from './findNestedObj.js'
 export const generateContractDetailHTML = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
 
@@ -10,47 +10,38 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   const image = findNestedObj(contractDetail, 'name', 'image')
   clone.querySelector('#contract-image').setAttribute('src', image.value)
 
-  // a side info
-  var aSideInfo = findNestedObj(contractDetail, 'name', 'employee')
-  const cloneASide = infoTemplate.content.cloneNode(true)
-  cloneASide.querySelector('label').innerHTML = displayInfoLang(aSideInfo.dataVie)
-  cloneASide.querySelector('input').value = aSideInfo.value
-  clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
-
-  // // b side info
-  // var bSideInfo = findNestedObj(contractDetail, 'name', 'customer')
-  // var bSideId = findNestedObj(contractDetail, 'name', 'customerId')
-  // var bSideIdProvidingPlace = findNestedObj(contractDetail, 'name', 'customerIdProvidingPlace')
-  // var bSideIdProvidingDate = findNestedObj(contractDetail, 'name', 'customerIdProvidingDate')
-
-  
-
   // contract infos
   // contractMetadata
   for (const property in contractDetail.contractMetadata) {
     const name = contractDetail.contractMetadata[property].name
     const value = contractDetail.contractMetadata[property].value
     const infoLang = contractDetail.contractMetadata[property].dataVie
-    if(name === "customer" || name === "customerId" || name === "customerIdProvidingPlace" 
-    || name === "customerIdProvidingDate" || name === "customerAddress" 
-    || name === "customerPhoneNumber" || name === "customerFamilyRegister"){
+    if (name === "employee" || name === "store") {
+      // A side info
+      const cloneASide = infoTemplate.content.cloneNode(true)
+      cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+      cloneASide.querySelector('input').value = value
+      clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
+    } else if (name === "customer" || name === "customerId" || name === "customerIdProvidingPlace"
+      || name === "customerIdProvidingDate" || name === "customerAddress"
+      || name === "customerPhoneNumber" || name === "customerFamilyRegister") {
+      // B side info
       const cloneBSide = infoTemplate.content.cloneNode(true)
       cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
       cloneBSide.querySelector('input').value = value
       clone.querySelector('.b-side-info-container').querySelector('.section').appendChild(cloneBSide)
     } else {
-      if (name.toLowerCase() !== "templateName" && name.toLowerCase() !== "image" && name.toLowerCase() !== "creator" && name.toLowerCase() !== "customer" && name !== "contractContent") {
+      if (name !== "templateName" && name !== "image" && name !== "employee" && name !== 'store' && name !== "customer" && name !== "contractContent") {
+        // contract info
         const infoTemplatelone = infoTemplate.content.cloneNode(true)
         infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
         infoTemplatelone.querySelector('input').value = value
         clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
-  
       }
     }
-    
-
   }
-  // info
+
+  // info items
   contractDetail.items.forEach(item => {
     const itemDiv = clone.querySelector('.item-info-container').querySelector('.section').cloneNode(true)
 
@@ -69,7 +60,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
       const infoTemplatelone = infoTemplate.content.cloneNode(true)
       infoTemplatelone.querySelector('.form-group').className = "form-group"
 
-      infoTemplatelone.querySelector('label').innerHTML = statusName.name === "type"? displayInfoLang('tinhTrang'): displayInfoLang(statusName.dataVie)
+      infoTemplatelone.querySelector('label').innerHTML = statusName.name === "type" ? displayInfoLang('tinhTrang') : displayInfoLang(statusName.dataVie)
       infoTemplatelone.querySelector('input').value = statusName.value
 
       itemDiv.querySelector('.item-status').appendChild(infoTemplatelone)
@@ -77,7 +68,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
         const infoTemplatelone = infoTemplate.content.cloneNode(true)
         infoTemplatelone.querySelector('.form-group').className = "form-group"
 
-        infoTemplatelone.querySelector('label').innerHTML = info.name.toLowerCase() === "loai" ? "Tinh trang" : info.name.charAt(0).toUpperCase() + info.name.slice(1)
+        infoTemplatelone.querySelector('label').innerHTML = info.name === "loai" ? "Tinh trang" : info.name.charAt(0).toUpperCase() + info.name.slice(1)
         infoTemplatelone.querySelector('input').value = info.value
 
         itemDiv.querySelector('.item-status').appendChild(infoTemplatelone)
@@ -86,8 +77,6 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
     })
 
     clone.querySelector('.item-info-container').appendChild(itemDiv)
-
-
   })
 
   // handle event click to pdf button
@@ -95,19 +84,17 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
     event.preventDefault()
     $.ajax({
       type: 'GET',
-      url: 'contracts/'+itemObj._id,
+      url: 'contracts/' + itemObj._id,
       contentType: 'application/json',
-      success: result=>{
+      success: result => {
         console.log(result)
         window.location.href = 'contracts/' + itemObj._id
       }
     })
   })
 
-
   document.body.querySelector('#' + elementName + '').appendChild(clone)
 
- 
 }
 
 const displayInfoLang = (info) => {

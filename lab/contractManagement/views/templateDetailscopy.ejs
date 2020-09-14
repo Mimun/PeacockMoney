@@ -402,39 +402,6 @@
     x[n].className += " active";
   }
 
-  const displayTemplate = (itemObj, template, elementName) => {
-    generateContractTemplateCard(itemObj, template, elementName)
-
-    document.querySelector('#template-handler').lastChild.addEventListener('click', (event) => {
-      console.log('event abc: ', document.querySelector('modal-body'))
-      var modalBody = document.querySelector('modal-body')
-      modalBody.querySelector('button[id="btn-create-new-contract"]').addEventListener('click', (event) => {
-        var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-        console.log('abc xyz: ', cData)
-        $.redirect("createNewContract", { data: JSON.stringify(cData) }, "POST");
-
-      })
-
-      modalBody.querySelector('button[id="btn-delete-contract-template"]').addEventListener('click', (event) => {
-        var cData = event.target.closest('modal-body').querySelector('.object-div').C_DATA
-        console.log('data to delete: ', cData)
-        $.ajax({
-          type: "DELETE",
-          url: 'deleteContractTemplate/' + cData._id,
-          contentType: 'application/json',
-          data: JSON.stringify(findNestedObj(cData, 'name', 'image')),
-          success: (result) => {
-            console.log(result)
-            window.location.reload()
-          }
-
-        })
-
-      })
-
-    })
-
-  }
 
   const getObj = (name, value, type, dataVie, dataKor) => {
     return {

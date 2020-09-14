@@ -2,7 +2,8 @@ import { findNestedObj } from './findNestedObj.js'
 // used when rendering "Quan ly va Tao mau hop dong" page
 export const generateContractTemplateCard = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
-
+  var modalBody = document.querySelector('.modal-body')
+  var modalFooter = document.querySelector('.modal-footer')
   // image
   var contractTemplateImage = findNestedObj(itemObj, 'name', 'image').value
   clone.querySelector('img').setAttribute('src', contractTemplateImage)
@@ -27,17 +28,9 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createCardText(max, cardText)
   }
 
-  // var cardText = clone.querySelector('.card-text')
-  // itemObj.templateMetadata.map(info=>{
-  //   var cardTextClone = cardText.cloneNode(true)
-  //   cardTextClone.innerHTML = displayInfoLang(info.dataVie) + ": "+ info.value
-  //   clone.querySelector('.card-body').appendChild(cardTextClone)
-  // })
-
   clone.querySelector('.object-div').addEventListener('click', function (evt) {
     $("#centralModalSm").modal('show');
-    var modalBody = document.querySelector('.modal-body')
-    var modalFooter = document.querySelector('.modal-footer')
+    
     while (modalBody.firstChild) {
       modalBody.removeChild(modalBody.lastChild)
     }
@@ -50,7 +43,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     </div>`
     modalBody.appendChild(container)
 
-    const buttonOptions = document.querySelector('.btn-options')
+    const buttonOptions = modalFooter.querySelector('.btn-options')
     while (buttonOptions.firstChild){
       buttonOptions.removeChild(buttonOptions.lastChild)
     }

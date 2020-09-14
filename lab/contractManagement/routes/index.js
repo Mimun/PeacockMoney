@@ -5,7 +5,7 @@ const Item = require('../models/item');
 const ItemStatus = require('../models/itemStatus');
 const ContractTemplate = require('../models/contractTemplate')
 const Contract = require('../models/contract');
-const WarehouseItem = require('../models/warehouseItem')
+const Property = require('../../systemManagement/models/property')
 const Store = require('../../systemManagement/models/store')
 const Employee = require('../../systemManagement/models/employee')
 var fs = require('fs');
@@ -300,7 +300,7 @@ router.post('/contracts', async (req, res) => {
           console.log('abc')
 
           if (item.evaluationItem) {
-            Item.find({ _id: item.evaluationItem }).exec(callback)
+            Item.findOne({ _id: item.evaluationItem }).exec(callback)
           } else {
             callback(null, [])
           }
@@ -328,26 +328,21 @@ router.post('/contracts', async (req, res) => {
       newItem.evaluationItem = results.item
       newItem.status = results.itemStatus
       console.log('new item: ', newItem)
-      var warehouseItem = new WarehouseItem(newItem)
-      warehouseItem.save((err, result) => {
+      var property = new Property(newItem)
+      property.save((err, result) => {
         if (err) throw err
         console.log('Save to warehouse item successfully!')
       })
-      const contract = new Contract(data)
-      contract.save((err, result)=>{
-        if(err) throw err
-        res.redirect('contracts')
-      })
+
     })
 
   })
-  //   contract.save((err, result)=>{
-  //     if(err) throw err
-  //     res.redirect('contracts')
-  // // 
-  //   })
 
-
+  const contract = new Contract(data)
+  contract.save((err, result) => {
+    if (err) throw err
+    res.redirect('contracts')
+  })
 })
 
 // update status of a contract
