@@ -23,7 +23,10 @@
     .tab-content::-webkit-scrollbar {
       display: none;
     }
-    #item-evaluation .bmd-form-group, #item-status .bmd-form-group, .tab-content .bmd-form-group{
+
+    #item-evaluation .bmd-form-group,
+    #item-status .bmd-form-group,
+    .tab-content .bmd-form-group {
       width: 100%;
       padding: 0 !important;
     }
@@ -70,6 +73,11 @@
                   <h5 class="card-title">Gia tien du kien: <span></span></h5>
                 </div>
                 </p>
+              </div>
+              <div class="card-footer">
+                <div class="btn-options">
+                  <button class="btn btn-primary btn-sm" id="create-contract">Create contract</button>
+                </div>
               </div>
 
             </div>
@@ -139,11 +147,11 @@
     if (document.querySelector('#item-status-list-table-container').innerHTML) {
       document.querySelector('#item-status-list-table-container').innerHTML = ""
     }
-    if(originItemList.length !==0){
+    if (originItemList.length !== 0) {
       generateHTML(originItemList, template, 'item-list-table-container')
 
-    } 
-    if(originItemStatusList.length !== 0){
+    }
+    if (originItemStatusList.length !== 0) {
       generateHTML(originItemStatusList, template, 'item-status-list-table-container')
 
     }
@@ -169,7 +177,7 @@
 
       document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
-          
+
           const itemStatusDiv = document.querySelector("#item-status")
           console.log('event target: ', event.target.closest('.object-div').C_DATA)
           const cloneNode = event.target.closest('.object-div').cloneNode(true)
@@ -213,6 +221,21 @@
       })
     }
     chooseItemStatus()
+
+    // create contract button
+    document.querySelector('#create-contract').addEventListener('click', (event) => {
+      console.log('event: ', event.target)
+      var evaluatingItem = event.target.closest('.card').querySelector('.card-body').querySelector('.item').querySelector('.object-div')
+      if (evaluatingItem) {
+        console.log('evaluation: ', evaluatingItem)
+        window.localStorage.setItem('evaluatingItem', JSON.stringify(evaluatingItem.C_DATA))
+        console.log('window local storage: ', JSON.parse(window.localStorage.getItem('evaluatingItem')))
+        $.redirect("../contractMng/contractTemplates", {}, "GET");
+      } else {
+        window.alert('You need to choose an item to evaluate and create a contract')
+      }
+
+    })
 
     // search function
     document.querySelector('#search').addEventListener('submit', () => {

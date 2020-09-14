@@ -1,5 +1,18 @@
-[
-  {
-    root: 
+{
+  "root": {
+    "create": ["superAdmin", "admin", "member"],
+    "delete": []
+  },
+  "superAdmin":{
+    "create": ["admin", "member"],
+    "delete": []
+  },
+  "admin":{
+    "create": ["member"],
+    "delete": []
+  },
+  "member":{
+    "create":[],
+    "delete": []
   }
-]
+}
