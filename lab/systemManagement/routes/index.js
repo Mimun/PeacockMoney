@@ -59,34 +59,30 @@ router.get('/employees', (req, res, next) => {
 // create new employee
 router.post('/employees', (req, res, next) => {
   console.log('req.body: ', req.body)
-  if (req.body.store) {
-    var avatar = findNestedObj(req.body, 'name', 'avatar').value
-    let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
-    let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
-    var fullName = findNestedObj(req.body, 'name', 'fullName').value
+  var avatar = findNestedObj(req.body, 'name', 'avatar').value
+  let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
+  let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
+  var fullName = findNestedObj(req.body, 'name', 'fullName').value
 
-    fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
-      if (err) console.error(err)
-      findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
-      var employee = new Employee(req.body)
-      console.log('employee: ', employee)
-      try {
-        employee.save((err, result) => {
-          if (err) throw err
-          if (result) {
-            res.send('Saved successfully!')
+  fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
+    if (err) console.error(err)
+    findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+    var employee = new Employee(req.body)
+    console.log('employee: ', employee)
+    try {
+      employee.save((err, result) => {
+        if (err) throw err
+        if (result) {
+          res.send('Saved successfully!')
 
-          }
-        })
-      } catch (err) {
-        console.error(err)
-      }
+        }
+      })
+    } catch (err) {
+      console.error(err)
+    }
 
 
-    })
-  } else {
-    res.send("Saved failed")
-  }
+  })
 
 
 })
@@ -149,7 +145,7 @@ router.get('/stores', (req, res, next) => {
       } catch (err) {
         console.error(err)
       }
-      
+
     }
   }, (err, results) => {
     if (err) throw err

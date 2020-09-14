@@ -15,7 +15,7 @@
     position: fixed;
     display: inline-block;
     max-width: inherit;
-    width: 13vw;
+    width: 100%;
     overflow: auto;
     max-height: 100vh;
   }
@@ -31,14 +31,12 @@
   }
 
   #wrapper.toggled #sidebar-wrapper {
-    margin-left: -15rem;
+    margin-left: -13rem;
   }
 
   .btn-toggle-container {
     height: fit-content;
     width: fit-content;
-    position: absolute;
-    left: 13vw;
   }
 
   .list-group-item-light {
@@ -48,7 +46,7 @@
 
   .list-group-item-secondary {
     border: none;
-    font-size:14px;
+    font-size: 14px;
   }
 
   .rotate {
@@ -73,6 +71,7 @@
     padding: 5% 3%;
     width: 100%;
   }
+
   /* End: sidebar css */
 
   #table-container {
@@ -145,60 +144,70 @@
 
 <!-- Sidebar -->
 <div id="sidebar-wrapper">
-  <div class="sidebar-container">
-    <div class="list-group list-group-flush justify-content-center">
-      <a href="#" class="list-group-item list-group-item-action list-group-item-light">Dashboard</a>
-      <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
-        data-toggle="collapse" data-target="#reminding-item">
-        Nhac nho
-        <span class="material-icons rotate">chevron_left</span>
-      </a>
-      <div class="collapse" id="reminding-item">
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Hop dong cho</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu qua han</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu sap phai thuc
-          hien</a>
-      </div>
-      <a href="/contractMng/contracts" class="list-group-item list-group-item-action list-group-item-light">Quan ly hop
-        dong</a>
-      <a href="/evaluationMng/evaluation" class="list-group-item list-group-item-action list-group-item-light">Tham dinh
-        gia</a>
-      <a href="/contractMng/contractTemplates" class="list-group-item list-group-item-action list-group-item-light">Tao
-        moi hop dong</a>
-      <a href="#" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
-      <a href="#" class="list-group-item list-group-item-action list-group-item-light">Thong ke/Bao cao</a>
-      <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
-        data-toggle="collapse" data-target="#management-item">
-        Quan ly he thong
-        <span class="material-icons rotate">chevron_left</span>
-      </a>
-      <div class="collapse" id="management-item">
-        <a href="/contractMng" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
+  <div class="sidebar-container d-flex">
+    <div class="sidebar">
+      <div class="list-group list-group-flush justify-content-center">
+        <a href="#" class="list-group-item list-group-item-action list-group-item-light">Dashboard</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
+          data-toggle="collapse" data-target="#reminding-item">
+          Nhac nho
+          <span class="material-icons rotate">chevron_left</span>
+        </a>
+        <div class="collapse" id="reminding-item">
+          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Hop dong cho</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu qua han</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu sap phai thuc
+            hien</a>
+        </div>
+        <a href="/contractMng/contracts" class="list-group-item list-group-item-action list-group-item-light">Quan ly
           hop
           dong</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau phieu</a>
-        <a href="/systemMng/stores" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly cua
-          hang</a>
-        <a href="/systemMng/warehouses" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
-          kho</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tai san</a>
-        <a href="/evaluationMng/itemStatus"
-          class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tinh trang tai
-          san</a>
-        <a href="/systemMng/employees" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
-          nhan vien</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly khach hang</a>
-        <a href="/evaluationMng/" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tham
+        <a href="/evaluationMng/evaluation" class="list-group-item list-group-item-action list-group-item-light">Tham
           dinh
           gia</a>
+        <a href="/contractMng/contractTemplates"
+          class="list-group-item list-group-item-action list-group-item-light">Tao
+          moi hop dong</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-light">Thong ke/Bao cao</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
+          data-toggle="collapse" data-target="#management-item">
+          Quan ly he thong
+          <span class="material-icons rotate">chevron_left</span>
+        </a>
+        <div class="collapse" id="management-item">
+          <a href="/contractMng" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
+            hop
+            dong</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau phieu</a>
+          <a href="/systemMng/stores" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+            cua
+            hang</a>
+          <a href="/systemMng/warehouses" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+            ly
+            kho</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tai san</a>
+          <a href="/evaluationMng/itemStatus"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tinh trang tai
+            san</a>
+          <a href="/systemMng/employees" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+            ly
+            nhan vien</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly khach hang</a>
+          <a href="/evaluationMng/" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+            tham
+            dinh
+            gia</a>
+        </div>
       </div>
     </div>
+    <div class="btn-toggle-container">
+      <button class="btn btn-primary btn-sm rotate-btn px-2 " id="sidebar-toggle-btn">
+        <span class="material-icons rotate">chevron_left</span>
+      </button>
+    </div>
   </div>
-  <div class="btn-toggle-container sticky-top">
-    <button class="btn btn-primary btn-sm rotate-btn px-2 " id="sidebar-toggle-btn">
-      <span class="material-icons rotate">chevron_left</span>
-    </button>
-  </div>
+
 </div>
 
 

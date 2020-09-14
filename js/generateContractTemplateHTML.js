@@ -1,7 +1,23 @@
+var selectContainer = document.createElement('div')
+selectContainer.className = 'select-container'
+
+var select = document.createElement('select')
+select.className = "browser-default custom-select"
+
+var selectLabel = document.createElement('label')
+
+
 import { findNestedObj } from './findNestedObj.js'
 // used when user clicks to "create contract button"
-export const generateContractTemplateHTML = (itemObj, template, elementName) => {
+export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
+  var storeSelectOptions = storeList.map(store => {
+    var storename = findNestedObj(store, 'name', 'storeName')
+    var option = `<option value=${store._id}>${storename.value}</option>`
+    return option
+  })
+  storeSelectOptions.unshift('<option value="">No store</option>')
+
   const infoContainer = document.createElement('div')
   // contract template image 
   const imageInfo = findNestedObj(itemObj, 'name', 'image')
@@ -46,9 +62,8 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
 
   // contract metadata
   itemObj.contractMetadata.map(info => {
-    if (info.name !== 'image' && info.name !== 'contractContent') {
+    if (info.name !== "creator" && info.name !== 'store') {
       const clone = document.importNode(template.content, true)
-
       var input = clone.querySelector('input')
 
       if (info.value === null || info.value === "") {
@@ -65,39 +80,53 @@ export const generateContractTemplateHTML = (itemObj, template, elementName) => 
 
       var label = clone.querySelector('label')
       label.innerHTML = displayInfoLang(info.dataVie)
-
-      if (info.name === 'creator' || info.name === 'store') {
-        aSideInfoDiv.appendChild(clone)
-      } else if (info.name === 'customer' || info.name === 'customerId' || info.name === 'customerIdProvidingPlace' || info.name === 'customerIdProvidingDate' || info.name === 'customerAddress' || info.name === 'customerPhoneNumber' || info.name === 'customerFamilyRegister') {
+      if (info.name === 'customer' || info.name === 'customerId' || info.name === 'customerIdProvidingPlace' || info.name === 'customerIdProvidingDate' || info.name === 'customerAddress' || info.name === 'customerPhoneNumber' || info.name === 'customerFamilyRegister') {
         bSideInfoDiv.appendChild(clone)
       } else {
         contractInfoDiv.appendChild(clone)
       }
+    } else if (info.name === 'store') {
+      var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang', 'koreanString', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
+      aSideInfoDiv.appendChild(selectContainerClone)
+  
+      
+      aSideInfoDiv.querySelector('#store').addEventListener('change', (event) => {
+        console.log('event: ', event.target.value)
+        $.ajax({
+          type: 'POST',
+          url: 'getStores',
+          contentType: 'application/json',
+          data: JSON.stringify({ data: event.target.value }),
+          success: result => {
+            console.log('result: ', result)
+
+            if(aSideInfoDiv.querySelector('#employee')){
+              aSideInfoDiv.removeChild(aSideInfoDiv.querySelector('#employee').parentNode)
+            }
+            var employeeSelectOptions = []
+            employeeSelectOptions.unshift('<option value="">No employee</option>')
+            if(result.employeeList.length !==0){
+              result.employeeList.map(employee => {
+                var employeeName = findNestedObj(employee, 'name', 'fullName')
+                var employeeRole = findNestedObj(employee, 'name', 'role')
+                var option = `<option value=${employee._id}>${employeeName.value}-${employeeRole.value}</option>`
+                employeeSelectOptions.push(option)
+              })
+            } 
+            var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien', 'koreanString', employeeSelectOptions, selectLabel, 'Nhan vien', selectContainer)
+            aSideInfoDiv.appendChild(selectContainerClone2)
+            
+          }
+        })
+      })
     }
 
+
+    // if (info.name === 'creator' || info.name === 'store') {
+    //   aSideInfoDiv.appendChild(clone)
+    // } else 
+
   })
-
-  // contract template metadata
-  // itemObj.templateMetadata.map(info => {
-  //   if (info.name !== 'image') {
-  //     const clone = document.importNode(template.content, true)
-
-  //     var input = clone.querySelector('input')
-  //     if (info.value === null || info.value === "") {
-  //       input.removeAttribute('disabled')
-
-  //     } else {
-  //       input.value = info.value
-  //     }
-  //     input.type = info.cType
-  //     input.setAttribute('name', info.name)
-  //     input.setAttribute('data-vie', info.dataVie)
-
-  //     var label = clone.querySelector('label')
-  //     label.innerHTML = displayInfoLang(info.dataVie)
-  //     infoContainer.appendChild(clone)
-  //   }
-  // })
 
   // contract custom infos
   if (itemObj.infos.length != 0) {
@@ -143,4 +172,26 @@ const displayInfoLang = (info) => {
   }
   return info
 
+}
+
+const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, dataVie, dataKor, selectOptions, labelTemplate, labelContent, selectContainer) => {
+  var select = selectTemplate.cloneNode(true)
+  select.id = selectId
+  select.setAttribute('data-vie', dataVie)
+  select.setAttribute('data-kor', dataKor)
+  select.setAttribute('name', selectId)
+  select.innerHTML = selectOptions
+  select.value = selecteValue
+  select.classList.add(selectClassName)
+  select.disabled = false
+
+
+  var selectLabel = labelTemplate.cloneNode(true)
+  selectLabel.setAttribute('for', selectId)
+  selectLabel.innerHTML = labelContent
+
+  var selectContainerClone = selectContainer.cloneNode(true)
+  selectContainerClone.appendChild(selectLabel)
+  selectContainerClone.appendChild(select)
+  return selectContainerClone
 }

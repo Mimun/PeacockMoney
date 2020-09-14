@@ -24,7 +24,7 @@
               </div>
             </div>
           </div>
-          
+
         </template>
 
         <template id="contract_detail">
@@ -60,13 +60,13 @@
                 </button>
               </div>
               <div class="modal-body">
-                <modal-body style="width: fit-content;">
-                  <!-- Adding dynamic content here -->
-                  <h2>I am going to add a dynamic content here</h2>
-                </modal-body>
+                <h2>I am going to add a dynamic content here</h2>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-primary btn-sm" id="btn-confirm">Confirm</button>
+                <div class="btn-options d-flex">
+                  <!-- <button class="btn btn-primary btn-sm" id="btn-confirm">Confirm</button> -->
+
+                </div>
               </div>
             </div>
           </div>
@@ -89,6 +89,9 @@
     console.log('All types: ', payOptions)
 
     const contractTemplate = document.getElementById('temp_contract');
+    const modalFooter = document.querySelector('.modal-footer')
+    const modalBody = document.querySelector('.modal-body')
+    const buttonOptions = modalFooter.querySelector('.btn-options')
 
     const createSelect = (itemObjs, elementName, variable) => {
       const select = document.createElement('select')
@@ -115,17 +118,20 @@
     $("#centralModalSm").on('show.bs.modal', () => {
       const containerFluid = document.querySelector('.container-fluid')
       containerFluid.querySelector('.modal-title').innerHTML = "Choose your contract template"
-      document.querySelector('.modal-body').innerHTML = ""
+      if(modalBody.firstChild){
+        modalBody.innerHTML = ""
+
+      }
 
       // create selector
       const typeTitle = document.createElement('p')
       typeTitle.innerHTML = 'Loai tai san'
-      document.querySelector('.modal-body').appendChild(typeTitle)
+      modalBody.appendChild(typeTitle)
       createSelect(types, '.modal-body', 'types')
 
       const payMethodTitle = document.createElement('p')
       payMethodTitle.innerHTML = 'Kieu thanh toan'
-      document.querySelector('.modal-body').appendChild(payMethodTitle)
+      modalBody.appendChild(payMethodTitle)
       createSelect(payOptions, '.modal-body', 'payOptions')
 
       const inputDiv = document.createElement('div')
@@ -136,8 +142,8 @@
         `
       inputDiv.style.margin = '0 0 2vh 0'
       inputDiv.style.width = '100%'
-      document.querySelector('.modal-body').appendChild(inputDiv)
-
+      modalBody.appendChild(inputDiv)
+      
       if (JSON.parse(window.localStorage.getItem('evaluatingItem'))) {
         var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
         console.log('evaluating item: ', evaluatingItem)
@@ -151,7 +157,13 @@
         }
       }
 
-      document.querySelector('#btn-confirm').addEventListener('click', (event) => {
+      const confirmButton = document.createElement('button')
+      confirmButton.className = "btn btn-sm btn-primary"
+      confirmButton.innerHTML = "Confirm"
+      while (buttonOptions.firstChild) {
+        buttonOptions.removeChild(buttonOptions.lastChild)
+      }
+      confirmButton.addEventListener('click', (event) => {
         var chosenType = document.querySelector('.types').value
         var chosenPayOption = document.querySelector('.payOptions').value
         console.log('chosen option: ', chosenPayOption)
@@ -165,7 +177,7 @@
           data: JSON.stringify({
             chosenType: chosenType,
             chosenPayOption: chosenPayOption,
-            amountOfMoney: parseInt(document.querySelector('.modal-body').querySelector('input').value)
+            amountOfMoney: parseInt(modalBody.querySelector('input').value)
           }),
           success: results => {
             console.log(results)
@@ -178,41 +190,44 @@
           }
         })
       })
-
-
+      buttonOptions.appendChild(confirmButton)
     })
+
     $("#centralModalSm").modal('show');
-    // $("#centralModalSm").on('hidden.bs.modal', ()=>{
-    //   document.querySelector('.types').value = ''
-    //   window.localStorage.removeItem('evaluatingItem')
-
-    // });
-
 
     document.querySelector('#chooseTemplate').addEventListener('click', (event) => {
       $("#centralModalSm").modal('show');
-
     })
 
+    // remove delete template button on employee level uses
     const templateButtonOption = () => {
       // detail template info
       document.querySelectorAll('.object-div').forEach(element => {
         element.addEventListener('click', function (event) {
-          console.log('modal body: ', document.querySelector('.modal-body'))
-          var modalBody = document.querySelector('.modal-body')
-          if (modalBody.querySelector('#btn-delete-contract-template')) {
-            modalBody.querySelector('.btn-options').removeChild(modalBody.querySelector('#btn-delete-contract-template'))
+          console.log('modal footer: ', document.querySelector('.modal-footer'))
+          var modalFooter = document.querySelector('.modal-footer')
+          if (modalFooter.querySelector('#btn-delete-contract-template')) {
+            modalFooter.querySelector('.btn-options').removeChild(modalFooter.querySelector('#btn-delete-contract-template'))
 
           }
-          
+
         })
       })
     }
-
     templateButtonOption()
 
-
-
+    // contract list button
+    document.querySelector('#redirect-page').addEventListener('click', (event)=>{
+      console.log('event', event.target)
+      $.ajax({
+        type: 'GET',
+        url: 'contracts',
+        contentType: 'application/json',
+        success: (result) => {
+          window.location.href = "contracts"
+        }
+      })
+    })
 
 
   </script>

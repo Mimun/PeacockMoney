@@ -11,7 +11,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   clone.querySelector('#contract-image').setAttribute('src', image.value)
 
   // a side info
-  var aSideInfo = findNestedObj(contractDetail, 'name', 'creator')
+  var aSideInfo = findNestedObj(contractDetail, 'name', 'employee')
   const cloneASide = infoTemplate.content.cloneNode(true)
   cloneASide.querySelector('label').innerHTML = displayInfoLang(aSideInfo.dataVie)
   cloneASide.querySelector('input').value = aSideInfo.value

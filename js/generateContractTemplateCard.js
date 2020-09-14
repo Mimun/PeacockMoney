@@ -1,4 +1,4 @@
-import {findNestedObj} from './findNestedObj.js'
+import { findNestedObj } from './findNestedObj.js'
 // used when rendering "Quan ly va Tao mau hop dong" page
 export const generateContractTemplateCard = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
@@ -11,7 +11,22 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
   const title = findNestedObj(itemObj, 'name', 'templateName')
   clone.querySelector('.card-title').innerHTML = title.value ? title.value : "Template name"
 
-  // // short info
+  // short info
+  var cardText = clone.querySelector('.card-text')
+  const createCardText = (info, sourceDiv) => {
+    var cardTextClone = sourceDiv.cloneNode(true)
+    cardTextClone.innerHTML = displayInfoLang(info.dataVie) + ": " + info.value
+    clone.querySelector('.card-body').appendChild(cardTextClone)
+  }
+  var min = findNestedObj(itemObj, 'name', 'min')
+  var max = findNestedObj(itemObj, 'name', 'max')
+  if (min) {
+    createCardText(min, cardText)
+  }
+  if (max) {
+    createCardText(max, cardText)
+  }
+
   // var cardText = clone.querySelector('.card-text')
   // itemObj.templateMetadata.map(info=>{
   //   var cardTextClone = cardText.cloneNode(true)
@@ -22,11 +37,10 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
   clone.querySelector('.object-div').addEventListener('click', function (evt) {
     $("#centralModalSm").modal('show');
     var modalBody = document.querySelector('.modal-body')
-
+    var modalFooter = document.querySelector('.modal-footer')
     while (modalBody.firstChild) {
       modalBody.removeChild(modalBody.lastChild)
     }
-
     const container = document.createElement('div')
     container.className = 'container'
     container.innerHTML = `<div class="row">
@@ -36,28 +50,26 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     </div>`
     modalBody.appendChild(container)
 
-    const buttonOptions = document.createElement('div')
-    buttonOptions.className = 'btn-options'
-    buttonOptions.style.display = 'flex'
-    buttonOptions.style.flexDirection = 'column'
-
+    const buttonOptions = document.querySelector('.btn-options')
+    while (buttonOptions.firstChild){
+      buttonOptions.removeChild(buttonOptions.lastChild)
+    }
     const createNewContractButton = document.createElement('button')
     createNewContractButton.id = 'btn-create-new-contract'
     createNewContractButton.className = "btn btn-primary btn-sm"
     createNewContractButton.innerHTML = "Create new contract"
-    createNewContractButton.addEventListener('click', ()=>{
+    createNewContractButton.addEventListener('click', () => {
       var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
       $.redirect("createNewContract", { data: JSON.stringify(itemObj), evaluatingItem: JSON.stringify(evaluatingItem) }, "POST");
       window.localStorage.removeItem('evaluatingItem')
     })
     buttonOptions.appendChild(createNewContractButton)
 
-
     const deleteContractTemplateButton = document.createElement('button')
     deleteContractTemplateButton.id = 'btn-delete-contract-template'
     deleteContractTemplateButton.className = "btn btn-outline-danger btn-sm"
     deleteContractTemplateButton.innerHTML = "Delete template"
-    deleteContractTemplateButton.addEventListener('click', (event)=>{
+    deleteContractTemplateButton.addEventListener('click', (event) => {
       $.ajax({
         type: "DELETE",
         url: 'deleteContractTemplate/' + itemObj._id,
@@ -70,7 +82,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
       })
     })
     buttonOptions.appendChild(deleteContractTemplateButton)
-    modalBody.querySelector('.template-preview').appendChild(buttonOptions)
+    modalFooter.appendChild(buttonOptions)
 
     var cardClone = this.querySelector('img').cloneNode(true)
     // cardClone.C_DATA = this.C_DATA
@@ -80,10 +92,9 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     const templateInfoContainer = document.createElement('div')
     templateInfoContainer.className = "template-info-container list-group"
     templateInfoContainer.style.margin = '14px 0'
-    
 
-    itemObj.templateMetadata.map(info=>{
-      if(info.name !== "image" && info.name !== "contractContent"){
+    itemObj.templateMetadata.map(info => {
+      if (info.name !== "image" && info.name !== "contractContent") {
         const infoContainer = document.createElement('div')
         infoContainer.className = 'info-container list-group-item'
         infoContainer.style.display = 'flex'
@@ -91,17 +102,15 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
 
         const label = document.createElement('div')
         label.className = 'label'
-        label.innerHTML = displayInfoLang(info.dataVie) + ": "+ info.value
+        label.innerHTML = displayInfoLang(info.dataVie) + ": " + info.value
         infoContainer.appendChild(label)
         templateInfoContainer.appendChild(infoContainer)
       }
     })
     modalBody.querySelector('.template-info').appendChild(templateInfoContainer)
   })
-
   clone.querySelector('.object-div').C_DATA = itemObj
 
-  // clone.setAttribute('id',i)
   document.body.querySelector('#' + elementName + '').appendChild(clone)
 }
 

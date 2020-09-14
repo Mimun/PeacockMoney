@@ -1,12 +1,15 @@
 var express = require('express');
 var router = express.Router();
+const mongoose = require('mongoose')
 const Item = require('../models/item');
 const ItemStatus = require('../models/itemStatus');
 const ContractTemplate = require('../models/contractTemplate')
 const Contract = require('../models/contract');
+const WarehouseItem = require('../models/warehouseItem')
+const Store = require('../../systemManagement/models/store')
+const Employee = require('../../systemManagement/models/employee')
 var fs = require('fs');
 var async = require('async');
-const { types } = require('util');
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -61,7 +64,7 @@ const filterContract = (value1, value2, value3, req, res, next) => {
   async.parallel({
     result1: (callback) => {
       try {
-        if(value1 !== ''){
+        if (value1 !== '') {
           ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
 
         } else {
@@ -74,7 +77,7 @@ const filterContract = (value1, value2, value3, req, res, next) => {
     },
     result2: (callback) => {
       try {
-        if(value2 !== ''){
+        if (value2 !== '') {
           ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
 
         } else {
@@ -168,15 +171,47 @@ router.post('/createNewContractTemplate', (req, res, next) => {
 // CONTRACT
 // create new contract route
 router.post('/createNewContract', function (req, res, next) {
-  Item.find({}, (err, itemResults) => {
+  async.parallel({
+    item: callback => {
+      try {
+        Item.find({}).exec(callback)
+
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    itemStatus: callback => {
+      try {
+        ItemStatus.find({}).exec(callback)
+
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    store: callback => {
+      try {
+        Store.find({}).exec(callback)
+
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }, (err, result) => {
     if (err) throw err
-    ItemStatus.find({}, (err, statusResults) => {
-      if (err) throw err
-      res.render('createNewContract', { itemResults: itemResults, statusResults: statusResults, contractInfo: JSON.parse(req.body.data), evaluatingItem: JSON.parse(req.body.evaluatingItem) });
-    })
+    res.render('createNewContract', { itemResults: result.item, statusResults: result.itemStatus, contractInfo: JSON.parse(req.body.data), evaluatingItem: JSON.parse(req.body.evaluatingItem), stores: result.store });
 
   })
+
 });
+
+router.post('/getStores', (req, res, next) => {
+  console.log('req.body: ', req.body)
+  Employee.find({ store: req.body.data }, (err, result) => {
+    if (err) throw err
+    res.send({ employeeList: result })
+  })
+
+})
 
 // search item || itemstatus
 router.post('/search', (req, res, next) => {
@@ -252,13 +287,66 @@ router.get('/contracts', (req, res) => {
 })
 
 // create new contract
-router.post('/contracts', (req, res) => {
-  const contract = new Contract(JSON.parse(req.body.data))
-  console.log('data: ', contract)
-  contract.save((err, result) => {
-    if (err) throw err
-    res.redirect('contracts')
+router.post('/contracts', async (req, res) => {
+  var data = JSON.parse(req.body.data)
+
+  data.items.forEach(item => {
+    var newItem = { ...item, evaluationItem: null, status: [] }
+    console.log('data: ', item)
+
+    async.parallel({
+      item: callback => {
+        try {
+          console.log('abc')
+
+          if (item.evaluationItem) {
+            Item.find({ _id: item.evaluationItem }).exec(callback)
+          } else {
+            callback(null, [])
+          }
+        } catch (err) { console.error(err) }
+
+      },
+      itemStatus: callback => {
+        try {
+          console.log('def')
+
+          if (item.status.length !== 0) {
+            var itemStatusIds = item.status.map(itemStatusId => {
+              return mongoose.Types.ObjectId(itemStatusId)
+            })
+            ItemStatus.find({ _id: { $in: itemStatusIds } }).exec(callback)
+          } else {
+            callback(null, [])
+          }
+        } catch (err) { console.error(err) }
+
+      }
+    }, (err, results) => {
+      if (err) throw err
+      console.log('results: ', results)
+      newItem.evaluationItem = results.item
+      newItem.status = results.itemStatus
+      console.log('new item: ', newItem)
+      var warehouseItem = new WarehouseItem(newItem)
+      warehouseItem.save((err, result) => {
+        if (err) throw err
+        console.log('Save to warehouse item successfully!')
+      })
+      const contract = new Contract(data)
+      contract.save((err, result)=>{
+        if(err) throw err
+        res.redirect('contracts')
+      })
+    })
+
   })
+  //   contract.save((err, result)=>{
+  //     if(err) throw err
+  //     res.redirect('contracts')
+  // // 
+  //   })
+
 
 })
 

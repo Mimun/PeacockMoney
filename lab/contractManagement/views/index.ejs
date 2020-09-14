@@ -6,10 +6,10 @@
 </head>
 
 <body>
- <%- include('../Components/navbar.ejs') %> 
+  <%- include('../Components/navbar.ejs') %>
 
   <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %> 
+    <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <main>
         <template id="temp_contract">
@@ -22,7 +22,7 @@
               </div>
             </div>
           </div>
-          
+
         </template>
 
         <template id="contract_detail">
@@ -36,7 +36,7 @@
         </header>
         <submain>
           <div id="template-handler" class="card-deck"></div>
-          <button type="button" class="btn btn-primary btn-sm" id="addTemplate" data-toggle="modal" data-target="#centralModalSm">Add Contract Template</button>
+          <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Add Contract Template</button>
           <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Contract List</button>
         </submain>
       </main>
@@ -58,13 +58,14 @@
                 </button>
               </div>
               <div class="modal-body">
-                  <!-- Adding dynamic content here -->
-                  <h2>I am going to add a dynamic content here</h2>
+                <!-- Adding dynamic content here -->
+                <h2>I am going to add a dynamic content here</h2>
               </div>
-              <!-- <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-sm">Create new Contract</button>
-              </div> -->
+              <div class="modal-footer justify-content-center">
+                <div class="btn-options d-flex">
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -78,29 +79,26 @@
     import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
     import { ObjectId } from '/createMongooseID.js'
     import { findNestedObj } from '/findNestedObj.js'
-
-    const contractTemplate = document.getElementById('temp_contract');
-    // card_handler = document.querySelector('template-handler')
     const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
+    const contractTemplate = document.getElementById('temp_contract');
+
+    // card_handler = document.querySelector('template-handler')
     for (var i = 0; i < contractTemplateList.length; i++) {
       generateContractTemplateCard(contractTemplateList[i], contractTemplate, 'template-handler')
     }
 
-    // create new contract template button
-    document.getElementById('addTemplate').addEventListener('click', (evt) => {
-      console.log('abc xyz: ')
-      $('#centralModalSm').on('show.bs.modal', () => {
-        var modalBody = document.querySelector('.modal-body')
-        while (modalBody.firstChild) {
-          modalBody.removeChild(modalBody.lastChild)
-        }
-        var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
-        modalBody.appendChild(tmpContent)
-        // execute jquery script for material design bootstrap again
-        $(tmpContent).bootstrapMaterialDesign()
 
-      })
-      // $("#centralModalSm").modal('show');
+    document.getElementById('addTemplate').addEventListener('click', (evt) => {
+      // create new contract template button
+      const modalBody = document.querySelector('.modal-body')
+
+      if (modalBody.firstChild) {
+        modalBody.innerHTML = ""
+
+      }
+      var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
+      modalBody.appendChild(tmpContent)
+      $("#centralModalSm").modal('show');
 
     })
 
