@@ -162,7 +162,7 @@
         <a href="/contractMng/contracts" class="list-group-item list-group-item-action list-group-item-light">Quan ly
           hop
           dong</a>
-        <a href="/evaluationMng/evaluation" class="list-group-item list-group-item-action list-group-item-light">Tham
+        <a href="/evaluationMng/" class="list-group-item list-group-item-action list-group-item-light">Tham
           dinh
           gia</a>
         <a href="/contractMng/contractTemplates"
@@ -216,10 +216,10 @@
   //   $("#wrapper").toggleClass("toggled");
 
   // });
-  // document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
-  //   window.localStorage.removeItem('evaluatingItem')
+  document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
+    window.localStorage.removeItem('evaluatingItem')
 
-  // })
+  })
   // hide sidebar onclick
   $("#sidebar-toggle-btn").click(function (e) {
     e.preventDefault();
