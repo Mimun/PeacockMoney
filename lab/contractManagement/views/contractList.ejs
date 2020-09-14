@@ -12,23 +12,23 @@
 
     @keyframes blinkingBackground {
       0% {
-        background-color: #10c018;
+        background-color: #ffffff;
       }
 
       25% {
-        background-color: #1056c0;
+        background-color: #e0f2f1;
       }
 
       50% {
-        background-color: #ef0a1a;
+        background-color: #ffffff;
       }
 
       75% {
-        background-color: #254878;
+        background-color: #e0f2f1;
       }
 
       100% {
-        background-color: #04a1d5;
+        background-color: #ffffff;
       }
     }
   </style>
@@ -83,7 +83,7 @@
         </div>
 
         <!-- filter|selector -->
-        <div class="filter-boxes" style="padding-bottom: 5%;">
+        <!-- <div class="filter-boxes" style="padding-bottom: 5%;">
           <select class="browser-default custom-select selector" style="width: 200px;">
             <option selected value="all">All</option>
             <option value="waiting">Waiting</option>
@@ -91,7 +91,7 @@
             <option value="completed">Completed</option>
           </select>
 
-        </div>
+        </div> -->
 
         <div class="list-group-flush" id="list-container">
 
@@ -158,29 +158,29 @@
     }
 
     // handling selector onclick event
-    document.querySelector('div[class="filter-boxes"]').addEventListener('change', (event) => {
-      var newArray = contractList.filter(contract => {
-        return contract.contractStatus === event.target.value
-      })
+    // document.querySelector('div[class="filter-boxes"]').addEventListener('change', (event) => {
+    //   var newArray = contractList.filter(contract => {
+    //     return contract.contractStatus === event.target.value
+    //   })
 
-      console.log('new array: ', newArray)
+    //   console.log('new array: ', newArray)
 
-      if (event.target.value !== "all") {
+    //   if (event.target.value !== "all") {
 
-        document.querySelector('#list-container').innerHTML = ''
-        newArray.map(object => {
-          generateContractListHTML(object, template, 'list-container')
-        })
-        addClickEvent()
-      } else {
-        document.querySelector('#list-container').innerHTML = ''
-        contractList.map(object => {
-          generateContractListHTML(object, template, 'list-container')
-        })
-        addClickEvent()
-      }
+    //     document.querySelector('#list-container').innerHTML = ''
+    //     newArray.map(object => {
+    //       generateContractListHTML(object, template, 'list-container')
+    //     })
+    //     addClickEvent()
+    //   } else {
+    //     document.querySelector('#list-container').innerHTML = ''
+    //     contractList.map(object => {
+    //       generateContractListHTML(object, template, 'list-container')
+    //     })
+    //     addClickEvent()
+    //   }
 
-    })
+    // })
 
     const addClickEvent = () => {
       // handling contract onclick event (contract detail page)
