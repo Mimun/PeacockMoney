@@ -8,22 +8,21 @@ var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
 var fs = require('fs');
-const { checkbox } = require('material-components-web');
+var auth = require('../../authentication/routes/checkAuthentication')
 
 function escapeRegex(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', auth.isAuthenticated, function (req, res, next) {
   // res.render('index', { title: 'Express' });
   res.redirect('employees')
 });
 
 // EMPLOYEES
 // get all employees
-router.get('/employees', (req, res, next) => {
-
+router.get('/employees', auth.isAuthenticated, auth.checkRole, (req, res, next) => {
   async.parallel({
     stores: callback => {
       // try catch to prevent "store" field id is null
@@ -53,7 +52,7 @@ router.get('/employees', (req, res, next) => {
         address
       }
     })
-    res.render('employees', { employeeList: results.employees, storeList })
+    res.render('employees', { employeeList: results.employees, storeList, roleAbility: req.roleAbility })
   })
 })
 

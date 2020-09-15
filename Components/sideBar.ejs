@@ -176,7 +176,7 @@
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="management-item">
-          <a href="/contractMng" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
+          <a onclick="getPage('contractMng')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
             hop
             dong</a>
           <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau phieu</a>
@@ -189,7 +189,7 @@
           <a href="/evaluationMng/itemStatus"
             class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tinh trang tai
             san</a>
-          <a href="/systemMng/employees" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+          <a onclick="getPage('systemMng/employees')" class="list-group-item list-group-item-action list-group-item-secondary">Quan
             ly
             nhan vien</a>
           <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly khach hang</a>
@@ -238,7 +238,6 @@
 
   // css for sublist menu
   $(".collapse").on('show.bs.collapse', () => {
-    console.log('abc', $(this))
     $(".collapse").find(".list-group-item").css('justify-content', 'center')
     $(".collapse").find(".list-group-item").css('text-align', 'center')
 
@@ -251,5 +250,25 @@
     // if(element.querySelector('span') === null){
     // }
   })
+
+  const getPage = (url)=>{
+    console.log('url: ', url)
+    const accessToken = window.localStorage.getItem('accessToken')
+    console.log('access token: ', accessToken)
+    window.location.href = url + '?token=' + accessToken
+
+    // $.ajax({
+    //   type: 'GET',
+    //   url: url,
+    //   contentType: 'application/json',
+    //   headers: {
+    //     'x-access-token': `Bearer ${accessToken}`
+    //   },
+    //   success: result=>{
+    //     console.log('result: ', result)
+    //   }
+
+    // })
+  }
 </script>
 <!-- /#sidebar-wrapper -->

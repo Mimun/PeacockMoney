@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- Material Design for Bootstrap fonts and icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+
+  <!-- Material Design for Bootstrap CSS -->
+  <link rel="stylesheet"
+    href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+    integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+</head>
+
+<body>
+  <h1>This is login page</h1>
+  <form id="login">
+    <div class="form-group">
+      <label for="userName">User name</label>
+      <input type="text" class="form-control" id="userName" aria-describedby="emailHelp" placeholder="Enter user name">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+
+  <script src="/jquery/dist/jquery.min.js"></script>
+  <!-- <script src="/jquery/dist/jquery.slim.js"></script> -->
+  <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+    integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+    integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+    crossorigin="anonymous"></script>
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.js"></script>
+  <script src="http://cdn.quilljs.com/1.2.0/quill.js"></script>
+  <script src="http://cdn.quilljs.com/1.2.0/quill.min.js"></script>
+  <script type="module" src="./cropper/cropper.js"></script>
+  <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
+
+  <script>
+    document.querySelector('#login').addEventListener('submit', (event) => {
+      event.preventDefault()
+      console.log('event: ', event.target)
+      var userName = document.querySelector('#userName').value
+      var password = document.querySelector('#password').value
+      console.log('user acc: ', {
+        userName, password
+      })
+      $.ajax({
+        type: 'POST',
+        url: '',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          userAccount: {
+            userName, password
+          },
+          localStorage: window.localStorage.getItem('user')
+        }),
+        success: result => {
+          console.log('result: ', result)
+          if (result.isLoggedIn === false) {
+            window.localStorage.setItem('accessToken', result.accessToken)
+            window.localStorage.setItem('user', JSON.stringify(result.user))
+            window.location.href = '/home'
+          } else {
+            window.alert('Account already logged')
+          }
+
+
+          // window.location.href = '/'
+        }
+      })
+    })
+  </script>
+</body>
+
+</html>

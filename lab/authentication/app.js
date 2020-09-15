@@ -3,52 +3,45 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser')
+var mongoose = require('mongoose')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const bodyParser = require('body-parser');
-const { validateToken } = require('./Libs/Authentication/auth');
-
-const evaluationMng = require('./lab/evaluationMng/app')
-const contractMng = require('./lab/contractManagement/app')
-const systemMng = require('./lab/systemManagement/app')
-const authentication = require('./lab/authentication/app')
 
 var app = express();
-app.use(bodyParser({limit: '50mb'}))
-app.use(express.json());
-require ('./Libs/autoload');
 
 // view engine setup
-app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'Components')]);
+app.set('views',[path.join(__dirname, 'views'), path.join(__dirname, '../../Components')]);
 app.set('view engine', 'ejs');
+app.use(bodyParser({limit: '50mb'}))
+app.use(express.json());
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-app.use(bodyParser.json())
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
-app.use(express.static(path.join(__dirname, 'js')));
-app.use(express.static(path.join(__dirname, 'styles')));
-app.use(express.static(path.join(__dirname, 'Components')));
-console.log('dir name: ', path.join(__dirname))
+app.use(express.static(path.join(__dirname, '../../node_modules')))
+app.use(express.static(path.join(__dirname, '../../Components')));
 
 
-app.use('/',validateToken, indexRouter);
-app.use('/auth', authentication)
-app.use('/evaluationMng', evaluationMng)
-app.use('/contractMng', contractMng)
-app.use('/systemMng', systemMng)
+app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+// connect to mongoose
+var mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
+mongoose.connect(mongooseURL, {useNewUrlParser: true})
+var db = mongoose.connection
+db.on('open', ()=>{
+  console.log('Authentication connected to database successfully!')
+})
 
 // error handler
 app.use(function(err, req, res, next) {

@@ -10,6 +10,7 @@ const Store = require('../../systemManagement/models/store')
 const Employee = require('../../systemManagement/models/employee')
 var fs = require('fs');
 var async = require('async');
+const auth = require('../../authentication/routes/checkAuthentication')
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -28,7 +29,7 @@ function escapeRegex(text) {
 
 // CONTRACT TEMPLATE
 // contract template list for admin
-router.get('/', function (req, res, next) {
+router.get('/',function (req, res, next) {
   ContractTemplate.find({}, (err, result) => {
     if (err) throw err
     res.render('index', { contractTemplateList: result })
