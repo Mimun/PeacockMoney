@@ -38,10 +38,10 @@ app.use(function(req, res, next) {
 // connect to mongoose
 var mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
 mongoose.connect(mongooseURL, {useNewUrlParser: true})
-var db = mongoose.connection
-db.on('open', ()=>{
-  console.log('Authentication connected to database successfully!')
-})
+// var db = mongoose.connection
+// db.on('open', ()=>{
+//   console.log('Authentication connected to database successfully!')
+// })
 
 // error handler
 app.use(function(err, req, res, next) {
