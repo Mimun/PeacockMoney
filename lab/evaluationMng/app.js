@@ -38,10 +38,10 @@ app.use(function(req, res, next) {
 
 // connect to mongo
 mongoose.connect(mongooseURL, {useNewUrlParser: true})
-// var db = mongoose.connection
-// db.on('open', ()=>{
-//   console.log('Connected to database successfully!')
-// })
+var db = mongoose.connection
+db.on('open', ()=>{
+  console.log('Connected to database successfully!')
+})
 
 // error handler
 app.use(function(err, req, res, next) {

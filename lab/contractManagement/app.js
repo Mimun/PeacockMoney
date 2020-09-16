@@ -14,10 +14,10 @@ var auth = require('../../routes/checkAuthentication')
 const mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
 
 mongoose.connect(mongooseURL, {useNewUrlParser: true})
-// var db = mongoose.connection
-// db.on('open', ()=>{
-//   console.log('Connected to database successfully!')
-// })
+var db = mongoose.connection
+db.on('open', ()=>{
+  console.log('Connected to database successfully!')
+})
 var app = express();
 
 // view engine setup
