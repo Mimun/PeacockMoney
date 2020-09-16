@@ -7,6 +7,7 @@ var mongoose = require('mongoose')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var auth = require('../../routes/checkAuthentication')
 var app = express();
 
 const mongooseURL = "mongodb://127.0.0.1:27017/evaluationMng"
@@ -27,7 +28,7 @@ app.use(express.static(path.join(__dirname, '../../Components')));
 
 console.log('dir name: ', __dirname)
 
-app.use('/', indexRouter);
+app.use('/', auth.isAuthenticated, auth.checkRole, indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

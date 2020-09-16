@@ -1,76 +1,70 @@
-export const checkMustHaveInfos = (item, propName) => {
-  var isHaving = false
-  item.infos.forEach(info => {
-    if (info["name"] == propName) {
-      isHaving = true
-    }
-  })
-  return isHaving
-}
-export const convertToJSON = (csv, originItemList) => {
+import { ObjectId } from './createMongooseID.js'
+import { findNestedObj } from './findNestedObj.js'
+export const convertToJSON = (csv) => {
   const lines = csv.split('\n')
-  var resultsInJSON = {}
   var itemObjs = []
+  const labels = lines[0].split(",")
 
-  const type = lines[0].split(",")[0]
-  const category = lines[0].split(",")[1]
-  const typeValue = lines[1].split(",")[0]
-  const categoryValue = lines[1].split(",")[1]
-  const labels = lines[2].split(",")
-
-  for (var i = 3; i < lines.length - 1; i++) {
+  for (var i = 1; i < lines.length - 1; i++) {
     const line = lines[i].split(",")
-    var itemObj = {}
-    var infos = []
-
-    for (var j = 0; j < line.length; j++) {
-      var infoObj = {}
-      if (line[j] !== "") {
-        infoObj["name"] = labels[j]
-        infoObj["value"] = line[j]
-        infos.push(infoObj)
-      }
-
+    var itemObj = {
+      metadata: [],
+      infos: [],
     }
-    itemObj["infos"] = infos
-    itemObj["metadata"] = {
-      type: typeValue,
-      category: categoryValue
-    }
-    resultsInJSON[i - 1] = itemObj
-    // results.push(obj)
+    // metadata
+    for (var j = 0; j <= 3; j++) {
+      var dataVie, dataKor, cType = 'text'
+      switch (j) {
+        case 0:
+          dataVie = 'loaiTaiSan'
+          dataKor = 'koreanString'
+          break
+        case 1:
+          dataVie = 'phanLoaiTaiSan'
+          dataKor = 'koreanString'
+          break
 
-  }
-  itemObjs = Object.values(resultsInJSON)
+        case 2:
+          dataVie = 'thamDinhGia'
+          dataKor = 'koreanString'
+          cType = 'number'
+          break
 
-  // check must have props
-
-
-  if (itemObjs.length !== 0) {
-    itemObjs = itemObjs.filter(item => {
-      var itemThatHasPrice = checkMustHaveInfos(item, "Tham dinh gia")
-      var itemThatHasName = checkMustHaveInfos(item, "Loai")
-      if (itemThatHasPrice && itemThatHasName) {
-        return item
+        case 3:
+          dataVie = 'loai'
+          dataKor = 'koreanString'
+          break
+        default:
+          dataVie = 'none'
       }
-    })
-
-    // create pagination
-    originItemList.forEach(obj1 => {
-      itemObjs.forEach(obj2 => {
-        if (JSON.stringify(obj2.infos) === JSON.stringify(obj1.infos)) {
-          var index = itemObjs.indexOf(obj2)
-          itemObjs.splice(index, 1)
-        }
+      itemObj.metadata.push({
+        name: labels[j],
+        value: line[j],
+        cType: cType,
+        dataVie,
+        dataKor
       })
-    })
-    originItemList = originItemList.concat(itemObjs)
+    }
+    // infos
+    for (var j = 4; j < line.length; j++) {
+      if (line[j] !== "") {
+        itemObj.infos.push({
+          name: labels[j],
+          value: line[j]
+        })
+      }
 
-    console.log('itemArray after removing duplicated item: ', originItemList)
-    // createPagination(originItemList)
-    return originItemList
+    }
 
+    if (itemObj._id === null || itemObj._id === undefined) {
+      itemObj._id = ObjectId()
+    }
+    if (findNestedObj(itemObj, 'name', 'itemType') && findNestedObj(itemObj, 'name', 'itemCategory')
+      && findNestedObj(itemObj, 'name', 'evaluatingPrice') && findNestedObj(itemObj, 'name', 'type')) {
+      itemObjs.push(itemObj)
+
+    }
   }
-
+  return itemObjs
 
 }

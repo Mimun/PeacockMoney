@@ -1,10 +1,8 @@
-export const createPagination = itemObjs => {
+import { generateListHTML } from './generateListHTML.js'
+export const createPagination = (itemObjs, template, elementName) => {
   // pagination
 
-  const pageNavigationContainer = document.querySelector('#page-navigation-container')
-  if (pageNavigationContainer.firstChild) {
-    pageNavigationContainer.innerHTML = ''
-  }
+
   const pageNavigation = document.createElement('nav')
   pageNavigation.setAttribute('aria-label', 'page navigation')
   pageNavigation.id = 'page-navigation'
@@ -25,8 +23,8 @@ export const createPagination = itemObjs => {
           <button class="page-link" id="next" disabled='false'>Next</button>
         </li>
       </ul>`
-  pageNavigationContainer.appendChild(pageNavigation)
-
+  // append clone table to table container
+  document.body.querySelector('#' + elementName + '').appendChild(pageNavigation)
   // duplicate object remove
 
   var list = itemObjs
@@ -157,7 +155,14 @@ export const createPagination = itemObjs => {
     var end = begin + numberPerPage
 
     pageList = list.slice(begin, end)
-    generateHTML(pageList)
+    if (document.querySelector('#table-container').firstChild) {
+      document.querySelector('#table-container').innerHTML = ''
+    }
+    pageList.forEach(page=>{
+      generateListHTML(page, template, 'table-container')
+
+    })
+
     check()
 
   }
@@ -175,23 +180,5 @@ export const createPagination = itemObjs => {
   })
   document.querySelector('#last').addEventListener('click', () => {
     lastPage()
-  })
-
-
-
-  // add item button on the home screen of tham dinh gia
-  const addItemButtonContainer = document.querySelector('#add-item-button-container')
-  if (addItemButtonContainer.firstChild) {
-    addItemButtonContainer.innerHTML = ''
-  }
-  const addItemButton = document.createElement('button')
-  addItemButton.className = 'btn btn-primary px-3 '
-  addItemButton.setAttribute('data-toggle', 'modal')
-  addItemButton.setAttribute('data-target', '#addItemModal')
-  addItemButton.innerHTML = `<i class="fa fa-plus" aria-hidden="true"></i>`
-  addItemButton.style.margin = 'auto'
-  addItemButtonContainer.appendChild(addItemButton)
-  addItemButton.addEventListener('click', () => {
-    document.querySelector('#cell-divs-container').innerHTML = ''
   })
 }

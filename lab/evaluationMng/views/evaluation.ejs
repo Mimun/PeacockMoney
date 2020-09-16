@@ -132,6 +132,7 @@
     import { generateHTML } from '/generateHTML.js'
     import { findNestedObj } from '/findNestedObj.js'
     import { searchFunction } from '/searchFunction.js'
+    import { makeRequest } from '/makeRequest.js'
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(itemStatusResults) %>;
@@ -240,21 +241,27 @@
     // search function
     document.querySelector('#search').addEventListener('submit', () => {
       event.preventDefault()
-      $.ajax({
-        type: 'POST',
-        url: 'search',
-        contentType: 'application/json',
-        data: JSON.stringify({ data: event.target.querySelector('input').value }),
-        success: result => {
-          console.log('result: ', result)
-          searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
-          chooseItem()
+      makeRequest('POST', 'search', 'application/json', JSON.stringify({
+        data: event.target.querySelector('input').value
+      }), (result) => {
+        console.log('result: ', result)
+        searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
+        chooseItem()
 
-          searchFunction(originItemStatusList, result.itemStatusResults, template, 'item-status-list-table-container')
-          chooseItemStatus()
-
-        }
+        searchFunction(originItemStatusList, result.itemStatusResults, template, 'item-status-list-table-container')
+        chooseItemStatus()
       })
+      // $.ajax({
+      //   type: 'POST',
+      //   url: 'search',
+      //   contentType: 'application/json',
+      //   data: JSON.stringify({ data: event.target.querySelector('input').value }),
+      //   success: result => {
+      //     console.log('result: ', result)
+
+
+      //   }
+      // })
 
     })
 

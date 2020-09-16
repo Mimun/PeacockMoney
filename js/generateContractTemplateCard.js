@@ -1,4 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
+import {makeRequest} from './makeRequest.js'
 // used when rendering "Quan ly va Tao mau hop dong" page
 export const generateContractTemplateCard = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
@@ -53,7 +54,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createNewContractButton.innerHTML = "Create new contract"
     createNewContractButton.addEventListener('click', () => {
       var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
-      $.redirect("createNewContract", { data: JSON.stringify(itemObj), evaluatingItem: JSON.stringify(evaluatingItem) }, "POST");
+      $.redirect(`createNewContract?token=${window.localStorage.getItem('accessToken')}`, { data: JSON.stringify(itemObj), evaluatingItem: JSON.stringify(evaluatingItem) }, "POST");
       window.localStorage.removeItem('evaluatingItem')
     })
     buttonOptions.appendChild(createNewContractButton)
@@ -63,16 +64,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     deleteContractTemplateButton.className = "btn btn-outline-danger btn-sm"
     deleteContractTemplateButton.innerHTML = "Delete template"
     deleteContractTemplateButton.addEventListener('click', (event) => {
-      $.ajax({
-        type: "DELETE",
-        url: 'deleteContractTemplate/' + itemObj._id,
-        contentType: 'application/json',
-        success: (result) => {
-          console.log(result)
-          window.location.reload()
-        }
-
-      })
+      makeRequest('DELETE', 'deleteContractTemplate/' + itemObj._id, 'application/json', JSON.stringify({}), window.location.reload())
     })
     buttonOptions.appendChild(deleteContractTemplateButton)
     modalFooter.appendChild(buttonOptions)

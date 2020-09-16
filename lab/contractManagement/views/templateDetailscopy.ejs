@@ -120,35 +120,35 @@
       <label class="bmd-label-floating" data-error="Empty">Nguoi lap</label>
       <input type="text" class="form-control validate" name="creator" data-vie="nguoiLap" disabled>
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">Khach hang</label>
       <input type="text" class="form-control validate" name="customer" data-vie="khachHang" disabled>
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">CMND</label>
       <input type="text" class="form-control validate" name="customerId" data-vie="cmnd">
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">Noi cap</label>
       <input type="text" class="form-control validate" name="customerIdProvidingPlace" data-vie="noiCap">
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">Ngay cap</label>
       <input type="date" class="form-control validate" name="customerIdProvidingDate" data-vie="ngayCap">
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">Dia chi</label>
       <input type="text" class="form-control validate" name="customerAddress" data-vie="diaChi">
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">So dien thoai</label>
       <input type="number" class="form-control validate" name="customerPhoneNumber" data-vie="soDienThoai">
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">Ho khau thuong tru</label>
       <input type="text" class="form-control validate" name="customerFamilyRegister" data-vie="soHoKhau">
     </div>
-   <div class="form-group" style="display: none;">
+    <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">So tien vay</label>
       <input type="number" class="form-control validate" name="loan" data-vie="soTienVay">
     </div>
@@ -234,6 +234,7 @@
   import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
   import { ObjectId } from '/createMongooseID.js'
   import { findNestedObj } from '/findNestedObj.js'
+  import { makeRequest } from '/makeRequest.js'
 
   var currentTab = 0; // Current tab is set to be the first tab (0)
   var payOption = {}
@@ -341,18 +342,18 @@
       })
 
       console.log('item is about to save: ', templateItem)
-
-      $.ajax({
-        type: 'POST',
-        data: JSON.stringify(templateItem),
-        contentType: 'application/json',
-        url: 'createNewContractTemplate',
-        success: (result) => {
-          console.log(result)
-          // displayTemplate(templateItem, contractTemplate, 'template-handler')
-          window.location.reload()
-        }
-      })
+      makeRequest('POST', 'createNewContractTemplate', 'application/json', JSON.stringify(templateItem), window.location.reload())
+      // $.ajax({
+      //   type: 'POST',
+      //   data: JSON.stringify(templateItem),
+      //   contentType: 'application/json',
+      //   url: 'createNewContractTemplate',
+      //   success: (result) => {
+      //     console.log(result)
+      //     // displayTemplate(templateItem, contractTemplate, 'template-handler')
+      //     window.location.reload()
+      //   }
+      // })
 
       return false;
     }

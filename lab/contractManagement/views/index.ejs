@@ -106,14 +106,7 @@
 
     // go to contract list button
     var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
-      $.ajax({
-        type: 'GET',
-        url: 'contracts',
-        contentType: 'application/json',
-        success: (result) => {
-          window.location.href = "contracts"
-        }
-      })
+      window.location.href = "contracts?token="+window.localStorage.getItem('accessToken')
 
     })
 

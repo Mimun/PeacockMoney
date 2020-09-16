@@ -39,7 +39,6 @@ console.log('dir name: ', path.join(__dirname))
 
 
 app.use('/',validateToken, indexRouter);
-app.use('/auth', authentication)
 app.use('/evaluationMng', evaluationMng)
 app.use('/contractMng', contractMng)
 app.use('/systemMng', systemMng)

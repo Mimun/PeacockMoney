@@ -135,6 +135,7 @@
   </div>
   <script type="module">
     import { generateStoreManagementList } from '/generateStoreManagementList.js'
+    import { makeRequest } from '/makeRequest.js'
     const storeList = <%- JSON.stringify(storeList) %>;
     const employeeList = <%- JSON.stringify(employeeList) %>;
     console.log('store list: ', storeList)
@@ -195,16 +196,8 @@
             }
           })
           console.log('input: ', storeObj)
-          $.ajax({
-            type: 'POST',
-            url: 'stores',
-            contentType: 'application/json',
-            data: JSON.stringify(storeObj),
-            success: result => {
-              console.log('result: ', result)
-              $("#modalContactForm").modal('hide')
-              window.location.reload()
-            }
+          makeRequest('POST', 'stores', 'application/json', JSON.stringify(storeObj), ()=>{
+            window.location.reload()
           })
 
         })
@@ -220,14 +213,8 @@
       event.preventDefault()
       var searchValueArray = event.target.querySelector('input').value.split(' ')
       console.log('search array: ', searchValueArray)
-      $.ajax({
-        type: 'POST',
-        url: 'stores/search',
-        contentType: 'application/json',
-        data: JSON.stringify({ data: searchValueArray }),
-        success: result => {
-          console.log('result: ', result)
-          document.querySelector('#store-list-container').innerHTML = ''
+      makeRequest('POST', 'stores/search', 'application/json', JSON.stringify({data: searchValueArray}), (result)=>{
+        document.querySelector('#store-list-container').innerHTML = ''
           if (result.storeList.length !== 0) {
             generateStoreManagementList(result.storeList, employeeList, storeListTemplate, 'store-list-container', 'stores')
 
@@ -235,9 +222,8 @@
             generateStoreManagementList(storeList, employeeList, storeListTemplate, 'store-list-container', 'stores')
 
           }
-
-        }
       })
+    
     })
   </script>
 

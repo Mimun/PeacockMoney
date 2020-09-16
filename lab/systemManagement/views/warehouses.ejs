@@ -137,6 +137,8 @@
 
   <script type="module">
     import { generateWarehouseManagementList } from '/generateWarehouseManagementList.js'
+    import { makeRequest } from '/makeRequest.js'
+
     const warehouseList = <%- JSON.stringify(warehouseList) %>;
     const employeeList = <%- JSON.stringify(employeeList) %>;
     console.log('warehouse list: ', warehouseList)
@@ -196,16 +198,8 @@
             }
           })
           console.log('input: ', warehouseObj)
-          $.ajax({
-            type: 'POST',
-            url: 'warehouses',
-            contentType: 'application/json',
-            data: JSON.stringify(warehouseObj),
-            success: result => {
-              console.log('result: ', result)
-              $("#modalContactForm").modal('hide')
-              window.location.reload()
-            }
+          makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), ()=>{
+            window.location.reload()
           })
 
         })
@@ -221,14 +215,8 @@
       event.preventDefault()
       var searchValueArray = event.target.querySelector('input').value.split(' ')
       console.log('search array: ', searchValueArray)
-      $.ajax({
-        type: 'POST',
-        url: 'warehouses/search',
-        contentType: 'application/json',
-        data: JSON.stringify({ data: searchValueArray }),
-        success: result => {
-          console.log('result: ', result)
-          document.querySelector('#warehouse-list-container').innerHTML = ''
+      makeRequest('POST', 'warehouses/search', 'application/json', JSON.stringify({data: searchValueArray}), (result)=>{
+        document.querySelector('#warehouse-list-container').innerHTML = ''
           if (result.warehouseList.length !== 0) {
             generateWarehouseManagementList(result.warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
 
@@ -237,9 +225,8 @@
 
 
           }
-
-        }
       })
+      
     })
 
   </script>

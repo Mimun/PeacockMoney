@@ -2,91 +2,85 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>CodePen - Auth Form Bootstrap</title>
-    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
-    <link rel="stylesheet" href="stylesheets/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- Material Design for Bootstrap fonts and icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
 
+  <!-- Material Design for Bootstrap CSS -->
+  <link rel="stylesheet"
+    href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+    integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 </head>
 
 <body>
-    <!-- partial:index.partial.html -->
-    <div id="main-container" class="container-fluid">
-        <div class="row">
-            <div id="auth-form" class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Auth Form</h3>
-                </div>
-                <div class="panel-body" action="/pagelogin" method="POST" id="login">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-user"></span>
-                        </span>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Login">
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-lock"></span>
-                        </span>
-                        <input type="password" id="password" name="password" class="form-control"
-                            placeholder="Password">
-                    </div>
-                    <button type="submit" class="btn btn-primary" id='loginBnt'>Login</button>
-                </div>
-            </div>
-        </div>
+  <h1>This is login page</h1>
+  <form id="login">
+    <div class="form-group">
+      <label for="userName">User name</label>
+      <input type="text" class="form-control" id="userName" aria-describedby="emailHelp" placeholder="Enter user name">
     </div>
-    <!-- partial -->
-    <script>
-        loginBnt = document.getElementById('loginBnt')
-        loginBnt.addEventListener('click', (evt) => {
-            console.log(evt)
-            sendObj = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value
-            }
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 
-            doAjax({
-                url: '/login'
-                , contentType: "application/json"
-                , payload: JSON.stringify(sendObj)
-                , handler: function (response) {
-                    console.log(response)
-                    window.postMessage(response, "*")
-                }
-            })
 
-        })
+  <script src="/jquery/dist/jquery.min.js"></script>
+  <!-- <script src="/jquery/dist/jquery.slim.js"></script> -->
+  <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+    integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+    integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+    crossorigin="anonymous"></script>
+  <script src="/jquery.redirect/jquery.redirect.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.min.js"></script>
+  <script src="/html2canvas/dist/html2canvas.js"></script>
+  <script src="http://cdn.quilljs.com/1.2.0/quill.js"></script>
+  <script src="http://cdn.quilljs.com/1.2.0/quill.min.js"></script>
+  <script type="module" src="./cropper/cropper.js"></script>
+  <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
 
-        function doAjax(request) {
-            var ajax = new XMLHttpRequest();
-            ajax.open("POST", request.url, false)
-            ajax.setRequestHeader("Content-type", request.contentType)
-            ajax.onreadystatechange = function () {
-                if (ajax.readyState == 4) {
-                    request.handler.call(request, ajax.responseText)
-                }
-            }
-            ajax.send(request.payload)
+  <script>
+    document.querySelector('#login').addEventListener('submit', (event) => {
+      event.preventDefault()
+      console.log('event: ', event.target)
+      var userName = document.querySelector('#userName').value
+      var password = document.querySelector('#password').value
+      console.log('user acc: ', {
+        userName, password
+      })
+      $.ajax({
+        type: 'POST',
+        url: '',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          userAccount: {
+            userName, password
+          },
+          localStorage: window.localStorage.getItem('user')
+        }),
+        success: result => {
+          console.log('result: ', result)
+          if (result.isLoggedIn === false) {
+            window.localStorage.setItem('accessToken', result.accessToken)
+            window.localStorage.setItem('user', JSON.stringify(result.user))
+            window.location.href = '/home?token=' + result.accessToken
+          } else {
+            window.alert('Account already logged')
+          }
+
+
+          // window.location.href = '/'
         }
-
-
-        window.addEventListener("message", receiveMessage, false);
-
-        function receiveMessage(evt) {
-            console.log(evt)
-            if (event.origin !== "localhost:3000")
-                return;
-
-            // ...
-        }
-    // document.getElementById('login').submit(function(evt){
-    //   evt.preventDefault()
-    //   alert("Submit")
-    // })
-    </script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+      })
+    })
+  </script>
 </body>
 
 </html>

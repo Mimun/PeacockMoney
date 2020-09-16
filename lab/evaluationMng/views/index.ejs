@@ -10,11 +10,10 @@
 
   <title>Simple Sidebar - Start Bootstrap Template</title>
   <style>
-    #table-container .bmd-form-group{
+    #table-container .bmd-form-group {
       width: 100%;
       padding: 0 !important;
     }
-
   </style>
 </head>
 
@@ -60,10 +59,13 @@
                 aria-describedby="inputGroupFileAddon01" />
               <label class="custom-file-label" for="csv-reader">Chon file tham dinh gia</label>
             </div> -->
+            <% if(roleAbility.importFiles){%>
             <div class="form-group">
               <label for="exampleInputFile" class="bmd-label-floating">File input</label>
               <input type="file" accept=".csv" id="csv-reader" class="form-control-file" id="exampleInputFile">
             </div>
+            <% } %>
+
 
           </div>
           <div id="search-container">
@@ -98,11 +100,15 @@
               </div>
 
               <div class="modal-footer">
-                <button class="btn btn-raised btn-primary" id="create-contract" style="position: relative; float: right;">Create
+                <% if(roleAbility.crud){ %>
+                <button class="btn btn-raised btn-primary" id="create-contract"
+                  style="position: relative; float: right;">Create
                   contract</button>
                 <button class="btn btn-primary" id="edit-btn" style="position: relative; float: right;">Edit</button>
                 <button class="btn btn-danger" id="delete-btn" style="position: relative; float: right;"
                   data-dismiss="modal">Delete</button>
+                <% } %>
+
               </div>
             </div>
           </div>
@@ -226,31 +232,37 @@
     import { generateHTML } from '/generateHTML.js'
     import { ObjectId } from '/createMongooseID.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { makeRequest } from '/makeRequest.js'
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
 
     const dataTemplate = document.querySelector('#data-field-template')
 
     // original item list (after fetching from database)
-    var originItemList = <%- JSON.stringify(dbItemObjs) %>
-      console.log('origin item: ', originItemList)
+    var originItemList = <%- JSON.stringify(dbItemObjs) %>;
+    var roleAbility = <%- JSON.stringify(roleAbility) %>;
+    console.log('origin item: ', originItemList)
+    console.log('role ability: ', roleAbility)
 
-    window.onload = () => {
-      // window.location = "data:text/csv;base64,77u/" + btoa("foo,bar\r\naaa,bbb")
-
-      // convert csv to json
+    // convert csv to json
+    if (document.querySelector('#csv-reader')) {
       document.querySelector('#csv-reader').addEventListener('change', (event) => {
-
-        const file = event.target.files[0]
-        var fileReader = new FileReader()
-        fileReader.onload = (e) => {
-          var csv = e.target.result
-          console.log('result: ', e.target.result)
-          convertToJSON(csv)
+        if (roleAbility.importFiles) {
+          const file = event.target.files[0]
+          var fileReader = new FileReader()
+          fileReader.onload = (e) => {
+            var csv = e.target.result
+            console.log('result: ', e.target.result)
+            convertToJSON(csv)
+          }
+          fileReader.readAsText(file, 'ISO-8859-1')
+        } else {
+          window.alert('You need to be beyond member to do that!')
         }
-        fileReader.readAsText(file, 'ISO-8859-1')
+
       })
     }
+
 
     const convertToJSON = (csv) => {
       const lines = csv.split('\n')
@@ -533,15 +545,16 @@
         submitBtn.style.margin = 'auto'
         submitBtn.addEventListener('click', () => {
           console.log('origin item list before submitting: ', originItemList)
-          $.ajax({
-            type: 'POST',
-            data: JSON.stringify(originItemList),
-            contentType: 'application/json',
-            url: 'items',
-            success: (data) => {
-              console.log('Saved successfully!')
-            }
-          })
+          makeRequest('POST', 'items', 'application/json', JSON.stringify(originItemList), ()=>{})
+          // $.ajax({
+          //   type: 'POST',
+          //   data: JSON.stringify(originItemList),
+          //   contentType: 'application/json',
+          //   url: 'items',
+          //   success: (data) => {
+          //     console.log('Saved successfully!')
+          //   }
+          // })
 
         })
         const deleteManyBtn = document.createElement('button')
@@ -549,16 +562,20 @@
         deleteManyBtn.id = 'delete-many-button'
         deleteManyBtn.innerHTML = 'Delete many'
         deleteManyBtn.style.margin = 'auto'
-        deleteManyBtn.addEventListener('click', (event)=>{
-          $.ajax({
-            type: 'DELETE',
-            url: 'items',
-            contentType: 'application/json',
-            success: result=>{
-              console.log('result: ', result)
-              window.location.reload()
-            }
+        deleteManyBtn.addEventListener('click', (event) => {
+          makeRequest('DELETE', 'items', 'application/json', JSON.stringify({}), ()=>{
+            window.location.reload()
           })
+
+          // $.ajax({
+          //   type: 'DELETE',
+          //   url: 'items',
+          //   contentType: 'application/json',
+          //   success: result => {
+          //     console.log('result: ', result)
+          //     window.location.reload()
+          //   }
+          // })
         })
 
 
@@ -595,7 +612,10 @@
       addItemButton.setAttribute('data-target', '#addItemModal')
       addItemButton.innerHTML = `<span class="material-icons" aria-hidden="true">add</span>`
       addItemButton.style.margin = 'auto'
-      addItemButtonContainer.appendChild(addItemButton)
+      if(roleAbility.crud){
+        addItemButtonContainer.appendChild(addItemButton)
+
+      }
       addItemButton.addEventListener('click', () => {
         document.querySelector('#cell-divs-container').innerHTML = ''
       })
@@ -655,15 +675,16 @@
       })
 
       originItemList.unshift(dataObj)
-      $.ajax({
-        type: 'POST',
-        url: 'createItem',
-        data: JSON.stringify(dataObj),
-        contentType: 'application/json',
-        success: (result) => {
-          console.log(result)
-        }
-      })
+      makeRequest('POST', 'createItem', 'application/json', JSON.stringify(dataObj), ()=>{})
+      // $.ajax({
+      //   type: 'POST',
+      //   url: 'createItem',
+      //   data: JSON.stringify(dataObj),
+      //   contentType: 'application/json',
+      //   success: (result) => {
+      //     console.log(result)
+      //   }
+      // })
 
       console.log('data obj: ', dataObj)
 
@@ -717,143 +738,141 @@
     }
 
     // edit button 
-    document.querySelector('#edit-btn').addEventListener('click', (e) => {
-      if (e.target.textContent == 'Edit') {
-        console.log('Edit')
-        e.target.removeAttribute('data-dismiss')
+    if (document.querySelector('#edit-btn')) {
+      document.querySelector('#edit-btn').addEventListener('click', (e) => {
+        if (roleAbility.crud) {
+          if (e.target.textContent == 'Edit') {
+            console.log('Edit')
+            e.target.removeAttribute('data-dismiss')
 
-        const itemDetail = document.querySelector('#item-info-container').firstChild
-        itemDetail.querySelectorAll('div[class="data-field-container"]').forEach(element => {
-          if (element.closest('div[class="data-field-container"]').querySelector('button')) {
-            element.closest('div[class="data-field-container"]').removeChild(element.closest('div[class="data-field-container"]').querySelector('button'))
-          }
-          const removeButton = document.createElement('button')
-          removeButton.id = 'remove-field-button'
-          removeButton.type = 'button'
-          removeButton.className = 'close'
-          removeButton.innerHTML = `<span class="material-icons">clear</span>`
-          removeButton.addEventListener('click', (event) => {
-            event.target.closest('div[class="object-div"]').removeChild(event.target.closest('div[class="data-field-container"]'))
-          })
+            const itemDetail = document.querySelector('#item-info-container').firstChild
+            itemDetail.querySelectorAll('div[class="data-field-container"]').forEach(element => {
+              if (element.closest('div[class="data-field-container"]').querySelector('button')) {
+                element.closest('div[class="data-field-container"]').removeChild(element.closest('div[class="data-field-container"]').querySelector('button'))
+              }
+              const removeButton = document.createElement('button')
+              removeButton.id = 'remove-field-button'
+              removeButton.type = 'button'
+              removeButton.className = 'close'
+              removeButton.innerHTML = `<span class="material-icons">clear</span>`
+              removeButton.addEventListener('click', (event) => {
+                event.target.closest('div[class="object-div"]').removeChild(event.target.closest('div[class="data-field-container"]'))
+              })
 
-          element.closest('div[class="data-field-container"]').appendChild(removeButton)
+              element.closest('div[class="data-field-container"]').appendChild(removeButton)
 
-          element.querySelectorAll('input').forEach(input => {
-            input.disabled ? input.removeAttribute('disabled') : input.setAttribute('disabled', true)
+              element.querySelectorAll('input').forEach(input => {
+                input.disabled ? input.removeAttribute('disabled') : input.setAttribute('disabled', true)
 
-          })
+              })
 
-        })
-        if (itemDetail.closest('div[class="modal-content"]').querySelector('button[id="add-field-button"]')) {
-          itemDetail.closest('div[class="modal-content"]').querySelector('div[class="modal-footer"]').removeChild(itemDetail.closest('div[class="modal-content"]').querySelector('button[id="add-field-button"]'))
-        }
-        var addFieldButton = addDataFieldButton.cloneNode(true)
-        addFieldButton.addEventListener('click', (event) => {
-          const clone = document.importNode(dataTemplate.content, true)
-          clone.querySelectorAll('input').forEach(input => {
-            input.removeAttribute('disabled')
-          })
-          const removeDataFieldButton = clone.querySelector('#remove-field-button')
-          removeDataFieldButton.addEventListener('click', (event) => {
-            event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').removeChild(event.target.closest('div[class="data-field-container"]'))
-          })
-          event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').appendChild(clone)
-        })
-        itemDetail.closest('div[class="modal-content"]').querySelector('div[class="modal-footer"]').prepend(addFieldButton)
-
-      } else {
-        e.target.setAttribute('data-dismiss', 'modal')
-        var objectDiv = e.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"')
-        var cData = objectDiv.C_DATA
-        var itemObj = Object.assign({}, cData)
-        var infos = []
-        objectDiv.querySelectorAll('div[class="data-field-container"]').forEach(element => {
-          var info = {}
-          element.querySelectorAll('input[class="form-control cell-div"]').forEach(input => {
-            info[input.getAttribute('obj_property')] = input.value
-          })
-          infos.push(info)
-        })
-        itemObj = { ...itemObj, infos: infos }
-
-        console.log('item: ', itemObj)
-        $.ajax({
-          type: "PUT",
-          url: 'items/' + itemObj._id,
-          contentType: 'application/json',
-          data: JSON.stringify(itemObj),
-          success: result => {
-            console.log(result.message)
-            if (result.isUpdated) {
-              originItemList.splice(originItemList.indexOf(cData), 1)
-              originItemList.unshift(itemObj)
-              createPagination(originItemList)
-
+            })
+            if (itemDetail.closest('div[class="modal-content"]').querySelector('button[id="add-field-button"]')) {
+              itemDetail.closest('div[class="modal-content"]').querySelector('div[class="modal-footer"]').removeChild(itemDetail.closest('div[class="modal-content"]').querySelector('button[id="add-field-button"]'))
             }
+            var addFieldButton = addDataFieldButton.cloneNode(true)
+            addFieldButton.addEventListener('click', (event) => {
+              const clone = document.importNode(dataTemplate.content, true)
+              clone.querySelectorAll('input').forEach(input => {
+                input.removeAttribute('disabled')
+              })
+              const removeDataFieldButton = clone.querySelector('#remove-field-button')
+              removeDataFieldButton.addEventListener('click', (event) => {
+                event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').removeChild(event.target.closest('div[class="data-field-container"]'))
+              })
+              event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').appendChild(clone)
+            })
+            itemDetail.closest('div[class="modal-content"]').querySelector('div[class="modal-footer"]').prepend(addFieldButton)
+
+          } else {
+            e.target.setAttribute('data-dismiss', 'modal')
+            var objectDiv = e.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"')
+            var cData = objectDiv.C_DATA
+            var itemObj = Object.assign({}, cData)
+            var infos = []
+            objectDiv.querySelectorAll('div[class="data-field-container"]').forEach(element => {
+              var info = {}
+              element.querySelectorAll('input[class="form-control cell-div"]').forEach(input => {
+                info[input.getAttribute('obj_property')] = input.value
+              })
+              infos.push(info)
+            })
+            itemObj = { ...itemObj, infos: infos }
+
+            console.log('item: ', itemObj)
+            makeRequest("PUT", 'items/' + itemObj._id, 'application/json', JSON.stringify(itemObj), (result)=>{
+              if (result.isUpdated) {
+                  originItemList.splice(originItemList.indexOf(cData), 1)
+                  originItemList.unshift(itemObj)
+                  createPagination(originItemList)
+
+                }
+            })
+
+            console.log('origin item list after editing: ', originItemList)
+
+
+            e.target.closest('div[class="modal-footer"]').removeChild(e.target.closest('div[class="modal-footer"]').querySelector('button[id="add-field-button"]'))
+
           }
-        })
+          e.target.textContent == 'Edit' ? e.target.textContent = 'Confirm' : e.target.textContent = 'Edit'
 
-        console.log('origin item list after editing: ', originItemList)
+        } else {
+          window.alert('You need to be beyond member to do that!')
+        }
 
+      })
 
-        e.target.closest('div[class="modal-footer"]').removeChild(e.target.closest('div[class="modal-footer"]').querySelector('button[id="add-field-button"]'))
-
-      }
-      e.target.textContent == 'Edit' ? e.target.textContent = 'Confirm' : e.target.textContent = 'Edit'
-
-    })
+    }
 
     // delete button
-    document.querySelector('#delete-btn').addEventListener('click', (event) => {
-      const deleteCData = event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').C_DATA
-      var index = originItemList.indexOf(deleteCData)
-      console.log('index: ', index)
-
-      $.ajax({
-        type: 'DELETE',
-        url: 'items/' + deleteCData._id,
-        success: result => {
-          console.log(result.message)
-          if (result.isDeleted) {
-            if (index > -1) {
-              originItemList.splice(index, 1)
-              createPagination(originItemList)
+    if (document.querySelector('#delete-btn')) {
+      document.querySelector('#delete-btn').addEventListener('click', (event) => {
+        if (roleAbility.crud) {
+          const deleteCData = event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').C_DATA
+          var index = originItemList.indexOf(deleteCData)
+          console.log('index: ', index)
+          makeRequest('DELETE', 'items/' + deleteCData._id, 'application/json', {}, result=>{
+            if (result.isDeleted) {
+                if (index > -1) {
+                  originItemList.splice(index, 1)
+                  createPagination(originItemList)
 
 
-            }
-          }
+                }
+              }
+          })
+         
+        } else {
+          window.alert('You need to be beyond member to do that')
         }
       })
 
-
-    })
+    }
 
     // create button
-    document.querySelector('#create-contract').addEventListener('click', (event) => {
+    if(document.querySelector('#create-contract')){
+      document.querySelector('#create-contract').addEventListener('click', (event) => {
       var evaluatingItem = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.object-div').C_DATA
       window.localStorage.setItem('evaluatingItem', JSON.stringify(evaluatingItem))
-      console.log('window local storage: ', JSON.parse(window.localStorage.getItem('evaluatingItem')))
-      $.redirect("../contractMng/contractTemplates", {}, "GET");
-
+      console.log('window local storage: ', `/contractMng/contractTemplates?token=${window.localStorage.getItem('accessToken')}`)
+      window.location.href = `/contractMng/contractTemplates?token=${window.localStorage.getItem('accessToken')}`
     })
 
+    }
     
+
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
       var array = event.target.querySelector('input').value.split(" ")
-      $.ajax({
-        type: 'POST',
-        url: 'items/search',
-        contentType:"application/json",
-        data: JSON.stringify({data: array}),
-        success:result=>{
-          if(result.itemResults.length !==0){
+      makeRequest('POST', 'items/search', 'application/json', JSON.stringify({data:array}), result=>{
+        if (result.itemResults.length !== 0) {
             createPagination(result.itemResults)
           } else {
             createPagination(originItemList)
           }
-        }
       })
+      
     })
 
     // check duplicate when loading from db

@@ -19,10 +19,14 @@
     .tabs {
       position: fixed;
     }
-    #item-evaluation .bmd-form-group, #item-status .bmd-form-group, .tabs .bmd-form-group{
+
+    #item-evaluation .bmd-form-group,
+    #item-status .bmd-form-group,
+    .tabs .bmd-form-group {
       width: 100%;
       padding: 0 !important;
     }
+
     .col-sm.side {
       max-height: 100vh;
       overflow-y: auto;
@@ -33,7 +37,7 @@
       display: none;
     }
 
-    strong{
+    strong {
       font-size: 20px;
     }
   </style>
@@ -47,9 +51,9 @@
   <%- include("./contractPreviewTemplate.ejs") %>
 
   <!-- navbar -->
- <%- include('../Components/navbar.ejs') %> 
+  <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %> 
+    <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <!-- page content -->
       <div class="container" style="margin: 0; border: none;">
@@ -146,6 +150,7 @@
     import { generateContractTemplateHTML } from '/generateContractTemplateHTML.js'
     import { findNestedObj } from '/findNestedObj.js'
     import { searchFunction } from '/searchFunction.js'
+    import { makeRequest } from '/makeRequest.js'
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(statusResults) %>;
@@ -160,7 +165,7 @@
     const contractTemplate = document.querySelector('template[id="contract-template"]')
 
     // display chosen evaluating item if user chose from 'evaluating' page
-    if(evaluatingItem){
+    if (evaluatingItem) {
       generateHTML([evaluatingItem], template, "item-evaluation")
       var clone = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').cloneNode(true)
       clone.C_DATA = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').C_DATA
@@ -246,10 +251,10 @@
       document.querySelector('#contract-template-container').innerHTML = ""
     }
 
-    if(originItemList.length !==0){
+    if (originItemList.length !== 0) {
       generateHTML(originItemList, template, 'item-list-table-container')
-    } 
-    if(originItemStatusList.length !==0){
+    }
+    if (originItemStatusList.length !== 0) {
       generateHTML(originItemStatusList, template, 'item-status-list-table-container')
     }
     generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container', stores)
@@ -277,7 +282,7 @@
           prevDiv.style.border = 'none'
 
         }
-        
+
       })
       document.querySelector('div[class="contract-item-container"]').appendChild(itemTemplateClone)
       $(itemTemplateClone).bootstrapMaterialDesign()
@@ -319,7 +324,7 @@
         element.addEventListener('click', (event) => {
           const itemStatusDiv = currentDiv.querySelector("#item-status")
           const cloneNode = event.target.closest('.object-div').cloneNode(true)
-          cloneNode.C_DATA =event.target.closest('.object-div').C_DATA
+          cloneNode.C_DATA = event.target.closest('.object-div').C_DATA
           cloneNode.className = "object-div item-status"
 
           const removeButton = document.createElement('i')
@@ -373,12 +378,12 @@
       const cData = contractTemplateContainer.C_DATA
       console.log('cdata: ', cData)
 
-      var data = {...cData, contractMetadata: [], infos: [], items: []}
+      var data = { ...cData, contractMetadata: [], infos: [], items: [] }
       delete data._id
       console.log('cdata 2: ', data)
 
       // contract info
-      contractTemplateContainer.querySelectorAll('select').forEach(select=>{
+      contractTemplateContainer.querySelectorAll('select').forEach(select => {
         var name = select.getAttribute('name')
         var value = select.value
         var type = 'text'
@@ -406,7 +411,7 @@
           dataKor: 'koreanString'
         })
       })
-      
+
 
       // item info
       const contractItemContainer = contractInfoContainer.querySelector('.contract-item-container')
@@ -440,9 +445,11 @@
 
         data.items.push(itemInfo)
       })
-      
+
       console.log('data: ', data)
-      $.redirect("contracts", { data: JSON.stringify(data) }, "POST");
+      makeRequest('POST', 'contracts', 'application/json', JSON.stringify(data), ()=>{
+        window.location.href = 'contracts?token='+window.localStorage.getItem('accessToken')
+      })
 
     })
 
@@ -450,23 +457,14 @@
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
       var array = event.target.querySelector('input').value.split(" ")
+      makeRequest('POST', 'search', 'application/json', JSON.stringify({data: array}), (result)=>{
+        searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
+        chooseItem()
 
-      $.ajax({
-        type: 'POST',
-        url: 'search',
-        contentType: 'application/json',
-        data: JSON.stringify({ data: array }),
-        success: result => {
-          console.log('result: ', result)
-          searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
-          chooseItem()
-
-          searchFunction(originItemStatusList, result.itemStatusResults, template, 'item-status-list-table-container')
-          chooseItemStatus()
-         
-        }
+        searchFunction(originItemStatusList, result.itemStatusResults, template, 'item-status-list-table-container')
+        chooseItemStatus()
       })
-    
+
     })
 
 

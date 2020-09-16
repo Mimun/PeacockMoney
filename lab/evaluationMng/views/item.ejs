@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .form-inline {
+      width: fit-content;
+      height: fit-content;
+    }
+
+    .form-inline:hover {
+      cursor: pointer;
+    }
+
+    .bmd-form-group {
+      padding: 0 !important;
+    }
+
+    .form-control-plaintext {
+      padding: 0;
+
+    }
+
+    @media(min-width: 576px) {
+      .modal-dialog {
+        max-width: 600px !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <template id="input-template">
+    <div class="form-inline">
+      <div class="form-group name">
+        <label class="sr-only">Ten truong</label>
+        <input type="text" class="" name="name" data-vie="tenTruong" data-kor="koreanString"
+          placeholder="Ten truong...">
+      </div>
+      <div class="form-group value">
+        <label class="sr-only">Gia tri</label>
+        <input type="text" class="" name="value" data-vie="giaTri" data-kor="koreanString" placeholder="Gia tri...">
+      </div>
+    </div>
+  </template>
+
+  <%- include('navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('sideBar.ejs') %>
+    <div class="" id="page-content-wrapper">
+      <h2>Quan ly tham dinh gia</h2>
+      <div class="form-group">
+        <label for="file-input" class="bmd-label-floating">File input</label>
+        <input type="file" class="form-control-file" id="file-input" accept=".csv">
+      </div>
+      <!-- for table of items -->
+      <div id="table-container"></div>
+      <!-- for buttons: create, submit, deleteMany -->
+      <div id="btn-options-container">
+        <button class="btn btn-primary btn-sm" id="create-item">Create Item</button>
+      </div>
+      <!-- for page navigation -->
+      <div id="page-navigation-container"></div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { generateListHTML, insertValue, removeFieldFunction } from '/generateListHTML.js'
+    import { createPagination } from '/createPagination.js'
+    import { convertToJSON } from '/convertToJSON.js'
+
+    var originItemList = <%- JSON.stringify(dbItemObjs) %>;
+    console.log('origin item list: ', originItemList)
+    // generate db list
+    const inputTemplate = document.querySelector('#input-template')
+    // originItemList.forEach(element => {
+    //   generateListHTML(element, inputTemplate, 'table-container')
+    // });
+
+    // import file
+    document.querySelector('input#file-input').addEventListener('change', (event) => {
+      const file = event.target.files[0]
+      var fileReader = new FileReader()
+      fileReader.onload = (e) => {
+        var csv = e.target.result
+        console.log('result: ', e.target.result)
+        var itemObjs = convertToJSON(csv)
+        console.log('initial item objs: ', itemObjs)
+        createPagination(itemObjs, inputTemplate, 'page-navigation-container')
+      }
+      fileReader.readAsText(file, 'ISO-8859-1')
+    })
+
+    // create item 
+    document.querySelector('#create-item').addEventListener('click', (event) => {
+      $('#exampleModal').on('show.bs.modal', () => {
+        var modalBody = document.querySelector('.modal-body')
+        var modalFooter = document.querySelector('.modal-footer')
+        const detailItemButtonOptions = `
+        <button class="btn btn-secondary btn-sm" id="addField">Add field</button>
+        <button class="btn btn-primary btn-sm" id="create">Create</button>
+        `
+
+        const removeFieldIcon = `<span class="material-icons">remove</span>`
+        var buttonRemoveField = document.createElement('button')
+        buttonRemoveField.className = 'btn btn-secondary btn-sm'
+        buttonRemoveField.innerHTML = removeFieldIcon
+        buttonRemoveField.id = "removeField"
+
+        const itemContainer = document.createElement('div')
+        itemContainer.className = 'object-div'
+        // apppend default metadata inputs
+        insertValue(inputTemplate.content.cloneNode(true), 'Loai tai san', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
+        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'itemType', 'loaiTaiSan', 'koreanString')
+        
+        insertValue(inputTemplate.content.cloneNode(true), 'Phan loai tai san', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
+        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'itemCategory', 'phanLoaiTaiSan', 'koreanString')
+        
+        insertValue(inputTemplate.content.cloneNode(true), 'Tham dinh gia', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
+        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'evaluatingPrice','thamDinhGia', 'koreanString')
+        
+        insertValue(inputTemplate.content.cloneNode(true), 'Loai', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
+        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'type','loai', 'koreanString')
+
+        modalBody.innerHTML = ''
+        modalBody.appendChild(itemContainer)
+        modalFooter.innerHTML = detailItemButtonOptions
+
+        // add field button
+        modalFooter.querySelector('button#addField').addEventListener('click', (event) => {
+          insertValue(inputTemplate.content.cloneNode(true), '', '', itemContainer, 'info row', false, 'form-control')
+          itemContainer.lastElementChild.appendChild(buttonRemoveField.cloneNode(true))
+          removeFieldFunction(modalBody)
+        })
+
+        // create button
+        modalFooter.querySelector('button#create').addEventListener('click', (event)=>{
+          var createObj = {
+            metadata: [],
+            infos: []
+          }
+
+          // metadata
+          modalBody.querySelectorAll('div.metadata.row').forEach(row=>{
+            createObj.metadata.push({
+              name: row.querySelector('input[name="value"]').getAttribute('data-eng'),
+              dataVie: row.querySelector('input[name="value"]').getAttribute('data-vie'),
+              dataKor: row.querySelector('input[name="value"]').getAttribute('data-kor'),
+              value: row.querySelector('input[name="value"]').value,
+              cType: 'text'
+
+            })
+          })
+
+          // infos
+          modalBody.querySelectorAll('div.info.row').forEach(row=>{
+            createObj.infos.push({
+              cType: 'text',
+              name: row.querySelector('input[name="name"]').value,
+              value: row.querySelector('input[name="value"]').value,
+            })
+          })
+
+          console.log('create item: ', createObj)
+        })
+      })
+      $('#exampleModal').modal('show')
+    })
+
+    const assignDataLang = (input, dataEng, dataVie, dataKor)=>{
+      input.setAttribute('data-vie', dataVie)
+      input.setAttribute('data-kor', dataKor)
+      input.setAttribute('data-eng', dataEng)
+
+    }
+
+  </script>
+</body>
+
+</html>

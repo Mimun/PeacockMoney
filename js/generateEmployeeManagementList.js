@@ -1,5 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
-
+import { makeRequest } from './makeRequest.js'
 const detailEmployeeTemplate = document.createElement('div')
 detailEmployeeTemplate.innerHTML = `
 <div class="modal-header text-center">
@@ -186,16 +186,11 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
       }
 
       console.log('update obj: ', updateObj)
-      $.ajax({
-        type: "PUT",
-        url: routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-        contentType: 'application/json',
-        data: JSON.stringify(updateObj),
-        success: result => {
-          console.log('result: ', result)
+      makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+        'application/json', JSON.stringify(updateObj), ()=>{
           window.location.reload()
-        }
-      })
+        })
+      
       break
     default:
 
@@ -205,23 +200,18 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 
 const deleteBtnFunction = (event, routerName, user) => {
   if (user.role !== "member") {
+    makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+    'application/json', {} ,(result)=>{
+      if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {
+        window.localStorage.removeItem('user')
+        window.localStorage.removeItem('accessToken')
+        window.location.href = "/"
+      } else {
+        window.location.reload()
 
-    $.ajax({
-      type: "DELETE",
-      url: routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      contentType: 'application/json',
-      success: result => {
-        console.log('result: ', result)
-        if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {
-          window.localStorage.removeItem('user')
-          window.localStorage.removeItem('accessToken')
-          window.location.href = "/"
-        } else {
-          window.location.reload()
-
-        }
       }
     })
+   
   } else {
     window.alert('You need to be beyond member to do that!')
   }

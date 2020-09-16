@@ -3,7 +3,7 @@ var router = express.Router();
 var Item = require('../models/item')
 var ItemStatus = require('../models/itemStatus');
 var async = require('async')
-const { cssNumber } = require('jquery');
+var auth = require('../../authentication/routes/checkAuthentication')
 
 function escapeRegex(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -11,13 +11,21 @@ function escapeRegex(text) {
 
 // item
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', auth.isAuthenticated, auth.checkRole, function (req, res, next) {
   Item.find({}, (err, results) => {
     if (err) throw err
-    res.render('index', { dbItemObjs: results });
+    res.render('index', { dbItemObjs: results, roleAbility: req.roleAbility });
 
   })
 });
+
+router.get('/items/test', (req, res, next) => {
+  Item.find({}, (err, results) => {
+    if (err) throw err
+    res.render('item', { dbItemObjs: results, roleAbility: req.roleAbility });
+
+  })
+})
 
 // upload items
 router.post('/items', (req, res) => {
@@ -178,9 +186,9 @@ router.post('/items/search', (req, res) => {
 })
 
 // delete many
-router.delete('/items', (req, res)=>{
-  Item.deleteMany({}, (err, result)=>{
-    if(err) throw err
+router.delete('/items', (req, res) => {
+  Item.deleteMany({}, (err, result) => {
+    if (err) throw err
     res.send('Delete many successfully')
   })
 })
@@ -262,9 +270,9 @@ router.delete('/itemStatus/:id', (req, res) => {
 })
 
 // delete many
-router.delete('/itemstatus', (req, res)=>{
-  ItemStatus.deleteMany({}, (err, result)=>{
-    if(err) throw err
+router.delete('/itemstatus', (req, res) => {
+  ItemStatus.deleteMany({}, (err, result) => {
+    if (err) throw err
     res.send('Delete many successfully!')
   })
 })
@@ -323,18 +331,28 @@ router.get('/evaluation', (req, res) => {
 // search item || itemstatus
 router.post('/search', (req, res, next) => {
   console.log('req.body: ', req.body)
-  const regex = new RegExp(escapeRegex(req.body.data), 'gi')
+  const arrayValue = req.body.data.split(" ")
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  arrayValue.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'infos.value': regex })
+  })
+  console.log('meta conditions: ', arrayMetadataConditions)
+  console.log('info conditions: ', arrayInfosConditions)
   async.parallel({
     itemResults: (callback) => {
       try {
-        Item.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+        Item.find({ $or: [{ $and: arrayMetadataConditions }, { $and: arrayInfosConditions }] }).exec(callback)
       } catch (err) {
         next(err)
       }
     },
     itemStatusResults: (callback) => {
       try {
-        ItemStatus.find({ $or: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
+        ItemStatus.find({ $or: [{ $and: arrayMetadataConditions }, { $and: arrayInfosConditions }] }).exec(callback)
 
       } catch (err) {
         next(err)

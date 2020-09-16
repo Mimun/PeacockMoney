@@ -136,8 +136,8 @@
 
 
   <script type="module">
-    import { generateContractListHTML } from './generateContractListHTML.js'
-    import { generateContractDetailHTML } from './generateContractDetailHTML.js'
+    import { generateContractListHTML } from '/generateContractListHTML.js'
+    import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
@@ -151,7 +151,7 @@
       generateContractListHTML(contract, template, 'list-container')
     })
     
-    if (document.referrer.split('/').includes('createNewContract')) {
+    if (document.referrer.split('/').includes('createNewContract?token='+window.localStorage.getItem('accessToken'))) {
       console.log('first element: ', document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div'))
       var firstElement = document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div')
       firstElement.classList.add('blink-bg')

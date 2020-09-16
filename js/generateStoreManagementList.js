@@ -1,5 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
-
+import {makeRequest} from './makeRequest.js'
 const detailStoreTemplate = document.createElement('div')
 detailStoreTemplate.innerHTML = `
 <div class="modal-header text-center">
@@ -156,16 +156,11 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
         })
 
         console.log('update obj: ', updateObj)
-        $.ajax({
-          type: "PUT",
-          url: routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-          contentType: 'application/json',
-          data: JSON.stringify(updateObj),
-          success: result => {
-            console.log('result: ', result)
-            window.location.reload()
-          }
+        makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+        'application/json', JSON.stringify(updateObj), ()=>{
+          window.location.reload()
         })
+        
         break
       default:
 
@@ -177,15 +172,11 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
 
   // delete button
   modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
-    $.ajax({
-      type: "DELETE",
-      url: routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      contentType: 'application/json',
-      success: result => {
-        console.log('result: ', result)
-        window.location.reload()
-      }
+    makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+    'application/json', {}, ()=>{
+      window.location.reload()
     })
+    
   })
 
   // add representative button

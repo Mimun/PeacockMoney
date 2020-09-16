@@ -82,15 +82,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   // handle event click to pdf button
   clone.querySelector('.get-pdf').addEventListener('click', (event) => {
     event.preventDefault()
-    $.ajax({
-      type: 'GET',
-      url: 'contracts/' + itemObj._id,
-      contentType: 'application/json',
-      success: result => {
-        console.log(result)
-        window.location.href = 'contracts/' + itemObj._id
-      }
-    })
+    window.location.href = 'contracts/' + itemObj._id + '?token=' + window.localStorage.getItem('accessToken')
   })
 
   document.body.querySelector('#' + elementName + '').appendChild(clone)

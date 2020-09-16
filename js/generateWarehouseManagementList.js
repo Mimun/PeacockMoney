@@ -1,5 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
-
+import { makeRequest } from './makeRequest.js'
 const detailWarehouseTemplate = document.createElement('div')
 detailWarehouseTemplate.innerHTML = `
 <div class="modal-header text-center">
@@ -108,9 +108,9 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
 
       })
       $("#modalContactForm").modal('show')
-      $('#modalContactForm').on('hidden.bs.modal', ()=>{
+      $('#modalContactForm').on('hidden.bs.modal', () => {
         console.log('this is called befor hidding')
-        if(modalFooter.querySelector('#btn-add-representative')){
+        if (modalFooter.querySelector('#btn-add-representative')) {
           modalFooter.removeChild(modalFooter.querySelector('#btn-add-representative'))
         }
       })
@@ -157,16 +157,11 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
         })
 
         console.log('update obj: ', updateObj)
-        $.ajax({
-          type: "PUT",
-          url: routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-          contentType: 'application/json',
-          data: JSON.stringify(updateObj),
-          success: result => {
-            console.log('result: ', result)
+        makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+          'application/json', JSON.stringify(updateObj), () => {
             window.location.reload()
-          }
-        })
+          })
+
         break
       default:
 
@@ -178,20 +173,16 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
 
   // delete button
   modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
-    $.ajax({
-      type: "DELETE",
-      url: routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      contentType: 'application/json',
-      success: result => {
-        console.log('result: ', result)
+    makeRequest('DELETE', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+      'application/json', {}, () => {
         window.location.reload()
-      }
-    })
+      })
+   
   })
 
   // add representative button
-  const addEventForAddRepresentativeButton = ()=>{
-    modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event)=>{
+  const addEventForAddRepresentativeButton = () => {
+    modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event) => {
       console.log('Event: ', event.target)
       var clone = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-container').cloneNode(true)
       clone.querySelector('select').value = ""

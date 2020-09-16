@@ -289,7 +289,7 @@ router.get('/contracts', (req, res) => {
 
 // create new contract
 router.post('/contracts', async (req, res) => {
-  var data = JSON.parse(req.body.data)
+  var data = req.body
 
   data.items.forEach(item => {
     var newItem = { ...item, evaluationItem: null, status: [] }

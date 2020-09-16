@@ -8,7 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
-
+var auth = require('../../routes/checkAuthentication')
 var app = express();
 app.use(bodyParser.json({limit: '50mb'}))
 
@@ -36,7 +36,7 @@ db.on('open', ()=>{
   console.log('Connected to database systemMng successfully!')
 })
 
-app.use('/', indexRouter);
+app.use('/', auth.isAuthenticated, auth.checkRole, indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

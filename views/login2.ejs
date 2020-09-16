@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CodePen - Auth Form Bootstrap</title>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="stylesheets/style.css">
+
+</head>
+
+<body>
+    <!-- partial:index.partial.html -->
+    <div id="main-container" class="container-fluid">
+        <div class="row">
+            <div id="auth-form" class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Auth Form</h3>
+                </div>
+                <div class="panel-body" action="/pagelogin" method="POST" id="login">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </span>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Login">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                        </span>
+                        <input type="password" id="password" name="password" class="form-control"
+                            placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id='loginBnt'>Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- partial -->
+    <script>
+        loginBnt = document.getElementById('loginBnt')
+        loginBnt.addEventListener('click', (evt) => {
+            console.log(evt)
+            sendObj = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            }
+
+            doAjax({
+                url: '/login'
+                , contentType: "application/json"
+                , payload: JSON.stringify(sendObj)
+                , handler: function (response) {
+                    console.log(response)
+                    window.postMessage(response, "*")
+                }
+            })
+
+        })
+
+        function doAjax(request) {
+            var ajax = new XMLHttpRequest();
+            ajax.open("POST", request.url, false)
+            ajax.setRequestHeader("Content-type", request.contentType)
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState == 4) {
+                    request.handler.call(request, ajax.responseText)
+                }
+            }
+            ajax.send(request.payload)
+        }
+
+
+        window.addEventListener("message", receiveMessage, false);
+
+        function receiveMessage(evt) {
+            console.log(evt)
+            if (event.origin !== "localhost:3000")
+                return;
+
+            // ...
+        }
+    // document.getElementById('login').submit(function(evt){
+    //   evt.preventDefault()
+    //   alert("Submit")
+    // })
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+</body>
+
+</html>

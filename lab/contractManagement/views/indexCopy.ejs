@@ -82,6 +82,7 @@
     import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
     import { ObjectId } from '/createMongooseID.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { makeRequest } from '/makeRequest.js'
 
     const types = <%- JSON.stringify(types) %>;
     const payOptions = <%- JSON.stringify(payOptions) %>;
@@ -118,7 +119,7 @@
     $("#centralModalSm").on('show.bs.modal', () => {
       const containerFluid = document.querySelector('.container-fluid')
       containerFluid.querySelector('.modal-title').innerHTML = "Choose your contract template"
-      if(modalBody.firstChild){
+      if (modalBody.firstChild) {
         modalBody.innerHTML = ""
 
       }
@@ -143,7 +144,7 @@
       inputDiv.style.margin = '0 0 2vh 0'
       inputDiv.style.width = '100%'
       modalBody.appendChild(inputDiv)
-      
+
       if (JSON.parse(window.localStorage.getItem('evaluatingItem'))) {
         var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
         console.log('evaluating item: ', evaluatingItem)
@@ -169,26 +170,35 @@
         console.log('chosen option: ', chosenPayOption)
         console.log('chosen type: ', chosenType)
         // console.log('chosen amount of money: ', parseInt(document.querySelector('modal-body').querySelector('input').value)
+        const callback = (results) => {
+          document.querySelector('#template-handler').innerHTML = ""
+          results.forEach(result => {
+            generateContractTemplateCard(result, contractTemplate, 'template-handler')
+          })
+          templateButtonOption()
+          $("#centralModalSm").modal('hide')
+        }
+        makeRequest('POST', 'findContractTemplates', 'application/json', JSON.stringify({
+          chosenType: chosenType,
+          chosenPayOption: chosenPayOption,
+          amountOfMoney: parseInt(modalBody.querySelector('input').value)
+        }), callback)
 
-        $.ajax({
-          type: 'POST',
-          url: 'findContractTemplates',
-          contentType: 'application/json',
-          data: JSON.stringify({
-            chosenType: chosenType,
-            chosenPayOption: chosenPayOption,
-            amountOfMoney: parseInt(modalBody.querySelector('input').value)
-          }),
-          success: results => {
-            console.log(results)
-            document.querySelector('#template-handler').innerHTML = ""
-            results.forEach(result => {
-              generateContractTemplateCard(result, contractTemplate, 'template-handler')
-            })
-            templateButtonOption()
-            $("#centralModalSm").modal('hide')
-          }
-        })
+       
+        // $.ajax({
+        //   type: 'POST',
+        //   url: 'findContractTemplates',
+        //   contentType: 'application/json',
+        //   data: JSON.stringify({
+        //     chosenType: chosenType,
+        //     chosenPayOption: chosenPayOption,
+        //     amountOfMoney: parseInt(modalBody.querySelector('input').value)
+        //   }),
+        //   success: results => {
+        //     console.log(results)
+
+        //   }
+        // })
       })
       buttonOptions.appendChild(confirmButton)
     })
@@ -217,16 +227,9 @@
     templateButtonOption()
 
     // contract list button
-    document.querySelector('#redirect-page').addEventListener('click', (event)=>{
-      console.log('event', event.target)
-      $.ajax({
-        type: 'GET',
-        url: 'contracts',
-        contentType: 'application/json',
-        success: (result) => {
-          window.location.href = "contracts"
-        }
-      })
+    var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
+      window.location.href = "contracts?token="+window.localStorage.getItem('accessToken')
+
     })
 
 

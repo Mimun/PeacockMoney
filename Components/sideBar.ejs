@@ -160,16 +160,16 @@
           <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu sap phai thuc
             hien</a>
         </div>
-        <a href="/contractMng/contracts" class="list-group-item list-group-item-action list-group-item-light">Quan ly
+        <a onclick="getPage('/contractMng/contracts')" class="list-group-item list-group-item-action list-group-item-light">Quan ly
           hop
           dong</a>
-        <a href="/evaluationMng/evaluation" class="list-group-item list-group-item-action list-group-item-light">Tham
+        <a onclick="getPage('/evaluationMng/evaluation')" class="list-group-item list-group-item-action list-group-item-light">Tham
           dinh
           gia</a>
-        <a href="/contractMng/contractTemplates"
+        <a onclick="getPage('/contractMng/contractTemplates')"
           class="list-group-item list-group-item-action list-group-item-light">Tao
           moi hop dong</a>
-        <a href="/systemMng/properties" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
         <a href="#" class="list-group-item list-group-item-action list-group-item-light">Thong ke/Bao cao</a>
         <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
           data-toggle="collapse" data-target="#management-item">
@@ -177,24 +177,24 @@
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="management-item">
-          <a href="/contractMng" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
+          <a onclick="getPage('/contractMng')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
             hop
             dong</a>
           <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau phieu</a>
-          <a href="/systemMng/stores" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+          <a onclick="getPage('/systemMng/stores')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
             cua
             hang</a>
-          <a href="/systemMng/warehouses" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+          <a onclick="getPage('/systemMng/warehouses')" class="list-group-item list-group-item-action list-group-item-secondary">Quan
             ly
             kho</a>
-          <a href="/evaluationMng/itemStatus"
+          <a onclick="getPage('/evaluationMng/itemStatus')"
             class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tinh trang tai
             san</a>
-          <a onclick="getPage('systemMng/employees')" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+          <a onclick="getPage('/systemMng/employees')" class="list-group-item list-group-item-action list-group-item-secondary">Quan
             ly
             nhan vien</a>
           <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly khach hang</a>
-          <a href="/evaluationMng/" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+          <a onclick="getPage('/evaluationMng')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
             tham
             dinh
             gia</a>
@@ -217,10 +217,10 @@
   //   $("#wrapper").toggleClass("toggled");
 
   // });
-  document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
-    window.localStorage.removeItem('evaluatingItem')
+  // document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
+  //   window.localStorage.removeItem('evaluatingItem')
 
-  })
+  // })
   // hide sidebar onclick
   $("#sidebar-toggle-btn").click(function (e) {
     e.preventDefault();
@@ -257,19 +257,6 @@
     const accessToken = window.localStorage.getItem('accessToken')
     console.log('access token: ', accessToken)
     window.location.href = url + '?token=' + accessToken
-
-    // $.ajax({
-    //   type: 'GET',
-    //   url: url,
-    //   contentType: 'application/json',
-    //   headers: {
-    //     'x-access-token': `Bearer ${accessToken}`
-    //   },
-    //   success: result=>{
-    //     console.log('result: ', result)
-    //   }
-
-    // })
   }
 </script>
 <!-- /#sidebar-wrapper -->

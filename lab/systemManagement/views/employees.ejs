@@ -151,6 +151,7 @@
 
   <script type="module">
     import { generateEmployeeManagementList, createSelect } from '/generateEmployeeManagementList.js'
+    import { makeRequest } from '/makeRequest.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;
     const storeList = <%- JSON.stringify(storeList) %>;
     const roleAbility = <%- JSON.stringify(roleAbility) %>;
@@ -228,19 +229,9 @@
               })
             })
             console.log('input: ', employeeObj)
-
-            $.ajax({
-              type: 'POST',
-              url: 'employees',
-              contentType: 'application/json',
-              data: JSON.stringify(employeeObj),
-              success: result => {
-                console.log('result: ', result)
-                $("#modalContactForm").modal('hide')
-                window.location.reload()
-              }
+            makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), ()=>{
+              window.location.reload()
             })
-
           })
           modalContent.innerHTML = ''
           modalContent.appendChild(createEmployee)
@@ -266,23 +257,10 @@
       event.preventDefault()
       var searchValueArray = event.target.querySelector('input').value.split(' ')
       console.log('search array: ', searchValueArray)
-      $.ajax({
-        type: 'POST',
-        url: 'employees/search',
-        contentType: 'application/json',
-        data: JSON.stringify({ data: searchValueArray }),
-        success: result => {
-          console.log('result: ', result)
-          // document.querySelector('#employee-list-container').querySelectorAll('.object-div').forEach(div=>{
-          //   result.employeeList.forEach(employee=>{
-          //     if(JSON.stringify(div.C_DATA) !== JSON.stringify(employee)){
-          //       div.style.display = 'none'
-          //     } else {
-          //       div.style.display = 'block'
-          //     }
-          //   })
-          // })
-          while(document.querySelector('#employee-list-container').firstChild){
+      makeRequest('POST', 'employees/search', 'application/json', JSON.stringify({
+        data: searchValueArray
+      }), (result)=>{
+        while(document.querySelector('#employee-list-container').firstChild){
             document.querySelector('#employee-list-container').removeChild(document.querySelector('#employee-list-container').lastChild)
           }
           if (result.employeeList.length !== 0) {
@@ -292,9 +270,8 @@
             generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees', user, roleAbility)
 
           }
-
-        }
       })
+   
     })
   </script>
 
