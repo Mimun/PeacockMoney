@@ -122,10 +122,6 @@
                   <h2>I am going to add a dynamic content here</h2>
                 </modal-body>
               </div>
-              <!-- <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-sm">Create new Contract</button>
-              </div> -->
             </div>
           </div>
         </div>
@@ -156,31 +152,6 @@
       var firstElement = document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div')
       firstElement.classList.add('blink-bg')
     }
-
-    // handling selector onclick event
-    // document.querySelector('div[class="filter-boxes"]').addEventListener('change', (event) => {
-    //   var newArray = contractList.filter(contract => {
-    //     return contract.contractStatus === event.target.value
-    //   })
-
-    //   console.log('new array: ', newArray)
-
-    //   if (event.target.value !== "all") {
-
-    //     document.querySelector('#list-container').innerHTML = ''
-    //     newArray.map(object => {
-    //       generateContractListHTML(object, template, 'list-container')
-    //     })
-    //     addClickEvent()
-    //   } else {
-    //     document.querySelector('#list-container').innerHTML = ''
-    //     contractList.map(object => {
-    //       generateContractListHTML(object, template, 'list-container')
-    //     })
-    //     addClickEvent()
-    //   }
-
-    // })
 
     const addClickEvent = () => {
       // handling contract onclick event (contract detail page)

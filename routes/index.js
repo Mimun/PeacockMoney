@@ -8,8 +8,8 @@ const refreshTokens = [];
 const auth = require('./checkAuthentication')
 
 const rootAcc = {
-  userName: 'abcdef',
-  password: '12345ghi',
+  userName: 'root',
+  password: '123456',
   role: 'root'
 }
 

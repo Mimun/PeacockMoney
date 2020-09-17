@@ -166,7 +166,7 @@
         <a onclick="getPage('/evaluationMng/evaluation')" class="list-group-item list-group-item-action list-group-item-light">Tham
           dinh
           gia</a>
-        <a onclick="getPage('/contractMng/contractTemplates')"
+        <a onclick="getPage('/contractMng/contractTemplates')" id="createNewContract"
           class="list-group-item list-group-item-action list-group-item-light">Tao
           moi hop dong</a>
         <a href="#" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
@@ -217,10 +217,10 @@
   //   $("#wrapper").toggleClass("toggled");
 
   // });
-  // document.querySelector('a[href="/contractMng/contractTemplates"]').addEventListener('click', (event) => {
-  //   window.localStorage.removeItem('evaluatingItem')
+  document.querySelector('a#createNewContract').addEventListener('click', (event) => {
+    window.localStorage.removeItem('evaluatingItem')
 
-  // })
+  })
   // hide sidebar onclick
   $("#sidebar-toggle-btn").click(function (e) {
     e.preventDefault();

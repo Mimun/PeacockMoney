@@ -207,7 +207,7 @@ router.post('/createNewContract', function (req, res, next) {
 
 router.post('/getStores', (req, res, next) => {
   console.log('req.body: ', req.body)
-  Employee.find({ store: req.body.data }, (err, result) => {
+  Employee.find({ "metadata.value": req.body.data }, (err, result) => {
     if (err) throw err
     res.send({ employeeList: result })
   })
@@ -291,53 +291,53 @@ router.get('/contracts', (req, res) => {
 router.post('/contracts', async (req, res) => {
   var data = req.body
 
-  data.items.forEach(item => {
-    var newItem = { ...item, evaluationItem: null, status: [] }
-    console.log('data: ', item)
+  // data.items.forEach(item => {
+  //   var newItem = { ...item, evaluationItem: null, status: [] }
+  //   console.log('data: ', item)
 
-    async.parallel({
-      item: callback => {
-        try {
-          console.log('abc')
+  //   async.parallel({
+  //     item: callback => {
+  //       try {
+  //         console.log('abc')
 
-          if (item.evaluationItem) {
-            Item.findOne({ _id: item.evaluationItem }).exec(callback)
-          } else {
-            callback(null, [])
-          }
-        } catch (err) { console.error(err) }
+  //         if (item.evaluationItem) {
+  //           Item.findOne({ _id: item.evaluationItem }).exec(callback)
+  //         } else {
+  //           callback(null, [])
+  //         }
+  //       } catch (err) { console.error(err) }
 
-      },
-      itemStatus: callback => {
-        try {
-          console.log('def')
+  //     },
+  //     itemStatus: callback => {
+  //       try {
+  //         console.log('def')
 
-          if (item.status.length !== 0) {
-            var itemStatusIds = item.status.map(itemStatusId => {
-              return mongoose.Types.ObjectId(itemStatusId)
-            })
-            ItemStatus.find({ _id: { $in: itemStatusIds } }).exec(callback)
-          } else {
-            callback(null, [])
-          }
-        } catch (err) { console.error(err) }
+  //         if (item.status.length !== 0) {
+  //           var itemStatusIds = item.status.map(itemStatusId => {
+  //             return mongoose.Types.ObjectId(itemStatusId)
+  //           })
+  //           ItemStatus.find({ _id: { $in: itemStatusIds } }).exec(callback)
+  //         } else {
+  //           callback(null, [])
+  //         }
+  //       } catch (err) { console.error(err) }
 
-      }
-    }, (err, results) => {
-      if (err) throw err
-      console.log('results: ', results)
-      newItem.evaluationItem = results.item
-      newItem.status = results.itemStatus
-      console.log('new item: ', newItem)
-      var property = new Property(newItem)
-      property.save((err, result) => {
-        if (err) throw err
-        console.log('Save to warehouse item successfully!')
-      })
+  //     }
+  //   }, (err, results) => {
+  //     if (err) throw err
+  //     console.log('results: ', results)
+  //     newItem.evaluationItem = results.item
+  //     newItem.status = results.itemStatus
+  //     console.log('new item: ', newItem)
+  //     var property = new Property(newItem)
+  //     property.save((err, result) => {
+  //       if (err) throw err
+  //       console.log('Save to warehouse item successfully!')
+  //     })
 
-    })
+  //   })
 
-  })
+  // })
 
   const contract = new Contract(data)
   contract.save((err, result) => {

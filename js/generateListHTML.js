@@ -1,4 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
+import { makeRequest } from './makeRequest.js'
 
 const detailItemButtonOptions = `
 <button class="btn btn-primary btn-sm" id="edit">edit</button>

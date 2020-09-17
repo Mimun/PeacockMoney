@@ -1,4 +1,7 @@
 import { findNestedObj } from './findNestedObj.js'
+import { makeRequest } from './makeRequest.js'
+
+
 export const generateContractListHTML = (itemObj, template, elementName) => {
   console.log('item obj from contract list: ', itemObj)
   const clone = template.content.cloneNode(true)
@@ -26,44 +29,35 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
 
   const button = clone.querySelector('.object-div').querySelector('button')
   // const completeBtn = clone.querySelector('.object-div').querySelector('button[id="btn-complete]')
+  switch (contractStatus) {
+    case ("waiting"):
+      button.id = 'btn-approve'
+      button.innerHTML = 'approve'
+      break
+    case ("approved"):
+      button.id = 'btn-complete'
+      button.className = 'btn btn-raised btn-primary btn-sm'
+      button.innerHTML = 'complete'
+      break
+    case ("completed"):
+      clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))
 
-  if (contractStatus === "waiting") {
-    button.id = 'btn-approve'
-    button.innerHTML = 'Approve'
-    // clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button[id="btn-complete"]'))
-  } else if (contractStatus === "approved") {
-    button.id = 'btn-complete'
-    button.className = 'btn btn-raised btn-primary btn-sm'
-    button.innerHTML = 'Complete'
-  } else if (contractStatus === "completed") {
-    clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))
+      break
+    default:
+      button.id = 'btn-waiting'
+      button.innerHTML = 'waiting'
   }
 
   button.addEventListener('click', (event) => {
     let textContent = event.target.textContent
-    if (textContent.toLowerCase() === "approve") {
-      $.ajax({
-        type: "PUT",
-        url: 'contracts/' + itemObj._id,
-        contentType: 'application/json',
-        data: JSON.stringify({ contractStatus: 'approved' }),
-        success: result => {
-          console.log(result)
-        }
-      })
+    console.log('text content; ', textContent)
+    if (textContent === "approve") {
+      // makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'approved'}), ()=>{})
       event.target.closest('.object-div').setAttribute('data-status', 'approved')
-      event.target.innerHTML = 'Complete'
+      event.target.innerHTML = 'complete'
       event.target.className = 'btn btn-raised btn-primary btn-sm'
-    } else if (textContent.toLowerCase() === "complete") {
-      $.ajax({
-        type: "PUT",
-        url: 'contracts/' + itemObj._id,
-        contentType: 'application/json',
-        data: JSON.stringify({ contractStatus: 'completed' }),
-        success: result => {
-          console.log(result)
-        }
-      })
+    } else if (textContent === "complete") {
+      // makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'completed'}), ()=>{})
       event.target.closest('.object-div').setAttribute('data-status', 'completed')
       event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
     }

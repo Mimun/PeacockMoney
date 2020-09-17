@@ -8,6 +8,7 @@ var selectLabel = document.createElement('label')
 
 
 import { findNestedObj } from './findNestedObj.js'
+import { makeRequest } from './makeRequest.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
@@ -94,33 +95,21 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
       aSideInfoDiv.querySelector('#store').addEventListener('change', (event) => {
         console.log('event: ', event.target.value)
-        $.ajax({
-          type: 'POST',
-          url: 'getStores',
-          contentType: 'application/json',
-          data: JSON.stringify({ data: event.target.value }),
-          success: result => {
-            console.log('result: ', result)
-
-            // if(aSideInfoDiv.querySelector('#employee')){
-            //   aSideInfoDiv.removeChild(aSideInfoDiv.querySelector('#employee').parentNode)
-            // }
-            var employeeSelectOptions = []
-            employeeSelectOptions.unshift('<option value="">No employee</option>')
-            if(result.employeeList.length !==0){
-              result.employeeList.map(employee => {
-                var employeeName = findNestedObj(employee, 'name', 'fullName')
-                var employeeRole = findNestedObj(employee, 'name', 'role')
-                var option = `<option value=${employee._id}>${employeeName.value}-${employeeRole.value}</option>`
-                employeeSelectOptions.push(option)
-              })
-            } 
-            aSideInfoDiv.querySelector('#employee').innerHTML = employeeSelectOptions
-            aSideInfoDiv.querySelector('#employee').disabled = false
-           
-            
-          }
+        makeRequest('POST', 'getStores', 'application/json', JSON.stringify({data: event.target.value}), (result)=>{
+          var employeeSelectOptions = []
+          employeeSelectOptions.unshift('<option value="">No employee</option>')
+          if(result.employeeList.length !==0){
+            result.employeeList.map(employee => {
+              var employeeName = findNestedObj(employee, 'name', 'fullName')
+              var employeeRole = findNestedObj(employee, 'name', 'role')
+              var option = `<option value=${employee._id}>${employeeName.value}-${employeeRole.value}</option>`
+              employeeSelectOptions.push(option)
+            })
+          } 
+          aSideInfoDiv.querySelector('#employee').innerHTML = employeeSelectOptions
+          aSideInfoDiv.querySelector('#employee').disabled = false
         })
+        
       })
     }
 
