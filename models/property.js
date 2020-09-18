@@ -7,10 +7,10 @@ const propertySchema = new mongoose.Schema({
   }],
   evaluationItem: { type: Object },
   status: [{ type: Object }],
-  contractId: { type: mongoose.Types.ObjectId },
-  originWarehouseId: { type: mongoose.Types.ObjectId },
-  currentWarehouseId: {type: mongoose.Types.ObjectId},
-  movement: [{type: mongoose.Types.ObjectId}]
+  contract: { type: mongoose.Types.ObjectId, ref: 'Contract' },
+  originWarehouse: { type: mongoose.Types.ObjectId, ref: 'Warehouse' },
+  currentWarehouse: {type: mongoose.Types.ObjectId, ref: 'Warehouse'},
+  movement: [{type: mongoose.Types.ObjectId, ref: 'Warehouse'}]
 
 })
 

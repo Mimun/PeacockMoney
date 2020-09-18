@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const warehouseSchema = new mongoose.Schema({
+const storeSchema = new mongoose.Schema({
   metadata: [{
     name: {type: String},
     value: {type: String},
@@ -13,7 +13,7 @@ const warehouseSchema = new mongoose.Schema({
     value: {type: String},
     cType: {type: String, default: 'text'}
   }],
-  representatives: [{type: Object}]
+  representatives: [{type: mongoose.Types.ObjectId, ref: 'Employee'}]
 })
 
-module.exports = mongoose.model('Warehouse', warehouseSchema)
+module.exports = mongoose.model('Store', storeSchema)

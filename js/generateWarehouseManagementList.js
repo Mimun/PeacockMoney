@@ -13,6 +13,8 @@ detailWarehouseTemplate.innerHTML = `
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
   <button class="btn btn-danger btn-sm" id="btn-delete">Delete</button>
+  <button class="btn btn-secondary btn-sm" id="btn-redirect">Properties</button>
+  
 </div>`
 
 const detailInfoTemplate = document.createElement('div')
@@ -35,13 +37,7 @@ const modalFooter = detailWarehouseTemplate.querySelector('.modal-footer')
 
 
 
-export const generateWarehouseManagementList = (mainList, selectList, template, elementName, routerName) => {
-  var representativeSelectOptions = selectList.map(select => {
-    var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
-    return option
-  })
-  representativeSelectOptions.unshift('<option value="">No representative</option>')
-  console.log('represnetative option: ', representativeSelectOptions)
+export const generateWarehouseManagementList = (mainList, optionsForSingleSelect, optionsForMultipleSelects, template, elementName, routerName) => {
 
   mainList.forEach(itemObj => {
     const clone = template.content.cloneNode(true)
@@ -75,35 +71,39 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
             var labelDiv = detailInfoTemplateClone.querySelector('label')
             setInfo(data, inputDiv)
             labelDiv.innerHTML = displayInfoLang(data.dataVie)
-            const script = document.createElement('script')
-            script.src = '/mdbootstrap/js/mdb.min.js'
-            detailInfoTemplateClone.prepend(script)
             modalBody.appendChild(detailInfoTemplateClone)
           }
         })
+
+        if(cData.store){
+          typeof cData.store === "object" ?
+          createSelect(select, cData.store._id, 'store-select', 'select-store',
+            optionsForSingleSelect, selectLabel, 'Cua hang', selectContainer, modalBody, true)
+          :
+          createSelect(select, cData.store, 'store-select', 'select-store',
+            optionsForSingleSelect, selectLabel, 'Cua hang', selectContainer, modalBody, true)
+        } else {
+          createSelect(select, '', 'store-select', 'select-store',
+            optionsForSingleSelect, selectLabel, 'Cua hang', selectContainer, modalBody, true)
+        }
+
+        
         if (cData.representatives.length !== 0) {
           cData.representatives.forEach(representative => {
-            var isInSelectList = false
-            selectList.forEach(selectOption => {
-              if (representative === selectOption._id) {
-                isInSelectList = true
-
-              }
-
-            })
-            if (isInSelectList) {
-              createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
-
-            } else {
-              createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
-
-            }
+            typeof representative === "object" ?
+              createSelect(select, representative._id, 'representative-select', 'select-representative',
+                optionsForMultipleSelects, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+              : createSelect(select, representative, 'representative-select', 'select-representative',
+                optionsForMultipleSelects, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
           })
 
         } else {
-          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+          createSelect(select, '', 'representative-select', 'select-representative',
+            optionsForMultipleSelects, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
 
         }
+
+
         modalContent.appendChild(detailWarehouseTemplate)
 
       })
@@ -128,7 +128,8 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
           input.removeAttribute('disabled')
         })
         if (modalBody.querySelectorAll('select').length === 0) {
-          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+          createSelect(select, '', 'representative-select', 'select-representative',
+            representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
 
         }
         modalBody.querySelectorAll('select').forEach(select => {
@@ -145,12 +146,19 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
 
         break
       case "Update":
-        var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [], representatives: [] }
+        var updateObj = {
+          ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA,
+          metadata: [], representatives: [], store: null
+        }
         modalBody.querySelectorAll('input').forEach(input => {
           input.setAttribute('disabled', true)
           updateObj.metadata.push(getInfo(input))
         })
-        modalBody.querySelectorAll('select').forEach(select => {
+        if (modalBody.querySelector('select.select-store').value) {
+          updateObj.store = modalBody.querySelector('select.select-store').value
+        }
+
+        modalBody.querySelectorAll('select.select-representative').forEach(select => {
           if (select.value) {
             updateObj.representatives.push(select.value)
           }
@@ -177,14 +185,20 @@ export const generateWarehouseManagementList = (mainList, selectList, template, 
       'application/json', {}, () => {
         window.location.reload()
       })
-   
+
+  })
+
+  // redirect button
+  modalFooter.querySelector('#btn-redirect').addEventListener('click', event=>{
+    console.log('event: ', modalBody.C_DATA)
+    window.location.href = 'warehouses/'+modalBody.C_DATA._id+'/properties?token='+window.localStorage.getItem('accessToken')
   })
 
   // add representative button
   const addEventForAddRepresentativeButton = () => {
     modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event) => {
       console.log('Event: ', event.target)
-      var clone = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-container').cloneNode(true)
+      var clone = modalBody.querySelector("select.select-representative").closest('.select-container').cloneNode(true)
       clone.querySelector('select').value = ""
       modalBody.appendChild(clone)
     })
@@ -227,13 +241,14 @@ const setInfo = (data, inputDiv) => {
   inputDiv.setAttribute('data-kor', data.dataKor)
 }
 
-const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, selectOptions, labelTemplate, labelContent, selectContainer) => {
+export const createSelect = (selectTemplate, selecteValue, selectId,
+  selectClassName, selectOptions, labelTemplate, labelContent, selectContainer, divAppend, disabled) => {
   var select = selectTemplate.cloneNode(true)
   select.id = selectId
   select.innerHTML = selectOptions
   select.value = selecteValue
   select.classList.add(selectClassName)
-  select.disabled = true
+  select.disabled = disabled
 
   var selectLabel = labelTemplate.cloneNode(true)
   selectLabel.setAttribute('for', selectId)
@@ -242,6 +257,6 @@ const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, s
   var selectContainerClone = selectContainer.cloneNode(true)
   selectContainerClone.appendChild(selectLabel)
   selectContainerClone.appendChild(select)
-  modalBody.appendChild(selectContainerClone)
+  divAppend.appendChild(selectContainerClone)
 
 }

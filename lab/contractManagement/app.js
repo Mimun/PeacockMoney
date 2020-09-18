@@ -44,7 +44,6 @@ app.use(express.static(path.join(__dirname, '../../Components')));
 app.use(compress())
 // app.use(bodyParser.urlencoded({limit: '50mb'}));
 
-app.use(express.static(path.join(__dirname, '../evaluationMng/views')));
 
 console.log('dir name from contract management: ',path.join(__dirname))
 

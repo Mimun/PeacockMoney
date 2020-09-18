@@ -1,5 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
-import {makeRequest} from './makeRequest.js'
+import { makeRequest } from './makeRequest.js'
 const detailStoreTemplate = document.createElement('div')
 detailStoreTemplate.innerHTML = `
 <div class="modal-header text-center">
@@ -84,20 +84,33 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
         if (cData.representatives.length !== 0) {
           cData.representatives.forEach(representative => {
             var isInSelectList = false
-            selectList.forEach(selectOption => {
-              if (representative === selectOption._id) {
-                isInSelectList = true
+            if (typeof representative === "object") {
+              selectList.forEach(selectOption => {
+                if (representative._id === selectOption._id) {
+                  isInSelectList = true
+                }
+              })
+              if (isInSelectList) {
+                createSelect(select, representative._id, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+              } else {
+                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+              }
+            } else if (typeof representative === "string") {
+              selectList.forEach(selectOption => {
+                if (representative === selectOption._id) {
+                  isInSelectList = true
+                }
+              })
+              if (isInSelectList) {
+                createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
+              } else {
+                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
 
               }
-
-            })
-            if (isInSelectList) {
-              createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
-
-            } else {
-              createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
-
             }
+
+
           })
 
         } else {
@@ -157,10 +170,10 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
 
         console.log('update obj: ', updateObj)
         makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-        'application/json', JSON.stringify(updateObj), ()=>{
-          window.location.reload()
-        })
-        
+          'application/json', JSON.stringify(updateObj), () => {
+            window.location.reload()
+          })
+
         break
       default:
 
@@ -173,10 +186,10 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
   // delete button
   modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
     makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-    'application/json', {}, ()=>{
-      window.location.reload()
-    })
-    
+      'application/json', {}, () => {
+        window.location.reload()
+      })
+
   })
 
   // add representative button

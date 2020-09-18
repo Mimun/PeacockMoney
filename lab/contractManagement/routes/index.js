@@ -5,12 +5,14 @@ const Item = require('../models/item');
 const ItemStatus = require('../models/itemStatus');
 const ContractTemplate = require('../models/contractTemplate')
 const Contract = require('../models/contract');
-const Property = require('../../systemManagement/models/property')
-const Store = require('../../systemManagement/models/store')
-const Employee = require('../../systemManagement/models/employee')
+const Property = require('../models/property')
+const Store = require('../models/store')
+const Employee = require('../models/employee')
+const Warehouse = require('../models/warehouse')
+
 var fs = require('fs');
 var async = require('async');
-const auth = require('../../authentication/routes/checkAuthentication')
+const auth = require('../../authentication/routes/checkAuthentication');
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -29,7 +31,7 @@ function escapeRegex(text) {
 
 // CONTRACT TEMPLATE
 // contract template list for admin
-router.get('/',function (req, res, next) {
+router.get('/', function (req, res, next) {
   ContractTemplate.find({}, (err, result) => {
     if (err) throw err
     res.render('index', { contractTemplateList: result })
@@ -279,6 +281,14 @@ router.get('/contracts', (req, res) => {
     {
       path: 'items.status',
       model: 'ItemStatus'
+    },
+    {
+      path: 'store.value',
+      model: 'Store'
+    },
+    {
+      path: 'employee.value',
+      model: 'Employee'
     }
   ]).exec((err, result2) => {
     if (err) throw err
@@ -291,53 +301,7 @@ router.get('/contracts', (req, res) => {
 router.post('/contracts', async (req, res) => {
   var data = req.body
 
-  // data.items.forEach(item => {
-  //   var newItem = { ...item, evaluationItem: null, status: [] }
-  //   console.log('data: ', item)
 
-  //   async.parallel({
-  //     item: callback => {
-  //       try {
-  //         console.log('abc')
-
-  //         if (item.evaluationItem) {
-  //           Item.findOne({ _id: item.evaluationItem }).exec(callback)
-  //         } else {
-  //           callback(null, [])
-  //         }
-  //       } catch (err) { console.error(err) }
-
-  //     },
-  //     itemStatus: callback => {
-  //       try {
-  //         console.log('def')
-
-  //         if (item.status.length !== 0) {
-  //           var itemStatusIds = item.status.map(itemStatusId => {
-  //             return mongoose.Types.ObjectId(itemStatusId)
-  //           })
-  //           ItemStatus.find({ _id: { $in: itemStatusIds } }).exec(callback)
-  //         } else {
-  //           callback(null, [])
-  //         }
-  //       } catch (err) { console.error(err) }
-
-  //     }
-  //   }, (err, results) => {
-  //     if (err) throw err
-  //     console.log('results: ', results)
-  //     newItem.evaluationItem = results.item
-  //     newItem.status = results.itemStatus
-  //     console.log('new item: ', newItem)
-  //     var property = new Property(newItem)
-  //     property.save((err, result) => {
-  //       if (err) throw err
-  //       console.log('Save to warehouse item successfully!')
-  //     })
-
-  //   })
-
-  // })
 
   const contract = new Contract(data)
   contract.save((err, result) => {
@@ -350,9 +314,31 @@ router.post('/contracts', async (req, res) => {
 router.put('/contracts/:id', (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body.contractStatus)
-  Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, (err, result) => {
+  Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
     if (err) throw err
-    res.send('Updated document successfully!')
+    if (contractResult.contractStatus === 'approved') {
+      await Warehouse.findOne({"store": contractResult.store.value}).exec((err, warehouseResult)=>{
+        if(err) throw err
+        contractResult.items.forEach(item => {
+          var newItem = {
+            infos: item.infos,
+            status: item.status,
+            evaluationItem: item.evaluationItem,
+            contract: contractResult._id,
+            originWarehouse: warehouseResult._id,
+            currentWarehouse: warehouseResult._id,
+            movement: [warehouseResult._id]
+          }
+          var property = new Property(newItem)
+          property.save((err, result)=>{
+            if(err) throw err
+            res.send({message: 'Saved property successfully!', result: contractResult})
+          })
+  
+        })
+      })
+    
+    }
   })
 })
 

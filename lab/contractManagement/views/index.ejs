@@ -92,11 +92,10 @@
       const modalBody = document.querySelector('.modal-body')
       const modalFooter = document.querySelector('.modal-footer')
 
-      if (modalBody.firstChild) {
-        modalBody.innerHTML = ""
-      }
-      if(modalFooter.querySelector('.btn-options').firstChild){
+      modalBody.innerHTML = ""
+      if(modalFooter.querySelector('.btn-options')){
         modalFooter.querySelector('.btn-options').innerHTML = ""
+
       }
       var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
       modalBody.appendChild(tmpContent)

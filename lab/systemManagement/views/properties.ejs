@@ -6,8 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .form-group{
+    .form-group {
       width: fit-content;
+    }
+
+    h2 {
+      color: blue;
+      background-color: red;
     }
   </style>
 </head>
@@ -39,18 +44,41 @@
       <div class="form-group">
         <input type="text" class="form-control" id="search" placeholder="Search...">
       </div>
+      <!-- property table -->
       <div id="property-list-container" class="list-container"></div>
+
+      <!-- Central Modal Small -->
+      <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+
+        <!-- Change class .modal-sm to change the size of the modal -->
+        <div class="modal-dialog modal-md" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title w-100" id="myModalLabel">Modal title</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-move">Move warehouse</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    import {generatePropertyManagementList} from '/generatePropertyManagementList.js'
+    import { generatePropertyManagementList } from '/generatePropertyManagementList.js'
     var propertyList = <%- JSON.stringify(propertyList) %>;
     console.log('property list: ', propertyList)
     const propertyListTemplate = document.querySelector('#property-list')
-    propertyList.forEach(property=>{
-      generatePropertyManagementList(property, propertyListTemplate, 'property-list-container')
-    })
+
+    generatePropertyManagementList(propertyList, 'property-list-container')
   </script>
 </body>
 

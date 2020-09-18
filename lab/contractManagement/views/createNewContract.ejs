@@ -378,24 +378,26 @@
       const cData = contractTemplateContainer.C_DATA
       console.log('cdata: ', cData)
 
-      var data = { ...cData, contractMetadata: [], infos: [], items: [] }
+      var data = { ...cData, contractMetadata: [], infos: [], items: [], store: null, employee: null }
       delete data._id
       console.log('cdata 2: ', data)
 
       // contract info
       contractTemplateContainer.querySelectorAll('select').forEach(select => {
+
         var name = select.getAttribute('name')
         var value = select.value
         var type = 'text'
         var dataVie = select.getAttribute('data-vie')
         var dataKor = select.getAttribute('data-kor')
-        data.contractMetadata.push({
-          name: name,
-          value: value,
-          cType: type,
-          dataVie: dataVie,
-          dataKor: dataKor
-        })
+        data[name] = {
+          name,
+          value: select.value ? select.value : null,
+          type,
+          dataVie,
+          dataKor
+        }
+
       })
       contractTemplateContainer.querySelectorAll('input').forEach(input => {
         var name = input.getAttribute('name')
@@ -447,8 +449,8 @@
       })
 
       console.log('data: ', data)
-      makeRequest('POST', 'contracts', 'application/json', JSON.stringify(data), ()=>{
-        window.location.href = 'contracts?token='+window.localStorage.getItem('accessToken')
+      makeRequest('POST', 'contracts', 'application/json', JSON.stringify(data), () => {
+        window.location.href = 'contracts?token=' + window.localStorage.getItem('accessToken')
       })
 
     })
@@ -457,7 +459,7 @@
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
       var array = event.target.querySelector('input').value.split(" ")
-      makeRequest('POST', 'search', 'application/json', JSON.stringify({data: array}), (result)=>{
+      makeRequest('POST', 'search', 'application/json', JSON.stringify({ data: array }), (result) => {
         searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
         chooseItem()
 

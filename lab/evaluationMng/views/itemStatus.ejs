@@ -10,11 +10,10 @@
 
   <title>Simple Sidebar - Start Bootstrap Template</title>
   <style>
-    #table-container .bmd-form-group{
+    #table-container .bmd-form-group {
       width: 100%;
       padding: 0 !important;
     }
-    
   </style>
 </head>
 
@@ -207,6 +206,7 @@
     import { generateHTML } from '/generateHTML.js'
     import { ObjectId } from '/createMongooseID.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { makeRequest } from '/makeRequest.js'
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
 
@@ -272,7 +272,7 @@
 
         for (var j = 3; j < line.length; j++) {
           if (line[j] !== "") {
-            if(labels[j] === "reduce(%)"){
+            if (labels[j] === "reduce(%)") {
               itemObj.infos.push({
                 name: labels[j],
                 value: line[j],
@@ -284,7 +284,7 @@
                 value: line[j],
               })
             }
-            
+
           }
 
         }
@@ -515,15 +515,7 @@
         submitBtn.style.margin = 'auto'
         submitBtn.addEventListener('click', () => {
           console.log('origin item list before submitting: ', originItemList)
-          $.ajax({
-            type: 'POST',
-            data: JSON.stringify(originItemList),
-            contentType: 'application/json',
-            url: 'itemStatus',
-            success: (data) => {
-              console.log('Saved successfully!')
-            }
-          })
+          makeRequest('POST', 'itemStatus', 'application/json', JSON.stringify(originItemList), () => { })
 
         })
         const deleteManyBtn = document.createElement('button')
@@ -532,14 +524,8 @@
         deleteManyBtn.innerHTML = "Delete many"
         deleteManyBtn.style.margin = 'auto'
         deleteManyBtn.addEventListener('click', () => {
-          $.ajax({
-            type: 'DELETE',
-            data: JSON.stringify(originItemList),
-            contentType: 'application/json',
-            url: 'itemStatus',
-            success: (data) => {
-              window.location.reload()
-            }
+          makeRequest('DELETE', 'itemStatus', 'application/json', JSON.stringify(originItemList), () => {
+            window.location.reload()
           })
 
         })
@@ -629,7 +615,7 @@
       document.querySelector('#data-fields-container').querySelector('#cell-divs-container').querySelectorAll('div[class="data-field-container"]').forEach(data => {
         var infoObj = {}
         var cellDivs = data.querySelectorAll('input').forEach(element => {
-          if(element.value === "giam(%)" && element.getAttribute('obj_property') === 'name'){
+          if (element.value === "giam(%)" && element.getAttribute('obj_property') === 'name') {
             infoObj["dataVie"] = element.value
             infoObj[element.getAttribute('obj_property')] = "reduce(%)"
             infoObj["cType"] = element.type
@@ -643,15 +629,7 @@
       })
 
       originItemList.unshift(dataObj)
-      $.ajax({
-        type: 'POST',
-        url: 'createItemStatus',
-        data: JSON.stringify(dataObj),
-        contentType: 'application/json',
-        success: (result) => {
-          console.log(result)
-        }
-      })
+      makeRequest('POST', 'createItemStatus', 'application/json', JSON.stringify(dataObj), () => { })
 
       console.log('data obj: ', dataObj)
 
@@ -758,7 +736,7 @@
         objectDiv.querySelectorAll('div[class="data-field-container"]').forEach(element => {
           var info = {}
           element.querySelectorAll('input[class="form-control cell-div"]').forEach(input => {
-            if(input.value === "giam(%)" && input.getAttribute('obj_property') === 'name'){
+            if (input.value === "giam(%)" && input.getAttribute('obj_property') === 'name') {
               info[input.getAttribute('obj_property')] = "reduce(%)"
               info["dataVie"] = input.value
             } else {
@@ -771,19 +749,12 @@
         itemObj = { ...itemObj, infos: infos }
 
         console.log('item: ', itemObj)
-        $.ajax({
-          type: "PUT",
-          url: 'itemStatus/' + itemObj._id,
-          contentType: 'application/json',
-          data: JSON.stringify(itemObj),
-          success: result => {
-            console.log(result.message)
-            if (result.isUpdated) {
-              originItemList.splice(originItemList.indexOf(cData), 1)
-              originItemList.unshift(itemObj)
-              createPagination(originItemList)
+        makeRequest('PUT', 'itemStatus/' + itemObj._id, 'application/json', JSON.stringify(itemObj), (result) => {
+          if (result.isUpdated) {
+            originItemList.splice(originItemList.indexOf(cData), 1)
+            originItemList.unshift(itemObj)
+            createPagination(originItemList)
 
-            }
           }
         })
 
@@ -802,24 +773,16 @@
       const deleteCData = event.target.closest('div[class="modal-content"]').querySelector('div[class="object-div"]').C_DATA
       var index = originItemList.indexOf(deleteCData)
       console.log('index: ', index)
-
-      $.ajax({
-        type: 'DELETE',
-        url: 'itemStatus/' + deleteCData._id,
-        success: result => {
-          console.log(result.message)
-          if (result.isDeleted) {
-            if (index > -1) {
-              originItemList.splice(index, 1)
-              createPagination(originItemList)
+      makeRequest('DELETE', 'itemStatus/' + deleteCData._id, 'application/json', {}, (result) => {
+        if (result.isDeleted) {
+          if (index > -1) {
+            originItemList.splice(index, 1)
+            createPagination(originItemList)
 
 
-            }
           }
         }
       })
-
-
     })
 
     // search function
@@ -827,13 +790,20 @@
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
       var array = event.target.querySelector('input').value.split(" ")
+      makeRequest('POST', 'itemStatus/search', 'application/json', JSON.stringify({ data: array }), (result) => {
+        if (result.itemStatusResults.length !== 0) {
+          createPagination(result.itemStatusResults)
+        } else {
+          createPagination(originItemList)
+        }
+      })
       $.ajax({
         type: 'POST',
         url: 'itemStatus/search',
-        contentType:"application/json",
-        data: JSON.stringify({data: array}),
-        success:result=>{
-          if(result.itemStatusResults.length !==0){
+        contentType: "application/json",
+        data: JSON.stringify({ data: array }),
+        success: result => {
+          if (result.itemStatusResults.length !== 0) {
             createPagination(result.itemStatusResults)
           } else {
             createPagination(originItemList)

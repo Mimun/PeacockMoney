@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+var mongoose = require('mongoose')
 
-const storeSchema = new mongoose.Schema({
+const employeeSchema = new mongoose.Schema({
   metadata: [{
     name: {type: String},
     value: {type: String},
@@ -13,7 +13,6 @@ const storeSchema = new mongoose.Schema({
     value: {type: String},
     cType: {type: String, default: 'text'}
   }],
-  representatives: [{type: Object}]
 })
 
-module.exports = mongoose.model('Store', storeSchema)
+module.exports = mongoose.model('Employee', employeeSchema)

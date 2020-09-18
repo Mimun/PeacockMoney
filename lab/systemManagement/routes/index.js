@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var Employee = require('../models/employee')
-var Store = require('../models/store')
-var Warehouse = require('../models/warehouse')
-var Property = require('../models/property')
+var Employee = require('../../../models/employee')
+var Store = require('../../../models/store')
+var Warehouse = require('../../../models/warehouse')
+var Property = require('../../../models/property')
+var Item = require('../../../models/item')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -133,7 +134,12 @@ router.get('/stores', (req, res, next) => {
   async.parallel({
     stores: callback => {
       try {
-        Store.find({}).exec(callback)
+        Store.find({}).populate([
+          {
+            path: 'representatives',
+            model: Employee
+          }
+        ]).exec(callback)
 
       } catch (err) {
         console.error(err)
@@ -225,6 +231,13 @@ router.get('/warehouses', (req, res, next) => {
       } catch (err) {
         console.error(err)
       }
+    },
+    stores: callback => {
+      try {
+        Store.find({}).exec(callback)
+      } catch (err) {
+        console.error(err)
+      }
     }
   }, (err, results) => {
     if (err) throw err
@@ -237,7 +250,16 @@ router.get('/warehouses', (req, res, next) => {
         role
       }
     })
-    res.render('warehouses', { warehouseList: results.warehouses, employeeList })
+    var storeList = results.stores.map(store => {
+      var storeName = findNestedObj(store, 'name', 'storeName').value
+      var address = findNestedObj(store, 'name', 'address').value
+      return {
+        _id: store._id,
+        storeName,
+        address
+      }
+    })
+    res.render('warehouses', { warehouseList: results.warehouses, employeeList, storeList })
   })
 })
 
@@ -254,7 +276,7 @@ router.post('/warehouses', (req, res, next) => {
 // update warehouse
 router.put('/warehouses/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Warehouse.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, (err, result) => {
+  Warehouse.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives, store: req.body.store } }, (err, result) => {
     if (err) throw err
     res.status(200).send("Update successfully!")
   })
@@ -286,14 +308,34 @@ router.post('/warehouses/search', (req, res, next) => {
 
 })
 
+// get property list of a warehouse
+router.get('/warehouses/:id/properties', (req, res, next)=>{
+  console.log('id: ', req.params.id)
+  Property.find({currentWarehouse: req.params.id}).populate([
+    {
+      path: 'evaluationItem',
+      model: 'Item'
+    },
+    {
+      path: 'currentWarehouse',
+      model: 'Warehouse'
+    }
+  ]).exec((err, result)=>{
+    if(err) throw err
+    res.render('properties', {propertyList: result})
+  })
+})
+
 // PROPERTIES
-// get all properties
+// get all properties 
 router.get('/properties', (req, res, next) => {
   Property.find({}).exec((err, results) => {
     if (err) throw err
-    res.render('properties',{ propertyList: results })
+    res.render('properties', { propertyList: results })
   })
 })
+
+
 
 const findNestedObj = (entireObj, keyToFind, valToFind) => {
   let foundObj;

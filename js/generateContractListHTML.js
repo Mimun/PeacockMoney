@@ -50,16 +50,24 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
 
   button.addEventListener('click', (event) => {
     let textContent = event.target.textContent
-    console.log('text content; ', textContent)
     if (textContent === "approve") {
-      // makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'approved'}), ()=>{})
-      event.target.closest('.object-div').setAttribute('data-status', 'approved')
-      event.target.innerHTML = 'complete'
-      event.target.className = 'btn btn-raised btn-primary btn-sm'
+      makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'approved'}), (result)=>{
+        event.target.closest('.object-div').C_DATA = result.result
+        console.log('event: ', event.target.closest('.object-div').C_DATA)
+        event.target.closest('.object-div').setAttribute('data-status', 'approved')
+        event.target.innerHTML = 'complete'
+        event.target.className = 'btn btn-raised btn-primary btn-sm'
+      })
+     
     } else if (textContent === "complete") {
-      // makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'completed'}), ()=>{})
-      event.target.closest('.object-div').setAttribute('data-status', 'completed')
-      event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
+      makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'completed'}), async (result)=>{
+        event.target.closest('.object-div').C_DATA = result.result
+        console.log('event: ', event.target.closest('.object-div').C_DATA)
+        event.target.closest('.object-div').setAttribute('data-status', 'completed')
+        // event.target.style.display = 'none'
+        event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
+      })
+      
     }
     event.stopPropagation()
   })

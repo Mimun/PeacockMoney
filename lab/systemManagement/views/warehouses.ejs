@@ -10,7 +10,7 @@
       width: 18vw;
     }
 
-    .form-group{
+    .form-group {
       width: 100%;
     }
 
@@ -19,7 +19,7 @@
       margin-bottom: 1rem;
     }
 
-    .modal-content .modal-footer .btn{
+    .modal-content .modal-footer .btn {
       margin: 0 8px !important;
     }
   </style>
@@ -136,51 +136,82 @@
   </div>
 
   <script type="module">
-    import { generateWarehouseManagementList } from '/generateWarehouseManagementList.js'
+    import { generateWarehouseManagementList, createSelect } from '/generateWarehouseManagementList.js'
     import { makeRequest } from '/makeRequest.js'
+    import { findNestedObj } from '/findNestedObj.js'
 
     const warehouseList = <%- JSON.stringify(warehouseList) %>;
     const employeeList = <%- JSON.stringify(employeeList) %>;
+    const storeList = <%- JSON.stringify(storeList) %>;
     console.log('warehouse list: ', warehouseList)
     console.log('employee list: ', employeeList)
+    console.log('store list: ', storeList)
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
     const warehouseListTemplate = document.querySelector('#warehouse-list')
 
-    // create representative select box
-    var warehouseRepresentativeSelect = document.querySelector('#warehouse-representative-select-template').content.cloneNode(true)
-    employeeList.forEach(employee => {
-      var option = document.createElement('option')
-      option.value = employee._id
-      option.innerHTML = employee.fullName + ' - ' + employee.role
-      warehouseRepresentativeSelect.querySelector('select').appendChild(option)
-    })
+    // declare some divs that are used for creating select box
+    var selectContainer = document.createElement('div')
+    selectContainer.className = 'select-container'
 
-    generateWarehouseManagementList(warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+    var select = document.createElement('select')
+    select.className = "browser-default custom-select"
+
+    var selectLabel = document.createElement('label')
+    // store and employee select options
+    var storeSelectOptions = storeList.map(store => {
+      var option = `<option value="${store._id}">${store.storeName}-${store.address}</option>`
+      return option
+    })
+    storeSelectOptions.unshift('<option value="">No store</option>')
+
+    var employeeSelectOptions = employeeList.map(employee => {
+      var option = `<option value="${employee._id}">${employee.fullName}-${employee.role}</option>`
+      return option
+    })
+    employeeSelectOptions.unshift('<option value="">No employee</option>')
+
+
+    // create warehouse list
+    // var warehouseRepresentativeSelect = document.querySelector('#warehouse-representative-select-template').content.cloneNode(true)
+    generateWarehouseManagementList(warehouseList, storeSelectOptions, employeeSelectOptions, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
 
     // create new warehouse button
     document.querySelector('#create-new-warehouse').addEventListener('click', (event) => {
       $("#modalContactForm").on('show.bs.modal', () => {
         modalContent.innerHTML = ''
 
+        // create warehouse template for modal when clicking "create new warehouse button"
         const createwarehouse = document.querySelector('#create-warehouse-template').content.cloneNode(true)
 
-        // must have one select representative box as default
-        const warehouseRepresentativeSelectClone = warehouseRepresentativeSelect.cloneNode(true)
+        var modalBody = createwarehouse.querySelector('.modal-body')
+        var modalFooter = createwarehouse.querySelector('.modal-footer')
+
+        // create store select
+        createSelect(select, '', 'store-select', 'select-store',
+          storeSelectOptions, selectLabel, 'Cua hang', selectContainer, modalBody, false)
+
+        // create employee select
+        createSelect(select, '', 'representative-select', 'select-representative',
+          employeeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, false)
 
         // for adding representatives button
         createwarehouse.querySelector('#btn-add-representative').addEventListener('click', (event) => {
-          let warehouseRepresentativeSelectClone = warehouseRepresentativeSelect.cloneNode(true)
-          event.target.closest('.modal-content').querySelector('.modal-body').appendChild(warehouseRepresentativeSelectClone)
+          console.log('representative: ', modalBody)
+          let warehouseRepresentativeSelectClone = modalBody.querySelector("select.select-representative").closest('.select-container').cloneNode(true)
+          warehouseRepresentativeSelectClone.querySelector('select').value = ""
+          modalBody.appendChild(warehouseRepresentativeSelectClone)
         })
 
+        // create button in modal
         createwarehouse.querySelector("#btn-create-warehouse").addEventListener('click', (event) => {
           var warehouseObj = {
             metadata: [],
             infos: [],
-            representatives: []
+            representatives: [],
+            store: null
           }
-          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
+          modalBody.querySelectorAll('input').forEach(input => {
             warehouseObj.metadata.push({
               cType: input.type,
               dataKor: input.getAttribute('data-kor'),
@@ -191,20 +222,26 @@
 
           })
 
-          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('select').forEach(select => {
+          modalBody.querySelectorAll('select.select-representative').forEach(select => {
             if (select.value) {
               warehouseObj.representatives.push(select.value)
 
             }
           })
+          if(modalBody.querySelector('select.select-store').value){
+            warehouseObj.store = modalBody.querySelector('select.select-store').value
+
+          }
+
           console.log('input: ', warehouseObj)
-          makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), ()=>{
+          makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), () => {
             window.location.reload()
           })
 
         })
-        createwarehouse.querySelector('.modal-body').appendChild(warehouseRepresentativeSelectClone)
+
         modalContent.appendChild(createwarehouse)
+
       })
 
       $("#modalContactForm").modal('show')
@@ -215,18 +252,18 @@
       event.preventDefault()
       var searchValueArray = event.target.querySelector('input').value.split(' ')
       console.log('search array: ', searchValueArray)
-      makeRequest('POST', 'warehouses/search', 'application/json', JSON.stringify({data: searchValueArray}), (result)=>{
+      makeRequest('POST', 'warehouses/search', 'application/json', JSON.stringify({ data: searchValueArray }), (result) => {
         document.querySelector('#warehouse-list-container').innerHTML = ''
-          if (result.warehouseList.length !== 0) {
-            generateWarehouseManagementList(result.warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+        if (result.warehouseList.length !== 0) {
+          generateWarehouseManagementList(result.warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
 
-          } else {
-            generateWarehouseManagementList(warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+        } else {
+          generateWarehouseManagementList(warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
 
 
-          }
+        }
       })
-      
+
     })
 
   </script>

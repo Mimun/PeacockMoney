@@ -12,33 +12,61 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
 
   // contract infos
   // contractMetadata
-  for (const property in contractDetail.contractMetadata) {
-    const name = contractDetail.contractMetadata[property].name
-    const value = contractDetail.contractMetadata[property].value
-    const infoLang = contractDetail.contractMetadata[property].dataVie
-    if (name === "employee" || name === "store") {
-      // A side info
-      const cloneASide = infoTemplate.content.cloneNode(true)
-      cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
-      cloneASide.querySelector('input').value = value
-      clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
-    } else if (name === "customer" || name === "customerId" || name === "customerIdProvidingPlace"
-      || name === "customerIdProvidingDate" || name === "customerAddress"
-      || name === "customerPhoneNumber" || name === "customerFamilyRegister") {
-      // B side info
-      const cloneBSide = infoTemplate.content.cloneNode(true)
-      cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
-      cloneBSide.querySelector('input').value = value
-      clone.querySelector('.b-side-info-container').querySelector('.section').appendChild(cloneBSide)
-    } else {
-      if (name !== "templateName" && name !== "image" && name !== "employee" && name !== 'store' && name !== "customer" && name !== "contractContent") {
-        // contract info
-        const infoTemplatelone = infoTemplate.content.cloneNode(true)
-        infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
-        infoTemplatelone.querySelector('input').value = value
-        clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
+  for (const property in contractDetail) {
+    switch (property) {
+      case ("contractMetadata"):
+        for (const property in contractDetail.contractMetadata) {
+          const name = contractDetail.contractMetadata[property].name
+          const value = contractDetail.contractMetadata[property].value
+          const infoLang = contractDetail.contractMetadata[property].dataVie
+          if (name === "customer" || name === "customerId" || name === "customerIdProvidingPlace"
+            || name === "customerIdProvidingDate" || name === "customerAddress"
+            || name === "customerPhoneNumber" || name === "customerFamilyRegister") {
+            // B side info
+            const cloneBSide = infoTemplate.content.cloneNode(true)
+            cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+            cloneBSide.querySelector('input').value = value
+            clone.querySelector('.b-side-info-container').querySelector('.section').appendChild(cloneBSide)
+          } else {
+            if (name !== "templateName" && name !== "image" && name !== "employee" && name !== 'store' && name !== "customer" && name !== "contractContent") {
+              // contract info
+              const infoTemplatelone = infoTemplate.content.cloneNode(true)
+              infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
+              infoTemplatelone.querySelector('input').value = value
+              clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
+            }
+          }
+        }
+        break
+      case ("store"): {
+        const name = contractDetail[property].name
+        const value = contractDetail[property].value
+        const infoLang = contractDetail[property].dataVie
+        // A side info
+        const cloneASide = infoTemplate.content.cloneNode(true)
+        cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+        cloneASide.querySelector('input').value = typeof value === "object" ? findNestedObj(value, 'name', 'storeName').value : value
+        clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
+        break
       }
+
+      case ("employee"): {
+        const name = contractDetail[property].name
+        const value = contractDetail[property].value
+        const infoLang = contractDetail[property].dataVie
+        // A side info
+        const cloneASide = infoTemplate.content.cloneNode(true)
+        cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+        cloneASide.querySelector('input').value = typeof value === "object" ? findNestedObj(value, 'name', 'fullName').value : value
+        clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
+        break
+      }
+       
+      default:
+
+
     }
+
   }
 
   // info items

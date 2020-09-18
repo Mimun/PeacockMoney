@@ -342,29 +342,14 @@
       })
 
       console.log('item is about to save: ', templateItem)
-      makeRequest('POST', 'createNewContractTemplate', 'application/json', JSON.stringify(templateItem), window.location.reload())
-      // $.ajax({
-      //   type: 'POST',
-      //   data: JSON.stringify(templateItem),
-      //   contentType: 'application/json',
-      //   url: 'createNewContractTemplate',
-      //   success: (result) => {
-      //     console.log(result)
-      //     // displayTemplate(templateItem, contractTemplate, 'template-handler')
-      //     window.location.reload()
-      //   }
-      // })
+      makeRequest('POST', 'createNewContractTemplate', 'application/json', JSON.stringify(templateItem), ()=>{
+        window.location.reload()
+      })
+
 
       return false;
     }
 
-    // if (currentTab === x.length - 1) {
-    //   quill.on('text-change', (delta, source) => {
-    //     // console.log('delta: ', delta)
-    //     // console.log('source: ', source)
-    //     console.log('output: ', quill.root.innerHTML)
-    //   })
-    // }
     // Otherwise, display the correct tab:
     showTab(currentTab);
   }
