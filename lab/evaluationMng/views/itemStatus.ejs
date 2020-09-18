@@ -521,7 +521,7 @@
         const deleteManyBtn = document.createElement('button')
         deleteManyBtn.className = 'btn btn-raised btn-primary'
         deleteManyBtn.id = 'delete-many-button'
-        deleteManyBtn.innerHTML = "Delete many"
+        deleteManyBtn.innerHTML = "Delete all"
         deleteManyBtn.style.margin = 'auto'
         deleteManyBtn.addEventListener('click', () => {
           makeRequest('DELETE', 'itemStatus', 'application/json', JSON.stringify(originItemList), () => {

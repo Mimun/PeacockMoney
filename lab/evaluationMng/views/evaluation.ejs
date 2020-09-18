@@ -231,7 +231,8 @@
         console.log('evaluation: ', evaluatingItem)
         window.localStorage.setItem('evaluatingItem', JSON.stringify(evaluatingItem.C_DATA))
         console.log('window local storage: ', JSON.parse(window.localStorage.getItem('evaluatingItem')))
-        $.redirect("../contractMng/contractTemplates", {}, "GET");
+        window.location.href = '/contractMng/contractTemplates?token=' + window.localStorage.getItem('accessToken')
+        // $.redirect("../contractMng/contractTemplates", {}, "GET");
       } else {
         window.alert('You need to choose an item to evaluate and create a contract')
       }
@@ -251,17 +252,6 @@
         searchFunction(originItemStatusList, result.itemStatusResults, template, 'item-status-list-table-container')
         chooseItemStatus()
       })
-      // $.ajax({
-      //   type: 'POST',
-      //   url: 'search',
-      //   contentType: 'application/json',
-      //   data: JSON.stringify({ data: event.target.querySelector('input').value }),
-      //   success: result => {
-      //     console.log('result: ', result)
-
-
-      //   }
-      // })
 
     })
 
