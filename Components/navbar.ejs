@@ -93,14 +93,22 @@
 <script src="http://cdn.quilljs.com/1.2.0/quill.min.js"></script>
 <script type="module" src="/cropper/cropper.js"></script>
 
-<script>
-  
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.js'></script>
+<script
+  src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/editable/bootstrap-table-editable.js'></script>
+<script
+  src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js'></script>
+<script src='https://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
+<script
+  src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
+<script src="./script.js"></script>
 
+<script>
   $(document).ready(function () {
     $('body').bootstrapMaterialDesign();
 
   });
-
 </script>
 <script>
   console.log('req.payload from navbar: ', JSON.parse(window.localStorage.getItem('user')))

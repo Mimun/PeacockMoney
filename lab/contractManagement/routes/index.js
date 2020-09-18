@@ -1,14 +1,14 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose')
-const Item = require('../models/item');
-const ItemStatus = require('../models/itemStatus');
-const ContractTemplate = require('../models/contractTemplate')
-const Contract = require('../models/contract');
-const Property = require('../models/property')
-const Store = require('../models/store')
-const Employee = require('../models/employee')
-const Warehouse = require('../models/warehouse')
+const Item = require('../../../models/item');
+const ItemStatus = require('../../../models/itemStatus');
+const ContractTemplate = require('../../../models/contractTemplate')
+const Contract = require('../../../models/contract');
+const Property = require('../../../models/property')
+const Store = require('../../../models/store')
+const Employee = require('../../../models/employee')
+const Warehouse = require('../../../models/warehouse')
 
 var fs = require('fs');
 var async = require('async');
@@ -316,35 +316,43 @@ router.post('/contracts', async (req, res) => {
 })
 
 // update status of a contract
-router.put('/contracts/:id', (req, res) => {
+router.put('/contracts/:id', async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body.contractStatus)
   try {
-    Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
+    await Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
       if (err) throw err
+      console.log('contract result: ', contractResult)
       if (contractResult.contractStatus === 'approved') {
         try {
-          await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {
+          await Warehouse.findOne({ store: contractResult.store.value }).exec((err, warehouseResult) => {
             if (err) throw err
-            contractResult.items.forEach(item => {
-              var newItem = {
-                metadata: item.evaluationItem.metadata,
-                infos: item.infos,
-                status: item.status,
-                evaluationItem: item.evaluationItem,
-                contract: contractResult._id,
-                originWarehouse: warehouseResult._id,
-                currentWarehouse: warehouseResult._id,
-                movement: [warehouseResult._id],
-              }
-              var property = new Property(newItem)
-              property.save((err, result) => {
-                if (err) throw err
-                res.send({ message: 'Saved property successfully!', result: contractResult })
-              })
+            if (warehouseResult)
+              contractResult.items.forEach(item => {
+                var newItem = {
+                  infos: item.infos,
+                  status: item.status,
+                  evaluationItem: item.evaluationItem,
+                  contract: contractResult._id,
+                  originWarehouse: warehouseResult._id,
+                  currentWarehouse: warehouseResult._id,
+                  movement: [warehouseResult._id],
+                  importDate: new Date(Date.now()),
+                  exportDate: null
+                }
+                var property = new Property(newItem)
+                console.log('new item: ', property)
 
-            })
+                property.save((err, result) => {
+                  if (err) throw err
+                  res.send({ message: 'Saved property successfully!', result: contractResult })
+                })
+
+              })
           })
+          // await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {
+
+          // })
         } catch (err) {
           console.error(err)
         }

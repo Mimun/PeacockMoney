@@ -100,18 +100,22 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
             storeSelectOptions.push(option)
           })
         }
-        if(findNestedObj(itemObj, 'name', 'store')){
-          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+        if (findNestedObj(itemObj, 'name', 'store')) {
+          if (selectList.includes(findNestedObj(itemObj, 'name', 'store')).value) {
+            modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          } else {
+            modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          }
 
         } else {
-        modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
 
         }
-        if(findNestedObj(itemObj, 'name', 'role')){
+        if (findNestedObj(itemObj, 'name', 'role')) {
           modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'role').value, 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
 
         } else {
-        modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
+          modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
 
         }
         modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {
@@ -199,10 +203,10 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 
       console.log('update obj: ', updateObj)
       makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-        'application/json', JSON.stringify(updateObj), ()=>{
+        'application/json', JSON.stringify(updateObj), () => {
           window.location.reload()
         })
-      
+
       break
     default:
 
@@ -213,17 +217,17 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 const deleteBtnFunction = (event, routerName, user) => {
   if (user.role !== "member") {
     makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-    'application/json', {} ,(result)=>{
-      if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {
-        window.localStorage.removeItem('user')
-        window.localStorage.removeItem('accessToken')
-        window.location.href = "/"
-      } else {
-        window.location.reload()
+      'application/json', {}, (result) => {
+        if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {
+          window.localStorage.removeItem('user')
+          window.localStorage.removeItem('accessToken')
+          window.location.href = "/"
+        } else {
+          window.location.reload()
 
-      }
-    })
-   
+        }
+      })
+
   } else {
     window.alert('You need to be beyond member to do that!')
   }

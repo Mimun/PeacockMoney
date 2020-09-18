@@ -45,7 +45,7 @@ router.get('/employees', auth.isAuthenticated, auth.checkRole, (req, res, next) 
   }, (err, results) => {
     if (err) throw err
     var storeList = results.stores.map(store => {
-      var fullName = findNestedObj(store, 'name', 'storeName').value
+      var fullName = findNestedObj(store, 'name', 'name').value
       var address = findNestedObj(store, 'name', 'address').value
       return {
         _id: store._id,
@@ -251,11 +251,11 @@ router.get('/warehouses', (req, res, next) => {
       }
     })
     var storeList = results.stores.map(store => {
-      var storeName = findNestedObj(store, 'name', 'storeName').value
+      var name = findNestedObj(store, 'name', 'name').value
       var address = findNestedObj(store, 'name', 'address').value
       return {
         _id: store._id,
-        storeName,
+        name,
         address
       }
     })
@@ -311,32 +311,101 @@ router.post('/warehouses/search', (req, res, next) => {
 // get property list of a warehouse
 router.get('/warehouses/:id/properties', (req, res, next) => {
   console.log('id: ', req.params.id)
-  try {
-    Property.find({ currentWarehouse: req.params.id }).populate([
-      {
-        path: 'evaluationItem',
-        model: 'Item'
-      },
-      {
-        path: 'currentWarehouse',
-        model: 'Warehouse'
+  async.parallel({
+    propertyList: callback => {
+      try {
+        Property.find({ currentWarehouse: req.params.id }).populate([
+          {
+            path: 'evaluationItem',
+            model: 'Item'
+          },
+          {
+            path: 'currentWarehouse',
+            model: 'Warehouse'
+          }
+        ]).exec(callback)
+      } catch (error) {
+        console.error(error)
       }
-    ]).exec((err, result) => {
-      if (err) throw err
-      res.render('properties', { propertyList: result })
+
+    },
+    warehouseList: callback => {
+      try {
+        Warehouse.find({}).exec(callback)
+
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    warehouse: callback=>{
+      try {
+        Warehouse.findOne({_id: req.params.id}).exec(callback)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }, (err, result) => {
+    if (err) throw err
+    var warehouseList = result.warehouseList.map(warehouse=>{
+      return {
+        _id: warehouse._id,
+        name: findNestedObj(warehouse, 'name', 'name').value,
+        address: findNestedObj(warehouse, 'name', 'address').value
+      }
     })
-  } catch (err) {
-    console.error(err)
-  }
+    res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: findNestedObj(result.warehouse, 'name', 'name').value})
+  })
 
 })
 
 // PROPERTIES
 // get all properties 
 router.get('/properties', (req, res, next) => {
-  Property.find({}).exec((err, results) => {
+  async.parallel({
+    propertyList: callback=>{
+      try {
+        Property.find({}).populate([
+          {
+            path: 'evaluationItem',
+            model: 'Item'
+          },
+          {
+            path: 'currentWarehouse',
+            model: 'Warehouse'
+          }
+        ]).exec(callback)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    warehouseList: callback=>{
+      try {
+        Warehouse.find({}).exec(callback)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }, (err, result)=>{
     if (err) throw err
-    res.render('properties', { propertyList: results })
+    var warehouseList = result.warehouseList.map(warehouse=>{
+      return {
+        _id: warehouse._id,
+        name: findNestedObj(warehouse, 'name', 'name').value,
+        address: findNestedObj(warehouse, 'name', 'address').value
+      }
+    })
+    res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: '' })
+  })
+ 
+})
+
+// update property
+router.put('/properties/:id', (req, res, next)=>{
+  console.log('id: ', req.params.id)
+  console.log('body: ', req.body)
+  Property.findOneAndUpdate({_id: req.params.id}, {$set: {currentWarehouse: req.body.currentWarehouse, movement: req.body.movement}}, {new: true}, (err, result)=>{
+    if(err) throw err
+    res.send({message: 'Updated successfully!', result})
   })
 })
 

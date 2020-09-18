@@ -10,10 +10,6 @@
       width: fit-content;
     }
 
-    h2 {
-      color: blue;
-      background-color: red;
-    }
   </style>
 </head>
 
@@ -40,7 +36,7 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h2>This is list of properties</h2>
+      <h2>This is list of properties of <%= pageTitle %> </h2>
       <div class="form-group">
         <input type="text" class="form-control" id="search" placeholder="Search...">
       </div>
@@ -64,7 +60,7 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary btn-sm" id="btn-move">Move warehouse</button>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-move">change warehouse</button>
             </div>
           </div>
         </div>
@@ -75,10 +71,14 @@
   <script type="module">
     import { generatePropertyManagementList } from '/generatePropertyManagementList.js'
     var propertyList = <%- JSON.stringify(propertyList) %>;
+    var warehouseList = <%- JSON.stringify(warehouseList) %>;
+
     console.log('property list: ', propertyList)
+    console.log('warehouse list: ', warehouseList)
+
     const propertyListTemplate = document.querySelector('#property-list')
 
-    generatePropertyManagementList(propertyList, 'property-list-container')
+    generatePropertyManagementList(propertyList, warehouseList, 'property-list-container')
   </script>
 </body>
 

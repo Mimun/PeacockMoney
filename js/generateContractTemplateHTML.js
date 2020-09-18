@@ -13,8 +13,8 @@ import { makeRequest } from './makeRequest.js'
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
   var storeSelectOptions = storeList.map(store => {
-    var storename = findNestedObj(store, 'name', 'storeName')
-    var option = `<option value=${store._id}>${storename.value}</option>`
+    var name = findNestedObj(store, 'name', 'name')
+    var option = `<option value=${store._id}>${name.value}</option>`
     return option
   })
   storeSelectOptions.unshift('<option value="">No store</option>')

@@ -29,7 +29,7 @@
   <!-- create warehouse template for modal -->
   <template id="create-warehouse-template">
     <div class="modal-header text-center">
-      <h4 class="modal-title w-100 font-weight-bold">Tao moi cua hang</h4>
+      <h4 class="modal-title w-100 font-weight-bold">Tao moi kho</h4>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -37,7 +37,7 @@
     <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
       <div class="form-group">
         <label data-error="wrong" data-success="right">Ten kho</label>
-        <input type="text" class="form-control validate" name="warehouseName" data-vie="tenCuaHang"
+        <input type="text" class="form-control validate" name="name" data-vie="tenKho"
           data-kor="koreanString">
       </div>
 
@@ -160,7 +160,7 @@
     var selectLabel = document.createElement('label')
     // store and employee select options
     var storeSelectOptions = storeList.map(store => {
-      var option = `<option value="${store._id}">${store.storeName}-${store.address}</option>`
+      var option = `<option value="${store._id}">${store.name}-${store.address}</option>`
       return option
     })
     storeSelectOptions.unshift('<option value="">No store</option>')
