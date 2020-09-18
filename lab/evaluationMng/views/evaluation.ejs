@@ -190,7 +190,7 @@
           removeButton.className = "material-icons"
           removeButton.innerHTML = 'remove'
           removeButton.addEventListener('click', (event) => {
-            totalDiscount = totalDiscount - parseInt(findNestedObj(event.target.closest('.object-div').C_DATA, 'name', 'reduce(%)').value)
+            totalDiscount = totalDiscount - parseInt(cloneNode.C_DATA.infos[0].value)
             event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
             calculateEvaluatePrice(originalPrice, totalDiscount)
 

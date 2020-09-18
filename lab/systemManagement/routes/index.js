@@ -309,21 +309,26 @@ router.post('/warehouses/search', (req, res, next) => {
 })
 
 // get property list of a warehouse
-router.get('/warehouses/:id/properties', (req, res, next)=>{
+router.get('/warehouses/:id/properties', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Property.find({currentWarehouse: req.params.id}).populate([
-    {
-      path: 'evaluationItem',
-      model: 'Item'
-    },
-    {
-      path: 'currentWarehouse',
-      model: 'Warehouse'
-    }
-  ]).exec((err, result)=>{
-    if(err) throw err
-    res.render('properties', {propertyList: result})
-  })
+  try {
+    Property.find({ currentWarehouse: req.params.id }).populate([
+      {
+        path: 'evaluationItem',
+        model: 'Item'
+      },
+      {
+        path: 'currentWarehouse',
+        model: 'Warehouse'
+      }
+    ]).exec((err, result) => {
+      if (err) throw err
+      res.render('properties', { propertyList: result })
+    })
+  } catch (err) {
+    console.error(err)
+  }
+
 })
 
 // PROPERTIES

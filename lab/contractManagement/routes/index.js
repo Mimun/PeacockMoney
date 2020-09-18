@@ -116,14 +116,14 @@ const filterContract = (value1, value2, value3, req, res, next) => {
       var max = parseInt(findNestedObj(item, 'name', 'max').value)
       console.log('min', min)
       console.log('max', max)
-      if(value3){
+      if (value3) {
         if (min <= value3 && value3 <= max) {
           return item
         }
       } else {
         return item
       }
-     
+
     })
 
 
@@ -319,32 +319,43 @@ router.post('/contracts', async (req, res) => {
 router.put('/contracts/:id', (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body.contractStatus)
-  Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
-    if (err) throw err
-    if (contractResult.contractStatus === 'approved') {
-      await Warehouse.findOne({"store": contractResult.store.value}).exec((err, warehouseResult)=>{
-        if(err) throw err
-        contractResult.items.forEach(item => {
-          var newItem = {
-            infos: item.infos,
-            status: item.status,
-            evaluationItem: item.evaluationItem,
-            contract: contractResult._id,
-            originWarehouse: warehouseResult._id,
-            currentWarehouse: warehouseResult._id,
-            movement: [warehouseResult._id]
-          }
-          var property = new Property(newItem)
-          property.save((err, result)=>{
-            if(err) throw err
-            res.send({message: 'Saved property successfully!', result: contractResult})
+  try {
+    Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
+      if (err) throw err
+      if (contractResult.contractStatus === 'approved') {
+        try {
+          await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {
+            if (err) throw err
+            contractResult.items.forEach(item => {
+              var newItem = {
+                metadata: item.evaluationItem.metadata,
+                infos: item.infos,
+                status: item.status,
+                evaluationItem: item.evaluationItem,
+                contract: contractResult._id,
+                originWarehouse: warehouseResult._id,
+                currentWarehouse: warehouseResult._id,
+                movement: [warehouseResult._id],
+              }
+              var property = new Property(newItem)
+              property.save((err, result) => {
+                if (err) throw err
+                res.send({ message: 'Saved property successfully!', result: contractResult })
+              })
+
+            })
           })
-  
-        })
-      })
-    
-    }
-  })
+        } catch (err) {
+          console.error(err)
+        }
+
+
+      }
+    })
+  } catch (err) {
+    console.error(err)
+  }
+
 })
 
 // get contract detail
