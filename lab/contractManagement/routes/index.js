@@ -116,9 +116,14 @@ const filterContract = (value1, value2, value3, req, res, next) => {
       var max = parseInt(findNestedObj(item, 'name', 'max').value)
       console.log('min', min)
       console.log('max', max)
-      if (min <= value3 && value3 <= max) {
+      if(value3){
+        if (min <= value3 && value3 <= max) {
+          return item
+        }
+      } else {
         return item
       }
+     
     })
 
 
