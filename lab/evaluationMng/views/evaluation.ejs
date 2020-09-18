@@ -184,13 +184,11 @@
           const cloneNode = event.target.closest('.object-div').cloneNode(true)
           cloneNode.C_DATA = event.target.closest('.object-div').C_DATA
           cloneNode.classList.add('item-status')
-          totalDiscount = totalDiscount + parseInt(findNestedObj(cloneNode.C_DATA, 'name', 'reduce(%)').value)
+          totalDiscount = totalDiscount + parseInt(cloneNode.C_DATA.infos[0].value)
 
-          const removeButton = document.createElement('i')
-          removeButton.className = "fa fa-times"
-          removeButton.style.fontSize = "25px"
-          removeButton.style.margin = "12px"
-          removeButton.style.color = '#bdbdbd '
+          const removeButton = document.createElement('span')
+          removeButton.className = "material-icons"
+          removeButton.innerHTML = 'remove'
           removeButton.addEventListener('click', (event) => {
             totalDiscount = totalDiscount - parseInt(findNestedObj(event.target.closest('.object-div').C_DATA, 'name', 'reduce(%)').value)
             event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))

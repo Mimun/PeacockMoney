@@ -100,8 +100,20 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
             storeSelectOptions.push(option)
           })
         }
-        modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
-        modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'role').value, 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
+        if(findNestedObj(itemObj, 'name', 'store')){
+          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+
+        } else {
+        modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+
+        }
+        if(findNestedObj(itemObj, 'name', 'role')){
+          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'role').value, 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
+
+        } else {
+        modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
+
+        }
         modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {
           if (!roleAbility.create.includes(option.getAttribute('value'))) {
             option.style.display = 'none'
