@@ -45,7 +45,7 @@ router.get('/employees', auth.isAuthenticated, auth.checkRole, (req, res, next) 
   }, async (err, results) => {
     if (err) throw err
     var storeList = []
-    if (results.stores.length!==0) {
+    if (results.stores.length !== 0) {
       storeList = await results.stores.map(store => {
         var fullName = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
         var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'
@@ -160,7 +160,7 @@ router.get('/stores', (req, res, next) => {
   }, (err, results) => {
     if (err) throw err
     var employeeList = []
-    if (results.employees) {
+    if (results.employees.length !== 0) {
       employeeList = results.employees.map(employee => {
         var fullName = findNestedObj(employee, 'name', 'fullName') ? findNestedObj(employee, 'name', 'fullName').value : 'None'
         var role = findNestedObj(employee, 'name', 'role') ? findNestedObj(employee, 'name', 'role').value : 'None'
@@ -286,7 +286,7 @@ router.get('/warehouses', (req, res, next) => {
     if (err) throw err
     var employeeList = []
     var storeList = []
-    if (results.employees) {
+    if (results.employees.length !== 0) {
       employeeList = await results.employees.map(employee => {
         var fullName = findNestedObj(employee, 'name', 'fullName') ? findNestedObj(employee, 'name', 'fullName').value : 'None'
         var role = findNestedObj(employee, 'name', 'role') ? findNestedObj(employee, 'name', 'role').value : 'None'
@@ -297,7 +297,7 @@ router.get('/warehouses', (req, res, next) => {
         }
       })
     }
-    if (results.stores) {
+    if (results.stores.length !==0) {
       storeList = await results.stores.map(store => {
         var name = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
         var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'
@@ -396,13 +396,17 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
     }
   }, (err, result) => {
     if (err) throw err
-    var warehouseList = result.warehouseList.map(warehouse => {
-      return {
-        _id: warehouse._id,
-        name: findNestedObj(warehouse, 'name', 'name').value,
-        address: findNestedObj(warehouse, 'name', 'address').value
-      }
-    })
+    var warehouseList = []
+    if (result.warehouseList.length !== 0) {
+      warehouseList = result.warehouseList.map(warehouse => {
+        return {
+          _id: warehouse._id,
+          name: findNestedObj(warehouse, 'name', 'name') ? findNestedObj(warehouse, 'name', 'name').value : 'None',
+          address: findNestedObj(warehouse, 'name', 'address') ? findNestedObj(warehouse, 'name', 'address').value : 'None'
+        }
+      })
+    }
+
     res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: findNestedObj(result.warehouse, 'name', 'name').value })
   })
 
@@ -438,16 +442,16 @@ router.get('/properties', (req, res, next) => {
   }, (err, result) => {
     if (err) throw err
     var warehouseList = []
-    if(result.warehouseList){
+    if (result.warehouseList.length !== 0) {
       warehouseList = result.warehouseList.map(warehouse => {
         return {
           _id: warehouse._id,
-          name: findNestedObj(warehouse, 'name', 'name')? findNestedObj(warehouse, 'name', 'name').value: 'None',
-          address: findNestedObj(warehouse, 'name', 'address')? findNestedObj(warehouse, 'name', 'address').value: 'None'
+          name: findNestedObj(warehouse, 'name', 'name') ? findNestedObj(warehouse, 'name', 'name').value : 'None',
+          address: findNestedObj(warehouse, 'name', 'address') ? findNestedObj(warehouse, 'name', 'address').value : 'None'
         }
       })
     }
-    
+
     res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: '' })
   })
 
