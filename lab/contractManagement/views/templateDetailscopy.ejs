@@ -179,10 +179,23 @@
       <label class="bmd-label-floating" data-error="Empty">Thoi han vay toi thieu</label>
       <input type="number" class="form-control validate" name="minLoanTerm" data-vie="thoiHanVayToiThieu">
     </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Ti le lai theo ngay(%)</label>
-      <input type="number" class="form-control validate" name="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
+    <div class="container" style="padding: 0;">
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <label class="bmd-label-floating" data-error="Empty">Ti le phan ngan theo ngay(<span>&#8240;</span>)</label>
+            <input id="perMilePerDay" type="number" class="form-control validate" name="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label class="bmd-label-floating" data-error="Empty">Ti le phan tram theo thang(%)</label>
+            <input id="percentagePerMonth" type="number" class="form-control validate" name="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
+          </div>
+        </div>
+      </div>
     </div>
+    
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ti le phat theo ngay(%)</label>
       <input type="number" class="form-control validate" name="percentagePenaltyPerDay" data-vie="tiLePhatTheoNgay">
@@ -320,11 +333,14 @@
       // contract metadata:
       // - contract metadata
       document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
-        var name = element.getAttribute('name')
-        var value = element.value
-        var type = element.type
-        var dataVie = element.getAttribute('data-vie')
-        templateItem.contractMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
+        if(element.getAttribute('id') !== "percentagePerMonth"){
+          var name = element.getAttribute('name')
+          var value = element.value
+          var type = element.type
+          var dataVie = element.getAttribute('data-vie')
+          templateItem.contractMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
+        }
+       
       })
 
       // custom info
@@ -446,6 +462,12 @@
 
 
   }
+
+  document.querySelector("#perMilePerDay").addEventListener('change', (event)=>{
+    var value = event.target.value
+    console.log('value: ', event.target.value)
+    document.querySelector("#percentagePerMonth").value = event.target.value*30
+  })
 
   addSeperatorOnInputChange()
 </script>

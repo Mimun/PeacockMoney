@@ -80,12 +80,18 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
       if (info.name === "loan" || info.name === "min" || info.name === "max") {
         input.setAttribute('data-type', 'currency')
-        input.setAttribute('type', 'text')
+        input.type = 'text'
+        input.setAttribute('name', info.name)
+        input.setAttribute('data-vie', info.dataVie)
+        input.setAttribute('data-kor', info.dataKor)
+  
+      } else {
+        input.type = info.cType
+        input.setAttribute('name', info.name)
+        input.setAttribute('data-vie', info.dataVie)
+        input.setAttribute('data-kor', info.dataKor)
       }
-      input.type = info.cType
-      input.setAttribute('name', info.name)
-      input.setAttribute('data-vie', info.dataVie)
-      input.setAttribute('data-kor', info.dataKor)
+      
 
       var label = clone.querySelector('label')
       label.innerHTML = displayInfoLang(info.dataVie)
