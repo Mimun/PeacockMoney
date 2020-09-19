@@ -45,7 +45,7 @@ router.get('/employees', auth.isAuthenticated, auth.checkRole, (req, res, next) 
   }, async (err, results) => {
     if (err) throw err
     var storeList = []
-    if (results.stores) {
+    if (results.stores.length!==0) {
       storeList = await results.stores.map(store => {
         var fullName = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
         var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'
