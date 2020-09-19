@@ -80,6 +80,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
       if (info.name === "loan" || info.name === "min" || info.name === "max") {
         input.setAttribute('data-type', 'currency')
+        input.setAttribute('type', 'text')
       }
       input.type = info.cType
       input.setAttribute('name', info.name)
