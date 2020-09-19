@@ -13,10 +13,10 @@ import { makeRequest } from './makeRequest.js'
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
   var storeSelectOptions = []
-  if(storeList.length !== 0){
+  if (storeList.length !== 0) {
     storeList.map(store => {
       var name = findNestedObj(store, 'name', 'name')
-      var option = `<option value=${store._id}>${name.value}</option>`
+      var option = `<option value=${store._id}>${name ? name.value : 'None'}</option>`
       storeSelectOptions.push(option)
     })
   }
