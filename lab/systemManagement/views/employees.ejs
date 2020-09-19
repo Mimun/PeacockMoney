@@ -48,6 +48,12 @@
         </div>
 
         <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Chuc vu</label>
+          <input type="text" class="form-control validate active" name="jobTitle" data-vie="chucVu"
+            data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Dia chi</label>
           <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
 
@@ -103,6 +109,9 @@
       <div class="info-container object-div">
         <div class="container">
           <div class="row">
+            <div class="col-1">
+              <img class="avatar rounded-circle" src="" alt="" style="width: 40px; height: 40px; object-fit: cover;">
+            </div>
             <div class="col">
               <p class="name"></p>
             </div>
@@ -164,7 +173,9 @@
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
     const employeeListTemplate = document.querySelector('#employee-list')
 
-    generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees', user, roleAbility)
+    if(employeeList.length!==0){
+      generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees', user, roleAbility)
+    }
    
     var selectContainer = document.createElement('div')
     selectContainer.className = 'select-container'

@@ -81,6 +81,7 @@
     import { findNestedObj } from '/findNestedObj.js'
     const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
     const contractTemplate = document.getElementById('temp_contract');
+    console.log('contract template list: ', contractTemplateList)
 
     // card_handler = document.querySelector('template-handler')
     for (var i = 0; i < contractTemplateList.length; i++) {

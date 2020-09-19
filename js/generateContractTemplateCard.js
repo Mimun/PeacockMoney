@@ -79,7 +79,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     templateInfoContainer.style.margin = '14px 0'
 
     itemObj.templateMetadata.map(info => {
-      if (info.name !== "image" && info.name !== "contractContent") {
+      if (info.name !== "image" && info.name !== "contractContent" && info.name !== "category" && info.name !== "templateType") {
         const infoContainer = document.createElement('div')
         infoContainer.className = 'info-container list-group-item'
         infoContainer.style.display = 'flex'

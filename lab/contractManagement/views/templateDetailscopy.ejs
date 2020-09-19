@@ -150,20 +150,22 @@
     </div>
     <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">So tien vay</label>
-      <input type="number" class="form-control validate" name="loan" data-vie="soTienVay">
+      <input type="text" class="form-control validate" name="loan" data-vie="soTienVay">
     </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">So tien min</label>
-            <input type="number" class="form-control validate" min="0" max="9999999999" name="min" data-vie="soTienMin">
+            <input type="text" class="form-control currency-field"
+            data-type="currency" min="0" max="9999999999" name="min" data-vie="soTienMin">
           </div>
         </div>
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">So tien max</label>
-            <input type="number" class="form-control validate" min="0" max="9999999999" name="max" data-vie="soTienMax">
+            <input type="text" class="form-control currency-field"  
+            data-type="currency" min="0" max="9999999999" name="max" data-vie="soTienMax">
           </div>
         </div>
 
@@ -404,6 +406,7 @@
 <script type="module">
   // generate template after choosing file
   import { generateCustomInfoTemplate } from '/generateCustomInfoTemplate.js'
+  import { addSeperatorOnInputChange } from '/addSeperatorOnInputChange.js'
   const template = document.querySelector('#contract-template')
 
   document.querySelector('#inputTemplateFile').addEventListener('change', (event) => {
@@ -444,4 +447,5 @@
 
   }
 
+  addSeperatorOnInputChange()
 </script>

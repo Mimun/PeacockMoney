@@ -56,8 +56,12 @@
           <span class="material-icons">person</span>
         </a>
         <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-333">
-          <p class="user-name dropdown-item"></p>
-          <a class="dropdown-item" href="#">Detail</a>
+          <div class="dropdown-item avatar-container">
+            <div class="img-container">
+              <img alt="" src="" class="rounded-circle" style="object-fit: cover; height: 64px; width: 64px;">
+            </div>
+            <p class="user-name dropdown-item text-center" href="#"></p>
+          </div>
           <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
         </div>
       </li>
@@ -115,6 +119,7 @@
   var user = JSON.parse(window.localStorage.getItem('user'))
   if (user) {
     document.querySelector('#navbarSupportedContent').querySelector('.user-name').innerHTML = user.userName
+    document.querySelector('#navbarSupportedContent').querySelector('.avatar-container').querySelector('img').src = user.avatar
   }
 
   const logout = () => {
