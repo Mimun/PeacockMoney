@@ -27,50 +27,50 @@ export const generateContractListHTML = (itemObj, template, elementName) => {
     }
   })
 
-  const button = clone.querySelector('.object-div').querySelector('button')
-  // const completeBtn = clone.querySelector('.object-div').querySelector('button[id="btn-complete]')
-  switch (contractStatus) {
-    case ("waiting"):
-      button.id = 'btn-approve'
-      button.innerHTML = 'approve'
-      break
-    case ("approved"):
-      button.id = 'btn-complete'
-      button.className = 'btn btn-raised btn-primary btn-sm'
-      button.innerHTML = 'complete'
-      break
-    case ("completed"):
-      clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))
+  // const button = clone.querySelector('.object-div').querySelector('button')
+  // // const completeBtn = clone.querySelector('.object-div').querySelector('button[id="btn-complete]')
+  // switch (contractStatus) {
+  //   case ("waiting"):
+  //     button.id = 'btn-approve'
+  //     button.innerHTML = 'approve'
+  //     break
+  //   case ("approved"):
+  //     button.id = 'btn-complete'
+  //     button.className = 'btn btn-raised btn-primary btn-sm'
+  //     button.innerHTML = 'complete'
+  //     break
+  //   case ("completed"):
+  //     clone.querySelector('.object-div').querySelector('.btn-options').removeChild(clone.querySelector('.object-div').querySelector('button'))
 
-      break
-    default:
-      button.id = 'btn-waiting'
-      button.innerHTML = 'waiting'
-  }
+  //     break
+  //   default:
+  //     button.id = 'btn-waiting'
+  //     button.innerHTML = 'waiting'
+  // }
 
-  button.addEventListener('click', (event) => {
-    let textContent = event.target.textContent
-    if (textContent === "approve") {
-      makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'approved'}), (result)=>{
-        event.target.closest('.object-div').C_DATA = result.result
-        console.log('event: ', event.target.closest('.object-div').C_DATA)
-        event.target.closest('.object-div').setAttribute('data-status', 'approved')
-        event.target.innerHTML = 'complete'
-        event.target.className = 'btn btn-raised btn-primary btn-sm'
-      })
+  // button.addEventListener('click', (event) => {
+  //   let textContent = event.target.textContent
+  //   if (textContent === "approve") {
+  //     makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'approved'}), (result)=>{
+  //       event.target.closest('.object-div').C_DATA = result.result
+  //       console.log('event: ', event.target.closest('.object-div').C_DATA)
+  //       event.target.closest('.object-div').setAttribute('data-status', 'approved')
+  //       event.target.innerHTML = 'complete'
+  //       event.target.className = 'btn btn-raised btn-primary btn-sm'
+  //     })
      
-    } else if (textContent === "complete") {
-      makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'completed'}), async (result)=>{
-        event.target.closest('.object-div').C_DATA = result.result
-        console.log('event: ', event.target.closest('.object-div').C_DATA)
-        event.target.closest('.object-div').setAttribute('data-status', 'completed')
-        // event.target.style.display = 'none'
-        event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
-      })
+  //   } else if (textContent === "complete") {
+  //     makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({contractStatus: 'completed'}), async (result)=>{
+  //       event.target.closest('.object-div').C_DATA = result.result
+  //       console.log('event: ', event.target.closest('.object-div').C_DATA)
+  //       event.target.closest('.object-div').setAttribute('data-status', 'completed')
+  //       // event.target.style.display = 'none'
+  //       event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
+  //     })
       
-    }
-    event.stopPropagation()
-  })
+  //   }
+  //   event.stopPropagation()
+  // })
 
   document.body.querySelector('#' + elementName + '').appendChild(clone)
 }

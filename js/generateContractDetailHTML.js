@@ -45,7 +45,8 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
         // A side info
         const cloneASide = infoTemplate.content.cloneNode(true)
         cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
-        cloneASide.querySelector('input').value = typeof value === "object" ? findNestedObj(value, 'name', 'name').value : value
+        cloneASide.querySelector('input').value = typeof value === "object" ?
+          (findNestedObj(value, 'name', 'name') ? findNestedObj(value, 'name', 'name').value : 'No store') : value
         clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
         break
       }
@@ -57,11 +58,12 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
         // A side info
         const cloneASide = infoTemplate.content.cloneNode(true)
         cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
-        cloneASide.querySelector('input').value = typeof value === "object" ? findNestedObj(value, 'name', 'fullName').value : value
+        cloneASide.querySelector('input').value = typeof value === "object" ?
+          (findNestedObj(value, 'name', 'fullName') ? findNestedObj(value, 'name', 'fullName').value : 'No employee') : value
         clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
         break
       }
-       
+
       default:
 
 

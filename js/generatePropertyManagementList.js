@@ -1,10 +1,5 @@
 const tableTemplate = `
-<template id="table-template">
-
   <style>
-  @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
-  @import url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.min.css')
-  @import url('https://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/css/bootstrap-editable.css')
     tbody>tr:hover{
       cursor: pointer;
     }
@@ -32,19 +27,6 @@ const tableTemplate = `
       </tbody>
     </table>
   </div>
- 
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.0/bootstrap-table.js'></script>
-  <script
-    src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/editable/bootstrap-table-editable.js'></script>
-  <script
-    src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js'></script>
-  <script src='https://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js'></script>
-  <script
-    src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/filter-control/bootstrap-table-filter-control.js'></script>
-  <script src="./script.js"></script>
-</template>
 `
 
 const detailInfoTemplate = document.createElement('div')
@@ -70,14 +52,9 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
     var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
     return option
   })
+  var tableContainer = document.createElement('div')
+  tableContainer.innerHTML = tableTemplate
 
-  // document.querySelector('#' + elementName + '').appendChild(tableContainer)
-  const host = document.querySelector('#property-list-container')
-  const root = host.attachShadow({ mode: 'closed' })
-  root.innerHTML = tableTemplate
-  root.appendChild(root.querySelector('#table-template').content.cloneNode(true))
-
-  console.log('root: ', root)
   if (itemObjs.length !== 0) {
     // table header
     var trHeader = document.createElement('tr')
@@ -88,7 +65,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
       th.innerHTML = metadata.name
       trHeader.appendChild(th)
     })
-    root.querySelector('#table>thead').appendChild(trHeader)
+    tableContainer.querySelector('#table>thead').appendChild(trHeader)
 
     itemObjs.forEach(itemObj => {
       var tr = document.createElement('tr')
@@ -120,9 +97,11 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
           })
           // current warehouse
           var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
-          detailInfoTemplateClone.querySelector('label').innerHTML = findNestedObj(propertyData.currentWarehouse, 'name', 'name').dataVie
+          detailInfoTemplateClone.querySelector('label').innerHTML = findNestedObj(propertyData.currentWarehouse, 'name', 'name') ?
+            findNestedObj(propertyData.currentWarehouse, 'name', 'name').dataVie : 'Ten kho'
 
-          detailInfoTemplateClone.querySelector('input').value = findNestedObj(propertyData.currentWarehouse, 'name', 'name').value
+          detailInfoTemplateClone.querySelector('input').value = findNestedObj(propertyData.currentWarehouse, 'name', 'name') ?
+            findNestedObj(propertyData.currentWarehouse, 'name', 'name').value : 'No warehouse/store'
 
           propertyInfoContainer.appendChild(detailInfoTemplateClone)
 
@@ -143,8 +122,9 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
                 const currentWarehouse = document.createElement('p')
                 currentWarehouse.className = 'text-center'
-                currentWarehouse.innerHTML = `${findNestedObj(itemObj.currentWarehouse, 'name', 'name').value}
-           -${findNestedObj(itemObj.currentWarehouse, 'name', 'address').value}`
+                findNestedObj(itemObj.currentWarehouse, 'name', 'name') ?
+                  currentWarehouse.innerHTML = `${findNestedObj(itemObj.currentWarehouse, 'name', 'name').value}
+           -${findNestedObj(itemObj.currentWarehouse, 'name', 'address').value}` : currentWarehouse.innerHTML = `No warehouse/store`
                 currentWarehouseContainer.appendChild(currentWarehouse)
                 modalBody.appendChild(currentWarehouseContainer)
 
@@ -156,7 +136,8 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
                   currentWarehouse: null,
                   movement: itemObj.movement
                 }
-                if (modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {
+                if (itemObj.currentWarehouse &&
+                  modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {
                   window.alert("Property's already in this warehouse!")
                 } else {
                   if (modalBody.querySelector('select.select-warehouse').value ||
@@ -169,6 +150,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
                     })
                   }
                 }
+
                 console.log('updateObj: ', updateObj)
                 break
               default:
@@ -179,8 +161,10 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
         })
         $("#centralModalSm").modal('show')
       })
-      root.querySelector('#table>tbody').appendChild(tr)
+      tableContainer.querySelector('#table>tbody').appendChild(tr)
     })
+    document.querySelector('#' + elementName + '').appendChild(tableContainer)
+
   }
 
 

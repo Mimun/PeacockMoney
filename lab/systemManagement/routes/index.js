@@ -172,11 +172,23 @@ router.get('/stores', (req, res, next) => {
 // create new store
 router.post('/stores', (req, res, next) => {
   console.log('req.body: ', req.body)
-  var store = new Store(req.body)
-  store.save((err, result) => {
-    if (err) throw err
-    res.send('Saved successfully!')
+  async.parallel({
+    storeResult: callback => {
+      var store = new Store(req.body)
+      store.save(callback)
+    },
+    warehouseResult: callback => {
+      var warehouse = new Warehouse({
+        ...req.body, store: null
+      })
+      console.log('warehosue: ', warehouse)
+      warehouse.save(callback)
+    }
+  }, (err, result)=>{
+    if(err) throw err
+    res.send("Save to db sucessfully!")
   })
+
 })
 
 // update store
@@ -337,23 +349,23 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
         console.error(error)
       }
     },
-    warehouse: callback=>{
+    warehouse: callback => {
       try {
-        Warehouse.findOne({_id: req.params.id}).exec(callback)
+        Warehouse.findOne({ _id: req.params.id }).exec(callback)
       } catch (error) {
         console.log(error)
       }
     }
   }, (err, result) => {
     if (err) throw err
-    var warehouseList = result.warehouseList.map(warehouse=>{
+    var warehouseList = result.warehouseList.map(warehouse => {
       return {
         _id: warehouse._id,
         name: findNestedObj(warehouse, 'name', 'name').value,
         address: findNestedObj(warehouse, 'name', 'address').value
       }
     })
-    res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: findNestedObj(result.warehouse, 'name', 'name').value})
+    res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: findNestedObj(result.warehouse, 'name', 'name').value })
   })
 
 })
@@ -362,7 +374,7 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
 // get all properties 
 router.get('/properties', (req, res, next) => {
   async.parallel({
-    propertyList: callback=>{
+    propertyList: callback => {
       try {
         Property.find({}).populate([
           {
@@ -378,16 +390,16 @@ router.get('/properties', (req, res, next) => {
         console.log(error)
       }
     },
-    warehouseList: callback=>{
+    warehouseList: callback => {
       try {
         Warehouse.find({}).exec(callback)
       } catch (error) {
         console.log(error)
       }
     }
-  }, (err, result)=>{
+  }, (err, result) => {
     if (err) throw err
-    var warehouseList = result.warehouseList.map(warehouse=>{
+    var warehouseList = result.warehouseList.map(warehouse => {
       return {
         _id: warehouse._id,
         name: findNestedObj(warehouse, 'name', 'name').value,
@@ -396,16 +408,16 @@ router.get('/properties', (req, res, next) => {
     })
     res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: '' })
   })
- 
+
 })
 
 // update property
-router.put('/properties/:id', (req, res, next)=>{
+router.put('/properties/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
-  Property.findOneAndUpdate({_id: req.params.id}, {$set: {currentWarehouse: req.body.currentWarehouse, movement: req.body.movement}}, {new: true}, (err, result)=>{
-    if(err) throw err
-    res.send({message: 'Updated successfully!', result})
+  Property.findOneAndUpdate({ _id: req.params.id }, { $set: { currentWarehouse: req.body.currentWarehouse, movement: req.body.movement } }, { new: true }, (err, result) => {
+    if (err) throw err
+    res.send({ message: 'Updated successfully!', result })
   })
 })
 

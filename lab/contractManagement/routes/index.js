@@ -325,10 +325,10 @@ router.put('/contracts/:id', async (req, res) => {
       console.log('contract result: ', contractResult)
       if (contractResult.contractStatus === 'approved') {
         try {
-          await Warehouse.findOne({ store: contractResult.store.value }).exec((err, warehouseResult) => {
+          await Warehouse.findOne({ store: contractResult.store.value }).exec(async (err, warehouseResult) => {
             if (err) throw err
-            if (warehouseResult)
-              contractResult.items.forEach(item => {
+            if (warehouseResult) {
+              await contractResult.items.forEach(item => {
                 var newItem = {
                   infos: item.infos,
                   status: item.status,
@@ -345,10 +345,35 @@ router.put('/contracts/:id', async (req, res) => {
 
                 property.save((err, result) => {
                   if (err) throw err
-                  res.send({ message: 'Saved property successfully!', result: contractResult })
                 })
 
               })
+              res.send({ message: 'Saved property successfully!', result: contractResult })
+
+            } else {
+              await contractResult.items.forEach(item => {
+                var newItem = {
+                  infos: item.infos,
+                  status: item.status,
+                  evaluationItem: item.evaluationItem,
+                  contract: contractResult._id,
+                  originWarehouse: contractResult.store.value,
+                  currentWarehouse: contractResult.store.value,
+                  movement: [contractResult.store.value],
+                  importDate: new Date(Date.now()),
+                  exportDate: null
+                }
+                var property = new Property(newItem)
+                console.log('new item: ', property)
+
+                property.save((err, result) => {
+                  if (err) throw err
+                })
+
+              })
+              res.send({ message: 'Saved property successfully!', result: contractResult })
+            }
+
           })
           // await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {
 
