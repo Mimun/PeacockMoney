@@ -16,7 +16,8 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   if (storeList.length !== 0) {
     storeList.map(store => {
       var name = findNestedObj(store, 'name', 'name')
-      var option = `<option value=${store._id}>${name ? name.value : 'None'}</option>`
+      var option = `<option value=${store._id}>${findNestedObj(store, 'name', 'name') ? 
+      findNestedObj(store, 'name', 'name').value : (findNestedObj(store, 'name', 'storeName')? findNestedObj(store, 'name', 'storeName').value : 'None')}</option>`
       storeSelectOptions.push(option)
     })
   }
