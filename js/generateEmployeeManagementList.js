@@ -56,7 +56,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
     let email = findNestedObj(itemObj.metadata, 'name', 'email').value
     let id = itemObj._id
     let role = findNestedObj(itemObj.metadata, 'name', 'role').value
-    let avatar = findNestedObj(itemObj.metadata, 'name', 'avatar').value
+    let avatar = findNestedObj(itemObj.metadata, 'name', 'avatar')? findNestedObj(itemObj.metadata, 'name', 'avatar').value : 'None'
 
     clone.querySelector('.name').innerHTML = name
     clone.querySelector('.phone-number').innerHTML = phoneNumber

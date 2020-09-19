@@ -48,7 +48,7 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
     clone.querySelector('.info-container').C_DATA = itemObj
     clone.querySelector('.info-container').setAttribute('cData', true)
 
-    let name = findNestedObj(itemObj.metadata, 'name', 'name').value
+    let name = findNestedObj(itemObj.metadata, 'name', 'name')? findNestedObj(itemObj.metadata, 'name', 'name').value : (findNestedObj(itemObj.metadata, 'name', 'storeName')? findNestedObj(itemObj.metadata, 'name', 'storeName').value: 'None')
     let phoneNumber = findNestedObj(itemObj.metadata, 'name', 'phoneNumber').value
     let email = findNestedObj(itemObj.metadata, 'name', 'email').value
     let id = itemObj._id
