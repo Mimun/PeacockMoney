@@ -42,17 +42,21 @@ router.get('/employees', auth.isAuthenticated, auth.checkRole, (req, res, next) 
       }
 
     }
-  }, (err, results) => {
+  }, async (err, results) => {
     if (err) throw err
-    var storeList = results.stores.map(store => {
-      var fullName = findNestedObj(store, 'name', 'name').value
-      var address = findNestedObj(store, 'name', 'address').value
-      return {
-        _id: store._id,
-        fullName,
-        address
-      }
-    })
+    var storeList = []
+    if (results.stores) {
+      storeList = await results.stores.map(store => {
+        var fullName = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
+        var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'name').value : 'None'
+        return {
+          _id: store._id,
+          fullName,
+          address
+        }
+      })
+    }
+
     res.render('employees', { employeeList: results.employees, storeList, roleAbility: req.roleAbility })
   })
 })
@@ -155,15 +159,19 @@ router.get('/stores', (req, res, next) => {
     }
   }, (err, results) => {
     if (err) throw err
-    var employeeList = results.employees.map(employee => {
-      var fullName = findNestedObj(employee, 'name', 'fullName').value
-      var role = findNestedObj(employee, 'name', 'role').value
-      return {
-        _id: employee._id,
-        fullName,
-        role
-      }
-    })
+    var employeeList = []
+    if (results.employees) {
+      employeeList = results.employees.map(employee => {
+        var fullName = findNestedObj(employee, 'name', 'fullName') ? findNestedObj(employee, 'name', 'fullName').value : 'None'
+        var role = findNestedObj(employee, 'name', 'role') ? findNestedObj(employee, 'name', 'role').value : 'None'
+        return {
+          _id: employee._id,
+          fullName,
+          role
+        }
+      })
+    }
+
     res.render('stores', { storeList: results.stores, employeeList })
   })
 
@@ -172,41 +180,64 @@ router.get('/stores', (req, res, next) => {
 // create new store
 router.post('/stores', (req, res, next) => {
   console.log('req.body: ', req.body)
-  async.parallel({
-    storeResult: callback => {
-      var store = new Store(req.body)
-      store.save(callback)
-    },
-    warehouseResult: callback => {
+  var store = new Store(req.body)
+  try {
+    store.save((err, result) => {
+      if (err) throw err
       var warehouse = new Warehouse({
-        ...req.body, store: null
+        ...req.body, store: result._id
       })
-      console.log('warehosue: ', warehouse)
-      warehouse.save(callback)
-    }
-  }, (err, result)=>{
-    if(err) throw err
-    res.send("Save to db sucessfully!")
-  })
+      try {
+        warehouse.save((err, result) => {
+          if (err) throw err
+          res.status(200).send('Save store and warehouse sucessfully!')
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
 
 })
 
 // update store
 router.put('/stores/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Store.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, (err, result) => {
+  async.parallel({
+    store: callback => {
+      Store.findByIdAndUpdate({ _id: req.params.id },
+        { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }).exec(callback)
+    },
+    warehouse: callback => {
+      Warehouse.findByIdAndUpdate({ _id: req.params.id },
+        { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }).exec(callback)
+    }
+  }, (err, results) => {
     if (err) throw err
-    res.status(200).send("Update successfully!")
+    res.status(200).send("Update store and warehouse successfully!")
   })
+
 })
 
 // delete store
 router.delete('/stores/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Store.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
+  async.parallel({
+    store: callback => {
+      Store.findByIdAndDelete({ _id: req.params.id }).exec(callback)
+    },
+    warehouse: callback => {
+      Warehouse.findByIdAndDelete({ _id: req.params.id }).exec(callback)
+
+    }
+  }, (err, results) => {
     if (err) throw err
-    res.status(200).send("Delete successfully!")
+    res.status(200).send("Delete store and warehouse successfully!")
   })
+
 })
 
 // search store
@@ -251,26 +282,33 @@ router.get('/warehouses', (req, res, next) => {
         console.error(err)
       }
     }
-  }, (err, results) => {
+  }, async (err, results) => {
     if (err) throw err
-    var employeeList = results.employees.map(employee => {
-      var fullName = findNestedObj(employee, 'name', 'fullName').value
-      var role = findNestedObj(employee, 'name', 'role').value
-      return {
-        _id: employee._id,
-        fullName,
-        role
-      }
-    })
-    var storeList = results.stores.map(store => {
-      var name = findNestedObj(store, 'name', 'name').value
-      var address = findNestedObj(store, 'name', 'address').value
-      return {
-        _id: store._id,
-        name,
-        address
-      }
-    })
+    var employeeList = []
+    var storeList = []
+    if (results.employees) {
+      employeeList = await results.employees.map(employee => {
+        var fullName = findNestedObj(employee, 'name', 'fullName') ? findNestedObj(employee, 'name', 'fullName').value : 'None'
+        var role = findNestedObj(employee, 'name', 'role') ? findNestedObj(employee, 'name', 'role').value : 'None'
+        return {
+          _id: employee._id,
+          fullName,
+          role
+        }
+      })
+    }
+    if (results.stores) {
+      storeList = await results.stores.map(store => {
+        var name = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
+        var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'
+        return {
+          _id: store._id,
+          name,
+          address
+        }
+      })
+    }
+
     res.render('warehouses', { warehouseList: results.warehouses, employeeList, storeList })
   })
 })
@@ -399,13 +437,17 @@ router.get('/properties', (req, res, next) => {
     }
   }, (err, result) => {
     if (err) throw err
-    var warehouseList = result.warehouseList.map(warehouse => {
-      return {
-        _id: warehouse._id,
-        name: findNestedObj(warehouse, 'name', 'name').value,
-        address: findNestedObj(warehouse, 'name', 'address').value
-      }
-    })
+    var warehouseList = []
+    if(result.warehouseList){
+      warehouseList = result.warehouseList.map(warehouse => {
+        return {
+          _id: warehouse._id,
+          name: findNestedObj(warehouse, 'name', 'name')? findNestedObj(warehouse, 'name', 'name').value: 'None',
+          address: findNestedObj(warehouse, 'name', 'address')? findNestedObj(warehouse, 'name', 'address').value: 'None'
+        }
+      })
+    }
+    
     res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: '' })
   })
 

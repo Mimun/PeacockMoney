@@ -4,9 +4,6 @@ const fs = require('fs')
 const authenticate = require('./authenticate')
 
 exports.isAuthenticated = function (req, res, next) {
-  console.log('headers: ', req.headers)
-  console.log('url: ', req.url)
-
   if (req.headers &&
     req.headers["x-access-token"] &&
     req.headers["x-access-token"].split(' ')[0] === 'Bearer') {

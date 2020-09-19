@@ -305,9 +305,6 @@ router.get('/contracts', (req, res) => {
 // create new contract
 router.post('/contracts', async (req, res) => {
   var data = req.body
-
-
-
   const contract = new Contract(data)
   contract.save((err, result) => {
     if (err) throw err
@@ -372,7 +369,7 @@ router.put('/contracts/:id', async (req, res) => {
 
               })
               res.send({ message: 'Saved property successfully!', result: contractResult })
-            }
+            } 
 
           })
           // await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {
