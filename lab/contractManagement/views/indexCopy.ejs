@@ -83,6 +83,7 @@
     import { ObjectId } from '/createMongooseID.js'
     import { findNestedObj } from '/findNestedObj.js'
     import { makeRequest } from '/makeRequest.js'
+    import { addSeparatorOnInputChange, removeSeperator } from '/addSeparatorOnInputChange.js'
 
     const types = <%- JSON.stringify(types) %>;
     const payOptions = <%- JSON.stringify(payOptions) %>;
@@ -121,7 +122,6 @@
       containerFluid.querySelector('.modal-title').innerHTML = "Choose your contract template"
       if (modalBody.firstChild) {
         modalBody.innerHTML = ""
-
       }
 
       // create selector
@@ -139,7 +139,7 @@
       inputDiv.className = "form-group"
       inputDiv.innerHTML = `
       <label for="form1" class="bmd-label-floating">So tien vay</label>
-      <input type="number" id="form1" class="form-control">
+      <input type="text" id="form1" class="form-control" data-type="currency">
         `
       inputDiv.style.margin = '0 0 2vh 0'
       inputDiv.style.width = '100%'
@@ -151,7 +151,7 @@
         var evaluatingItemType = findNestedObj(evaluatingItem, 'name', 'itemType').value
         if (types.includes(evaluatingItemType)) {
           document.querySelector('.types').value = evaluatingItemType
-          document.querySelector('.types').disabled = true
+          document.querySelector('.types').disabled = false
         } else {
           document.querySelector('.types').value = ''
           document.querySelector('.types').disabled = false
@@ -169,7 +169,7 @@
         var chosenPayOption = document.querySelector('.payOptions').value
         console.log('chosen option: ', chosenPayOption)
         console.log('chosen type: ', chosenType)
-        // console.log('chosen amount of money: ', parseInt(document.querySelector('modal-body').querySelector('input').value)
+        // console.log('chosen amount of money: ', parseInt(document.querySelector('modal-body').querySelector('input').value))
         const callback = (results) => {
           document.querySelector('#template-handler').innerHTML = ""
           results.forEach(result => {
@@ -178,35 +178,25 @@
           templateButtonOption()
           $("#centralModalSm").modal('hide')
         }
+
+        // POST request
         makeRequest('POST', 'findContractTemplates', 'application/json', JSON.stringify({
           chosenType: chosenType,
           chosenPayOption: chosenPayOption,
-          amountOfMoney: parseInt(modalBody.querySelector('input').value)
+          amountOfMoney: removeSeperator(modalBody.querySelector('input').value)
         }), callback)
-
-       
-        // $.ajax({
-        //   type: 'POST',
-        //   url: 'findContractTemplates',
-        //   contentType: 'application/json',
-        //   data: JSON.stringify({
-        //     chosenType: chosenType,
-        //     chosenPayOption: chosenPayOption,
-        //     amountOfMoney: parseInt(modalBody.querySelector('input').value)
-        //   }),
-        //   success: results => {
-        //     console.log(results)
-
-        //   }
-        // })
       })
       buttonOptions.appendChild(confirmButton)
+      addSeparatorOnInputChange()
+
     })
 
     $("#centralModalSm").modal('show');
 
     document.querySelector('#chooseTemplate').addEventListener('click', (event) => {
       $("#centralModalSm").modal('show');
+      addSeparatorOnInputChange()
+
     })
 
     // remove delete template button on employee level uses
@@ -231,7 +221,6 @@
       window.location.href = "contracts?token="+window.localStorage.getItem('accessToken')
 
     })
-
 
   </script>
 </body>

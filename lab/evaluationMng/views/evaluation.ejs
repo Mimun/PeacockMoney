@@ -133,6 +133,7 @@
     import { findNestedObj } from '/findNestedObj.js'
     import { searchFunction } from '/searchFunction.js'
     import { makeRequest } from '/makeRequest.js'
+    import { addSeparator } from '/addSeparatorOnInputChange.js'
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(itemStatusResults) %>;
@@ -178,7 +179,6 @@
 
       document.querySelector('#item-status-list-table-container').querySelectorAll("div[class='mdc-data-table__header-row header-row-div']").forEach(element => {
         element.addEventListener('click', (event) => {
-
           const itemStatusDiv = document.querySelector("#item-status")
           console.log('event target: ', event.target.closest('.object-div').C_DATA)
           const cloneNode = event.target.closest('.object-div').cloneNode(true)
@@ -226,14 +226,23 @@
       console.log('event: ', event.target)
       var evaluatingItem = event.target.closest('.card').querySelector('.card-body').querySelector('.item').querySelector('.object-div')
       if (evaluatingItem) {
-        console.log('evaluation: ', evaluatingItem)
         window.localStorage.setItem('evaluatingItem', JSON.stringify(evaluatingItem.C_DATA))
         console.log('window local storage: ', JSON.parse(window.localStorage.getItem('evaluatingItem')))
-        window.location.href = '/contractMng/contractTemplates?token=' + window.localStorage.getItem('accessToken')
         // $.redirect("../contractMng/contractTemplates", {}, "GET");
       } else {
         window.alert('You need to choose an item to evaluate and create a contract')
       }
+
+      var statusArray = []
+      var status = event.target.closest('.card').querySelector('.card-body').querySelectorAll('.object-div.item-status').forEach(status=>{
+        statusArray.push(status.C_DATA)
+      })
+      console.log('statusArray: ', statusArray)
+      if(statusArray.length !==0){
+        window.localStorage.setItem('itemStatus', JSON.stringify(statusArray))
+      }
+
+      window.location.href = '/contractMng/contractTemplates?token=' + window.localStorage.getItem('accessToken')
 
     })
 
@@ -255,7 +264,7 @@
 
     const calculateEvaluatePrice = (originalPrice, totalDiscount) => {
       var evaluatedPrice = originalPrice - (totalDiscount * originalPrice / 100)
-      document.querySelector('#item-price').querySelector('span').innerHTML = evaluatedPrice
+      document.querySelector('#item-price').querySelector('span').innerHTML = addSeparator(evaluatedPrice)
       console.log('original price: ', originalPrice)
       console.log('total discount: ', totalDiscount)
       console.log('evaluated price: ', evaluatedPrice)

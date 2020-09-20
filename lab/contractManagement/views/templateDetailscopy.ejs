@@ -250,6 +250,8 @@
   import { ObjectId } from '/createMongooseID.js'
   import { findNestedObj } from '/findNestedObj.js'
   import { makeRequest } from '/makeRequest.js'
+  import { removeSeperator } from '/addSeparatorOnInputChange.js'
+
 
   var currentTab = 0; // Current tab is set to be the first tab (0)
   var payOption = {}
@@ -335,7 +337,7 @@
       document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
         if(element.getAttribute('id') !== "percentagePerMonth"){
           var name = element.getAttribute('name')
-          var value = element.value
+          var value = element.getAttribute('data-type') === 'currency'? removeSeperator(element.value) : element.value
           var type = element.type
           var dataVie = element.getAttribute('data-vie')
           templateItem.contractMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
@@ -422,7 +424,7 @@
 <script type="module">
   // generate template after choosing file
   import { generateCustomInfoTemplate } from '/generateCustomInfoTemplate.js'
-  import { addSeperatorOnInputChange } from '/addSeperatorOnInputChange.js'
+  import { addSeparatorOnInputChange } from '/addSeparatorOnInputChange.js'
   const template = document.querySelector('#contract-template')
 
   document.querySelector('#inputTemplateFile').addEventListener('change', (event) => {
@@ -469,5 +471,5 @@
     document.querySelector("#percentagePerMonth").value = event.target.value*30
   })
 
-  addSeperatorOnInputChange()
+  addSeparatorOnInputChange()
 </script>

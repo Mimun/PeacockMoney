@@ -206,7 +206,11 @@ router.post('/createNewContract', function (req, res, next) {
     }
   }, (err, result) => {
     if (err) throw err
-    res.render('createNewContract', { itemResults: result.item, statusResults: result.itemStatus, contractInfo: JSON.parse(req.body.data), evaluatingItem: JSON.parse(req.body.evaluatingItem), stores: result.store });
+    res.render('createNewContract', {
+      itemResults: result.item, statusResults: result.itemStatus, contractInfo: JSON.parse(req.body.data),
+      evaluatingItem: JSON.parse(req.body.evaluatingItem), itemStatus: JSON.parse(req.body.itemStatus), 
+      stores: result.store
+    });
 
   })
 
@@ -369,7 +373,7 @@ router.put('/contracts/:id', async (req, res) => {
 
               })
               res.send({ message: 'Saved property successfully!', result: contractResult })
-            } 
+            }
 
           })
           // await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {

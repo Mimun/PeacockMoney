@@ -149,16 +149,19 @@
     import { findNestedObj } from '/findNestedObj.js'
     import { searchFunction } from '/searchFunction.js'
     import { makeRequest } from '/makeRequest.js'
-    import { addSeperatorOnInputChange } from '/addSeperatorOnInputChange.js'
+    import { addSeparatorOnInputChange, removeSeperator } from '/addSeparatorOnInputChange.js'
 
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(statusResults) %>;
     var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
     var evaluatingItem = <%- JSON.stringify(evaluatingItem) %>;
+    var itemStatus = <%- JSON.stringify(itemStatus) %>
     var stores = <%- JSON.stringify(stores) %>;
+    
     console.log('evaluating item from local storage: ', evaluatingItem)
     console.log('prev url: ', document.referrer)
     console.log('stores: ', stores)
+    console.log('item status from local storage: ', itemStatus)
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')
@@ -166,10 +169,26 @@
     // display chosen evaluating item if user chose from 'evaluating' page
     if (evaluatingItem) {
       generateHTML([evaluatingItem], template, "item-evaluation")
-      var clone = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').cloneNode(true)
-      clone.C_DATA = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').C_DATA
-      document.querySelector('#item-evaluation').innerHTML = ''
-      document.querySelector('#item-evaluation').appendChild(clone)
+      // var clone = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').cloneNode(true)
+      // clone.C_DATA = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').C_DATA
+      // document.querySelector('#item-evaluation').innerHTML = ''
+      // document.querySelector('#item-evaluation').appendChild(clone)
+    }
+    if(itemStatus){
+      generateHTML(itemStatus, template, "item-status")
+      document.querySelector('#item-status').querySelectorAll('.object-div').forEach(div=>{
+        const removeButton = document.createElement('button')
+        removeButton.className = "btn btn-sm"
+        removeButton.innerHTML = `<span class="material-icons">remove</span>`
+        removeButton.addEventListener('click', (event) => {
+          event.preventDefault()
+          console.log('event: ', event.target)
+          event.target.closest('div.mdc-data-table').removeChild(event.target.closest('.object-div'))
+          // event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode)
+        })
+        div.querySelector('div.mdc-data-table__header-row.header-row-div').appendChild(removeButton)
+      })
+      
     }
 
     var currentDiv = null
@@ -325,17 +344,9 @@
           const cloneNode = event.target.closest('.object-div').cloneNode(true)
           cloneNode.C_DATA = event.target.closest('.object-div').C_DATA
           cloneNode.className = "object-div item-status"
-
-          const removeButton = document.createElement('i')
-          removeButton.className = "fa fa-times"
-          removeButton.style.fontSize = "25px"
-          removeButton.style.margin = "12px"
-
-          removeButton.style.color = '#bdbdbd '
-          // removeButton.className = "btn"
-          // removeButton.style.backgroundColor = "#e0e0e0"
-          // removeButton.innerHTML = '<span class="material-icons">clear</span>'
-
+          const removeButton = document.createElement('button')
+          removeButton.className = "btn btn-sm"
+          removeButton.innerHTML = `<span class="material-icons">remove</span>`
           removeButton.addEventListener('click', (event) => {
             console.log('event: ', event.target)
             event.target.closest('div[id="item-status"]').removeChild(event.target.closest('.object-div'))
@@ -398,19 +409,20 @@
         }
 
       })
+
       contractTemplateContainer.querySelectorAll('input').forEach(input => {
         var name = input.getAttribute('name')
         var value = input.value
         var type = input.type
         var dataVie = input.getAttribute('data-vie')
-
         data.contractMetadata.push({
           name: name,
-          value: value,
+          value: input.getAttribute('data-type') === 'currency' ? removeSeperator(value) : value,
           cType: type,
           dataVie: dataVie,
           dataKor: 'koreanString'
         })
+
       })
 
 
@@ -468,7 +480,7 @@
 
     })
 
-    addSeperatorOnInputChange()
+    addSeparatorOnInputChange()
 
   </script>
 

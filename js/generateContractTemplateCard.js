@@ -1,5 +1,6 @@
 import { findNestedObj } from './findNestedObj.js'
-import {makeRequest} from './makeRequest.js'
+import { makeRequest } from './makeRequest.js'
+import { addSeparator } from './addSeparatorOnInputChange.js'
 // used when rendering "Quan ly va Tao mau hop dong" page
 export const generateContractTemplateCard = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
@@ -17,7 +18,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
   var cardText = clone.querySelector('.card-text')
   const createCardText = (info, sourceDiv) => {
     var cardTextClone = sourceDiv.cloneNode(true)
-    cardTextClone.innerHTML = displayInfoLang(info.dataVie) + ": " + info.value
+    cardTextClone.innerHTML = displayInfoLang(info.dataVie) + ": " + addSeparator(info.value)
     clone.querySelector('.card-body').appendChild(cardTextClone)
   }
   var min = findNestedObj(itemObj, 'name', 'min')
@@ -31,7 +32,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
 
   clone.querySelector('.object-div').addEventListener('click', function (evt) {
     $("#centralModalSm").modal('show');
-    
+
     while (modalBody.firstChild) {
       modalBody.removeChild(modalBody.lastChild)
     }
@@ -45,7 +46,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     modalBody.appendChild(container)
 
     const buttonOptions = modalFooter.querySelector('.btn-options')
-    while (buttonOptions.firstChild){
+    while (buttonOptions.firstChild) {
       buttonOptions.removeChild(buttonOptions.lastChild)
     }
     const createNewContractButton = document.createElement('button')
@@ -53,9 +54,12 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
     createNewContractButton.className = "btn btn-primary btn-sm"
     createNewContractButton.innerHTML = "Create new contract"
     createNewContractButton.addEventListener('click', () => {
-      var evaluatingItem = JSON.parse(window.localStorage.getItem('evaluatingItem'))
-      $.redirect(`createNewContract?token=${window.localStorage.getItem('accessToken')}`, { data: JSON.stringify(itemObj), evaluatingItem: JSON.stringify(evaluatingItem) }, "POST");
+      var evaluatingItem = window.localStorage.getItem('evaluatingItem')
+      var itemStatus = window.localStorage.getItem('itemStatus')
+      $.redirect(`createNewContract?token=${window.localStorage.getItem('accessToken')}`,
+        { data: JSON.stringify(itemObj), evaluatingItem, itemStatus }, "POST");
       window.localStorage.removeItem('evaluatingItem')
+      window.localStorage.removeItem('itemStatus')
     })
     buttonOptions.appendChild(createNewContractButton)
 

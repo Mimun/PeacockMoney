@@ -1,5 +1,5 @@
-// Jquery Dependency
-export const addSeperatorOnInputChange = () => {
+// add seperator on change
+export const addSeparatorOnInputChange = () => {
   $("input[data-type='currency']").on({
     keyup: function () {
       formatCurrency($(this));
@@ -82,4 +82,14 @@ export const addSeperatorOnInputChange = () => {
     caret_pos = updated_len - original_len + caret_pos;
     input[0].setSelectionRange(caret_pos, caret_pos);
   }
+}
+
+// remove seperator
+export const removeSeperator = (number)=>{
+  return parseFloat(number.replace(/,/g, ''))
+}
+
+// add seperator on load
+export const addSeparator = (number)=>{
+  return parseFloat(number).toLocaleString('en')
 }

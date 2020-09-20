@@ -1,4 +1,5 @@
 import {findNestedObj} from './findNestedObj.js'
+import { addSeparator } from './addSeparatorOnInputChange.js'
 // used for generating list of evaluation item
 export const generateHTML = (itemObjs, template, elementName) => {
   const clone = document.importNode(template.content, true)
@@ -60,7 +61,7 @@ export const generateHTML = (itemObjs, template, elementName) => {
       const value = document.createElement('input')
       value.className = 'mdc-data-table__cell cell-div form-control'
 
-      value.setAttribute('value', evaluatingPrice.value)
+      value.setAttribute('value', addSeparator(evaluatingPrice.value))
       value.setAttribute('disabled', true)
       value.setAttribute('obj_property', 'value')
       // value.obj_property = 'value'

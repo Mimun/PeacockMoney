@@ -1,4 +1,5 @@
 import { findNestedObj } from './findNestedObj.js'
+import { addSeparator } from './addSeparatorOnInputChange.js'
 export const generateContractDetailHTML = (itemObj, template, elementName) => {
   const clone = template.content.cloneNode(true)
 
@@ -28,11 +29,13 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
             cloneBSide.querySelector('input').value = value
             clone.querySelector('.b-side-info-container').querySelector('.section').appendChild(cloneBSide)
           } else {
-            if (name !== "templateName" && name !== "image" && name !== "employee" && name !== 'store' && name !== "customer" && name !== "contractContent") {
+            if (name !== "templateName" && name !== "image" && name !== "employee" &&
+              name !== 'store' && name !== "customer" && name !== "contractContent") {
               // contract info
               const infoTemplatelone = infoTemplate.content.cloneNode(true)
               infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
-              infoTemplatelone.querySelector('input').value = value
+              infoTemplatelone.querySelector('input').value = name === "loan" || name === "min" || name === "max" ? 
+              addSeparator(value) : value
               clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
             }
           }

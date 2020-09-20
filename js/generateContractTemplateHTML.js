@@ -9,6 +9,7 @@ var selectLabel = document.createElement('label')
 
 import { findNestedObj } from './findNestedObj.js'
 import { makeRequest } from './makeRequest.js'
+import { addSeparator } from './addSeparatorOnInputChange.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
@@ -75,7 +76,9 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         input.removeAttribute('disabled')
 
       } else {
-        input.value = info.value
+        info.name === "min" ? input.value = addSeparator(info.value) : input.value = info.value
+        info.name === "max" ? input.value = addSeparator(info.value) : input.value = info.value
+
       }
 
       if (info.name === "loan" || info.name === "min" || info.name === "max") {
