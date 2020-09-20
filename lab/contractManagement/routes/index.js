@@ -176,45 +176,30 @@ router.post('/createNewContractTemplate', (req, res, next) => {
   })
 })
 
-// CONTRACT
-// create new contract route
-router.post('/createNewContract', function (req, res, next) {
+// get a contract template to create new contract
+router.get('/contractTemplates/:id', (req, res) => {
+  console.log('req: ', req.params.id)
   async.parallel({
+    contractTemplate: callback => {
+      ContractTemplate.findOne({ _id: req.params.id }).exec(callback)
+    },
     item: callback => {
-      try {
-        Item.find({}).exec(callback)
-
-      } catch (err) {
-        console.error(err)
-      }
+      Item.find({}).exec(callback)
     },
     itemStatus: callback => {
-      try {
-        ItemStatus.find({}).exec(callback)
-
-      } catch (err) {
-        console.error(err)
-      }
+      ItemStatus.find({}).exec(callback)
     },
     store: callback => {
-      try {
-        Store.find({}).exec(callback)
-
-      } catch (err) {
-        console.error(err)
-      }
+      Store.find({}).exec(callback)
     }
-  }, (err, result) => {
+  }, (err, results) => {
     if (err) throw err
     res.render('createNewContract', {
-      itemResults: result.item, statusResults: result.itemStatus, contractInfo: JSON.parse(req.body.data),
-      evaluatingItem: JSON.parse(req.body.evaluatingItem), itemStatus: JSON.parse(req.body.itemStatus), 
-      stores: result.store
+      itemResults: results.item, statusResults: results.itemStatus,
+      contractInfo: results.contractTemplate, stores: results.store
     });
-
   })
-
-});
+})
 
 router.post('/getStores', (req, res, next) => {
   console.log('req.body: ', req.body)
@@ -280,17 +265,10 @@ router.delete('/deleteContractTemplate/:id', (req, res) => {
   })
 })
 
+// CONTRACT
 // contract list
 router.get('/contracts', (req, res) => {
   Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
-    {
-      path: 'items.evaluationItem',
-      model: 'Item'
-    },
-    {
-      path: 'items.status',
-      model: 'ItemStatus'
-    },
     {
       path: 'store.value',
       model: 'Store'
@@ -307,14 +285,37 @@ router.get('/contracts', (req, res) => {
 })
 
 // create new contract
-router.post('/contracts', async (req, res) => {
+router.post('/contracts', (req, res) => {
   var data = req.body
   const contract = new Contract(data)
-  contract.save((err, result) => {
-    if (err) throw err
-    res.redirect('contracts')
-  })
+  try {
+    contract.save((err, result) => {
+      if (err) throw err
+      res.send('Saved contract successfully!')
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
 })
+
+// function to create property
+const createProperty = (metadata, infos, status, evaluationItem = null, contract = null,
+  originWarehouse = null, currentWarehouse = null, movement = [],
+  importDate = new Date(Date.now()), exportDate = null) => {
+  return {
+    metadata,
+    infos,
+    status,
+    evaluationItem,
+    contract,
+    originWarehouse,
+    currentWarehouse,
+    movement,
+    importDate,
+    exportDate
+  }
+}
 
 // update status of a contract
 router.put('/contracts/:id', async (req, res) => {
@@ -324,66 +325,43 @@ router.put('/contracts/:id', async (req, res) => {
     await Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
       if (err) throw err
       console.log('contract result: ', contractResult)
+      // add property only when the contract is approved
       if (contractResult.contractStatus === 'approved') {
         try {
           await Warehouse.findOne({ store: contractResult.store.value }).exec(async (err, warehouseResult) => {
             if (err) throw err
-            if (warehouseResult) {
+            console.log('warehouse result: ', warehouseResult)
+            if (contractResult.items.length !== 0) {
               await contractResult.items.forEach(item => {
-                var newItem = {
-                  infos: item.infos,
-                  status: item.status,
-                  evaluationItem: item.evaluationItem,
-                  contract: contractResult._id,
-                  originWarehouse: warehouseResult._id,
-                  currentWarehouse: warehouseResult._id,
-                  movement: [warehouseResult._id],
-                  importDate: new Date(Date.now()),
-                  exportDate: null
+                if (warehouseResult) {
+                  var newItem = createProperty(item.evaluationItem.metadata, item.infos, item.status, item.evaluationItem,
+                    contractResult._id, warehouseResult._id, warehouseResult._id, [warehouseResult._id])
+                  var property = new Property(newItem)
+                  console.log('new item: ', property)
+
+                  property.save((err, result) => {
+                    if (err) throw err
+                  })
+                } else {
+                  var newItem = createProperty(item.evaluationItem.metadata, item.infos, item.status, item.evaluationItem,
+                    contractResult._id, contractResult.store.value, contractResult.store.value, [contractResult.store.value])
+
+                  var property = new Property(newItem)
+                  console.log('new item: ', property)
+
+                  property.save((err, result) => {
+                    if (err) throw err
+                  })
                 }
-                var property = new Property(newItem)
-                console.log('new item: ', property)
-
-                property.save((err, result) => {
-                  if (err) throw err
-                })
-
               })
               res.send({ message: 'Saved property successfully!', result: contractResult })
 
-            } else {
-              await contractResult.items.forEach(item => {
-                var newItem = {
-                  infos: item.infos,
-                  status: item.status,
-                  evaluationItem: item.evaluationItem,
-                  contract: contractResult._id,
-                  originWarehouse: contractResult.store.value,
-                  currentWarehouse: contractResult.store.value,
-                  movement: [contractResult.store.value],
-                  importDate: new Date(Date.now()),
-                  exportDate: null
-                }
-                var property = new Property(newItem)
-                console.log('new item: ', property)
-
-                property.save((err, result) => {
-                  if (err) throw err
-                })
-
-              })
-              res.send({ message: 'Saved property successfully!', result: contractResult })
             }
 
           })
-          // await Warehouse.findOne({ "store": contractResult.store.value }).exec((err, warehouseResult) => {
-
-          // })
         } catch (err) {
           console.error(err)
         }
-
-
       }
     })
   } catch (err) {

@@ -12,8 +12,8 @@ const contractSchema = new mongoose.Schema({
   infos: [{ type: Object }],
   items: [{
     infos: [{ type: Object }],
-    evaluationItem: { type: mongoose.Types.ObjectId, ref: 'Item', required: false },
-    status: [{ type: mongoose.Types.ObjectId, ref: 'ItemStatus', required: false }]
+    evaluationItem: { type: Object, required: false },
+    status: [{ type: Object, required: false }]
   }],
   templateMetadata: [{
     name: { type: String },

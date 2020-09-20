@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 
 const propertySchema = new mongoose.Schema({
+  metadata: [{
+    type: Object
+  }],
   infos: [{
     name: { type: String },
     value: { type: String }

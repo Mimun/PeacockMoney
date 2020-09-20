@@ -62,7 +62,7 @@
                 <div class="contract-info"></div>
               </div>
               <div class="col-2 btn-options" style="margin: auto;">
-                <!-- <button class="btn btn-primary btn-sm"></button> -->
+                <button class="btn btn-primary btn-sm"></button>
                 <!-- <button class="btn btn-outline-danger btn-sm" id="btn-complete">Complete</button> -->
               </div>
             </div>
@@ -147,7 +147,7 @@
       generateContractListHTML(contract, template, 'list-container')
     })
     
-    if (document.referrer.split('/').includes('createNewContract?token='+window.localStorage.getItem('accessToken'))) {
+    if (document.referrer.split('/').includes('contractTemplates')) {
       console.log('first element: ', document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div'))
       var firstElement = document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div')
       firstElement.classList.add('blink-bg')

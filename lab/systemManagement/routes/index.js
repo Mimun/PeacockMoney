@@ -16,14 +16,14 @@ function escapeRegex(text) {
 };
 
 /* GET home page. */
-router.get('/', auth.isAuthenticated, function (req, res, next) {
+router.get('/', function (req, res, next) {
   // res.render('index', { title: 'Express' });
   res.redirect('employees')
 });
 
 // EMPLOYEES
 // get all employees
-router.get('/employees', auth.isAuthenticated, auth.checkRole, (req, res, next) => {
+router.get('/employees', (req, res, next) => {
   async.parallel({
     stores: callback => {
       // try catch to prevent "store" field id is null
@@ -371,7 +371,7 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
           },
           {
             path: 'currentWarehouse',
-            model: 'Warehouse'
+            model: 'Warehouse' || 'Store'
           }
         ]).exec(callback)
       } catch (error) {
@@ -425,7 +425,7 @@ router.get('/properties', (req, res, next) => {
           },
           {
             path: 'currentWarehouse',
-            model: 'Warehouse'
+            model: 'Warehouse' || 'Store'
           }
         ]).exec(callback)
       } catch (error) {

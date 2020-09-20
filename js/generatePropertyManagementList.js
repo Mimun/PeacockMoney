@@ -48,10 +48,17 @@ import { findNestedObj } from './findNestedObj.js'
 import { createSelect } from './createSelect.js'
 import { makeRequest } from './makeRequest.js'
 export const generatePropertyManagementList = async (itemObjs, warehouseList, elementName) => {
-  var warehouseSelectOptions = warehouseList.map(warehouse => {
-    var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
-    return option
-  })
+  var warehouseSelectOptions = []
+  if(warehouseList.length !==0){
+    warehouseList.map(warehouse => {
+      var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
+      warehouseSelectOptions.push(option)
+    })
+  } else {
+    warehouseSelectOptions.push(`<option value="">No store</option>`)
+
+  }
+  
   var tableContainer = document.createElement('div')
   tableContainer.innerHTML = tableTemplate
 

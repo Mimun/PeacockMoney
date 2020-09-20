@@ -160,16 +160,19 @@
           <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoan thu sap phai thuc
             hien</a>
         </div>
-        <a onclick="getPage('/contractMng/contracts')" class="list-group-item list-group-item-action list-group-item-light">Quan ly
+        <a onclick="getPage('/contractMng/contracts')"
+          class="list-group-item list-group-item-action list-group-item-light">Quan ly
           hop
           dong</a>
-        <a onclick="getPage('/evaluationMng/evaluation')" class="list-group-item list-group-item-action list-group-item-light">Tham
+        <a onclick="getPage('/evaluationMng/evaluation')"
+          class="list-group-item list-group-item-action list-group-item-light">Tham
           dinh
           gia</a>
         <a onclick="getPage('/contractMng/contractTemplates')" id="createNewContract"
           class="list-group-item list-group-item-action list-group-item-light">Tao
           moi hop dong</a>
-        <a onclick="getPage('/systemMng/properties')" class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
+        <a onclick="getPage('/systemMng/properties')"
+          class="list-group-item list-group-item-action list-group-item-light">Quan ly tai san</a>
         <a href="#" class="list-group-item list-group-item-action list-group-item-light">Thong ke/Bao cao</a>
         <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
           data-toggle="collapse" data-target="#management-item">
@@ -177,23 +180,28 @@
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="management-item">
-          <a onclick="getPage('/contractMng')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
+          <a onclick="getPage('/contractMng')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau
             hop
             dong</a>
           <!-- <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau phieu</a> -->
-          <a onclick="getPage('/systemMng/stores')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+          <a onclick="getPage('/systemMng/stores')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
             cua
             hang</a>
-          <a onclick="getPage('/systemMng/warehouses')" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+          <a onclick="getPage('/systemMng/warehouses')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quan
             ly
             kho</a>
           <a onclick="getPage('/evaluationMng/itemStatus')"
             class="list-group-item list-group-item-action list-group-item-secondary">Quan ly tinh trang tai
             san</a>
-          <a onclick="getPage('/systemMng/employees')" class="list-group-item list-group-item-action list-group-item-secondary">Quan
+          <a onclick="getPage('/systemMng/employees')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quan
             ly
             nhan vien</a>
-          <a onclick="getPage('/evaluationMng')" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
+          <a onclick="getPage('/evaluationMng')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quan ly
             tham
             dinh
             gia</a>
@@ -218,7 +226,7 @@
   // });
   document.querySelector('a#createNewContract').addEventListener('click', (event) => {
     window.localStorage.removeItem('evaluatingItem')
-
+    window.localStorage.removeItem('itemStatus')
   })
   // hide sidebar onclick
   $("#sidebar-toggle-btn").click(function (e) {
@@ -251,7 +259,7 @@
     // }
   })
 
-  const getPage = (url)=>{
+  const getPage = (url) => {
     console.log('url: ', url)
     const accessToken = window.localStorage.getItem('accessToken')
     console.log('access token: ', accessToken)

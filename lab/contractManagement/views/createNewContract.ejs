@@ -154,10 +154,12 @@
     var originItemList = <%- JSON.stringify(itemResults) %>;
     var originItemStatusList = <%- JSON.stringify(statusResults) %>;
     var originContractTemplate = <%- JSON.stringify(contractInfo) %>;
-    var evaluatingItem = <%- JSON.stringify(evaluatingItem) %>;
-    var itemStatus = <%- JSON.stringify(itemStatus) %>
     var stores = <%- JSON.stringify(stores) %>;
-    
+    var evaluatingItem = window.localStorage.getItem('evaluatingItem') ?
+      JSON.parse(window.localStorage.getItem('evaluatingItem')) : null
+    var itemStatus = window.localStorage.getItem('itemStatus') ?
+      JSON.parse(window.localStorage.getItem('itemStatus')) : null
+
     console.log('evaluating item from local storage: ', evaluatingItem)
     console.log('prev url: ', document.referrer)
     console.log('stores: ', stores)
@@ -169,14 +171,10 @@
     // display chosen evaluating item if user chose from 'evaluating' page
     if (evaluatingItem) {
       generateHTML([evaluatingItem], template, "item-evaluation")
-      // var clone = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').cloneNode(true)
-      // clone.C_DATA = document.querySelector('.contract-item-container').querySelector('.item-container').querySelector('#item-evaluation').querySelector('.object-div').C_DATA
-      // document.querySelector('#item-evaluation').innerHTML = ''
-      // document.querySelector('#item-evaluation').appendChild(clone)
     }
-    if(itemStatus){
+    if (itemStatus) {
       generateHTML(itemStatus, template, "item-status")
-      document.querySelector('#item-status').querySelectorAll('.object-div').forEach(div=>{
+      document.querySelector('#item-status').querySelectorAll('.object-div').forEach(div => {
         const removeButton = document.createElement('button')
         removeButton.className = "btn btn-sm"
         removeButton.innerHTML = `<span class="material-icons">remove</span>`
@@ -188,7 +186,7 @@
         })
         div.querySelector('div.mdc-data-table__header-row.header-row-div').appendChild(removeButton)
       })
-      
+
     }
 
     var currentDiv = null
@@ -449,19 +447,21 @@
         // evaluation item and item status
         var item = itemContainer.querySelector('#item-evaluation').querySelector('.object-div')
         if (item) {
-          itemInfo.evaluationItem = item.C_DATA._id
+          itemInfo.evaluationItem = item.C_DATA
         }
         var itemStatus = itemContainer.querySelector('#item-status').querySelectorAll('.object-div')
         if (itemStatus) {
-          itemStatus = itemStatus.forEach(element => itemInfo.status.push(element.C_DATA._id))
+          itemStatus = itemStatus.forEach(element => itemInfo.status.push(element.C_DATA))
         }
 
         data.items.push(itemInfo)
       })
 
       console.log('data: ', data)
-      makeRequest('POST', 'contracts', 'application/json', JSON.stringify(data), () => {
-        window.location.href = 'contracts?token=' + window.localStorage.getItem('accessToken')
+      makeRequest('POST', '/contractMng/contracts', 'application/json', JSON.stringify(data), () => {
+        window.localStorage.removeItem('evaluatingItem')
+        window.localStorage.removeItem('itemStatus')
+        window.location.href = '/contractMng/contracts?token=' + window.localStorage.getItem('accessToken')
       })
 
     })
@@ -470,7 +470,7 @@
     document.querySelector('#search').addEventListener('submit', (event) => {
       event.preventDefault()
       var array = event.target.querySelector('input').value.split(" ")
-      makeRequest('POST', 'search', 'application/json', JSON.stringify({ data: array }), (result) => {
+      makeRequest('POST', '/contractMng/search', 'application/json', JSON.stringify({ data: array }), (result) => {
         searchFunction(originItemList, result.itemResults, template, 'item-list-table-container')
         chooseItem()
 
