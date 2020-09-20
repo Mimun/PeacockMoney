@@ -52,15 +52,31 @@
     <%- include('sideBar.ejs') %>
     <div class="" id="page-content-wrapper">
       <h2>Quan ly tham dinh gia</h2>
-      <div class="form-group">
-        <label for="file-input" class="bmd-label-floating">File input</label>
-        <input type="file" class="form-control-file" id="file-input" accept=".csv">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="file-input" class="bmd-label-floating">File input</label>
+              <input type="file" class="form-control-file" id="file-input" accept=".csv">
+            </div>
+          </div>
+          <div class="col">
+            <form action="#" id="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+            </form>
+
+          </div>
+
+        </div>
       </div>
+
       <!-- for table of items -->
       <div id="table-container"></div>
       <!-- for buttons: create, submit, deleteMany -->
       <div id="btn-options-container">
-        <button class="btn btn-primary btn-sm" id="create-item">Create Item</button>
+        <button class="btn btn-primary btn-sm" id="btn-create-item">Create Item</button>
       </div>
       <!-- for page navigation -->
       <div id="page-navigation-container"></div>
@@ -91,14 +107,21 @@
     import { generateListHTML, insertValue, removeFieldFunction } from '/generateListHTML.js'
     import { createPagination } from '/createPagination.js'
     import { convertToJSON } from '/convertToJSON.js'
+    import { makeRequest } from '/makeRequest.js'
 
-    var originItemList = <%- JSON.stringify(dbItemObjs) %>;
-    console.log('origin item list: ', originItemList)
+    var originItemList = <% - JSON.stringify(itemList) %>;
+    var totalItemFromDb = <% - JSON.stringify(totalItems) %>
+      console.log('origin item list: ', originItemList)
+    console.log('test item list: ', <% - JSON.stringify(testList) %>)
+
     // generate db list
     const inputTemplate = document.querySelector('#input-template')
     // originItemList.forEach(element => {
     //   generateListHTML(element, inputTemplate, 'table-container')
     // });
+    if (originItemList && originItemList.length !== 0) {
+      createPagination(originItemList, totalItemFromDb, inputTemplate, 'page-navigation-container')
+    }
 
     // import file
     document.querySelector('input#file-input').addEventListener('change', (event) => {
@@ -109,13 +132,25 @@
         console.log('result: ', e.target.result)
         var itemObjs = convertToJSON(csv)
         console.log('initial item objs: ', itemObjs)
-        createPagination(itemObjs, inputTemplate, 'page-navigation-container')
+        createPagination(itemObjs, itemObjs.length, inputTemplate, 'page-navigation-container')
+
+        var uploadBtn = document.createElement('button')
+        uploadBtn.className = 'btn btn-sm btn-raised btn-primary'
+        uploadBtn.id = 'btn-upload'
+        uploadBtn.innerHTML = "upload"
+        uploadBtn.addEventListener('click', (event) => {
+          console.log('event: ', event.target)
+          makeRequest('POST', 'items', 'application/json', JSON.stringify(itemObjs), () => {
+
+          })
+        })
+        document.querySelector('#btn-options-container').appendChild(uploadBtn)
       }
       fileReader.readAsText(file, 'ISO-8859-1')
     })
 
     // create item 
-    document.querySelector('#create-item').addEventListener('click', (event) => {
+    document.querySelector('#btn-create-item').addEventListener('click', (event) => {
       $('#exampleModal').on('show.bs.modal', () => {
         var modalBody = document.querySelector('.modal-body')
         var modalFooter = document.querySelector('.modal-footer')
@@ -135,15 +170,15 @@
         // apppend default metadata inputs
         insertValue(inputTemplate.content.cloneNode(true), 'Loai tai san', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
         assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'itemType', 'loaiTaiSan', 'koreanString')
-        
+
         insertValue(inputTemplate.content.cloneNode(true), 'Phan loai tai san', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
         assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'itemCategory', 'phanLoaiTaiSan', 'koreanString')
-        
+
         insertValue(inputTemplate.content.cloneNode(true), 'Tham dinh gia', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
-        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'evaluatingPrice','thamDinhGia', 'koreanString')
-        
+        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'evaluatingPrice', 'thamDinhGia', 'koreanString')
+
         insertValue(inputTemplate.content.cloneNode(true), 'Loai', '', itemContainer, 'metadata row', false, 'form-control-plaintext')
-        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'type','loai', 'koreanString')
+        assignDataLang(itemContainer.lastElementChild.querySelector('input[name="value"]'), 'type', 'loai', 'koreanString')
 
         modalBody.innerHTML = ''
         modalBody.appendChild(itemContainer)
@@ -157,14 +192,14 @@
         })
 
         // create button
-        modalFooter.querySelector('button#create').addEventListener('click', (event)=>{
+        modalFooter.querySelector('button#create').addEventListener('click', (event) => {
           var createObj = {
             metadata: [],
             infos: []
           }
 
           // metadata
-          modalBody.querySelectorAll('div.metadata.row').forEach(row=>{
+          modalBody.querySelectorAll('div.metadata.row').forEach(row => {
             createObj.metadata.push({
               name: row.querySelector('input[name="value"]').getAttribute('data-eng'),
               dataVie: row.querySelector('input[name="value"]').getAttribute('data-vie'),
@@ -176,7 +211,7 @@
           })
 
           // infos
-          modalBody.querySelectorAll('div.info.row').forEach(row=>{
+          modalBody.querySelectorAll('div.info.row').forEach(row => {
             createObj.infos.push({
               cType: 'text',
               name: row.querySelector('input[name="name"]').value,
@@ -190,7 +225,22 @@
       $('#exampleModal').modal('show')
     })
 
-    const assignDataLang = (input, dataEng, dataVie, dataKor)=>{
+    // search
+    document.querySelector('#search').addEventListener('submit', (event) => {
+      event.preventDefault()
+      var array = event.target.querySelector('input').value.split(" ")
+      makeRequest('POST', 'items/search', 'application/json', JSON.stringify({ data: array }), result => {
+        if (result.itemResults.length !== 0) {
+          createPagination(originItemList, totalItemFromDb, inputTemplate, 'page-navigation-container')
+        } else {
+          window.alert('No results match!')
+          createPagination(originItemList, totalItemFromDb, inputTemplate, 'page-navigation-container')
+        }
+      })
+
+    })
+
+    const assignDataLang = (input, dataEng, dataVie, dataKor) => {
       input.setAttribute('data-vie', dataVie)
       input.setAttribute('data-kor', dataKor)
       input.setAttribute('data-eng', dataEng)

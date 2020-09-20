@@ -1,5 +1,6 @@
 import { generateListHTML } from './generateListHTML.js'
-export const createPagination = (itemObjs, template, elementName) => {
+import { makeRequest } from './makeRequest.js'
+export const createPagination = (itemObjs, totalItems, template, elementName) => {
   // pagination
 
 
@@ -28,11 +29,11 @@ export const createPagination = (itemObjs, template, elementName) => {
   // duplicate object remove
 
   var list = itemObjs
-  var pageList = []
   var currentPage = 1
   var numberPerPage = 5
-  var numberOfPages = Math.ceil(list.length / numberPerPage)
+  var numberOfPages = Math.ceil(totalItems / numberPerPage)
 
+  // create pagination item
   const generateList = (currentPage) => {
     if (document.querySelector('.li-list').firstChild) {
       document.querySelector('.li-list').innerHTML = ''
@@ -116,33 +117,31 @@ export const createPagination = (itemObjs, template, elementName) => {
   generateList(currentPage)
 
   const nextPage = () => {
-    currentPage += 1
-    loadList()
-    generateList(currentPage)
+    randomPage(currentPage + 1)
   }
 
   const prevPage = () => {
-    currentPage -= 1
-    loadList()
-    generateList(currentPage)
+    randomPage(currentPage - 1)
   }
 
   const randomPage = (page) => {
-    currentPage = page
-    loadList()
-    generateList(currentPage)
+    var obj = makeRequestObj(currentPage, page, 5, list[0]._id, list[list.length - 1]._id)
+    console.log('obj: ', obj)
+    makeRequest('POST', `items/page`, 'application/json', JSON.stringify(obj), (result) => {
+      currentPage = page
+      loadList(result.items)
+      generateList(currentPage)
+      list = result.items
+    })
+
   }
 
   const firstPage = () => {
-    currentPage = 1
-    loadList()
-    generateList(currentPage)
+    randomPage(1)
   }
 
   const lastPage = () => {
-    currentPage = numberOfPages
-    loadList()
-    generateList(currentPage)
+    randomPage(numberOfPages)
   }
 
   const check = () => {
@@ -150,24 +149,18 @@ export const createPagination = (itemObjs, template, elementName) => {
     document.querySelector('#next').disabled = currentPage == numberOfPages ? true : false
   }
 
-  const loadList = () => {
-    var begin = ((currentPage - 1) * numberPerPage)
-    var end = begin + numberPerPage
-
-    pageList = list.slice(begin, end)
+  const loadList = (items) => {
     if (document.querySelector('#table-container').firstChild) {
       document.querySelector('#table-container').innerHTML = ''
     }
-    pageList.forEach(page=>{
+    items.forEach(page => {
       generateListHTML(page, template, 'table-container')
 
     })
-
     check()
-
   }
 
-  loadList()
+  loadList(list)
 
   document.querySelector('#prev').addEventListener('click', () => {
     prevPage()
@@ -181,4 +174,14 @@ export const createPagination = (itemObjs, template, elementName) => {
   document.querySelector('#last').addEventListener('click', () => {
     lastPage()
   })
+
+  function makeRequestObj() {
+    return {
+      currentPage: arguments[0],
+      nextPage: arguments[1],
+      pageSize: arguments[2],
+      firstId: arguments[3],
+      lastId: arguments[4]
+    }
+  }
 }

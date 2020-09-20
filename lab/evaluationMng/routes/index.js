@@ -12,51 +12,63 @@ function escapeRegex(text) {
 // item
 /* GET home page. */
 router.get('/', auth.isAuthenticated, auth.checkRole, function (req, res, next) {
-  Item.find({}, (err, results) => {
+  async.parallel({
+    count: callback => {
+      Item.count().exec(callback)
+    },
+    itemList: callback => {
+      Item.find({}).sort({ _id: 1 }).exec(callback)
+    },
+    testList: callback => {
+      Item.find().sort({ _id: 1 }).exec(callback)
+    }
+  }, (err, results) => {
     if (err) throw err
-    res.render('index', { dbItemObjs: results, roleAbility: req.roleAbility });
-
+    res.render('index', { itemList: results.itemList, totalItems: results.count, roleAbility: req.roleAbility, testList: results.testList });
   })
+
 });
+// router.get('/', auth.isAuthenticated, auth.checkRole, function (req, res, next) {
+//   async.parallel({
+//     count: callback => {
+//       Item.count().exec(callback)
+//     },
+//     itemList: callback => {
+//       Item.find({}).sort({ _id: 1 }).limit(5).exec(callback)
+//     },
+//     testList: callback => {
+//       Item.find().sort({ _id: 1 }).exec(callback)
+//     }
+//   }, (err, results) => {
+//     if (err) throw err
+//     res.render('item', { itemList: results.itemList, totalItems: results.count, roleAbility: req.roleAbility, testList: results.testList });
+//   })
 
-router.get('/items/test', (req, res, next) => {
-  Item.find({}, (err, results) => {
-    if (err) throw err
-    res.render('item', { dbItemObjs: results, roleAbility: req.roleAbility });
-
-  })
-})
+// });
 
 // upload items
 router.post('/items', (req, res) => {
   var itemObjsArray = req.body
-  var array = []
   itemObjsArray.map(itemObj => {
     Item.findOneAndUpdate({ _id: itemObj._id }, { $set: { "infos": itemObj.infos } }, (err, result) => {
       if (err) throw err
       if (result) {
         console.log('Updated successfully!')
-        array.push(itemObj)
       } else {
         var item = new Item({
           metadata: itemObj.metadata,
           infos: itemObj.infos
         })
-        array.push(item)
-
         item.save((err, result) => {
           if (err) throw err
-          else {
-            console.log('Saved to db successfully!')
+          console.log('Saved to db successfully!')
 
-          }
         })
       }
 
     })
 
   })
-  console.log('array: ', array)
 
 })
 
@@ -106,6 +118,26 @@ router.put('/items/:id', (req, res) => {
   })
 })
 
+// get items of specific page in pagination
+router.post('/items/page', (req, res, next) => {
+  console.log('req(from pagination): ', req.body)
+  let nextPage = req.body.nextPage
+  let currentPage = req.body.currentPage
+  let pageSize = req.body.pageSize
+
+  if (nextPage > currentPage) {
+    Item.find({ _id: { $gt: req.body.lastId } }).skip((nextPage - currentPage - 1) * pageSize).limit(5).exec((err, result) => {
+      if (err) throw err
+      res.status(200).send({ items: result })
+    })
+  } else if (nextPage < currentPage) {
+    Item.find({ _id: { $lt: req.body.firstId } }).sort({ _id: -1 }).skip((currentPage - nextPage - 1) * pageSize).limit(5).exec((err, result) => {
+      if (err) throw err
+      res.status(200).send({ items: result.reverse() })
+    })
+  }
+})
+
 // search items
 router.post('/items/search', (req, res) => {
   console.log('req.body: ', req.body)
@@ -126,64 +158,10 @@ router.post('/items/search', (req, res) => {
 
   })
 
-  // var resultArray = []
-  // for (var i = 0; i < arrayValue.length; i++) {
-  //   const regex = new RegExp(escapeRegex(arrayValue[i]), 'gi')
-  //   console.log('search: ', regex)
-  //   Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec((err, results)=>{
-  //     if(err) throw err
-  //   })
-  // }
-  // async.parallel({
-  //   itemResults1: callback => {
-  //     const regex = new RegExp(escapeRegex(arrayValue[0]), 'gi')
-  //     console.log('search: ', regex)
-  //     Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
-  //   },
-  //   itemResults2: callback => {
-  //     const regex = new RegExp(escapeRegex(arrayValue[1]), 'gi')
-  //     console.log('search: ', regex)
-  //     Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
-  //   },
-  //   itemResults3: callback => {
-  //     const regex = new RegExp(escapeRegex(arrayValue[2]), 'gi')
-  //     console.log('search: ', regex)
-  //     Item.find({ $and: [{ 'metadata.value': regex }, { 'infos.value': regex }] }).exec(callback)
-  //   }
-
-  // }, (err, result) => {
-  //   if (err) throw err
-  //   var array1 = result.itemResults1, array2 = result.itemResults2, array3 = result.itemResults3, array4 = []
-  //   console.log('array 1: ', array1.length)
-  //   console.log('array 2: ', array2.length)
-  //   console.log('array 3: ', array3.length)
-
-  //   var array12 = []
-  //   array1.map(item1 => {
-  //     array2.map(item2 => {
-  //       if (JSON.stringify(item1) === JSON.stringify(item2)) {
-  //         array12.push(item2)
-  //       }
-  //     })
-  //   })
-  //   console.log('array 12: ', array12.length)
-
-  //   array12.map(item12 => {
-  //     array3.map(item3 => {
-  //       if (JSON.stringify(item12) === JSON.stringify(item3)) {
-  //         array4.push(item3)
-  //       }
-  //     })
-  //   })
-  //   console.log(array4)
-  //   res.send({itemResults: array4})
-  // })
-
-
-  // const regex = new RegExp(escapeRegex(req.body.data), 'gi')
-
-
 })
+
+
+
 
 // delete many
 router.delete('/items', (req, res) => {
