@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose')
+const _ = require('lodash')
 const Item = require('../../../models/item');
 const ItemStatus = require('../../../models/itemStatus');
 const ContractTemplate = require('../../../models/contractTemplate')
@@ -203,11 +204,37 @@ router.get('/contractTemplates/:id', (req, res) => {
 
 router.post('/getStores', (req, res, next) => {
   console.log('req.body: ', req.body)
-  Employee.find({ "metadata.value": req.body.data }, (err, result) => {
+  Store.findOne({ _id: req.body.data }).exec((err, result) => {
     if (err) throw err
-    res.send({ employeeList: result })
-  })
+    console.log('results: ', result.representatives)
+    // find representative
+    if (result) {
+      async.parallel({
+        representatives: callback => {
+          Employee.find({ _id: { $in: result.representatives } }).exec(callback)
+        },
+        employees: callback => {
+          Employee.find({ "metadata.value": result._id }).exec(callback)
+        }
+      }, async (err, results) => {
+        if (err) throw err
+        console.log('representatives: ', results.representatives.length)
+        console.log('employees: ', results.employees.length)
+        var employeeList = results.representatives.concat(results.employees)
+        employeeList = employeeList.map(employee=>{
+          return{
+            _id: employee._id,
+            name: findNestedObj(employee, 'name', 'fullName').value,
+            role: findNestedObj(employee, 'name', 'role').value
+          }
+        })
 
+        res.send({ employeeList: _.uniqBy(employeeList, e=>{
+          return JSON.stringify(e._id)
+        }) })
+      })
+    }
+  })
 })
 
 // search item || itemstatus

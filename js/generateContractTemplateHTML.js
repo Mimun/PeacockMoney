@@ -17,8 +17,8 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   if (storeList.length !== 0) {
     storeList.map(store => {
       var name = findNestedObj(store, 'name', 'name')
-      var option = `<option value=${store._id}>${findNestedObj(store, 'name', 'name') ? 
-      findNestedObj(store, 'name', 'name').value : (findNestedObj(store, 'name', 'storeName')? findNestedObj(store, 'name', 'storeName').value : 'None')}</option>`
+      var option = `<option value=${store._id}>${findNestedObj(store, 'name', 'name') ?
+        findNestedObj(store, 'name', 'name').value : (findNestedObj(store, 'name', 'storeName') ? findNestedObj(store, 'name', 'storeName').value : 'None')}</option>`
       storeSelectOptions.push(option)
     })
   }
@@ -87,14 +87,14 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         input.setAttribute('name', info.name)
         input.setAttribute('data-vie', info.dataVie)
         input.setAttribute('data-kor', info.dataKor)
-  
+
       } else {
         input.type = info.cType
         input.setAttribute('name', info.name)
         input.setAttribute('data-vie', info.dataVie)
         input.setAttribute('data-kor', info.dataKor)
       }
-      
+
 
       var label = clone.querySelector('label')
       label.innerHTML = displayInfoLang(info.dataVie)
@@ -104,9 +104,12 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         contractInfoDiv.appendChild(clone)
       }
     } else if (info.name === 'store') {
-      var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang', 'koreanString', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
+      var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang',
+        'koreanString', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
       aSideInfoDiv.appendChild(selectContainerClone)
-      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien', 'koreanString', [], selectLabel, 'Nguoi dai dien', selectContainer)
+
+      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien',
+        'koreanString', [], selectLabel, 'Nguoi dai dien', selectContainer)
       selectContainerClone2.querySelector('#employee').disabled = true
       aSideInfoDiv.appendChild(selectContainerClone2)
 
@@ -117,9 +120,9 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
           employeeSelectOptions.unshift('<option value="">No employee</option>')
           if (result.employeeList.length !== 0) {
             result.employeeList.map(employee => {
-              var employeeName = findNestedObj(employee, 'name', 'fullName')
-              var employeeRole = findNestedObj(employee, 'name', 'role')
-              var option = `<option value=${employee._id}>${employeeName.value}-${employeeRole.value}</option>`
+              // var employeeName = findNestedObj(employee, 'name', 'fullName')
+              // var employeeRole = findNestedObj(employee, 'name', 'role')
+              var option = `<option value=${employee._id}>${employee.name}-${employee.role}</option>`
               employeeSelectOptions.push(option)
             })
           }

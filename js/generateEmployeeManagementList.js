@@ -103,11 +103,12 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
           })
         }
         if (findNestedObj(itemObj, 'name', 'store')) {
-          if (selectList.includes(findNestedObj(itemObj, 'name', 'store')).value) {
-            modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
-          } else {
-            modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
-          }
+          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+
+          // if (selectList.includes(findNestedObj(itemObj, 'name', 'store').value)) {
+          // } else {
+          //   modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          // }
 
         } else {
           modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
