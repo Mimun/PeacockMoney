@@ -73,41 +73,48 @@
   <script src="http://cdn.quilljs.com/1.2.0/quill.js"></script>
   <script src="http://cdn.quilljs.com/1.2.0/quill.min.js"></script>
   <script type="module" src="./cropper/cropper.js"></script>
-  <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
+  <script>$(document).ready(function () {
+      $('body').bootstrapMaterialDesign();
+
+    });
+    window.addEventListener('load', () => {
+      console.log('window laod')
+      window.localStorage.removeItem('accessToken')
+      window.localStorage.removeItem('user')
+    })  
+  </script>
 
   <script type="module">
     import { makeRequest } from '/makeRequest.js'
-    if (window.localStorage.getItem('accessToken')) {
-      window.location.href = '/home?token=' + window.localStorage.getItem('accessToken')
-    } else {
-      document.querySelector('#login').addEventListener('submit', (event) => {
-        event.preventDefault()
-        console.log('event: ', event.target)
-        var userName = document.querySelector('#userName').value
-        var password = document.querySelector('#password').value
-        console.log('user acc: ', {
-          userName, password
-        })
-        $.ajax({
-          type: 'POST',
-          url: '',
-          contentType: 'application/json',
-          data: JSON.stringify({
-            userAccount: {
-              userName, password
-            },
-            localStorage: window.localStorage.getItem('user')
-          }),
-          success: result => {
-            console.log('result: ', result)
-            window.localStorage.setItem('accessToken', result.accessToken)
-            window.localStorage.setItem('user', JSON.stringify(result.user))
-            window.location.href = '/home?token=' + result.accessToken
-          }
-        })
 
+    document.querySelector('#login').addEventListener('submit', (event) => {
+      event.preventDefault()
+      console.log('event: ', event.target)
+      var userName = document.querySelector('#userName').value
+      var password = document.querySelector('#password').value
+      console.log('user acc: ', {
+        userName, password
       })
-    }
+      $.ajax({
+        type: 'POST',
+        url: '',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          userAccount: {
+            userName, password
+          },
+          localStorage: window.localStorage.getItem('user')
+        }),
+        success: result => {
+          console.log('result: ', result)
+          window.localStorage.setItem('accessToken', result.accessToken)
+          window.localStorage.setItem('user', JSON.stringify(result.user))
+          window.location.href = '/home?token=' + result.accessToken
+        }
+      })
+
+    })
+
 
   </script>
 </body>

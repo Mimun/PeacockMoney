@@ -64,17 +64,21 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
   if (itemObjs.length !== 0) {
     // table header
-    var trHeader = document.createElement('tr')
-    itemObjs[0].evaluationItem.metadata.forEach(metadata => {
-      var th = document.createElement('th')
-      th.setAttribute('data-field', metadata.name)
-      th.setAttribute('data-sortable', true)
-      th.innerHTML = metadata.name
-      trHeader.appendChild(th)
-    })
-    tableContainer.querySelector('#table>thead').appendChild(trHeader)
+    
 
     itemObjs.forEach(itemObj => {
+      {
+        var trHeader = document.createElement('tr')
+        itemObj.evaluationItem.metadata.forEach(metadata => {
+          var th = document.createElement('th')
+          th.setAttribute('data-field', metadata.name)
+          th.setAttribute('data-sortable', true)
+          th.innerHTML = metadata.name
+          trHeader.appendChild(th)
+        })
+        tableContainer.querySelector('#table>thead').appendChild(trHeader)
+        continue
+      }
       var tr = document.createElement('tr')
       tr.C_DATA = itemObj
       itemObj.evaluationItem.metadata.forEach(metadata => {

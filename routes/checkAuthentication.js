@@ -11,7 +11,8 @@ exports.isAuthenticated = function (req, res, next) {
     if (jwtToken) {
       jwt.verify(jwtToken, accessTokenSecret, function (err, payload) {
         if (err) {
-          res.status(401).json({ message: 'Unauthorized user!' });
+          // res.status(401).json({ message: 'Unauthorized user!' });
+          res.redirect('/login')
         } else {
           console.log('decoder: ', payload);
           req.payload = payload
@@ -19,7 +20,8 @@ exports.isAuthenticated = function (req, res, next) {
         }
       });
     } else {
-      res.status(401).json({ message: 'Unauthorized user!' });
+      // res.status(401).json({ message: 'Unauthorized user!' });
+      res.redirect('/login')
 
     }
 
@@ -28,19 +30,23 @@ exports.isAuthenticated = function (req, res, next) {
     if (jwtToken) {
       jwt.verify(jwtToken, accessTokenSecret, function (err, payload) {
         if (err) {
-          res.status(401).json({ message: 'Unauthorized user!' });
+          // res.status(401).json({ message: 'Unauthorized user!' });
+          res.redirect('/login')
+
         } else {
           req.payload = payload
           next()
         }
       });
     } else {
-      res.status(401).json({ message: 'Unauthorized user!' });
+      // res.status(401).json({ message: 'Unauthorized user!' });
+      res.redirect('/login')
+
 
     }
   } else {
-    res.status(401).json({ message: 'Unauthorized user!' });
-
+    // res.status(401).json({ message: 'Unauthorized user!' });
+    res.redirect('/login')
   }
 };
 

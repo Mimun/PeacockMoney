@@ -106,7 +106,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
     } else if (info.name === 'store') {
       var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang', 'koreanString', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
       aSideInfoDiv.appendChild(selectContainerClone)
-      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien', 'koreanString', [], selectLabel, 'Nhan vien', selectContainer)
+      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien', 'koreanString', [], selectLabel, 'Nguoi dai dien', selectContainer)
       selectContainerClone2.querySelector('#employee').disabled = true
       aSideInfoDiv.appendChild(selectContainerClone2)
 

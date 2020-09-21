@@ -334,8 +334,9 @@ router.put('/contracts/:id', async (req, res) => {
             if (contractResult.items.length !== 0) {
               await contractResult.items.forEach(item => {
                 if (warehouseResult) {
-                  var newItem = createProperty(item.evaluationItem.metadata, item.infos, item.status, item.evaluationItem,
-                    contractResult._id, warehouseResult._id, warehouseResult._id, [warehouseResult._id])
+                  var newItem = createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
+                    item.infos, item.status, item.evaluationItem, contractResult._id,
+                    warehouseResult._id, warehouseResult._id, [warehouseResult._id])
                   var property = new Property(newItem)
                   console.log('new item: ', property)
 
@@ -343,8 +344,9 @@ router.put('/contracts/:id', async (req, res) => {
                     if (err) throw err
                   })
                 } else {
-                  var newItem = createProperty(item.evaluationItem.metadata, item.infos, item.status, item.evaluationItem,
-                    contractResult._id, contractResult.store.value, contractResult.store.value, [contractResult.store.value])
+                  var newItem = createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
+                    item.infos, item.status, item.evaluationItem, contractResult._id,
+                    contractResult.store.value, contractResult.store.value, [contractResult.store.value])
 
                   var property = new Property(newItem)
                   console.log('new item: ', property)
