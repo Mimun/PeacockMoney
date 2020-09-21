@@ -112,7 +112,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
       aSideInfoDiv.querySelector('#store').addEventListener('change', (event) => {
         console.log('event: ', event.target.value)
-        makeRequest('POST', 'getStores', 'application/json', JSON.stringify({ data: event.target.value }), (result) => {
+        makeRequest('POST', '/contractMng/getStores', 'application/json', JSON.stringify({ data: event.target.value }), (result) => {
           var employeeSelectOptions = []
           employeeSelectOptions.unshift('<option value="">No employee</option>')
           if (result.employeeList.length !== 0) {
