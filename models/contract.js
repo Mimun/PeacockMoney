@@ -12,8 +12,8 @@ const contractSchema = new mongoose.Schema({
   infos: [{ type: Object }],
   items: [{
     infos: [{ type: Object }],
-    evaluationItem: { type: Object, required: false },
-    status: [{ type: Object, required: false }]
+    evaluationItem: { type: Object},
+    status: [{ type: Object}]
   }],
   templateMetadata: [{
     name: { type: String },

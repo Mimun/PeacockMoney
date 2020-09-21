@@ -315,6 +315,7 @@ router.get('/contracts', (req, res) => {
 router.post('/contracts', (req, res) => {
   var data = req.body
   const contract = new Contract(data)
+  console.log('contract items; ', contract.items)
   try {
     contract.save((err, result) => {
       if (err) throw err
@@ -403,14 +404,15 @@ router.put('/contracts/:id', async (req, res) => {
 router.get('/contracts/:id', (req, res) => {
   console.log('id received', req.params.id)
   Contract.findById(req.params.id).populate([
+   
     {
-      path: 'items.evaluationItem',
-      model: 'Item'
+      path: 'store.value',
+      model: 'Store'
+    }, {
+      path: 'employee.value',
+      model: 'Employee'
     },
-    {
-      path: 'items.status',
-      model: 'ItemStatus'
-    }
+   
   ]).exec((err, contractResult) => {
     if (err) throw err
     res.render('contractContent', { contractDetail: contractResult })

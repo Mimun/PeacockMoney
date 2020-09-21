@@ -80,40 +80,93 @@
 
   <script type="module">
     import { findNestedObj } from '/findNestedObj.js'
+    import { addSeparator, numberToWords } from '/addSeparatorOnInputChange.js'
     const convertDbObjToQuillObj = (object) => {
-      const objectData = {}
+      const objectData = {
+        id: "",
+        createdDate: "",
+        storeAddress: "",
+        storeCreditNumber: "",
+        storeRepresentative: "",
+        storeRepresentativeJobTitle: "",
+
+        customer: "",
+        customerId: "",
+        customerIdProvidingPlace: "",
+        customerIdProvidingDate: "",
+        customerAddress: "",
+        customerPhoneNumber: "",
+        customerFamilyRegister: "",
+
+        loan: "",
+        loanInWord: "",
+        endingDate: "",
+        item: "",
+        itemStatus: "",
+        max: "",
+        min: "",
+        minLoanTerm: "",
+        numberOfAcceptanceTerms: "",
+        numberOfDaysPerTerm: "",
+        percentageInterestPerDay: "",
+        percentagePenaltyPerDay: "",
+      }
+      // contract metadata
       if (object.contractMetadata.length !== 0) {
         object.contractMetadata.forEach(info => {
           if (info) {
             if (info.name && info.name !== "image" && info.name !== "contractContent") {
-              objectData[info.name] = info.value
+              objectData[info.name] = info.name === "loan"? addSeparator(info.value) : info.value
             }
+            if(info.name === "loan"){
+              objectData["loanInWord"] = numberToWords(info.value)
+            }
+
           }
 
         })
 
+      }
+
+      // item
+      if (object.items.length !== 0) {
+        var item = []
+        var itemStatus = []
+
         for (var i = 0; i < object.items.length; i++) {
-          console.log('item: ', object.items[i])
+          console.log('item: ', object.items[i].evaluationItem)
           var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type')
           if (itemName) {
-            objectData["item" + (i + 1) + ""] = itemName.value
+            item.push(itemName.value)
 
           }
-          var statusArr = []
           object.items[i].status.forEach(status => {
             var status = findNestedObj(status, 'name', 'type')
+            console.log('status: ', status)
+
             if (status) {
-              statusArr.push(status.value)
+              itemStatus.push(status.value)
 
             }
 
           })
-          objectData["item" + (i + 1) + "Status"] = statusArr.join(", ")
 
         }
+        objectData["item"] = item.join(", ")
+        objectData["itemStatus"] = itemStatus.join(", ")
       }
 
+      // store
+      objectData["storeAddress"] = findNestedObj(object.store.value, 'name', 'address') ?
+        findNestedObj(object.store.value, 'name', 'address').value : 'None'
+      objectData["storeCreditNumber"] = findNestedObj(object.store.value, 'name', 'creditNumber') ?
+        findNestedObj(object.store.value, 'name', 'creditNumber').value : 'None'
+      objectData["storeRepresentative"] = object.employee.value ?
+        findNestedObj(object.employee.value, 'name', 'fullName').value : 'None'
+      objectData["storeRepresentativeJobTitle"] = object.employee.value ?
+        findNestedObj(object.employee.value, 'name', 'jobTitle').value : 'None'
 
+      
       return objectData
     }
 
