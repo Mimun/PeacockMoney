@@ -51,29 +51,23 @@ import { findNestedObj } from './findNestedObj.js'
 import { createSelect } from './createSelect.js'
 import { makeRequest } from './makeRequest.js'
 
-var itemObj = {}
-var warehouseList = []
-const getObj = (obj, list)=>{
-  itemObj = obj
-  warehouseList = list
-}
+var params = {}
 
 export const generatePropertyManagementList = async (itemObjs, warehouseList, elementName) => {
-  await getObj(itemObjs, warehouseList)
+  await Object.assign(params, { itemObjs, warehouseList })
+
   var tableContainer = document.createElement('div')
   tableContainer.innerHTML = tableTemplate
 
   if (itemObjs.length !== 0) {
     // table header
-
-
     itemObjs.forEach(itemObj => {
+
       if (!tableContainer.querySelector('#table>thead').querySelector('tr')) {
         var trHeader = document.createElement('tr')
 
         itemObj.metadata.forEach(metadata => {
           if (metadata) {
-            console.log('metadata', metadata.name)
             var th = document.createElement('th')
             th.setAttribute('data-field', metadata.name)
             th.setAttribute('data-sortable', true)
@@ -99,12 +93,14 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
         var propertyData = event.target.closest('tr').C_DATA
-    
+
         $("#centralModalSm").on('show.bs.modal', () => {
+          modalBody.C_DATA = propertyData
           modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
+          
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
-
+          
           // property infos
           var h4 = document.createElement('h4')
           h4.innerHTML = "I. Property infos"
@@ -116,6 +112,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
             detailInfoTemplateClone.querySelector('input').value = info.value
             propertyInfoContainer.appendChild(detailInfoTemplateClone)
           })
+
           // current warehouse
           var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
           detailInfoTemplateClone.querySelector('label').innerHTML = findNestedObj(propertyData.currentWarehouse, 'name', 'name') ?
@@ -128,7 +125,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
           modalBody.innerHTML = ""
           modalBody.appendChild(propertyInfoContainer)
-          
+
         })
         $("#centralModalSm").modal('show')
       })
@@ -142,7 +139,11 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 }
 
 modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
-  console.log('text content: ', event.target.textContent)
+  var itemObj = event.target.closest('.modal-content').querySelector('.modal-body').C_DATA
+  console.log('text content: ', itemObj)
+
+  // create warehouse selector options
+  var { warehouseList } = params
   var warehouseSelectOptions = []
   if (warehouseList.length !== 0) {
     warehouseList.map(warehouse => {
@@ -151,11 +152,12 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
     })
   } else {
     warehouseSelectOptions.push(`<option value="">No store</option>`)
-
   }
+
   switch (event.target.textContent) {
     case ("change warehouse"):
       modalBody.innerHTML = ""
+      // current warehouse
       const currentWarehouseContainer = document.createElement('div')
       currentWarehouseContainer.className = "current-warehouse"
 
@@ -166,12 +168,14 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
 
       const currentWarehouse = document.createElement('p')
       currentWarehouse.className = 'text-center'
+
       findNestedObj(itemObj.currentWarehouse, 'name', 'name') ?
         currentWarehouse.innerHTML = `${findNestedObj(itemObj.currentWarehouse, 'name', 'name').value}
  -${findNestedObj(itemObj.currentWarehouse, 'name', 'address').value}` : currentWarehouse.innerHTML = `No warehouse/store`
       currentWarehouseContainer.appendChild(currentWarehouse)
       modalBody.appendChild(currentWarehouseContainer)
 
+      // warehouse selector
       createSelect(select, warehouseList[0]._id, 'warehouse-select', 'select-warehouse',
         warehouseSelectOptions, selectLabel, 'Move to: ', selectContainer, modalBody, false)
       break
@@ -188,6 +192,7 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
           modalBody.querySelector('select.select-warehouse').value !== "") {
           updateObj.currentWarehouse = modalBody.querySelector('select.select-warehouse').value
           updateObj.movement.push(modalBody.querySelector('select.select-warehouse').value)
+          console.log('updateObj: ', updateObj)
           makeRequest("PUT", '/systemMng/properties/' + itemObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
             // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
             window.location.reload()
@@ -195,7 +200,6 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
         }
       }
 
-      console.log('updateObj: ', updateObj)
       break
     default:
   }
