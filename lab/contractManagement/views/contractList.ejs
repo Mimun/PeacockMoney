@@ -150,7 +150,7 @@
     if (document.referrer.split('/').includes('contractTemplates')) {
       console.log('first element: ', document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div'))
       var firstElement = document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div')
-      firstElement.classList.add('blink-bg')
+      firstElement? firstElement.classList.add('blink-bg') : null
     }
 
     const addClickEvent = () => {

@@ -161,9 +161,11 @@
       JSON.parse(window.localStorage.getItem('itemStatus')) : null
 
     console.log('evaluating item from local storage: ', evaluatingItem)
-    console.log('prev url: ', document.referrer)
-    console.log('stores: ', stores)
     console.log('item status from local storage: ', itemStatus)
+    console.log('item list: ', originItemList)
+    console.log('item status: ', originItemStatusList)
+    console.log('stores: ', stores)
+    console.log('prev url: ', document.referrer)
 
     const template = document.querySelector('#quan-ly-tham-dinh-gia')
     const contractTemplate = document.querySelector('template[id="contract-template"]')

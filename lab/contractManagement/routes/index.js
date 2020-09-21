@@ -184,10 +184,10 @@ router.get('/contractTemplates/:id', (req, res) => {
       ContractTemplate.findOne({ _id: req.params.id }).exec(callback)
     },
     item: callback => {
-      Item.find({}).exec(callback)
+      Item.find({}).limit(20).exec(callback)
     },
     itemStatus: callback => {
-      ItemStatus.find({}).exec(callback)
+      ItemStatus.find({}).limit(20).exec(callback)
     },
     store: callback => {
       Store.find({}).exec(callback)

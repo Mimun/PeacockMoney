@@ -44,54 +44,64 @@ select.className = "browser-default custom-select"
 
 var selectLabel = document.createElement('label')
 
+const modalBody = document.querySelector('.modal-body')
+const modalFooter = document.querySelector('.modal-footer')
+
 import { findNestedObj } from './findNestedObj.js'
 import { createSelect } from './createSelect.js'
 import { makeRequest } from './makeRequest.js'
-export const generatePropertyManagementList = async (itemObjs, warehouseList, elementName) => {
-  var warehouseSelectOptions = []
-  if(warehouseList.length !==0){
-    warehouseList.map(warehouse => {
-      var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
-      warehouseSelectOptions.push(option)
-    })
-  } else {
-    warehouseSelectOptions.push(`<option value="">No store</option>`)
 
-  }
-  
+var itemObj = {}
+var warehouseList = []
+const getObj = (obj, list)=>{
+  itemObj = obj
+  warehouseList = list
+}
+
+export const generatePropertyManagementList = async (itemObjs, warehouseList, elementName) => {
+  await getObj(itemObjs, warehouseList)
   var tableContainer = document.createElement('div')
   tableContainer.innerHTML = tableTemplate
 
   if (itemObjs.length !== 0) {
     // table header
-    
+
 
     itemObjs.forEach(itemObj => {
-      {
+      if (!tableContainer.querySelector('#table>thead').querySelector('tr')) {
         var trHeader = document.createElement('tr')
-        itemObj.evaluationItem.metadata.forEach(metadata => {
-          var th = document.createElement('th')
-          th.setAttribute('data-field', metadata.name)
-          th.setAttribute('data-sortable', true)
-          th.innerHTML = metadata.name
-          trHeader.appendChild(th)
+
+        itemObj.metadata.forEach(metadata => {
+          if (metadata) {
+            console.log('metadata', metadata.name)
+            var th = document.createElement('th')
+            th.setAttribute('data-field', metadata.name)
+            th.setAttribute('data-sortable', true)
+            th.innerHTML = metadata.name
+            trHeader.appendChild(th)
+
+          }
+
         })
-        tableContainer.querySelector('#table>thead').appendChild(trHeader)
-        continue
+        if (trHeader.firstChild) {
+          tableContainer.querySelector('#table>thead').appendChild(trHeader)
+
+        }
       }
       var tr = document.createElement('tr')
       tr.C_DATA = itemObj
-      itemObj.evaluationItem.metadata.forEach(metadata => {
+      itemObj.metadata ? itemObj.metadata.forEach(metadata => {
         var td = document.createElement('td')
-        td.innerHTML = metadata.value
+        td.innerHTML = metadata ? metadata.value : 'None'
         tr.appendChild(td)
-      })
+
+      }) : null
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
         var propertyData = event.target.closest('tr').C_DATA
-        const modalBody = document.querySelector('.modal-body')
-        const modalFooter = document.querySelector('.modal-footer')
+    
         $("#centralModalSm").on('show.bs.modal', () => {
+          modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
 
@@ -118,57 +128,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
           modalBody.innerHTML = ""
           modalBody.appendChild(propertyInfoContainer)
-          modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
-            console.log('text content: ', event.target.textContent)
-            switch (event.target.textContent) {
-              case ("change warehouse"):
-                modalBody.innerHTML = ""
-                const currentWarehouseContainer = document.createElement('div')
-                currentWarehouseContainer.className = "current-warehouse"
-
-                const currentWarehouseLabel = document.createElement('label')
-                currentWarehouseLabel.className = "current-warehouse-label"
-                currentWarehouseLabel.innerHTML = "Current warehouse"
-                currentWarehouseContainer.appendChild(currentWarehouseLabel)
-
-                const currentWarehouse = document.createElement('p')
-                currentWarehouse.className = 'text-center'
-                findNestedObj(itemObj.currentWarehouse, 'name', 'name') ?
-                  currentWarehouse.innerHTML = `${findNestedObj(itemObj.currentWarehouse, 'name', 'name').value}
-           -${findNestedObj(itemObj.currentWarehouse, 'name', 'address').value}` : currentWarehouse.innerHTML = `No warehouse/store`
-                currentWarehouseContainer.appendChild(currentWarehouse)
-                modalBody.appendChild(currentWarehouseContainer)
-
-                createSelect(select, warehouseList[0]._id, 'warehouse-select', 'select-warehouse',
-                  warehouseSelectOptions, selectLabel, 'Move to: ', selectContainer, modalBody, false)
-                break
-              case ("change"):
-                var updateObj = {
-                  currentWarehouse: null,
-                  movement: itemObj.movement
-                }
-                if (itemObj.currentWarehouse &&
-                  modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {
-                  window.alert("Property's already in this warehouse!")
-                } else {
-                  if (modalBody.querySelector('select.select-warehouse').value ||
-                    modalBody.querySelector('select.select-warehouse').value !== "") {
-                    updateObj.currentWarehouse = modalBody.querySelector('select.select-warehouse').value
-                    updateObj.movement.push(modalBody.querySelector('select.select-warehouse').value)
-                    makeRequest("PUT", '/systemMng/properties/' + itemObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
-                      // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
-                      window.location.reload()
-                    })
-                  }
-                }
-
-                console.log('updateObj: ', updateObj)
-                break
-              default:
-            }
-            event.target.textContent === "change warehouse" ? event.target.textContent = "change" : event.target.textContent = "change"
-
-          })
+          
         })
         $("#centralModalSm").modal('show')
       })
@@ -180,3 +140,65 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
 
 }
+
+modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
+  console.log('text content: ', event.target.textContent)
+  var warehouseSelectOptions = []
+  if (warehouseList.length !== 0) {
+    warehouseList.map(warehouse => {
+      var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
+      warehouseSelectOptions.push(option)
+    })
+  } else {
+    warehouseSelectOptions.push(`<option value="">No store</option>`)
+
+  }
+  switch (event.target.textContent) {
+    case ("change warehouse"):
+      modalBody.innerHTML = ""
+      const currentWarehouseContainer = document.createElement('div')
+      currentWarehouseContainer.className = "current-warehouse"
+
+      const currentWarehouseLabel = document.createElement('label')
+      currentWarehouseLabel.className = "current-warehouse-label"
+      currentWarehouseLabel.innerHTML = "Current warehouse"
+      currentWarehouseContainer.appendChild(currentWarehouseLabel)
+
+      const currentWarehouse = document.createElement('p')
+      currentWarehouse.className = 'text-center'
+      findNestedObj(itemObj.currentWarehouse, 'name', 'name') ?
+        currentWarehouse.innerHTML = `${findNestedObj(itemObj.currentWarehouse, 'name', 'name').value}
+ -${findNestedObj(itemObj.currentWarehouse, 'name', 'address').value}` : currentWarehouse.innerHTML = `No warehouse/store`
+      currentWarehouseContainer.appendChild(currentWarehouse)
+      modalBody.appendChild(currentWarehouseContainer)
+
+      createSelect(select, warehouseList[0]._id, 'warehouse-select', 'select-warehouse',
+        warehouseSelectOptions, selectLabel, 'Move to: ', selectContainer, modalBody, false)
+      break
+    case ("change"):
+      var updateObj = {
+        currentWarehouse: null,
+        movement: itemObj.movement
+      }
+      if (itemObj.currentWarehouse &&
+        modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {
+        window.alert("Property's already in this warehouse!")
+      } else {
+        if (modalBody.querySelector('select.select-warehouse').value ||
+          modalBody.querySelector('select.select-warehouse').value !== "") {
+          updateObj.currentWarehouse = modalBody.querySelector('select.select-warehouse').value
+          updateObj.movement.push(modalBody.querySelector('select.select-warehouse').value)
+          makeRequest("PUT", '/systemMng/properties/' + itemObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
+            // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
+            window.location.reload()
+          })
+        }
+      }
+
+      console.log('updateObj: ', updateObj)
+      break
+    default:
+  }
+  event.target.textContent === "change warehouse" ? event.target.textContent = "change" : event.target.textContent = "change"
+
+})
