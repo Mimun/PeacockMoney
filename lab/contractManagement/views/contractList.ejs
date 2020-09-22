@@ -139,18 +139,26 @@
       $("#wrapper").toggleClass("toggled");
     });
     const contractList = <%- JSON.stringify(contractList) %>;
+    const roleAbility = <%- JSON.stringify(roleAbility) %>;
+    const payload = <%- JSON.stringify(payload) %>;
+
     console.log('contract list: ', contractList)
+    console.log('role ability: ', roleAbility)
+    console.log('payload: ', payload)
+
+   
+
     const template = document.querySelector('#contract-card-template')
     console.log('previous url: ', document.referrer.split('/').includes('createNewContract'))
 
     contractList.map(contract => {
-      generateContractListHTML(contract, template, 'list-container')
+      generateContractListHTML(contract, template, 'list-container', payload, roleAbility)
     })
-    
+
     if (document.referrer.split('/').includes('contractTemplates')) {
       console.log('first element: ', document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div'))
       var firstElement = document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div')
-      firstElement? firstElement.classList.add('blink-bg') : null
+      firstElement ? firstElement.classList.add('blink-bg') : null
     }
 
     const addClickEvent = () => {

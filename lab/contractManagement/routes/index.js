@@ -306,7 +306,7 @@ router.get('/contracts', (req, res) => {
     }
   ]).exec((err, result2) => {
     if (err) throw err
-    res.render('contractList', { contractList: result2 })
+    res.render('contractList', { contractList: result2, roleAbility: req.roleAbility, payload: req.payload })
 
   })
 })
@@ -325,6 +325,15 @@ router.post('/contracts', (req, res) => {
     console.error(error)
   }
 
+})
+
+// delete contract
+router.delete('/contracts/:id', (req, res, next)=>{
+  console.log('id: ', req.params.id)
+  Contract.findByIdAndDelete({_id: req.params.id}).exec((err, result)=>{
+    if(err) throw err
+    res.send('Delete contract successfully!')
+  })
 })
 
 // function to create property

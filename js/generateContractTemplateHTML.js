@@ -69,6 +69,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   // contract metadata
   itemObj.contractMetadata.map(info => {
     if (info.name !== "creator" && info.name !== 'store') {
+      console.log('info name: ', info.name === "min")
       const clone = document.importNode(template.content, true)
       var input = clone.querySelector('input')
 
@@ -76,9 +77,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         input.removeAttribute('disabled')
 
       } else {
-        info.name === "min" ? input.value = addSeparator(info.value) : input.value = info.value
-        info.name === "max" ? input.value = addSeparator(info.value) : input.value = info.value
-
+        info.name === "min" || "max" ? input.value = addSeparator(info.value) : input.value = info.value
       }
 
       if (info.name === "loan" || info.name === "min" || info.name === "max") {
