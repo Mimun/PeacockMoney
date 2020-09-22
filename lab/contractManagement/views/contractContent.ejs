@@ -117,9 +117,9 @@
             if (info.name && info.name !== "image" && info.name !== "contractContent") {
               objectData[info.name] = info.name === "loan" ? addSeparator(info.value) : info.value
             }
-            if (info.name === "loan") {
-              objectData["loanInWord"] = numberToWords(info.value)
-            }
+            // if (info.name === "loan") {
+            //   objectData["loanInWord"] = numberToWords(info.value)
+            // }
 
           }
 

@@ -202,7 +202,8 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
           cType: 'select'
         })
       })
-      // console.log('modalBody: ', modalBody.querySelector('cropper-wc'))
+    
+      // console.log('modalBody: ', modalBody.querySelector('cropper-wc').getImageData())
       // modalBody.querySelector('cropper-wc').addEventListener('CROPPED', (event)=>{
       //   console.log('image: ', event.detail['image'])
       // })
@@ -216,10 +217,10 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
       }
 
       console.log('update obj: ', updateObj)
-      // makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      //   'application/json', JSON.stringify(updateObj), () => {
-      //     window.location.reload()
-      //   })
+      makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+        'application/json', JSON.stringify(updateObj), () => {
+          window.location.reload()
+        })
 
       break
     default:
