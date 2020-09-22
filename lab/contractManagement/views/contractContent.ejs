@@ -101,8 +101,7 @@
         loan: "",
         loanInWord: "",
         endingDate: "",
-        item: "",
-        itemStatus: "",
+        items: "",
         max: "",
         min: "",
         minLoanTerm: "",
@@ -116,9 +115,9 @@
         object.contractMetadata.forEach(info => {
           if (info) {
             if (info.name && info.name !== "image" && info.name !== "contractContent") {
-              objectData[info.name] = info.name === "loan"? addSeparator(info.value) : info.value
+              objectData[info.name] = info.name === "loan" ? addSeparator(info.value) : info.value
             }
-            if(info.name === "loan"){
+            if (info.name === "loan") {
               objectData["loanInWord"] = numberToWords(info.value)
             }
 
@@ -130,30 +129,33 @@
 
       // item
       if (object.items.length !== 0) {
+
         var item = []
-        var itemStatus = []
-
+        var ol = document.createElement('ol')
         for (var i = 0; i < object.items.length; i++) {
-          console.log('item: ', object.items[i].evaluationItem)
-          var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type')
-          if (itemName) {
-            item.push(itemName.value)
 
-          }
+          console.log('item: ', object.items[i].evaluationItem)
+          // item name
+          var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type') ?
+            findNestedObj(object.items[i].evaluationItem, 'name', 'type').value : 'None'
+
+          // item status
+          var itemStatus = []
           object.items[i].status.forEach(status => {
             var status = findNestedObj(status, 'name', 'type')
             console.log('status: ', status)
 
             if (status) {
               itemStatus.push(status.value)
-
             }
-
           })
-
+          itemStatus = itemStatus.join(", ")
+          const li = document.createElement('li')
+          li.innerHTML = `<p>Tai san cam co ${i + 1}: ${itemName}<br>Tinh trang: ${itemStatus}</p>`
+          ol.appendChild(li)
         }
-        objectData["item"] = item.join(", ")
-        objectData["itemStatus"] = itemStatus.join(", ")
+        objectData["items"] = `${ol.outerHTML}`
+
       }
 
       // store
@@ -166,7 +168,7 @@
       objectData["storeRepresentativeJobTitle"] = object.employee.value ?
         findNestedObj(object.employee.value, 'name', 'jobTitle').value : 'None'
 
-      
+
       return objectData
     }
 
