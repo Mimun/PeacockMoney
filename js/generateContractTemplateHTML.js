@@ -9,7 +9,7 @@ var selectLabel = document.createElement('label')
 
 import { findNestedObj } from './findNestedObj.js'
 import { makeRequest } from './makeRequest.js'
-import { addSeparator } from './addSeparatorOnInputChange.js'
+import { addSeparator, removeSeperator } from './addSeparatorOnInputChange.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   console.log('itemobjs from generaete contract template htlm: ', itemObj)
@@ -165,6 +165,19 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
     })
   }
+
+  // prevent typing the loan from getting over the max or under the min
+  contractInfoDiv.querySelector('input[name="loan"]').addEventListener('change', (event) => {
+    console.log('chane: ', event.target.value)
+    var loan = parseFloat(removeSeperator(event.target.value))
+    var min = parseFloat(removeSeperator(contractInfoDiv.querySelector('input[name="min"]').value))
+    var max = parseFloat(removeSeperator(contractInfoDiv.querySelector('input[name="max"]').value))
+    if (loan < min || loan > max) {
+      window.alert('You cannot enter the loan being out of min-max range')
+      contractInfoDiv.querySelector('input[name="loan"]').value = 0
+    }
+
+  })
 
 
   document.body.querySelector('#' + elementName + '').appendChild(infoContainer)

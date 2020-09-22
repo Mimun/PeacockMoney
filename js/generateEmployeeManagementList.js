@@ -81,6 +81,13 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
             imageContainer.innerHTML = `<img src="${data.value}">`
             modalBody.appendChild(imageContainer)
 
+            // var imageEditContainer = document.createElement('div')
+            // imageEditContainer.className = 'cropper-container'
+            // imageEditContainer.innerHTML = `<cropper-wc title="abc"></cropper-wc>`
+            // imageEditContainer.style.padding = '0 18%'
+            // imageEditContainer.style.display = 'none'
+            // modalBody.appendChild(imageEditContainer)
+
           } else {
             if (data.cType !== 'select') {
               const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
@@ -163,6 +170,8 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
         modalBody.querySelectorAll('select').forEach(select => {
           select.disabled = false
         })
+        // modalBody.querySelector('.img-container').style.display = 'none'
+        // modalBody.querySelector('.cropper-container').style.display = 'block'
       } else {
         modalBody.querySelector('input[name="password"]').disabled = false
 
@@ -170,8 +179,6 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 
       break
     case "Update":
-      console.log('update')
-
       var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [] }
       updateObj.metadata.push({
         cType: 'image',
@@ -195,6 +202,10 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
           cType: 'select'
         })
       })
+      // console.log('modalBody: ', modalBody.querySelector('cropper-wc'))
+      // modalBody.querySelector('cropper-wc').addEventListener('CROPPED', (event)=>{
+      //   console.log('image: ', event.detail['image'])
+      // })
       if (updateObj._id === user._id) {
         window.localStorage.setItem('user', JSON.stringify({
           userName: findNestedObj(updateObj, 'name', 'fullName').value,
@@ -205,10 +216,10 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
       }
 
       console.log('update obj: ', updateObj)
-      makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-        'application/json', JSON.stringify(updateObj), () => {
-          window.location.reload()
-        })
+      // makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+      //   'application/json', JSON.stringify(updateObj), () => {
+      //     window.location.reload()
+      //   })
 
       break
     default:
