@@ -56,7 +56,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
     let email = findNestedObj(itemObj.metadata, 'name', 'email').value
     let id = itemObj._id
     let role = findNestedObj(itemObj.metadata, 'name', 'role').value
-    let avatar = findNestedObj(itemObj.metadata, 'name', 'avatar')? findNestedObj(itemObj.metadata, 'name', 'avatar').value : 'None'
+    let avatar = findNestedObj(itemObj.metadata, 'name', 'avatar') ? findNestedObj(itemObj.metadata, 'name', 'avatar').value : 'None'
 
     clone.querySelector('.name').innerHTML = name
     clone.querySelector('.phone-number').innerHTML = phoneNumber
@@ -81,12 +81,12 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
             imageContainer.innerHTML = `<img src="${data.value}">`
             modalBody.appendChild(imageContainer)
 
-            // var imageEditContainer = document.createElement('div')
-            // imageEditContainer.className = 'cropper-container'
-            // imageEditContainer.innerHTML = `<cropper-wc title="abc"></cropper-wc>`
-            // imageEditContainer.style.padding = '0 18%'
-            // imageEditContainer.style.display = 'none'
-            // modalBody.appendChild(imageEditContainer)
+            var imageEditContainer = document.createElement('div')
+            imageEditContainer.className = 'cropper-container'
+            imageEditContainer.innerHTML = `<cropper-wc title="abc"></cropper-wc>`
+            imageEditContainer.style.padding = '0 18%'
+            imageEditContainer.style.display = 'none'
+            modalBody.appendChild(imageEditContainer)
 
           } else {
             if (data.cType !== 'select') {
@@ -142,6 +142,8 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
     })
     document.querySelector('#' + elementName + '').appendChild(clone)
   })
+  
+  
 }
 
 console.log('param: ', param)
@@ -170,21 +172,26 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
         modalBody.querySelectorAll('select').forEach(select => {
           select.disabled = false
         })
-        // modalBody.querySelector('.img-container').style.display = 'none'
-        // modalBody.querySelector('.cropper-container').style.display = 'block'
+        modalBody.querySelector('.img-container').style.display = 'none'
+        modalBody.querySelector('.cropper-container').style.display = 'block'
+        modalBody.querySelector('.cropper-container').querySelector('cropper-wc').addEventListener('CROPPED', (event) => {
+          console.log('image: ', event.detail['image'])
+        })
+        console.log('img: ', modalBody.querySelector('.cropper-container').querySelector('cropper-wc').querySelector('img'))
       } else {
         modalBody.querySelector('input[name="password"]').disabled = false
 
       }
-
       break
     case "Update":
+      console.log('modalBody: ', modalBody.querySelector('cropper-wc').getImageData())
+
       var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [] }
       updateObj.metadata.push({
         cType: 'image',
         dataKor: 'koreanString',
         name: 'avatar',
-        value: modalBody.querySelector('img').getAttribute('src'),
+        value: modalBody.querySelector('.cropper-container').querySelector('cropper-wc').getImageData(),
         dataVie: 'anhDaiDien'
       })
 
@@ -202,11 +209,8 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
           cType: 'select'
         })
       })
-    
-      // console.log('modalBody: ', modalBody.querySelector('cropper-wc').getImageData())
-      // modalBody.querySelector('cropper-wc').addEventListener('CROPPED', (event)=>{
-      //   console.log('image: ', event.detail['image'])
-      // })
+
+
       if (updateObj._id === user._id) {
         window.localStorage.setItem('user', JSON.stringify({
           userName: findNestedObj(updateObj, 'name', 'fullName').value,

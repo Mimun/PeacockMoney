@@ -95,6 +95,20 @@ router.post('/employees', (req, res, next) => {
 // upate employee
 router.put('/employees/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
+  var employeeAvatar = findNestedObj(req.body.metadata, 'name', 'avatar') ? findNestedObj(req.body.metadata, 'name', 'avatar').value : 'None'
+  var fullName = findNestedObj(req.body, 'name', 'fullName') ? findNestedObj(req.body, 'name', 'fullName').value : 'Unknown'
+  var base64data = employeeAvatar.replace(/^data:image\/[a-z]+;base64,/, "")
+  if (base64data) {
+    var isBase64 = checkBase64(base64data)
+    if (isBase64) {
+      let base64Ext = employeeAvatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
+      console.log('extension 1: ', base64Ext)
+      // const imageBuffer = new Buffer(base64data, "base64");
+      fs.writeFileSync(`public/images/${fullName}.${base64Ext}`, base64data, 'base64');
+      findNestedObj(req.body.metadata, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+    }
+  }
+
   Employee.findByIdAndUpdate({ _id: req.params.id }, { $set: { 'metadata': req.body.metadata, 'store': req.body.store } }, (err, result) => {
     if (err) throw err
     res.send('Update successfully!')
@@ -297,7 +311,7 @@ router.get('/warehouses', (req, res, next) => {
         }
       })
     }
-    if (results.stores.length !==0) {
+    if (results.stores.length !== 0) {
       storeList = await results.stores.map(store => {
         var name = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
         var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'

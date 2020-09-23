@@ -5,7 +5,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    .content-container {
+      border: 1px solid lightgrey;
+      padding: 5%;
+      /* width: 50vw; */
+    }
 
+    .part {
+      margin-bottom: 3%;
+    }
+
+    .contract-image {
+      width: 128px;
+      height: auto;
+      max-height: 128px;
+      position: relative;
+      float: right;
+    }
+
+    .contract-image img {
+      width: 100%;
+      height: auto;
+    }
+
+    .contract-detail-body {
+      padding: 0 5%;
+    }
+
+    .contract-detail-body .section {
+      margin: 2% 0;
+      padding: 0 5%;
+    }
+
+    .section-title {
+      font-weight: bold;
+    }
+
+    .section-title.signature-container {
+      font-weight: normal;
+      font-style: italic;
+      margin: 5%;
+    }
+
+    .signature {
+      min-height: 192px;
+    }
+
+    .signature h5 {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .invisible-div {
+      visibility: hidden;
+      width: 0;
+      height: 0;
+    }
+  </style>
 </head>
 
 <body>
@@ -28,64 +85,7 @@
   </template>
   
   <template id="contract-template">
-    <style>
-      .content-container {
-        border: 1px solid lightgrey;
-        padding: 5%;
-        /* width: 50vw; */
-      }
-  
-      .part {
-        margin-bottom: 3%;
-      }
-  
-      .contract-image {
-        width: 128px;
-        height: auto;
-        max-height: 128px;
-        position: relative;
-        float: right;
-      }
-  
-      .contract-image img {
-        width: 100%;
-        height: auto;
-      }
-  
-      .contract-detail-body {
-        padding: 0 5%;
-      }
-  
-      .contract-detail-body .section {
-        margin: 2% 0;
-        padding: 0 5%;
-      }
-  
-      .section-title {
-        font-weight: bold;
-      }
-  
-      .section-title.signature-container {
-        font-weight: normal;
-        font-style: italic;
-        margin: 5%;
-      }
-  
-      .signature {
-        min-height: 192px;
-      }
-  
-      .signature h5 {
-        font-weight: bold;
-        text-align: center;
-      }
-  
-      .invisible-div {
-        visibility: hidden;
-        width: 0;
-        height: 0;
-      }
-    </style>
+    
     <div class="content-container">
       <div class="contract-detail-container">
         <div class="contract-detail-header part">
