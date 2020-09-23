@@ -84,7 +84,8 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
             var imageEditContainer = document.createElement('div')
             imageEditContainer.className = 'cropper-container'
             imageEditContainer.innerHTML = `<cropper-wc title="abc"></cropper-wc>`
-            imageEditContainer.style.padding = '0 18%'
+            imageEditContainer.style.width = "100%"
+            imageEditContainer.style.margin = 'auto'
             imageEditContainer.style.display = 'none'
             modalBody.appendChild(imageEditContainer)
 

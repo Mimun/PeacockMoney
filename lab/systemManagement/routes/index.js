@@ -85,11 +85,7 @@ router.post('/employees', (req, res, next) => {
     } catch (err) {
       console.error(err)
     }
-
-
   })
-
-
 })
 
 // upate employee
@@ -480,8 +476,6 @@ router.put('/properties/:id', (req, res, next) => {
     res.send({ message: 'Updated successfully!', result })
   })
 })
-
-
 
 const findNestedObj = (entireObj, keyToFind, valToFind) => {
   let foundObj;

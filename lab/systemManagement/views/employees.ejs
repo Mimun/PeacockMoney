@@ -23,6 +23,14 @@
     .modal-content .modal-footer .btn {
       margin: 0 8px;
     }
+
+    .list-group-item:first-child{
+      margin-right: 0 !important;
+    }
+    .list-group{
+      width: fit-content;
+      margin: auto;
+    }
   </style>
 </head>
 
@@ -113,30 +121,25 @@
 
     <!-- employee list -->
     <template id="employee-list">
-      <div class="info-container object-div">
-        <div class="container">
-          <div class="row">
-            <div class="col-1">
-              <img class="avatar rounded-circle" src="" alt="" style="width: 40px; height: 40px; object-fit: cover;">
-            </div>
-            <div class="col">
-              <p class="name"></p>
-            </div>
-            <div class="col">
-              <p class="role"></p>
-            </div>
-            <div class="col">
-              <p class="phone-number"></p>
-            </div>
-            <div class="col">
-              <p class="email"></p>
-            </div>
-            <div class="col">
-              <p class="id"></p>
-            </div>
-          </div>
+      <div class="info-container object-div list-group-item">
+        <div class="bmd-list-group-col">
+          <img class="avatar rounded-circle" src="" alt="" style="width: 40px; height: 40px; object-fit: cover;">
         </div>
-
+        <div class="bmd-list-group-col">
+          <p class="name"></p>
+        </div>
+        <div class="bmd-list-group-col">
+          <p class="role"></p>
+        </div>
+        <div class="bmd-list-group-col">
+          <p class="phone-number"></p>
+        </div>
+        <div class="bmd-list-group-col">
+          <p class="email"></p>
+        </div>
+        <div class="bmd-list-group-col">
+          <p class="id"></p>
+        </div>
       </div>
     </template>
 
@@ -151,7 +154,7 @@
         </form>
       </div>
 
-      <div id="employee-list-container" class="list-container"></div>
+      <div id="employee-list-container" class="list-container list-group"></div>
       <button class="btn btn-raised btn-primary btn-sm" id="create-new-employee">Create new employee</button>
 
       <!-- modal to create new employee -->
