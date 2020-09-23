@@ -14,7 +14,7 @@
       <main>
         <template id="temp_contract">
           <div class="align-items-stretch object-div" c-data="true">
-            <div class="card object-div" c-data="true" style="width: 24rem; margin-bottom: 15px;">
+            <div class="card object-div" c-data="true" style="width: 320px; margin-bottom: 15px;">
               <img class="card-img-top" src="" alt="Card image cap">
               <div class="card-body">
                 <h5 class="card-title"></h5>
@@ -101,7 +101,7 @@
       var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
       modalBody.appendChild(tmpContent)
       $("#centralModalSm").modal('show');
-
+      $(tmpContent).bootstrapMaterialDesign()
     })
 
     // go to contract list button

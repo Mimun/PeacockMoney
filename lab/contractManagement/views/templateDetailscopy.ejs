@@ -77,7 +77,7 @@
   <!-- Step2: Template Metadata -->
   <div class="tab md-tabs template-metadata">Template metadata:
     <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Template name</label>
+      <label class="bmd-label-floating" data-error="Empty">Ten mau hop dong</label>
       <input type="text" class="form-control validate" name="templateName" data-vie="temMauHopDong">
     </div>
     <div class="form-group" style="display: none;">
@@ -152,6 +152,10 @@
       <label class="bmd-label-floating" data-error="Empty">So tien vay</label>
       <input type="text" class="form-control validate" name="loan" data-vie="soTienVay">
     </div>
+    <div class="form-group" style="display: none;">
+      <label class="bmd-label-floating" data-error="Empty">Bang chu</label>
+      <input type="text" class="form-control validate" name="loanInWord" data-vie="soTienVayBangChu">
+    </div>
     <div class="container" style="padding: 0;">
       <div class="row">
         <div class="col">
@@ -173,7 +177,7 @@
     </div>
     <div class="form-group" style="display: none;">
       <label class="bmd-label-floating" data-error="Empty">Ngay lap</label>
-      <input type="date" class="form-control validate" name="createdDate" data-vie="ngayLap">
+      <input type="date" class="form-control validate" name="contractCreatedDate" data-vie="ngayLap">
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Thoi han vay toi thieu</label>
@@ -184,13 +188,13 @@
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">Ti le phan ngan theo ngay(<span>&#8240;</span>)</label>
-            <input id="perMilePerDay" type="number" class="form-control validate" name="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
+            <input id="permillePerDay" type="number" class="form-control validate" name="interrestRatePermillePerDay" data-vie="tiLePhanNganTheoNgay">
           </div>
         </div>
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">Ti le phan tram theo thang(%)</label>
-            <input id="percentagePerMonth" type="number" class="form-control validate" name="percentageInterestPerDay" data-vie="tiLeLaiTheoNgay">
+            <input id="percentagePerMonth" type="number" class="form-control validate" name="interrestRatePercentagePerDay" data-vie="tiLeLaiTheoNgay">
           </div>
         </div>
       </div>
@@ -207,6 +211,10 @@
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">So ngay cua 1 ky</label>
       <input type="number" class="form-control validate" name="numberOfDaysPerTerm" data-vie="soNgayMotKy">
+    </div>
+    <div class="form-group" style="display: none;">
+      <label class="bmd-label-floating" data-error="Empty">Ngay ket thuc hop dong</label>
+      <input type="date" class="form-control validate" name="contractEndingDate" data-vie="ngayKetThuc">
     </div>
 
   </div>
@@ -465,11 +473,14 @@
 
   }
 
-  document.querySelector("#perMilePerDay").addEventListener('change', (event)=>{
+  // calculate percentage per month
+  document.querySelector("#permillePerDay").addEventListener('change', (event)=>{
     var value = event.target.value
     console.log('value: ', event.target.value)
-    document.querySelector("#percentagePerMonth").value = event.target.value*30
+    document.querySelector("#percentagePerMonth").value = event.target.value*30/10
   })
 
+
+  // add separator to number
   addSeparatorOnInputChange()
 </script>

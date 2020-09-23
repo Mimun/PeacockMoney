@@ -109,6 +109,7 @@
         numberOfDaysPerTerm: "",
         percentageInterestPerDay: "",
         percentagePenaltyPerDay: "",
+        contractEndingDate: "",
       }
       // contract metadata
       if (object.contractMetadata.length !== 0) {
@@ -133,25 +134,25 @@
         var item = []
         var ol = document.createElement('ol')
         for (var i = 0; i < object.items.length; i++) {
-
-          console.log('item: ', object.items[i].evaluationItem)
           // item name
-          var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type') ?
-            findNestedObj(object.items[i].evaluationItem, 'name', 'type').value : 'None'
+          var itemName = []
+          object.items[i].infos.forEach(info=>{
+            itemName.push(info.value)
+          })
+          // var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type') ?
+          //   findNestedObj(object.items[i].evaluationItem, 'name', 'type').value : 'None'
 
           // item status
           var itemStatus = []
           object.items[i].status.forEach(status => {
             var status = findNestedObj(status, 'name', 'type')
-            console.log('status: ', status)
-
             if (status) {
               itemStatus.push(status.value)
             }
           })
           itemStatus = itemStatus.join(", ")
           const li = document.createElement('li')
-          li.innerHTML = `<p>Tai san cam co ${i + 1}: ${itemName}<br>Tinh trang: ${itemStatus}</p>`
+          li.innerHTML = `<p>Tai san cam co ${i + 1}: ${itemName.join(', ')}<br>Tinh trang: ${itemStatus}</p>`
           ol.appendChild(li)
         }
         objectData["items"] = `${ol.outerHTML}`
@@ -169,7 +170,8 @@
       objectData["storeRepresentativeJobTitle"] = object.employee.value ?
         (findNestedObj(object.employee.value, 'name', 'jobTitle') ?
           findNestedObj(object.employee.value, 'name', 'jobTitle').value : 'Not defined') : 'Not defined'
-
+      objectData["contractEndingDate"] = findNestedObj(object.metadata, 'name', 'contractEndingDate') ?
+        findNestedObj(object.metadata, 'name', 'contractEndingDate').value : 'Unknown'
 
       return objectData
     }

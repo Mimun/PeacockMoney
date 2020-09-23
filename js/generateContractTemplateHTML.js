@@ -47,24 +47,26 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
   // contract A side
   const aSideInfoDiv = document.createElement('div')
-  aSideInfoDiv.className = 'a-side-info'
-  aSideInfoDiv.innerHTML = `<strong>I. Thong tin ben A</strong>`
+  aSideInfoDiv.className = 'a-side-info info-container'
+  aSideInfoDiv.innerHTML = `<div class="title">I. Thong tin ben A</div>`
   infoContainer.appendChild(aSideInfoDiv)
 
   // contract B side
   const bSideInfoDiv = document.createElement('div')
-  bSideInfoDiv.className = 'b-side-info'
-  bSideInfoDiv.innerHTML = `<strong>II. Thong tin ben B</strong>`
+  bSideInfoDiv.className = 'b-side-info-container info-container'
+  bSideInfoDiv.innerHTML = `<div class="title">II. Thong tin ben B</div>
+    <div class="b-side-info d-flex flex-wrap justify-content-start info-div"></div>
+  `
   infoContainer.appendChild(bSideInfoDiv)
 
   // contract Info 
   const contractInfoDiv = document.createElement('div')
-  contractInfoDiv.className = 'contract-info'
-  contractInfoDiv.innerHTML = `<strong>III. Thong tin hop dong</strong>`
+  contractInfoDiv.className = 'contract-info-container info-container'
+  contractInfoDiv.innerHTML = `<div class="title">III. Thong tin hop dong</div>
+    <div class="contract-info d-flex flex-wrap justify-content-start info-div"></div>
+  `
 
   infoContainer.appendChild(contractInfoDiv)
-
-
 
   // contract metadata
   itemObj.contractMetadata.map(info => {
@@ -94,13 +96,27 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         input.setAttribute('data-kor', info.dataKor)
       }
 
+      if (info.name === "contractCreatedDate") {
+        // calculate contract ending date
+        input.addEventListener('change', (event) => {
+          var numberOfAcceptanceTerms = findNestedObj(itemObj, 'name', 'numberOfAcceptanceTerms') ?
+            findNestedObj(itemObj, 'name', 'numberOfAcceptanceTerms').value : 0
+          var numberOfDaysPerTerm = findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm') ?
+            findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm').value : 0
+          var contractEndingDate = new Date(new Date(event.target.value).getTime() + numberOfAcceptanceTerms * numberOfDaysPerTerm * 24 * 60 * 60 * 1000)
+          console.log('end date: ', contractEndingDate)
+          contractInfoDiv.querySelector('input[name="contractEndingDate"]').value = formatDate(contractEndingDate)
+
+
+        })
+      }
 
       var label = clone.querySelector('label')
       label.innerHTML = displayInfoLang(info.dataVie)
       if (info.name === 'customer' || info.name === 'customerId' || info.name === 'customerIdProvidingPlace' || info.name === 'customerIdProvidingDate' || info.name === 'customerAddress' || info.name === 'customerPhoneNumber' || info.name === 'customerFamilyRegister') {
-        bSideInfoDiv.appendChild(clone)
+        bSideInfoDiv.querySelector('.b-side-info').appendChild(clone)
       } else {
-        contractInfoDiv.appendChild(clone)
+        contractInfoDiv.querySelector('.contract-info').appendChild(clone)
       }
     } else if (info.name === 'store') {
       var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang',
@@ -196,6 +212,20 @@ const displayInfoLang = (info) => {
   }
   return info
 
+}
+
+function formatDate(date) {
+  var d = new Date(date),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+  if (month.length < 2)
+    month = '0' + month;
+  if (day.length < 2)
+    day = '0' + day;
+  
+  return [year, month, day].join('-');
 }
 
 const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, dataVie, dataKor, selectOptions, labelTemplate, labelContent, selectContainer) => {
