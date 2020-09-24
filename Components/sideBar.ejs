@@ -1,4 +1,38 @@
 <style>
+  /* resizable table */
+  td,
+  th {
+    overflow: hidden;
+    white-space: nowrap;
+    -moz-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+  }
+
+  .rc-handle-container {
+    position: relative;
+  }
+
+  .rc-handle {
+    position: absolute;
+    width: 7px;
+    cursor: ew-resize;
+    margin-left: -3px;
+    z-index: 2;
+  }
+
+  table.rc-table-resizing {
+    cursor: ew-resize;
+  }
+
+  table.rc-table-resizing thead,
+  table.rc-table-resizing thead>th,
+  table.rc-table-resizing thead>th>a {
+    cursor: ew-resize;
+  }
+
+  /*  */
   /* Begin: sidebar css */
   #sidebar-wrapper {
     position: relative;
@@ -140,7 +174,9 @@
     border-right: 1px solid lightgrey;
     border-left: 1px solid lightgrey;
     /* border-top: 1px solid lightgrey; */
-  } */
+  }
+
+  */
 </style>
 
 <!-- Sidebar -->

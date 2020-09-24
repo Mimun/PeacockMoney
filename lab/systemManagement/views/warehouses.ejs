@@ -104,10 +104,10 @@
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
           <thead>
             <tr>
-              <th>Ten kho</th>
-              <th>Dia chi</th>
-              <th>So dien thoai</th>
-              <th>Email</th>
+              <th data-resizable-column-id="name">Ten kho</th>
+              <th data-resizable-column-id="address">Dia chi</th>
+              <th data-resizable-column-id="phoneNumber">So dien thoai</th>
+              <th data-resizable-column-id="email">Email</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -140,6 +140,13 @@
     console.log('warehouse list: ', warehouseList)
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
+
+    // resizable table
+    $(function() {
+      $("table").resizableColumns({
+        store: window.store
+      });
+    });
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 

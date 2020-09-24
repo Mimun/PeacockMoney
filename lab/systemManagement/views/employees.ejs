@@ -6,23 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    /* resizable table */
-    table {
-      table-layout: fixed;
-
-    }
-
-    td,
-    th {
-      overflow: hidden;
-      white-space: nowrap;
-      -moz-text-overflow: ellipsis;
-      -ms-text-overflow: ellipsis;
-      -o-text-overflow: ellipsis;
-      text-overflow: ellipsis;
-    }
-
-    /*  */
+    
     img {
       max-width: 240px;
     }
@@ -198,8 +182,12 @@
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
 
-    $("table").resizableColumns({
-      store: window.store
+    // resizable table
+    $(function() {
+  
+      $("table").resizableColumns({
+        store: window.store
+      });
     });
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
