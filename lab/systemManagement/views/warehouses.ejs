@@ -86,24 +86,6 @@
 
   </template>
 
-  <!-- warehouse list -->
-  <template id="warehouse-list">
-    <div class="info-container object-div list-group-item">
-      <div class="bmd-list-group-col">
-        <p class="name"></p>
-      </div>
-      <div class="bmd-list-group-col">
-        <p class="phone-number"></p>
-      </div>
-      <div class="bmd-list-group-col">
-        <p class="email"></p>
-      </div>
-      <div class="bmd-list-group-col">
-        <p class="id"></p>
-      </div>
-    </div>
-  </template>
-
   <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
@@ -118,7 +100,19 @@
         </form>
       </div>
 
-      <div id="warehouse-list-container" class="list-container list-group"></div>
+      <div id="warehouse-list-container" class="list-container">
+        <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
+          <thead>
+            <tr>
+              <th>Ten kho</th>
+              <th>Dia chi</th>
+              <th>So dien thoai</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <button class="btn btn-raised btn-primary btn-sm" id="create-new-warehouse">Create new warehouse</button>
 
       <!-- modal to create new warehouse -->
@@ -148,7 +142,6 @@
     console.log('store list: ', storeList)
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
-    const warehouseListTemplate = document.querySelector('#warehouse-list')
 
     // declare some divs that are used for creating select box
     var selectContainer = document.createElement('div')
@@ -174,7 +167,7 @@
 
     // create warehouse list
     // var warehouseRepresentativeSelect = document.querySelector('#warehouse-representative-select-template').content.cloneNode(true)
-    generateWarehouseManagementList(warehouseList, storeSelectOptions, employeeSelectOptions, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+    generateWarehouseManagementList(warehouseList, storeSelectOptions, employeeSelectOptions, 'warehouse-list-container', 'warehouses')
 
     // create new warehouse button
     document.querySelector('#create-new-warehouse').addEventListener('click', (event) => {
@@ -253,12 +246,12 @@
       var searchValueArray = event.target.querySelector('input').value.split(' ')
       console.log('search array: ', searchValueArray)
       makeRequest('POST', 'warehouses/search', 'application/json', JSON.stringify({ data: searchValueArray }), (result) => {
-        document.querySelector('#warehouse-list-container').innerHTML = ''
+        document.querySelector('#warehouse-list-container').querySelector('tbody').innerHTML = ''
         if (result.warehouseList.length !== 0) {
-          generateWarehouseManagementList(result.warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+          generateWarehouseManagementList(result.warehouseList, storeSelectOptions, employeeSelectOptions, 'warehouse-list-container', 'warehouses')
 
         } else {
-          generateWarehouseManagementList(warehouseList, employeeList, warehouseListTemplate, 'warehouse-list-container', 'warehouses')
+          generateWarehouseManagementList(warehouseList, storeSelectOptions, employeeSelectOptions, 'warehouse-list-container', 'warehouses')
 
 
         }

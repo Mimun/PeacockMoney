@@ -33,9 +33,12 @@ const modalContent = document.querySelector('#modalContactForm').querySelector('
 const modalBody = detailStoreTemplate.querySelector('.modal-body')
 const modalFooter = detailStoreTemplate.querySelector('.modal-footer')
 
+var param = {}
 
 
-export const generateStoreManagementList = (mainList, selectList, template, elementName, routerName) => {
+export const generateStoreManagementList = async (mainList, selectList, elementName, routerName) => {
+  await Object.assign(param, { routerName })
+
   var representativeSelectOptions = selectList.map(select => {
     var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
     return option
@@ -44,23 +47,22 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
   console.log('represnetative option: ', representativeSelectOptions)
 
   mainList.forEach(itemObj => {
-    const clone = template.content.cloneNode(true)
-    clone.querySelector('.info-container').C_DATA = itemObj
-    clone.querySelector('.info-container').setAttribute('cData', true)
+    var tr = document.createElement('tr')
+    tr.C_DATA = itemObj
+    itemObj.metadata.forEach(data => {
 
-    let name = findNestedObj(itemObj.metadata, 'name', 'name')? findNestedObj(itemObj.metadata, 'name', 'name').value : (findNestedObj(itemObj.metadata, 'name', 'storeName')? findNestedObj(itemObj.metadata, 'name', 'storeName').value: 'None')
-    let phoneNumber = findNestedObj(itemObj.metadata, 'name', 'phoneNumber').value
-    let email = findNestedObj(itemObj.metadata, 'name', 'email').value
-    let id = itemObj._id
+      if (data.name === "name" || data.name === "id"
+        || data.name === "address" || data.name === "creditNumber" || data.name === "email") {
+        var td = document.createElement('td')
+        td.innerHTML = data.value ? data.value : 'None'
+        tr.appendChild(td)
 
-    clone.querySelector('.name').innerHTML = name
-    clone.querySelector('.phone-number').innerHTML = phoneNumber
-    clone.querySelector('.email').innerHTML = email
-    clone.querySelector('.id').innerHTML = id
+      }
+    })
+    document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
-
-    clone.querySelector('.info-container').addEventListener('click', (event) => {
-      const cData = event.target.closest('.info-container').C_DATA
+    tr.addEventListener('click', (event) => {
+      const cData = event.target.closest('tr').C_DATA
       console.log('event: ', cData)
       detailStoreTemplate.querySelector('.object-div').C_DATA = cData
 
@@ -128,80 +130,83 @@ export const generateStoreManagementList = (mainList, selectList, template, elem
         }
       })
     })
-    document.querySelector('#' + elementName + '').appendChild(clone)
+
 
 
   })
 
-  // edit button
-  modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
-    switch (event.target.textContent) {
-      case "Edit":
-        modalBody.querySelectorAll('input').forEach(input => {
-          input.removeAttribute('disabled')
-        })
-        if (modalBody.querySelectorAll('select').length === 0) {
-          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
 
+
+}
+
+// edit button
+modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
+  var { routerName } = param
+  switch (event.target.textContent) {
+    case "Edit":
+      modalBody.querySelectorAll('input').forEach(input => {
+        input.removeAttribute('disabled')
+      })
+      if (modalBody.querySelectorAll('select').length === 0) {
+        createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+
+      }
+      modalBody.querySelectorAll('select').forEach(select => {
+        select.disabled = false
+      })
+      var addRepresentativeButton = event.target.cloneNode(true)
+      addRepresentativeButton.classList.remove('btn-raised', 'btn-primary')
+      addRepresentativeButton.classList.add('btn-outline-primary')
+      addRepresentativeButton.id = 'btn-add-representative'
+      addRepresentativeButton.innerHTML = "Add representative"
+      modalFooter.prepend(addRepresentativeButton)
+      addEventForAddRepresentativeButton()
+
+      break
+    case "Update":
+      var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [], representatives: [] }
+      modalBody.querySelectorAll('input').forEach(input => {
+        input.setAttribute('disabled', true)
+        updateObj.metadata.push(getInfo(input))
+      })
+      modalBody.querySelectorAll('select').forEach(select => {
+        if (select.value) {
+          updateObj.representatives.push(select.value)
         }
-        modalBody.querySelectorAll('select').forEach(select => {
-          select.disabled = false
-        })
-        var addRepresentativeButton = event.target.cloneNode(true)
-        addRepresentativeButton.classList.remove('btn-raised', 'btn-primary')
-        addRepresentativeButton.classList.add('btn-outline-primary')
-        addRepresentativeButton.id = 'btn-add-representative'
-        addRepresentativeButton.innerHTML = "Add representative"
-        modalFooter.prepend(addRepresentativeButton)
-        addEventForAddRepresentativeButton()
-
-        break
-      case "Update":
-        var updateObj = { ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA, metadata: [], representatives: [] }
-        modalBody.querySelectorAll('input').forEach(input => {
-          input.setAttribute('disabled', true)
-          updateObj.metadata.push(getInfo(input))
-        })
-        modalBody.querySelectorAll('select').forEach(select => {
-          if (select.value) {
-            updateObj.representatives.push(select.value)
-          }
-        })
-
-        console.log('update obj: ', updateObj)
-        makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-          'application/json', JSON.stringify(updateObj), () => {
-            window.location.reload()
-          })
-
-        break
-      default:
-
-    }
-    event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
-
-
-  })
-
-  // delete button
-  modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
-    makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      'application/json', {}, () => {
-        window.location.reload()
       })
 
-  })
+      console.log('update obj: ', updateObj)
+      makeRequest('PUT', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+        'application/json', JSON.stringify(updateObj), () => {
+          window.location.reload()
+        })
 
-  // add representative button
-  const addEventForAddRepresentativeButton = () => {
-    modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event) => {
-      console.log('Event: ', event.target)
-      var clone = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-container').cloneNode(true)
-      clone.querySelector('select').value = ""
-      modalBody.appendChild(clone)
-    })
+      break
+    default:
+
   }
+  event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
+
+})
+
+// delete button
+modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
+  makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+    'application/json', {}, () => {
+      window.location.reload()
+    })
+
+})
+
+// add representative button
+const addEventForAddRepresentativeButton = () => {
+  modalFooter.querySelector('#btn-add-representative').addEventListener('click', (event) => {
+    console.log('Event: ', event.target)
+    var clone = event.target.closest('.modal-content').querySelector('.modal-body').querySelector('.select-container').cloneNode(true)
+    clone.querySelector('select').value = ""
+    modalBody.appendChild(clone)
+  })
 }
 
 const displayInfoLang = (info) => {

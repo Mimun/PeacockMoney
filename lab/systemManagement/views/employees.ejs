@@ -6,6 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
+    /* resizable table */
+    table {
+      table-layout: fixed;
+
+    }
+
+    td,
+    th {
+      overflow: hidden;
+      white-space: nowrap;
+      -moz-text-overflow: ellipsis;
+      -ms-text-overflow: ellipsis;
+      -o-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+    }
+
+    /*  */
     img {
       max-width: 240px;
     }
@@ -24,12 +41,23 @@
       margin: 0 8px;
     }
 
-    .list-group-item:first-child{
+    .list-group-item:first-child {
       margin-right: 0 !important;
     }
-    .list-group{
+
+    .list-group {
       width: fit-content;
       margin: auto;
+    }
+
+    .bmd-list-group-col {
+      width: 160px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -119,30 +147,6 @@
 
     </template>
 
-    <!-- employee list -->
-    <template id="employee-list">
-      <div class="info-container object-div list-group-item">
-        <div class="bmd-list-group-col">
-          <img class="avatar rounded-circle" src="" alt="" style="width: 40px; height: 40px; object-fit: cover;">
-        </div>
-        <div class="bmd-list-group-col">
-          <p class="name"></p>
-        </div>
-        <div class="bmd-list-group-col">
-          <p class="role"></p>
-        </div>
-        <div class="bmd-list-group-col">
-          <p class="phone-number"></p>
-        </div>
-        <div class="bmd-list-group-col">
-          <p class="email"></p>
-        </div>
-        <div class="bmd-list-group-col">
-          <p class="id"></p>
-        </div>
-      </div>
-    </template>
-
     <div id="page-content-wrapper">
       <h2>List of employees</h2>
       <!-- Search form -->
@@ -154,7 +158,22 @@
         </form>
       </div>
 
-      <div id="employee-list-container" class="list-container list-group"></div>
+      <div id="employee-table-container" class="table-container ">
+        <table class="table table-hover table-bordered table-responsive table-striped" data-resizable-columns-id="demo-table-v2">
+          <thead>
+            <tr>
+              <th data-resizable-column-id="avatar">Anh dai dien</th>
+              <th data-resizable-column-id="name">Ten nhan vien</th>
+              <th data-resizable-column-id="employeeId">Ma nhan vien</th>
+              <th data-resizable-column-id="jobTitle">Chuc vu</th>
+              <th data-resizable-column-id="phoneNumber">So dien thoai</th>
+              <th data-resizable-column-id="email">Email</th>
+
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <button class="btn btn-raised btn-primary btn-sm" id="create-new-employee">Create new employee</button>
 
       <!-- modal to create new employee -->
@@ -179,14 +198,16 @@
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
 
+    $("table").resizableColumns({
+      store: window.store
+    });
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
-    const employeeListTemplate = document.querySelector('#employee-list')
 
-    if(employeeList.length!==0){
-      generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees', user, roleAbility)
+    if (employeeList.length !== 0) {
+      generateEmployeeManagementList(employeeList, storeList, 'employee-table-container', 'employees', user, roleAbility)
     }
-   
+
     var selectContainer = document.createElement('div')
     selectContainer.className = 'select-container'
 
@@ -252,7 +273,7 @@
               })
             })
             console.log('input: ', employeeObj)
-            makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), ()=>{
+            makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), () => {
               window.location.reload()
             })
           })
@@ -282,19 +303,20 @@
       console.log('search array: ', searchValueArray)
       makeRequest('POST', 'employees/search', 'application/json', JSON.stringify({
         data: searchValueArray
-      }), (result)=>{
-        while(document.querySelector('#employee-list-container').firstChild){
-            document.querySelector('#employee-list-container').removeChild(document.querySelector('#employee-list-container').lastChild)
-          }
-          if (result.employeeList.length !== 0) {
-            generateEmployeeManagementList(result.employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees', user, roleAbility)
+      }), (result) => {
 
-          } else {
-            generateEmployeeManagementList(employeeList, storeList, employeeListTemplate, 'employee-list-container', 'employees', user, roleAbility)
+        while (document.querySelector('#employee-table-container').querySelector('tbody').firstChild) {
+          document.querySelector('#employee-table-container').querySelector('tbody').removeChild(document.querySelector('#employee-table-container').querySelector('tbody').lastChild)
+        }
+        if (result.employeeList.length !== 0) {
+          generateEmployeeManagementList(result.employeeList, storeList, 'employee-table-container', 'employees', user, roleAbility)
 
-          }
+        } else {
+          generateEmployeeManagementList(employeeList, storeList, 'employee-table-container', 'employees', user, roleAbility)
+
+        }
       })
-   
+
     })
   </script>
 

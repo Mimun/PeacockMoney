@@ -101,24 +101,6 @@
 
   </template>
 
-  <!-- store list -->
-  <template id="store-list">
-    <div class="info-container object-div list-group-item">
-      <div class="bmd-list-group-col">
-        <p class="name"></p>
-      </div>
-      <div class="bmd-list-group-col">
-        <p class="phone-number"></p>
-      </div>
-      <div class="bmd-list-group-col">
-        <p class="email"></p>
-      </div>
-      <div class="bmd-list-group-col">
-        <p class="id"></p>
-      </div>
-    </div>
-  </template>
-
   <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
@@ -133,7 +115,20 @@
         </form>
       </div>
 
-      <div id="store-list-container" class="list-container list-group"></div>
+      <div id="store-list-container" class="list-container">
+        <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
+          <thead>
+            <tr>
+              <th>Ten cua hang</th>
+              <th>Ma cua hang</th>
+              <th>Ma giao dich</th>
+              <th>Dia chi</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <button class="btn btn-raised btn-primary btn-sm" id="create-new-store">Create new store</button>
 
       <!-- modal to create new store -->
@@ -158,7 +153,6 @@
     console.log('employee list: ', employeeList)
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
-    const storeListTemplate = document.querySelector('#store-list')
 
     // create representative select box
     var storeRepresentativeSelect = document.querySelector('#store-representative-select-template').content.cloneNode(true)
@@ -169,7 +163,7 @@
       storeRepresentativeSelect.querySelector('select').appendChild(option)
     })
 
-    generateStoreManagementList(storeList, employeeList, storeListTemplate, 'store-list-container', 'stores')
+    generateStoreManagementList(storeList, employeeList, 'store-list-container', 'stores')
 
     // create new store button
     document.querySelector('#create-new-store').addEventListener('click', (event) => {
@@ -230,12 +224,12 @@
       var searchValueArray = event.target.querySelector('input').value.split(' ')
       console.log('search array: ', searchValueArray)
       makeRequest('POST', 'stores/search', 'application/json', JSON.stringify({data: searchValueArray}), (result)=>{
-        document.querySelector('#store-list-container').innerHTML = ''
+        document.querySelector('#store-list-container').querySelector('tbody').innerHTML = ''
           if (result.storeList.length !== 0) {
-            generateStoreManagementList(result.storeList, employeeList, storeListTemplate, 'store-list-container', 'stores')
+            generateStoreManagementList(result.storeList, employeeList, 'store-list-container', 'stores')
 
           } else {
-            generateStoreManagementList(storeList, employeeList, storeListTemplate, 'store-list-container', 'stores')
+            generateStoreManagementList(storeList, employeeList, 'store-list-container', 'stores')
 
           }
       })

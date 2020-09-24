@@ -44,29 +44,35 @@ const modalBody = detailEmployeeTemplate.querySelector('.modal-body')
 
 
 var param = {}
-export const generateEmployeeManagementList = async (mainList, selectList, template, elementName, routerName, user, roleAbility) => {
+export const generateEmployeeManagementList = async (mainList, selectList, elementName, routerName, user, roleAbility) => {
   await Object.assign(param, { routerName, user, roleAbility })
   mainList.forEach(itemObj => {
-    const clone = template.content.cloneNode(true)
-    clone.querySelector('.info-container').C_DATA = itemObj
-    clone.querySelector('.info-container').setAttribute('cData', true)
+    var tr = document.createElement('tr')
+    tr.C_DATA = itemObj
+    itemObj.metadata.forEach(data => {
+      
+      if (data.name === "avatar" || data.name === "fullName" || data.name === "employeeId"
+        || data.name === "jobTitle" || data.name === "phoneNumber" || data.name === "email") {
+        var td = document.createElement('td')
+        if(data.name !== "avatar"){
+          td.innerHTML = data.value
 
-    let name = findNestedObj(itemObj.metadata, 'name', 'fullName').value
-    let phoneNumber = findNestedObj(itemObj.metadata, 'name', 'phoneNumber').value
-    let email = findNestedObj(itemObj.metadata, 'name', 'email').value
-    let id = itemObj._id
-    let role = findNestedObj(itemObj.metadata, 'name', 'role').value
-    let avatar = findNestedObj(itemObj.metadata, 'name', 'avatar') ? findNestedObj(itemObj.metadata, 'name', 'avatar').value : 'None'
+        } else {
+          var imageContainer = document.createElement('img')
+          imageContainer.className = 'image-container avatar rounded-circle'
+          imageContainer.src = data.value
+          td.appendChild(imageContainer)
+        }
+        tr.appendChild(td)
 
-    clone.querySelector('.name').innerHTML = name
-    clone.querySelector('.phone-number').innerHTML = phoneNumber
-    clone.querySelector('.email').innerHTML = email
-    clone.querySelector('.id').innerHTML = id
-    clone.querySelector('.role').innerHTML = role
-    clone.querySelector('.avatar').setAttribute('src', avatar)
+      }
+    })
+    document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+    // $(tr).bootstrapMaterialDesign()
 
-    clone.querySelector('.info-container').addEventListener('click', (event) => {
-      const cData = event.target.closest('.info-container').C_DATA
+
+    tr.addEventListener('click', (event) => {
+      const cData = event.target.closest('tr').C_DATA
       console.log('event: ', cData)
       detailEmployeeTemplate.querySelector('.object-div').C_DATA = cData
 
@@ -141,10 +147,14 @@ export const generateEmployeeManagementList = async (mainList, selectList, templ
       $("#modalContactForm").on('hidden.bs.modal', () => {
       })
     })
-    document.querySelector('#' + elementName + '').appendChild(clone)
+
+    // clone.querySelector('.info-container').addEventListener('click', (event) => {
+
+    // })
+    // document.querySelector('#' + elementName + '').appendChild(clone)
   })
-  
-  
+
+
 }
 
 console.log('param: ', param)
