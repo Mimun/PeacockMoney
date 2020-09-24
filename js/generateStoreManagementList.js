@@ -39,7 +39,7 @@ var param = {}
 export const generateStoreManagementList = async (mainList, selectList, elementName, routerName) => {
   await Object.assign(param, { routerName })
 
-  var representativeSelectOptions = selectList.map(select => {
+  var representativeSelectOptions = await selectList.map(select => {
     var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
     return option
   })

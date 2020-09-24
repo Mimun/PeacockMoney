@@ -287,6 +287,22 @@
 
   })
 
+  setTimeout(() => {
+    $(function () {
+      $(document.querySelector('.table')).resizableColumns({
+        store: window.store
+      });
+    });
+  }, 500)
+
+  // resizable table
+  /* 
+  $(function () {
+     $(document.querySelector('.table')).resizableColumns({
+       store: window.store
+     });
+   });
+ */
   // css for all list-group-item not having icon 
   document.querySelector('.sidebar-container').querySelectorAll(".list-group-item").forEach(element => {
     element.style.justifyContent = 'flex-start'
