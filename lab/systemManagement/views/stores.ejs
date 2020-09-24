@@ -156,12 +156,7 @@
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 
-    // resizable table
-    $(function() {
-      $("table").resizableColumns({
-        store: window.store
-      });
-    });
+    
 
     // create representative select box
     var storeRepresentativeSelect = document.querySelector('#store-representative-select-template').content.cloneNode(true)
@@ -244,6 +239,13 @@
       })
 
     })
+
+    // resizable table
+    $(function() {
+      $("table").resizableColumns({
+        store: window.store
+      });
+    });
   </script>
 
 </body>

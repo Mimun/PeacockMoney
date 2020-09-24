@@ -47,6 +47,12 @@
       </div>
 
       <div class="form-group">
+        <label data-error="wrong" data-success="right">Ma kho</label>
+        <input type="text" class="form-control validate" name="id" data-vie="maKho"
+          data-kor="koreanString">
+      </div>
+
+      <div class="form-group">
         <label data-error="wrong" data-success="right">Dia chi</label>
         <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
       </div>
@@ -141,12 +147,7 @@
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
 
-    // resizable table
-    $(function() {
-      $("table").resizableColumns({
-        store: window.store
-      });
-    });
+    
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 
@@ -266,6 +267,12 @@
 
     })
 
+    // resizable table
+    $(function() {
+      $("table").resizableColumns({
+        store: window.store
+      });
+    });
   </script>
 
 </body>

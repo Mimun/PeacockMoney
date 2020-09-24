@@ -182,13 +182,7 @@
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
 
-    // resizable table
-    $(function() {
-  
-      $("table").resizableColumns({
-        store: window.store
-      });
-    });
+    
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 
@@ -306,6 +300,14 @@
       })
 
     })
+
+    // resizable table
+    $(function() {
+  
+      $("table").resizableColumns({
+        store: window.store
+      });
+    });
   </script>
 
 </body>
