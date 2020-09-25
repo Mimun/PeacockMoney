@@ -322,10 +322,10 @@
         // console.log('result: ', e.target.result)
 
         // 2. Transform raw data to array of object: {name:'', value: ''}
-        var simpleObjects = transformRawToSimpleObjects(csv)
-
+        var simpleObjects = await transformRawToSimpleObjects(csv)
+        console.log('simple objects: ', simpleObjects)
         // 3. Transform array of object to database object: {cType, name, dataVie, dataKor, value}
-        var dbObjects = transformSimpleObjectsToDbObjects(simpleObjects)
+        var dbObjects = await transformSimpleObjectsToDbObjects(simpleObjects)
         console.log('db object: ', dbObjects)
 
         // 4. Display input object
@@ -367,19 +367,23 @@
     const transformSimpleObjectsToDbObjects = (objectArrays)=>{
       var dbObjectArray = []
       objectArrays.forEach(objectArray=>{
+        var sampleObj = employeeMetadataSample()
         var object = {
           infos: [],
           metadata: []
         }
         objectArray.forEach(object=>{
           if(object.name === "avatar"){
-            employeeMetadataSample[object.name].value = '/images/userPicture.png'
+            sampleObj[object.name].value = '/images/userPicture.png'
           } else {
-            employeeMetadataSample[object.name].value = object.value
+            sampleObj[object.name].value = object.value
 
           }
+
         })
-        object.metadata = Object.values(employeeMetadataSample)
+        console.log('test: ', sampleObj)
+
+        // object.metadata = Object.values(sampleObj)
         dbObjectArray.push(object)
       })
       return dbObjectArray
