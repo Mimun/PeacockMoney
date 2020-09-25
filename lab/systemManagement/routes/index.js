@@ -49,10 +49,12 @@ router.get('/employees', (req, res, next) => {
       storeList = await results.stores.map(store => {
         var fullName = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
         var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'
+        var id = findNestedObj(store, 'name', 'id') ? findNestedObj(store, 'name', 'id').value : 'None'
         return {
           _id: store._id,
           fullName,
-          address
+          address,
+          id
         }
       })
     }
@@ -187,6 +189,12 @@ router.get('/stores', (req, res, next) => {
 
 })
 
+const createMetadata = (name = "", value = null, cType = "text", dataVie = "vietnameseString", dataKor = "koreanString") => {
+  return {
+    name, value, cType, dataVie, dataKor
+  }
+}
+
 // create new store
 router.post('/stores', (req, res, next) => {
   console.log('req.body: ', req.body)
@@ -194,8 +202,19 @@ router.post('/stores', (req, res, next) => {
   try {
     store.save((err, result) => {
       if (err) throw err
+      var warehouseMetadataArray = []
+      result.metadata.forEach(data => {
+        if (data.name === "name" || data.name === "id" || data.name === "address"
+          || data.name === "phoneNumber" || data.name === "email" || data.name === "note") {
+          warehouseMetadataArray.push(data)
+        }
+      })
       var warehouse = new Warehouse({
-        ...req.body, store: result._id
+        metadata: warehouseMetadataArray,
+        infos: [],
+        representatives: result.representatives,
+        store: result._id,
+        deactive: false
       })
       try {
         warehouse.save((err, result) => {
@@ -451,7 +470,7 @@ router.get('/properties', (req, res, next) => {
     },
     warehouseList: callback => {
       try {
-        Warehouse.find({deactive: false}).exec(callback)
+        Warehouse.find({ deactive: false }).exec(callback)
       } catch (error) {
         console.log(error)
       }

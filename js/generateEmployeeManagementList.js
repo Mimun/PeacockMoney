@@ -51,7 +51,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
     tr.C_DATA = itemObj
     itemObj.metadata.forEach(data => {
       
-      if (data.name === "avatar" || data.name === "fullName" || data.name === "employeeId"
+      if (data.name === "avatar" || data.name === "fullName" || data.name === "customId"
         || data.name === "jobTitle" || data.name === "phoneNumber" || data.name === "email") {
         var td = document.createElement('td')
         if(data.name !== "avatar"){
@@ -112,7 +112,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
         storeSelectOptions.push('<option value="">No store</option>')
         if (selectList !== 0) {
           selectList.map(select => {
-            var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select._id}>${select.fullName} - ${select.address}</option>`
+            var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.fullName} - ${select.address}</option>`
             storeSelectOptions.push(option)
           })
         }
@@ -246,6 +246,7 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 
 const deleteBtnFunction = (event, routerName, user) => {
   if (user.role !== "member") {
+    console.log('id: ',event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id)
     makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
       'application/json', {}, (result) => {
         if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {

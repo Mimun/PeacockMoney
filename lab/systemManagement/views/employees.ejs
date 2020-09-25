@@ -69,7 +69,7 @@
 
         <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Ma nhan vien</label>
-          <input type="text" class="form-control validate active" name="employeeId" data-vie="maNhanVien"
+          <input type="text" class="form-control validate active" name="customId" data-vie="maNhanVien"
             data-kor="koreanString">
         </div>
 
@@ -147,7 +147,7 @@
             <tr>
               <th data-resizable-column-id="avatar">Anh dai dien</th>
               <th data-resizable-column-id="name">Ten nhan vien</th>
-              <th data-resizable-column-id="employeeId">Ma nhan vien</th>
+              <th data-resizable-column-id="customId">Ma nhan vien</th>
               <th data-resizable-column-id="jobTitle">Chuc vu</th>
               <th data-resizable-column-id="phoneNumber">So dien thoai</th>
               <th data-resizable-column-id="email">Email</th>
@@ -202,7 +202,7 @@
     storeSelectOptions.push('<option value="">No store</option>')
     if (storeList !== 0) {
       storeList.map(select => {
-        var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select._id}>${select.fullName} - ${select.address}</option>`
+        var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.fullName} - ${select.address}</option>`
         storeSelectOptions.push(option)
       })
     }

@@ -46,7 +46,7 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
     itemObj.metadata.forEach(data => {
 
       if (data.name === "name"
-        || data.name === "address" || data.name === "phoneNumber" || data.name === "email") {
+        || data.name === "address" || data.name === "phoneNumber" || data.name === "email" || data.name === "id") {
         let td = document.createElement('td')
         td.innerHTML = data.value ? data.value : 'None'
         tr.appendChild(td)
@@ -69,7 +69,7 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
     input.addEventListener('change', (event) => {
       console.log('event for checkbox: ', event.target.checked)
       makeRequest('PUT', `warehouses/${event.target.closest('tr').C_DATA._id}`, 'application/json',
-        JSON.stringify({ ...event.target.closest('tr').C_DATA, deactive: event.target.checked}), () => {
+        JSON.stringify({ ...event.target.closest('tr').C_DATA, deactive: event.target.checked }), () => {
           window.location.reload()
         })
     })

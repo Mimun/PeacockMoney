@@ -111,6 +111,7 @@
           <thead>
             <tr>
               <th data-resizable-column-id="name">Ten kho</th>
+              <th data-resizable-column-id="id">Ma kho</th>
               <th data-resizable-column-id="address">Dia chi</th>
               <th data-resizable-column-id="phoneNumber">So dien thoai</th>
               <th data-resizable-column-id="email">Email</th>
@@ -210,7 +211,7 @@
             infos: [],
             representatives: [],
             store: null,
-            active: true
+            deactive: false
           }
           modalBody.querySelectorAll('input').forEach(input => {
             warehouseObj.metadata.push({
@@ -235,9 +236,9 @@
           }
 
           console.log('input: ', warehouseObj)
-          makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), () => {
-            window.location.reload()
-          })
+          // makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), () => {
+          //   window.location.reload()
+          // })
 
         })
 
