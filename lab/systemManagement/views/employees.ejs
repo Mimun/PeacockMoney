@@ -87,7 +87,7 @@
 
         <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Cmnd</label>
-          <input type="text" class="form-control validate" name="id" data-vie="CMND" data-kor="koreanString">
+          <input type="text" class="form-control validate" name="idCard" data-vie="CMND" data-kor="koreanString">
         </div>
 
         <div class="form-group">
@@ -132,6 +132,14 @@
 
     <div id="page-content-wrapper">
       <h2>List of employees</h2>
+      <!-- input file -->
+      <div class="file-input-container">
+        <div class="form-group">
+          <label for="file" class="bmd-label-floating">File input</label>
+          <input type="file" class="form-control-file" id="file" accept=".csv">
+        </div>
+      </div>
+
       <!-- Search form -->
       <div class="search-container">
         <form id="form-search">
@@ -142,7 +150,8 @@
       </div>
 
       <div id="employee-table-container" class="table-container ">
-        <table class="table table-hover table-bordered table-responsive table-striped" data-resizable-columns-id="demo-table-v2">
+        <table class="table table-hover table-bordered table-responsive table-striped"
+          data-resizable-columns-id="demo-table-v2">
           <thead>
             <tr>
               <th data-resizable-column-id="avatar">Anh dai dien</th>
@@ -158,6 +167,8 @@
         </table>
       </div>
       <button class="btn btn-raised btn-primary btn-sm" id="create-new-employee">Create new employee</button>
+      <button class="btn btn-primary btn-sm" id="upload-employees" style="display: none;">Upload</button>
+
 
       <!-- modal to create new employee -->
       <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -173,6 +184,7 @@
   <script type="module">
     import { generateEmployeeManagementList, createSelect } from '/generateEmployeeManagementList.js'
     import { makeRequest } from '/makeRequest.js'
+    import { employeeMetadataSample } from '/employeeConfig.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;
     const storeList = <%- JSON.stringify(storeList) %>;
     const roleAbility = <%- JSON.stringify(roleAbility) %>;
@@ -180,8 +192,6 @@
 
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
-
-    
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 
@@ -277,6 +287,7 @@
 
     })
 
+    // search
     document.querySelector('#form-search').addEventListener('submit', (event) => {
       console.log('event: ', event.target)
       event.preventDefault()
@@ -299,6 +310,81 @@
       })
 
     })
+
+    // input file
+    document.querySelector('#file').addEventListener('change', (event) => {
+      console.log('event: ', event)
+      const file = event.target.files[0]
+      var fileReader = new FileReader()
+      fileReader.onload = async (e) => {
+        // 1. Read data from csv
+        var csv = e.target.result
+        // console.log('result: ', e.target.result)
+
+        // 2. Transform raw data to array of object: {name:'', value: ''}
+        var simpleObjects = transformRawToSimpleObjects(csv)
+
+        // 3. Transform array of object to database object: {cType, name, dataVie, dataKor, value}
+        var dbObjects = transformSimpleObjectsToDbObjects(simpleObjects)
+        console.log('db object: ', dbObjects)
+
+        // 4. Display input object
+        if(dbObjects.length !==0){
+          generateEmployeeManagementList(dbObjects, storeList, 'employee-table-container', 'employees', user, roleAbility)
+          document.querySelector('#upload-employees').style.display = 'inline-block'
+          document.querySelector('#upload-employees').addEventListener('click', (event)=>{
+            console.log('event: ', event.target)
+
+            makeRequest('POST', 'multEmployee', 'application/json', JSON.stringify({dbObjects}), ()=>{
+
+            })
+          })
+        }
+      }
+      fileReader.readAsText(file, 'ISO-8859-1')
+    })
+
+    // function to transform raw data to array of simple objects: 
+    const transformRawToSimpleObjects = (rawData) => {
+      const lines = rawData.split('\n')
+      var employeeArrays = []
+      const labels = lines[0].split(",")
+      for (var i = 1; i < lines.length - 1; i++) {
+        var employeeArray = []
+        const line = lines[i].split(",")
+        for (var j = 0; j < line.length; j++) {
+          employeeArray.push({
+            name: labels[j],
+            value: line[j]
+          })
+        }
+        employeeArrays.push(employeeArray)
+      }
+      return employeeArrays
+    }
+
+    // function to transform simple objects to database object: 
+    const transformSimpleObjectsToDbObjects = (objectArrays)=>{
+      var dbObjectArray = []
+      objectArrays.forEach(objectArray=>{
+        var object = {
+          infos: [],
+          metadata: []
+        }
+        objectArray.forEach(object=>{
+          if(object.name === "avatar"){
+            employeeMetadataSample[object.name].value = '/images/userPicture.png'
+          } else {
+            employeeMetadataSample[object.name].value = object.value
+
+          }
+        })
+        object.metadata = Object.values(employeeMetadataSample)
+        dbObjectArray.push(object)
+      })
+      return dbObjectArray
+    }
+  
   </script>
 
 </body>

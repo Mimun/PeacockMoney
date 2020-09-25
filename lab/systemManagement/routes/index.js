@@ -70,24 +70,37 @@ router.post('/employees', (req, res, next) => {
   let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
   let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
   var fullName = findNestedObj(req.body, 'name', 'fullName').value
+  if (base64data) {
+    fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
+      if (err) console.error(err)
+      findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+      var employee = new Employee(req.body)
+      console.log('employee: ', employee)
+      try {
+        employee.save((err, result) => {
+          if (err) throw err
+          if (result) {
+            res.send('Saved successfully!')
 
-  fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
-    if (err) console.error(err)
-    findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
-    var employee = new Employee(req.body)
-    console.log('employee: ', employee)
-    try {
-      employee.save((err, result) => {
-        if (err) throw err
-        if (result) {
-          res.send('Saved successfully!')
+          }
+        })
+      } catch (err) {
+        console.error(err)
+      }
+    })
+  } 
+})
 
-        }
-      })
-    } catch (err) {
-      console.error(err)
-    }
+// upload multiple employees
+router.post('/multEmployee', async (req, res)=>{
+  console.log('req.body: ', req.body)
+  await req.body.dbObjects.forEach(object=>{
+    var employee = new Employee(object)
+    employee.save((err, result)=>{
+      if(err) throw err
+    })
   })
+  res.send('Upload successfully!')
 })
 
 // upate employee

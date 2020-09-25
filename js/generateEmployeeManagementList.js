@@ -50,11 +50,11 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
     var tr = document.createElement('tr')
     tr.C_DATA = itemObj
     itemObj.metadata.forEach(data => {
-      
+
       if (data.name === "avatar" || data.name === "fullName" || data.name === "customId"
         || data.name === "jobTitle" || data.name === "phoneNumber" || data.name === "email") {
         var td = document.createElement('td')
-        if(data.name !== "avatar"){
+        if (data.name !== "avatar") {
           td.innerHTML = data.value
 
         } else {
@@ -176,23 +176,30 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
   switch (event.target.textContent) {
     case "Edit":
       console.log('edit')
-      if (roleAbility.editInfo === "all") {
-        modalBody.querySelectorAll('input').forEach(input => {
-          input.removeAttribute('disabled')
-        })
-        modalBody.querySelectorAll('select').forEach(select => {
-          select.disabled = false
-        })
-        modalBody.querySelector('.img-container').style.display = 'none'
-        modalBody.querySelector('.cropper-container').style.display = 'block'
-        modalBody.querySelector('.cropper-container').querySelector('cropper-wc').addEventListener('CROPPED', (event) => {
-          console.log('image: ', event.detail['image'])
-        })
-        console.log('img: ', modalBody.querySelector('.cropper-container').querySelector('cropper-wc').querySelector('img'))
-      } else {
-        modalBody.querySelector('input[name="password"]').disabled = false
+      if (modalBody.C_DATA._id) {
+        if (roleAbility.editInfo === "all") {
+          modalBody.querySelectorAll('input').forEach(input => {
+            input.removeAttribute('disabled')
+          })
+          modalBody.querySelectorAll('select').forEach(select => {
+            select.disabled = false
+          })
+          modalBody.querySelector('.img-container').style.display = 'none'
+          modalBody.querySelector('.cropper-container').style.display = 'block'
+          modalBody.querySelector('.cropper-container').querySelector('cropper-wc').addEventListener('CROPPED', (event) => {
+            console.log('image: ', event.detail['image'])
+          })
+          console.log('img: ', modalBody.querySelector('.cropper-container').querySelector('cropper-wc').querySelector('img'))
+        } else {
+          modalBody.querySelector('input[name="password"]').disabled = false
 
+        }
+        event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
+
+      } else {
+        window.alert('You need to upload your input data in order to edit!')
       }
+
       break
     case "Update":
       console.log('modalBody: ', modalBody.querySelector('cropper-wc').getImageData())
@@ -236,32 +243,37 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
         'application/json', JSON.stringify(updateObj), () => {
           window.location.reload()
         })
+      event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
       break
     default:
 
   }
-  event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 }
 
 const deleteBtnFunction = (event, routerName, user) => {
-  if (user.role !== "member") {
-    console.log('id: ',event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id)
-    makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-      'application/json', {}, (result) => {
-        if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {
-          window.localStorage.removeItem('user')
-          window.localStorage.removeItem('accessToken')
-          window.location.href = "/"
-        } else {
-          window.location.reload()
-
-        }
-      })
-
+  if(event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id){
+    if (user.role !== "member") {
+      console.log('id: ', event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id)
+      makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+        'application/json', {}, (result) => {
+          if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id === user._id) {
+            window.localStorage.removeItem('user')
+            window.localStorage.removeItem('accessToken')
+            window.location.href = "/"
+          } else {
+            window.location.reload()
+  
+          }
+        })
+  
+    } else {
+      window.alert('You need to be beyond member to do that!')
+    }
   } else {
-    window.alert('You need to be beyond member to do that!')
+    window.alert('You need to upload your data in order to delete this!')
   }
+  
 
 }
 
