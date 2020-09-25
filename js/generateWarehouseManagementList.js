@@ -47,12 +47,35 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
 
       if (data.name === "name"
         || data.name === "address" || data.name === "phoneNumber" || data.name === "email") {
-        var td = document.createElement('td')
+        let td = document.createElement('td')
         td.innerHTML = data.value ? data.value : 'None'
         tr.appendChild(td)
 
       }
     })
+    var td = document.createElement('td')
+    var checkbox = document.createElement('div')
+    checkbox.className = "checkbox"
+    checkbox.innerHTML = `
+      <label>
+        <input type="checkbox">
+      </label>`
+    itemObj.deactive ? checkbox.querySelector('input').setAttribute('checked', true) : checkbox.querySelector('input').removeAttribute('checked')
+    checkbox.addEventListener('click', (event) => {
+      event.stopPropagation()
+
+    })
+    var input = checkbox.querySelector('input')
+    input.addEventListener('change', (event) => {
+      console.log('event for checkbox: ', event.target.checked)
+      makeRequest('PUT', `warehouses/${event.target.closest('tr').C_DATA._id}`, 'application/json',
+        JSON.stringify({ ...event.target.closest('tr').C_DATA, deactive: event.target.checked}), () => {
+          window.location.reload()
+        })
+    })
+
+    td.appendChild(checkbox)
+    tr.appendChild(td)
     document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
 
@@ -116,12 +139,7 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
         }
       })
     })
-
-
   })
-
-
-
 }
 
 // edit button
@@ -129,31 +147,40 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
   var { routerName } = param
   switch (event.target.textContent) {
     case "Edit":
-      modalBody.querySelectorAll('input').forEach(input => {
-        input.removeAttribute('disabled')
-      })
-      if (modalBody.querySelectorAll('select').length === 0) {
-        createSelect(select, '', 'representative-select', 'select-representative',
-          representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+      console.log('event edit: ', modalBody.C_DATA)
+      if (modalBody.C_DATA.deactive === true) {
+        window.alert('You cannot edit this warehouse because of the warehouse deactivation!')
+        event.target.textContent = 'Edit'
+      } else {
+        modalBody.querySelectorAll('input').forEach(input => {
+          input.removeAttribute('disabled')
+        })
+        if (modalBody.querySelectorAll('select').length === 0) {
+          createSelect(select, '', 'representative-select', 'select-representative',
+            representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+
+        }
+        modalBody.querySelectorAll('select').forEach(select => {
+          select.disabled = false
+        })
+        var addRepresentativeButton = event.target.cloneNode(true)
+        addRepresentativeButton.classList.remove('btn-raised', 'btn-primary')
+        addRepresentativeButton.classList.add('btn-outline-primary')
+
+        addRepresentativeButton.id = 'btn-add-representative'
+        addRepresentativeButton.innerHTML = "Add representative"
+        modalFooter.prepend(addRepresentativeButton)
+        addEventForAddRepresentativeButton()
+        event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
       }
-      modalBody.querySelectorAll('select').forEach(select => {
-        select.disabled = false
-      })
-      var addRepresentativeButton = event.target.cloneNode(true)
-      addRepresentativeButton.classList.remove('btn-raised', 'btn-primary')
-      addRepresentativeButton.classList.add('btn-outline-primary')
 
-      addRepresentativeButton.id = 'btn-add-representative'
-      addRepresentativeButton.innerHTML = "Add representative"
-      modalFooter.prepend(addRepresentativeButton)
-      addEventForAddRepresentativeButton()
 
       break
     case "Update":
       var updateObj = {
         ...event.target.closest('.modal-content').querySelector('.object-div').C_DATA,
-        metadata: [], representatives: [], store: null
+        metadata: [], representatives: [], store: null, deactive: false
       }
       modalBody.querySelectorAll('input').forEach(input => {
         input.setAttribute('disabled', true)
@@ -174,18 +201,19 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
         'application/json', JSON.stringify(updateObj), () => {
           window.location.reload()
         })
+      event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
       break
     default:
 
   }
-  event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
 
 })
 
 // delete button
 modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
+  var { routerName } = param
   makeRequest('DELETE', routerName + "/" + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
     'application/json', {}, () => {
       window.location.reload()

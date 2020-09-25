@@ -336,10 +336,17 @@ router.post('/warehouses', (req, res, next) => {
 // update warehouse
 router.put('/warehouses/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Warehouse.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives, store: req.body.store } }, (err, result) => {
-    if (err) throw err
-    res.status(200).send("Update successfully!")
-  })
+  console.log('req body: ', req.body)
+  Warehouse.findByIdAndUpdate({ _id: req.params.id },
+    {
+      $set: {
+        "metadata": req.body.metadata, "representatives": req.body.representatives, store: req.body.store,
+        deactive: req.body.deactive
+      }
+    }, (err, result) => {
+      if (err) throw err
+      res.status(200).send("Update successfully!")
+    })
 })
 
 // delete warehouse
@@ -444,7 +451,7 @@ router.get('/properties', (req, res, next) => {
     },
     warehouseList: callback => {
       try {
-        Warehouse.find({}).exec(callback)
+        Warehouse.find({deactive: false}).exec(callback)
       } catch (error) {
         console.log(error)
       }

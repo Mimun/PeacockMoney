@@ -14,7 +14,8 @@ const warehouseSchema = new mongoose.Schema({
     cType: {type: String, default: 'text'}
   }],
   representatives: [{type: mongoose.Types.ObjectId, ref: 'Employee', required: false}],
-  store: {type: mongoose.Types.ObjectId, ref: 'Store', required: false}
+  store: {type: mongoose.Types.ObjectId, ref: 'Store', required: false},
+  deactive: {type: Boolean, default: false}
 })
 
 module.exports = mongoose.model('Warehouse', warehouseSchema)
