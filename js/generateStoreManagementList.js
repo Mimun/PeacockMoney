@@ -192,6 +192,7 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
 
 // delete button
 modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
+  var {routerName} = param
   makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
     'application/json', {}, () => {
       window.location.reload()

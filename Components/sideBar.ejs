@@ -1,13 +1,20 @@
 <style>
-  /* resizable table
+  /* resizable table */
+  table.table {
+    width: 100%;
+    overflow: hidden;
+  }
+
   td,
   th {
-    overflow: hidden;
-    white-space: nowrap;
+    /* overflow: hidden;
+    white-space: nowrap; */
     -moz-text-overflow: ellipsis;
     -ms-text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
+    /* word-wrap: break-word; */
+    word-break: break-all;
   }
 
   .rc-handle-container {
@@ -30,7 +37,7 @@
   table.rc-table-resizing thead>th,
   table.rc-table-resizing thead>th>a {
     cursor: ew-resize;
-  } */
+  }
 
   /*  */
   /* Begin: sidebar css */
@@ -287,22 +294,14 @@
 
   })
 
-  setTimeout(() => {
-    $(function () {
-      $(document.querySelector('.table')).resizableColumns({
-        store: window.store
-      });
-    });
-  }, 500)
-
   // resizable table
-  /* 
   $(function () {
-     $(document.querySelector('.table')).resizableColumns({
-       store: window.store
-     });
-   });
- */
+    $(document.querySelector('.table')).resizableColumns({
+      store: window.store
+    });
+  });
+
+
   // css for all list-group-item not having icon 
   document.querySelector('.sidebar-container').querySelectorAll(".list-group-item").forEach(element => {
     element.style.justifyContent = 'flex-start'
