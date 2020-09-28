@@ -12,12 +12,11 @@ import { makeRequest } from './makeRequest.js'
 import { addSeparator, removeSeperator } from './addSeparatorOnInputChange.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
-  console.log('itemobjs from generaete contract template htlm: ', itemObj)
   var storeSelectOptions = []
   if (storeList.length !== 0) {
     storeList.map(store => {
       var name = findNestedObj(store, 'name', 'name')
-      var option = `<option value=${store._id}>${findNestedObj(store, 'name', 'name') ?
+      var option = `<option value=${store._id} name='${findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'id').value : 'None'}'>${findNestedObj(store, 'name', 'name') ?
         findNestedObj(store, 'name', 'name').value : (findNestedObj(store, 'name', 'storeName') ? findNestedObj(store, 'name', 'storeName').value : 'None')}</option>`
       storeSelectOptions.push(option)
     })
@@ -27,7 +26,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   const infoContainer = document.createElement('div')
   // contract template image 
   const imageInfo = findNestedObj(itemObj, 'name', 'image')
-  console.log('image: ', imageInfo)
   var imgContainer = document.createElement('div')
   imgContainer.style.width = "320px"
   imgContainer.style.height = "180px"
@@ -71,7 +69,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   // contract metadata
   itemObj.contractMetadata.map(info => {
     if (info.name !== "creator" && info.name !== 'store') {
-      console.log('info name: ', info.name === "min")
       const clone = document.importNode(template.content, true)
       var input = clone.querySelector('input')
 
@@ -104,7 +101,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
           var numberOfDaysPerTerm = findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm') ?
             findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm').value : 0
           var contractEndingDate = new Date(new Date(event.target.value).getTime() + numberOfAcceptanceTerms * numberOfDaysPerTerm * 24 * 60 * 60 * 1000)
-          console.log('end date: ', contractEndingDate)
           contractInfoDiv.querySelector('input[name="contractEndingDate"]').value = formatDate(contractEndingDate)
 
 
@@ -129,7 +125,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
       aSideInfoDiv.appendChild(selectContainerClone2)
 
       aSideInfoDiv.querySelector('#store').addEventListener('change', (event) => {
-        console.log('event: ', event.target.value)
         makeRequest('POST', '/contractMng/getStores', 'application/json', JSON.stringify({ data: event.target.value }), (result) => {
           var employeeSelectOptions = []
           employeeSelectOptions.unshift('<option value="">No employee</option>')
@@ -183,7 +178,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
   // prevent typing the loan from getting over the max or under the min
   contractInfoDiv.querySelector('input[name="loan"]').addEventListener('change', (event) => {
-    console.log('chane: ', event.target.value)
     var loan = parseFloat(removeSeperator(event.target.value))
     var min = parseFloat(removeSeperator(contractInfoDiv.querySelector('input[name="min"]').value))
     var max = parseFloat(removeSeperator(contractInfoDiv.querySelector('input[name="max"]').value))
@@ -224,7 +218,7 @@ function formatDate(date) {
     month = '0' + month;
   if (day.length < 2)
     day = '0' + day;
-  
+
   return [year, month, day].join('-');
 }
 

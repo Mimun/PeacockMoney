@@ -505,12 +505,12 @@ router.get('/properties', (req, res, next) => {
     if (err) throw err
     var warehouseList = []
     if (result.warehouseList.length !== 0) {
-      warehouseList = result.warehouseList.map(warehouse => {
-        return {
+      result.warehouseList.map(warehouse => {
+        warehouseList.push({
           _id: warehouse._id,
           name: findNestedObj(warehouse, 'name', 'name') ? findNestedObj(warehouse, 'name', 'name').value : 'None',
           address: findNestedObj(warehouse, 'name', 'address') ? findNestedObj(warehouse, 'name', 'address').value : 'None'
-        }
+        })
       })
     }
 

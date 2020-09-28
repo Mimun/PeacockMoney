@@ -14,6 +14,7 @@ const Warehouse = require('../../../models/warehouse')
 var fs = require('fs');
 var async = require('async');
 const auth = require('../../authentication/routes/checkAuthentication');
+const { format } = require('path');
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -29,6 +30,21 @@ function findNestedObj(entireObj, keyToFind, valToFind) {
 function escapeRegex(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
+
+// function to format date as YYYY-MM-DD
+function formatDate(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) 
+      month = '0' + month;
+  if (day.length < 2) 
+      day = '0' + day;
+
+  return [year, month, day].join('-');
+}
 
 // CONTRACT TEMPLATE
 // contract template list for admin
@@ -179,6 +195,7 @@ router.post('/createNewContractTemplate', (req, res, next) => {
 
 // get a contract template to create new contract
 router.get('/contractTemplates/:id', (req, res) => {
+
   console.log('req: ', req.params.id)
   async.parallel({
     contractTemplate: callback => {
@@ -192,12 +209,16 @@ router.get('/contractTemplates/:id', (req, res) => {
     },
     store: callback => {
       Store.find({}).exec(callback)
+    },
+    contractNow: callback => {
+      Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
     res.render('createNewContract', {
       itemResults: results.item, statusResults: results.itemStatus,
-      contractInfo: results.contractTemplate, stores: results.store
+      contractInfo: results.contractTemplate, stores: results.store,
+      contractNow: results.contractNow
     });
   })
 })
@@ -221,17 +242,19 @@ router.post('/getStores', (req, res, next) => {
         console.log('representatives: ', results.representatives.length)
         console.log('employees: ', results.employees.length)
         var employeeList = results.representatives.concat(results.employees)
-        employeeList = employeeList.map(employee=>{
-          return{
+        employeeList = employeeList.map(employee => {
+          return {
             _id: employee._id,
             name: findNestedObj(employee, 'name', 'name').value,
             role: findNestedObj(employee, 'name', 'role').value
           }
         })
 
-        res.send({ employeeList: _.uniqBy(employeeList, e=>{
-          return JSON.stringify(e._id)
-        }) })
+        res.send({
+          employeeList: _.uniqBy(employeeList, e => {
+            return JSON.stringify(e._id)
+          })
+        })
       })
     }
   })
@@ -294,21 +317,32 @@ router.delete('/deleteContractTemplate/:id', (req, res) => {
 
 // CONTRACT
 // contract list
+
 router.get('/contracts', (req, res) => {
-  Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
-    {
-      path: 'store.value',
-      model: 'Store'
+  const checkDate = formatDate(new Date())
+  console.log('date now: ', checkDate)
+  async.parallel({
+    contract: callback => {
+      Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
     },
-    {
-      path: 'employee.value',
-      model: 'Employee'
+    contractNow: callback => {
+      Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
     }
-  ]).exec((err, result2) => {
+  }, (err, result2) => {
     if (err) throw err
-    res.render('contractList', { contractList: result2, roleAbility: req.roleAbility, payload: req.payload })
+    res.render('contractList', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
   })
+
 })
 
 // create new contract
@@ -328,10 +362,10 @@ router.post('/contracts', (req, res) => {
 })
 
 // delete contract
-router.delete('/contracts/:id', (req, res, next)=>{
+router.delete('/contracts/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
-  Contract.findByIdAndDelete({_id: req.params.id}).exec((err, result)=>{
-    if(err) throw err
+  Contract.findByIdAndDelete({ _id: req.params.id }).exec((err, result) => {
+    if (err) throw err
     res.send('Delete contract successfully!')
   })
 })
@@ -413,7 +447,7 @@ router.put('/contracts/:id', async (req, res) => {
 router.get('/contracts/:id', (req, res) => {
   console.log('id received', req.params.id)
   Contract.findById(req.params.id).populate([
-   
+
     {
       path: 'store.value',
       model: 'Store'
@@ -421,7 +455,7 @@ router.get('/contracts/:id', (req, res) => {
       path: 'employee.value',
       model: 'Employee'
     },
-   
+
   ]).exec((err, contractResult) => {
     if (err) throw err
     res.render('contractContent', { contractDetail: contractResult })

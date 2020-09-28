@@ -35,7 +35,8 @@ const contractSchema = new mongoose.Schema({
     cType: { type: String, default: 'text' },
     dataVie: { type: String },
     dataKor: { type: String, default: 'korean string' }
-  }
+  },
+  id: {type: String}
 
   // item: {type: mongoose.Types.ObjectId, ref: 'Item', required: false},
   // itemStatus: [{type: mongoose.Types.ObjectId, ref: 'ItemStatus', required: false}],

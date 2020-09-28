@@ -236,9 +236,9 @@
           }
 
           console.log('input: ', warehouseObj)
-          // makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), () => {
-          //   window.location.reload()
-          // })
+          makeRequest('POST', 'warehouses', 'application/json', JSON.stringify(warehouseObj), () => {
+            window.location.reload()
+          })
 
         })
 
