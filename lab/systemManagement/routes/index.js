@@ -475,6 +475,10 @@ router.get('/properties', (req, res, next) => {
           {
             path: 'currentWarehouse',
             model: 'Warehouse' || 'Store'
+          },
+          {
+            path: 'contract', 
+            model: 'Contract'
           }
         ]).exec(callback)
       } catch (error) {

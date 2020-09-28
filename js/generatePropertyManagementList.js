@@ -56,40 +56,62 @@ var params = {}
 export const generatePropertyManagementList = async (itemObjs, warehouseList, elementName) => {
   await Object.assign(params, { itemObjs, warehouseList })
 
-  var tableContainer = document.createElement('div')
-  tableContainer.innerHTML = tableTemplate
+  // var tableContainer = document.createElement('div')
+  // tableContainer.innerHTML = tableTemplate
 
   if (itemObjs.length !== 0) {
     // table header
     itemObjs.forEach(itemObj => {
 
-      if (!tableContainer.querySelector('#table>thead').querySelector('tr')) {
-        var trHeader = document.createElement('tr')
-
-        itemObj.metadata.forEach(metadata => {
-          if (metadata) {
-            var th = document.createElement('th')
-            th.setAttribute('data-field', metadata.name)
-            th.setAttribute('data-sortable', true)
-            th.innerHTML = metadata.name
-            trHeader.appendChild(th)
-
-          }
-
-        })
-        if (trHeader.firstChild) {
-          tableContainer.querySelector('#table>thead').appendChild(trHeader)
-
-        }
-      }
       var tr = document.createElement('tr')
       tr.C_DATA = itemObj
-      itemObj.metadata ? itemObj.metadata.forEach(metadata => {
+      // warehouse info
+      if (typeof itemObj.currentWarehouse === 'object' && itemObj.currentWarehouse !== null) {
+        // warehouse name
+        var warehouseName = findNestedObj(itemObj.currentWarehouse, 'name', 'name')
         var td = document.createElement('td')
-        td.innerHTML = metadata ? metadata.value : 'None'
+        td.innerHTML = warehouseName ? warehouseName.value : 'None'
         tr.appendChild(td)
 
-      }) : null
+        // warehouse custom id
+        var warehouseId = findNestedObj(itemObj.currentWarehouse, 'name', 'id')
+        var td2 = document.createElement('td')
+        td2.innerHTML = warehouseId ? warehouseId.value : 'None'
+        tr.appendChild(td2)
+
+      }
+
+      // store info
+      if (typeof itemObj.contract === "object" && itemObj.contract !== null) {
+        // store id
+        var storeId = findNestedObj(itemObj.contract.store.value, 'name', 'id')
+        var td = document.createElement('td')
+        td.innerHTML = storeId ? storeId.value : 'None'
+        tr.appendChild(td)
+
+        // contract id
+        var contractId = itemObj.contract._id
+        var td2 = document.createElement('td')
+        td2.innerHTML = contractId
+        tr.appendChild(td2)
+      }
+      var propertyId = itemObj._id
+      var td2 = document.createElement('td')
+      td2.innerHTML = propertyId
+      tr.appendChild(td2)
+
+      // property name
+      var propertyName = findNestedObj(itemObj.metadata, 'name',  'type')
+      var td = document.createElement('td')
+      td.innerHTML = propertyId
+      tr.appendChild(td)
+
+      // itemObj.metadata ? itemObj.metadata.forEach(metadata => {
+      //   var td = document.createElement('td')
+      //   td.innerHTML = metadata ? metadata.value : 'None'
+      //   tr.appendChild(td)
+
+      // }) : null
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
         var propertyData = event.target.closest('tr').C_DATA
@@ -97,10 +119,10 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
         $("#centralModalSm").on('show.bs.modal', () => {
           modalBody.C_DATA = propertyData
           modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
-          
+
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
-          
+
           // property infos
           var h4 = document.createElement('h4')
           h4.innerHTML = "I. Property infos"
@@ -129,9 +151,10 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
         })
         $("#centralModalSm").modal('show')
       })
-      tableContainer.querySelector('#table>tbody').appendChild(tr)
+      // tableContainer.querySelector('#table>tbody').appendChild(tr)
+      document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+
     })
-    document.querySelector('#' + elementName + '').appendChild(tableContainer)
 
   }
 
