@@ -46,9 +46,6 @@ const modalBody = detailEmployeeTemplate.querySelector('.modal-body')
 var param = {}
 export const generateEmployeeManagementList = async (mainList, selectList, elementName, routerName, user, roleAbility) => {
   await Object.assign(param, { routerName, user, roleAbility })
-
-
-
   mainList.forEach(itemObj => {
     var avatar = findNestedObj(itemObj, 'name', 'avatar') ? findNestedObj(itemObj, 'name', 'avatar').value : 'None'
     var id = findNestedObj(itemObj, 'name', 'id') ? findNestedObj(itemObj, 'name', 'id').value : 'None'
@@ -89,6 +86,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
 
           } else {
             if (data.cType !== 'select') {
+              
               const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
               var inputDiv = detailInfoTemplateClone.querySelector('input')
               var labelDiv = detailInfoTemplateClone.querySelector('label')

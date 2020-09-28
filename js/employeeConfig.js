@@ -14,12 +14,26 @@ export const employeeMetadataSample = () => {
       "value": "",
       "dataVie": "hoTen"
     },
-    customId: {
+    id: {
       "cType": "text",
       "dataKor": "koreanString",
-      "name": "customId",
+      "name": "id",
       "value": "",
       "dataVie": "maNhanVien"
+    },
+    dateOfBirth: {
+      "cType": "date",
+      "dataKor": "koreanString",
+      "name": "dateOfBirth",
+      "value": "",
+      "dataVie": "ngaySinh"
+    },
+    joiningDate: {
+      "cType": "date",
+      "dataKor": "koreanString",
+      "name": "joiningDate",
+      "value": "",
+      "dataVie": "ngayVaoCongTy"
     },
     jobTitle: {
       "cType": "text",
