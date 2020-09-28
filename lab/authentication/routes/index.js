@@ -50,7 +50,7 @@ router.post('/login', (req, res, next) => {
     Employee.findOne({ $and: [{ 'metadata.value': userName }, { 'metadata.value': password }] }, (err, result) => {
       if (err) throw err
       if (result) {
-        var resultUserName = findNestedObj(result, 'name', 'fullName').value
+        var resultUserName = findNestedObj(result, 'name', 'name').value
         var resultRole = findNestedObj(result, 'name', 'role').value
         var resultAvatar = findNestedObj(result, 'name', 'avatar').value
         var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole)

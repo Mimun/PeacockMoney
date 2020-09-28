@@ -7,10 +7,10 @@ export const employeeMetadataSample = () => {
       "value": "",
       "dataVie": "anhDaiDien"
     },
-    fullName: {
+    name: {
       "cType": "text",
       "dataKor": "koreanString",
-      "name": "fullName",
+      "name": "name",
       "value": "",
       "dataVie": "hoTen"
     },

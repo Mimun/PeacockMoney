@@ -46,30 +46,22 @@ const modalBody = detailEmployeeTemplate.querySelector('.modal-body')
 var param = {}
 export const generateEmployeeManagementList = async (mainList, selectList, elementName, routerName, user, roleAbility) => {
   await Object.assign(param, { routerName, user, roleAbility })
+
+
+
   mainList.forEach(itemObj => {
-    var tr = document.createElement('tr')
+    var avatar = findNestedObj(itemObj, 'name', 'avatar') ? findNestedObj(itemObj, 'name', 'avatar').value : 'None'
+    var id = findNestedObj(itemObj, 'name', 'id') ? findNestedObj(itemObj, 'name', 'id').value : 'None'
+    var name = findNestedObj(itemObj, 'name', 'name') ? findNestedObj(itemObj, 'name', 'name').value : 'None'
+    var dateOfBirth = findNestedObj(itemObj, 'name', 'dateOfBirth') ? findNestedObj(itemObj, 'name', 'dateOfBirth').value : 'None'
+    var joiningDate = findNestedObj(itemObj, 'name', 'joiningDate') ? findNestedObj(itemObj, 'name', 'joiningDate').value : 'None'
+    var jobTitle = findNestedObj(itemObj, 'name', 'jobTitle') ? findNestedObj(itemObj, 'name', 'jobTitle').value : 'None'
+    var workingPlace = findNestedObj(itemObj, 'name', 'store') ? (findNestedObj(selectList, 'id', `${findNestedObj(itemObj, 'name', 'store').value}`) ? findNestedObj(selectList, 'id', `${findNestedObj(itemObj, 'name', 'store').value}`).name : 'None') : 'None'
+    console.log('working place: ', workingPlace)
+    var phoneNumber = findNestedObj(itemObj, 'name', 'phoneNumber') ? findNestedObj(itemObj, 'name', 'phoneNumber').value : 'None'
+
+    var tr = displayInfoToTable(transformToSimpleObject(avatar, id, name, dateOfBirth, joiningDate, jobTitle, workingPlace, phoneNumber), elementName)
     tr.C_DATA = itemObj
-    itemObj.metadata.forEach(data => {
-
-      if (data.name === "avatar" || data.name === "fullName" || data.name === "customId"
-        || data.name === "jobTitle" || data.name === "phoneNumber" || data.name === "email") {
-        var td = document.createElement('td')
-        if (data.name !== "avatar") {
-          td.innerHTML = data.value
-
-        } else {
-          var imageContainer = document.createElement('img')
-          imageContainer.className = 'image-container avatar rounded-circle'
-          imageContainer.src = data.value
-          td.appendChild(imageContainer)
-        }
-        tr.appendChild(td)
-
-      }
-    })
-    document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
-    // $(tr).bootstrapMaterialDesign()
-
 
     tr.addEventListener('click', (event) => {
       const cData = event.target.closest('tr').C_DATA
@@ -112,7 +104,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
         storeSelectOptions.push('<option value="">No store</option>')
         if (selectList !== 0) {
           selectList.map(select => {
-            var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.fullName} - ${select.address}</option>`
+            var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
             storeSelectOptions.push(option)
           })
         }
@@ -147,11 +139,6 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
       $("#modalContactForm").on('hidden.bs.modal', () => {
       })
     })
-
-    // clone.querySelector('.info-container').addEventListener('click', (event) => {
-
-    // })
-    // document.querySelector('#' + elementName + '').appendChild(clone)
   })
 
 
@@ -231,7 +218,7 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 
       if (updateObj._id === user._id) {
         window.localStorage.setItem('user', JSON.stringify({
-          userName: findNestedObj(updateObj, 'name', 'fullName').value,
+          userName: findNestedObj(updateObj, 'name', 'name').value,
           role: findNestedObj(updateObj, 'name', 'role').value,
           _id: updateObj._id,
           avatar: findNestedObj(updateObj, 'name', 'avatar').value
@@ -252,7 +239,7 @@ const editBtnFunction = (event, routerName, user, roleAbility) => {
 }
 
 const deleteBtnFunction = (event, routerName, user) => {
-  if(event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id){
+  if (event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id) {
     if (user.role !== "member") {
       console.log('id: ', event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id)
       makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
@@ -263,17 +250,17 @@ const deleteBtnFunction = (event, routerName, user) => {
             window.location.href = "/"
           } else {
             window.location.reload()
-  
+
           }
         })
-  
+
     } else {
       window.alert('You need to be beyond member to do that!')
     }
   } else {
     window.alert('You need to upload your data in order to delete this!')
   }
-  
+
 
 }
 
@@ -328,4 +315,32 @@ export const createSelect = (selectTemplate, selecteValue, selectId, selectVie, 
   selectContainerClone.appendChild(selectLabel)
   selectContainerClone.appendChild(select)
   return selectContainerClone
+}
+
+// create simple object
+const transformToSimpleObject = (avatar = "None", id = "None", name = "None", dateOfBirth = "None", joiningDate = "None", jobTitle = "None", workingPlace = "None", phoneNumber = "None") => {
+
+  return {
+    avatar, id, name, dateOfBirth, joiningDate, jobTitle, workingPlace, phoneNumber
+  }
+}
+
+// display table
+const displayInfoToTable = (itemObj, elementName) => {
+  var tr = document.createElement('tr')
+  for (var prop in itemObj) {
+    var td = document.createElement('td')
+    if (prop === 'avatar') {
+      var img = document.createElement('img')
+      img.className = 'rounded-circle avatar'
+      img.src = itemObj[prop]
+      td.appendChild(img)
+    } else {
+      td.innerHTML = itemObj[prop]
+    }
+    tr.appendChild(td)
+  }
+
+  document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+  return tr
 }

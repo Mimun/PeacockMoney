@@ -41,18 +41,16 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
   await Object.assign(param, { routerName })
 
   mainList.forEach(itemObj => {
-    var tr = document.createElement('tr')
+    var id = findNestedObj(itemObj.metadata, 'name', 'id') ? findNestedObj(itemObj.metadata, 'name', 'id').value : 'None'
+    var name = findNestedObj(itemObj.metadata, 'name', 'name') ? findNestedObj(itemObj.metadata, 'name', 'name').value : 'None'
+    var address = findNestedObj(itemObj.metadata, 'name', 'address') ? findNestedObj(itemObj.metadata, 'name', 'address').value : 'None'
+    var representative = findNestedObj(itemObj.representatives[0], 'name', 'name') ? findNestedObj(itemObj.representatives[0], 'name', 'name').value : 'None'
+    var phoneNumber = findNestedObj(itemObj.metadata, 'name', 'phoneNumber') ? findNestedObj(itemObj.metadata, 'name', 'phoneNumber').value : 'None'
+
+    var tr = displayInfoToTable(transformToSimpleObject(id, name, address, representative, phoneNumber), elementName)
     tr.C_DATA = itemObj
-    itemObj.metadata.forEach(data => {
-
-      if (data.name === "name"
-        || data.name === "address" || data.name === "phoneNumber" || data.name === "email" || data.name === "id") {
-        let td = document.createElement('td')
-        td.innerHTML = data.value ? data.value : 'None'
-        tr.appendChild(td)
-
-      }
-    })
+    
+    // check box
     var td = document.createElement('td')
     var checkbox = document.createElement('div')
     checkbox.className = "checkbox"
@@ -76,6 +74,7 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
 
     td.appendChild(checkbox)
     tr.appendChild(td)
+
     document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
 
@@ -290,4 +289,25 @@ export const createSelect = (selectTemplate, selecteValue, selectId,
   selectContainerClone.appendChild(select)
   divAppend.appendChild(selectContainerClone)
 
+}
+
+// create simple object
+const transformToSimpleObject = (id = "None", name = "None", address = "None", representative = "None",
+  phoneNumber = "None") => {
+  return {
+    id, name, address, representative, phoneNumber
+  }
+}
+
+// display table
+const displayInfoToTable = (itemObj, elementName) => {
+  var tr = document.createElement('tr')
+  for (var prop in itemObj) {
+    var td = document.createElement('td')
+    td.innerHTML = itemObj[prop]
+    tr.appendChild(td)
+  }
+
+  document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+  return tr
 }

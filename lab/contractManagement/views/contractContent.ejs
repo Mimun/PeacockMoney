@@ -165,8 +165,8 @@
       objectData["storeCreditNumber"] = findNestedObj(object.store.value, 'name', 'creditNumber') ?
         findNestedObj(object.store.value, 'name', 'creditNumber').value : 'Not defined'
       objectData["storeRepresentative"] = object.employee.value ?
-        (findNestedObj(object.employee.value, 'name', 'fullName') ?
-          findNestedObj(object.employee.value, 'name', 'fullName').value : 'Not defined') : 'Not defined'
+        (findNestedObj(object.employee.value, 'name', 'name') ?
+          findNestedObj(object.employee.value, 'name', 'name').value : 'Not defined') : 'Not defined'
       objectData["storeRepresentativeJobTitle"] = object.employee.value ?
         (findNestedObj(object.employee.value, 'name', 'jobTitle') ?
           findNestedObj(object.employee.value, 'name', 'jobTitle').value : 'Not defined') : 'Not defined'

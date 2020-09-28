@@ -63,13 +63,25 @@
         </div>
         <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Ho ten</label>
-          <input type="text" class="form-control validate active" name="fullName" data-vie="hoTen"
+          <input type="text" class="form-control validate active" name="name" data-vie="hoTen"
             data-kor="koreanString">
         </div>
 
         <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Ma nhan vien</label>
-          <input type="text" class="form-control validate active" name="customId" data-vie="maNhanVien"
+          <input type="text" class="form-control validate active" name="id" data-vie="maNhanVien"
+            data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngay sinh</label>
+          <input type="date" class="form-control validate active" name="dateOfBirth" data-vie="ngaySinh"
+            data-kor="koreanString">
+        </div>
+
+        <div class="form-group">
+          <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngay vao cong ty</label>
+          <input type="date" class="form-control validate active" name="joiningDate" data-vie="ngayVaoCongTy"
             data-kor="koreanString">
         </div>
 
@@ -155,11 +167,13 @@
           <thead>
             <tr>
               <th data-resizable-column-id="avatar">Anh dai dien</th>
-              <th data-resizable-column-id="name">Ten nhan vien</th>
               <th data-resizable-column-id="customId">Ma nhan vien</th>
+              <th data-resizable-column-id="name">Ten nhan vien</th>
+              <th data-resizable-column-id="dateOfBirth">Ngay sinh</th>
+              <th data-resizable-column-id="joiningDate">Ngay vao cong ty</th>
               <th data-resizable-column-id="jobTitle">Chuc vu</th>
+              <th data-resizable-column-id="workingAddress">Dia diem lam viec</th>
               <th data-resizable-column-id="phoneNumber">So dien thoai</th>
-              <th data-resizable-column-id="email">Email</th>
 
             </tr>
           </thead>
@@ -212,7 +226,7 @@
     storeSelectOptions.push('<option value="">No store</option>')
     if (storeList !== 0) {
       storeList.map(select => {
-        var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.fullName} - ${select.address}</option>`
+        var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
         storeSelectOptions.push(option)
       })
     }

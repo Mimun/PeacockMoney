@@ -224,7 +224,7 @@ router.post('/getStores', (req, res, next) => {
         employeeList = employeeList.map(employee=>{
           return{
             _id: employee._id,
-            name: findNestedObj(employee, 'name', 'fullName').value,
+            name: findNestedObj(employee, 'name', 'name').value,
             role: findNestedObj(employee, 'name', 'role').value
           }
         })

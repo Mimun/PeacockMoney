@@ -135,7 +135,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
           employeeSelectOptions.unshift('<option value="">No employee</option>')
           if (result.employeeList.length !== 0) {
             result.employeeList.map(employee => {
-              // var employeeName = findNestedObj(employee, 'name', 'fullName')
+              // var employeeName = findNestedObj(employee, 'name', 'name')
               // var employeeRole = findNestedObj(employee, 'name', 'role')
               var option = `<option value=${employee._id}>${employee.name}-${employee.role}</option>`
               employeeSelectOptions.push(option)

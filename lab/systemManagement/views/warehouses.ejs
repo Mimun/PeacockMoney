@@ -110,12 +110,12 @@
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
           <thead>
             <tr>
-              <th data-resizable-column-id="name">Ten kho</th>
               <th data-resizable-column-id="id">Ma kho</th>
+              <th data-resizable-column-id="name">Ten kho</th>
               <th data-resizable-column-id="address">Dia chi</th>
+              <th data-resizable-column-id="representative">Nguoi lien he</th>
               <th data-resizable-column-id="phoneNumber">So dien thoai</th>
-              <th data-resizable-column-id="email">Email</th>
-              <th data-resizable-column-id="active">Bo theo doi</th>
+              <th data-resizable-column-id="active">Ngung theo doi</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -167,7 +167,7 @@
     storeSelectOptions.unshift('<option value="">No store</option>')
 
     var employeeSelectOptions = employeeList.map(employee => {
-      var option = `<option value="${employee._id}">${employee.fullName}-${employee.role}</option>`
+      var option = `<option value="${employee._id}">${employee.name}-${employee.role}</option>`
       return option
     })
     employeeSelectOptions.unshift('<option value="">No employee</option>')

@@ -47,12 +47,12 @@ router.get('/employees', (req, res, next) => {
     var storeList = []
     if (results.stores.length !== 0) {
       storeList = await results.stores.map(store => {
-        var fullName = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
+        var name = findNestedObj(store, 'name', 'name') ? findNestedObj(store, 'name', 'name').value : 'None'
         var address = findNestedObj(store, 'name', 'address') ? findNestedObj(store, 'name', 'address').value : 'None'
         var id = findNestedObj(store, 'name', 'id') ? findNestedObj(store, 'name', 'id').value : 'None'
         return {
           _id: store._id,
-          fullName,
+          name,
           address,
           id
         }
@@ -69,11 +69,11 @@ router.post('/employees', (req, res, next) => {
   var avatar = findNestedObj(req.body, 'name', 'avatar').value
   let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
   let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
-  var fullName = findNestedObj(req.body, 'name', 'fullName').value
+  var name = findNestedObj(req.body, 'name', 'name').value
   if (base64data) {
-    fs.writeFile(`public/images/${fullName}.${base64Ext}`, base64data, 'base64', (err) => {
+    fs.writeFile(`public/images/${name}.${base64Ext}`, base64data, 'base64', (err) => {
       if (err) console.error(err)
-      findNestedObj(req.body, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+      findNestedObj(req.body, 'name', 'avatar').value = `/images/${name}.${base64Ext}`
       var employee = new Employee(req.body)
       console.log('employee: ', employee)
       try {
@@ -107,7 +107,7 @@ router.post('/multEmployee', async (req, res)=>{
 router.put('/employees/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
   var employeeAvatar = findNestedObj(req.body.metadata, 'name', 'avatar') ? findNestedObj(req.body.metadata, 'name', 'avatar').value : 'None'
-  var fullName = findNestedObj(req.body, 'name', 'fullName') ? findNestedObj(req.body, 'name', 'fullName').value : 'Unknown'
+  var name = findNestedObj(req.body, 'name', 'name') ? findNestedObj(req.body, 'name', 'name').value : 'Unknown'
   var base64data = employeeAvatar.replace(/^data:image\/[a-z]+;base64,/, "")
   if (base64data) {
     var isBase64 = checkBase64(base64data)
@@ -115,8 +115,8 @@ router.put('/employees/:id', (req, res, next) => {
       let base64Ext = employeeAvatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
       console.log('extension 1: ', base64Ext)
       // const imageBuffer = new Buffer(base64data, "base64");
-      fs.writeFileSync(`public/images/${fullName}.${base64Ext}`, base64data, 'base64');
-      findNestedObj(req.body.metadata, 'name', 'avatar').value = `/images/${fullName}.${base64Ext}`
+      fs.writeFileSync(`public/images/${name}.${base64Ext}`, base64data, 'base64');
+      findNestedObj(req.body.metadata, 'name', 'avatar').value = `/images/${name}.${base64Ext}`
     }
   }
 
@@ -187,11 +187,11 @@ router.get('/stores', (req, res, next) => {
     var employeeList = []
     if (results.employees.length !== 0) {
       employeeList = results.employees.map(employee => {
-        var fullName = findNestedObj(employee, 'name', 'fullName') ? findNestedObj(employee, 'name', 'fullName').value : 'None'
+        var name = findNestedObj(employee, 'name', 'name') ? findNestedObj(employee, 'name', 'name').value : 'None'
         var role = findNestedObj(employee, 'name', 'role') ? findNestedObj(employee, 'name', 'role').value : 'None'
         return {
           _id: employee._id,
-          fullName,
+          name,
           role
         }
       })
@@ -305,7 +305,16 @@ router.get('/warehouses', (req, res, next) => {
   async.parallel({
     warehouses: callback => {
       try {
-        Warehouse.find({}).exec(callback)
+        Warehouse.find({}).populate([
+          {
+            path: 'store',
+            model: 'Store'
+          }, 
+          {
+            path: 'representatives',
+            model: 'Employee'
+          }
+        ]).exec(callback)
       } catch (err) {
         console.error(err)
       }
@@ -330,11 +339,11 @@ router.get('/warehouses', (req, res, next) => {
     var storeList = []
     if (results.employees.length !== 0) {
       employeeList = await results.employees.map(employee => {
-        var fullName = findNestedObj(employee, 'name', 'fullName') ? findNestedObj(employee, 'name', 'fullName').value : 'None'
+        var name = findNestedObj(employee, 'name', 'name') ? findNestedObj(employee, 'name', 'name').value : 'None'
         var role = findNestedObj(employee, 'name', 'role') ? findNestedObj(employee, 'name', 'role').value : 'None'
         return {
           _id: employee._id,
-          fullName,
+          name,
           role
         }
       })

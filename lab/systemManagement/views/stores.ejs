@@ -120,11 +120,13 @@
         <table class="table table-hover table-bordered table-responsive table-striped">
           <thead>
             <tr>
-              <th data-resizable-column-id="name">Ten cua hang</th>
               <th data-resizable-column-id="id">Ma cua hang</th>
-              <th data-resizable-column-id="creditNumber">Ma giao dich</th>
+              <th data-resizable-column-id="name">Ten cua hang</th>
               <th data-resizable-column-id="address">Dia chi</th>
-              <th data-resizable-column-id="email">Email</th>
+              <th data-resizable-column-id="creditNumber">So tai khoan</th>
+              <th data-resizable-column-id="representative">Cua hang truong</th>
+              <th data-resizable-column-id="phoneNumber">So dien thoai</th>
+              <th data-resizable-column-id="openingDay">Opening</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -161,7 +163,7 @@
     employeeList.forEach(employee => {
       var option = document.createElement('option')
       option.value = employee._id
-      option.innerHTML = employee.fullName + ' - ' + employee.role
+      option.innerHTML = employee.name + ' - ' + employee.role
       storeRepresentativeSelect.querySelector('select').appendChild(option)
     })
 

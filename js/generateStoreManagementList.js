@@ -40,27 +40,23 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
   await Object.assign(param, { routerName })
 
   var representativeSelectOptions = await selectList.map(select => {
-    var option = `<option value=${select._id}>${select.fullName} - ${select.role}</option>`
+    var option = `<option value=${select._id}>${select.name} - ${select.role}</option>`
     return option
   })
   representativeSelectOptions.unshift('<option value="">No representative</option>')
   console.log('represnetative option: ', representativeSelectOptions)
-
   mainList.forEach(itemObj => {
-    var tr = document.createElement('tr')
+    var id = findNestedObj(itemObj, 'name', 'id') ? findNestedObj(itemObj, 'name', 'id').value : 'None'
+    var name = findNestedObj(itemObj, 'name', 'name') ? findNestedObj(itemObj, 'name', 'name').value : 'None'
+    var address = findNestedObj(itemObj, 'name', 'address') ? findNestedObj(itemObj, 'name', 'address').value : 'None'
+    var creditNumber = findNestedObj(itemObj, 'name', 'creditNumber') ? findNestedObj(itemObj, 'name', 'creditNumber').value : 'None'
+    var representative = findNestedObj(itemObj.representatives[0], 'name', 'name') ? findNestedObj(itemObj.representatives[0], 'name', 'name').value : 'None'
+    var phoneNumber = findNestedObj(itemObj, 'name', 'phoneNumber') ? findNestedObj(itemObj, 'name', 'phoneNumber').value : 'None'
+    var openingDay = findNestedObj(itemObj, 'name', 'openingDay') ? findNestedObj(itemObj, 'name', 'openingDay').value : 'None'
+
+
+    var tr = displayInfoToTable(transformToSimpleObject(id, name, address, creditNumber, representative, phoneNumber, openingDay), elementName)
     tr.C_DATA = itemObj
-    itemObj.metadata.forEach(data => {
-
-      if (data.name === "name" || data.name === "id"
-        || data.name === "address" || data.name === "creditNumber" || data.name === "email") {
-        var td = document.createElement('td')
-        td.innerHTML = data.value ? data.value : 'None'
-        tr.appendChild(td)
-
-      }
-    })
-    document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
-
     tr.addEventListener('click', (event) => {
       const cData = event.target.closest('tr').C_DATA
       console.log('event: ', cData)
@@ -130,12 +126,7 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
         }
       })
     })
-
-
-
   })
-
-
 
 }
 
@@ -192,7 +183,7 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
 
 // delete button
 modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
-  var {routerName} = param
+  var { routerName } = param
   makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
     'application/json', {}, () => {
       window.location.reload()
@@ -262,4 +253,25 @@ const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, s
   selectContainerClone.appendChild(select)
   modalBody.appendChild(selectContainerClone)
 
+}
+
+// create simple object
+const transformToSimpleObject = (id = "None", name = "None", address = "None", creditNumber = "None", representative = "None",
+  phoneNumber = "None", openingDay = "None", status = false) => {
+  return {
+    id, name, address, creditNumber, representative, phoneNumber, openingDay
+  }
+}
+
+// display table
+const displayInfoToTable = (itemObj, elementName) => {
+  var tr = document.createElement('tr')
+  for (var prop in itemObj) {
+    var td = document.createElement('td')
+    td.innerHTML = itemObj[prop]
+    tr.appendChild(td)
+  }
+
+  document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+  return tr
 }
