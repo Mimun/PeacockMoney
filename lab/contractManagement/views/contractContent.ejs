@@ -173,6 +173,8 @@
       objectData["contractEndingDate"] = findNestedObj(object.metadata, 'name', 'contractEndingDate') ?
         findNestedObj(object.metadata, 'name', 'contractEndingDate').value : 'Unknown'
 
+      // contract id
+      objectData["id"] = object.id
       return objectData
     }
 
@@ -195,7 +197,8 @@
     var contractContent = findNestedObj(contractDetail, 'name', 'contractContent').value
 
     var contract = convertDbObjToQuillObj(contractDetail)
-    console.log('data converted: ', contract)
+    console.log('data converted: ', contract.id)
+
 
     let tpl = eval('`' + contractContent + '`');
     const div = document.createElement('div')
