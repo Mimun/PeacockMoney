@@ -483,7 +483,7 @@ router.get('/properties', (req, res, next) => {
           },
           {
             path: 'currentWarehouse',
-            model: 'Warehouse' || 'Store'
+            model: 'Warehouse'
           },
           {
             path: 'contract', 

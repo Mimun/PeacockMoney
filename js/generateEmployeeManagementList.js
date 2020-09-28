@@ -19,7 +19,7 @@ const detailInfoTemplate = document.createElement('div')
 detailInfoTemplate.className = 'form-group'
 detailInfoTemplate.innerHTML = `
   <label data-error="wrong" data-success="right" ></label>
-  <input type="text" class="form-control" disabled placeholder="abc">
+  <input type="text" class="form-control" disabled>
 `
 
 // select

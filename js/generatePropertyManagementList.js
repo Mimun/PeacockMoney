@@ -33,7 +33,7 @@ const detailInfoTemplate = document.createElement('div')
 detailInfoTemplate.className = 'form-group'
 detailInfoTemplate.innerHTML = `
   <label data-error="wrong" data-success="right" ></label>
-  <input type="text" class="form-control" disabled placeholder="abc">
+  <input type="text" class="form-control" disabled>
 `
 
 var selectContainer = document.createElement('div')
@@ -62,56 +62,14 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
   if (itemObjs.length !== 0) {
     // table header
     itemObjs.forEach(itemObj => {
+      var storeId = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id').value : 'None'
+      var storeName = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name').value : 'None'
+      var contractId = itemObj.contract ? itemObj.contract.id : 'None'
+      var propertyId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
+      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value!== ''? itemObj.info[0].value : 'None') : 'None'
 
-      var tr = document.createElement('tr')
+      var tr = displayInfoToTable(transformToSimpleObject(storeId, storeName, contractId, propertyId, propertyName), elementName)
       tr.C_DATA = itemObj
-      // warehouse info
-      if (typeof itemObj.currentWarehouse === 'object' && itemObj.currentWarehouse !== null) {
-        // warehouse name
-        var warehouseName = findNestedObj(itemObj.currentWarehouse, 'name', 'name')
-        var td = document.createElement('td')
-        td.innerHTML = warehouseName ? warehouseName.value : 'None'
-        tr.appendChild(td)
-
-        // warehouse custom id
-        var warehouseId = findNestedObj(itemObj.currentWarehouse, 'name', 'id')
-        var td2 = document.createElement('td')
-        td2.innerHTML = warehouseId ? warehouseId.value : 'None'
-        tr.appendChild(td2)
-
-      }
-
-      // store info
-      if (typeof itemObj.contract === "object" && itemObj.contract !== null) {
-        // store id
-        var storeId = findNestedObj(itemObj.contract.store.value, 'name', 'id')
-        var td = document.createElement('td')
-        td.innerHTML = storeId ? storeId.value : 'None'
-        tr.appendChild(td)
-
-        // contract id
-        var contractId = itemObj.contract._id
-        var td2 = document.createElement('td')
-        td2.innerHTML = contractId
-        tr.appendChild(td2)
-      }
-      var propertyId = itemObj._id
-      var td2 = document.createElement('td')
-      td2.innerHTML = propertyId
-      tr.appendChild(td2)
-
-      // property name
-      var propertyName = findNestedObj(itemObj.metadata, 'name',  'type')
-      var td = document.createElement('td')
-      td.innerHTML = propertyId
-      tr.appendChild(td)
-
-      // itemObj.metadata ? itemObj.metadata.forEach(metadata => {
-      //   var td = document.createElement('td')
-      //   td.innerHTML = metadata ? metadata.value : 'None'
-      //   tr.appendChild(td)
-
-      // }) : null
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
         var propertyData = event.target.closest('tr').C_DATA
@@ -229,3 +187,24 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
   event.target.textContent === "change warehouse" ? event.target.textContent = "change" : event.target.textContent = "change"
 
 })
+
+// create simple object
+const transformToSimpleObject = (storeId = "None", storeName = "None", contractId = "None",
+  propertyId = "None", propertyName = 'None') => {
+  return {
+    storeId, storeName, contractId, propertyId, propertyName
+  }
+}
+
+// display table
+const displayInfoToTable = (itemObj, elementName) => {
+  var tr = document.createElement('tr')
+  for (var prop in itemObj) {
+    var td = document.createElement('td')
+    td.innerHTML = itemObj[prop]
+    tr.appendChild(td)
+  }
+
+  document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+  return tr
+}
