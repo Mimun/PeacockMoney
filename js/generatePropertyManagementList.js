@@ -65,10 +65,10 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
       var storeId = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id').value : 'None'
       var storeName = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name').value : 'None'
       var contractId = itemObj.contract ? itemObj.contract.id : 'None'
-      var propertyId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
-      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value!== ''? itemObj.infos[0].value : 'None') : 'None'
-
-      var tr = displayInfoToTable(transformToSimpleObject(storeId, storeName, contractId, propertyId, propertyName), elementName)
+      var itemTypeId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
+      var propertyId = itemObj.id
+      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None'
+      var tr = displayInfoToTable(transformToSimpleObject(storeId, storeName, contractId, itemTypeId, propertyId, propertyName), elementName)
       tr.C_DATA = itemObj
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
@@ -86,12 +86,20 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
           h4.innerHTML = "I. Property infos"
           h4.style.width = "100%"
           propertyInfoContainer.appendChild(h4)
+          // property id
+          var propertyIdClone = detailInfoTemplate.cloneNode(true)
+          propertyIdClone.querySelector('label').innerHTML = 'ID'
+          propertyIdClone.querySelector('input').value = propertyId
+          propertyInfoContainer.appendChild(propertyIdClone)
+          // property infos
           propertyData.infos.forEach(info => {
             var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
             detailInfoTemplateClone.querySelector('label').innerHTML = info.name
             detailInfoTemplateClone.querySelector('input').value = info.value
             propertyInfoContainer.appendChild(detailInfoTemplateClone)
           })
+
+
 
           // current warehouse
           var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
@@ -190,9 +198,9 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
 
 // create simple object
 const transformToSimpleObject = (storeId = "None", storeName = "None", contractId = "None",
-  propertyId = "None", propertyName = 'None') => {
+  itemTypeId = "None", propertyId = "None", propertyName = 'None') => {
   return {
-    storeId, storeName, contractId, propertyId, propertyName
+    storeId, storeName, contractId, itemTypeId, propertyId, propertyName
   }
 }
 

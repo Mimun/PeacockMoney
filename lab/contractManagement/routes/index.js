@@ -34,14 +34,14 @@ function escapeRegex(text) {
 // function to format date as YYYY-MM-DD
 function formatDate(date) {
   var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
 
-  if (month.length < 2) 
-      month = '0' + month;
-  if (day.length < 2) 
-      day = '0' + day;
+  if (month.length < 2)
+    month = '0' + month;
+  if (day.length < 2)
+    day = '0' + day;
 
   return [year, month, day].join('-');
 }
@@ -384,8 +384,14 @@ const createProperty = (metadata, infos, status, evaluationItem = null, contract
     currentWarehouse,
     movement,
     importDate,
-    exportDate
+    exportDate,
+    
   }
+}
+
+// function to generate property id
+const createPropertyId = (contractId, itemTypeId, index=0) => {
+  return `${itemTypeId !== '' ? itemTypeId : 'None'}.${contractId !== '' ? contractId : 'None'}.${index}`
 }
 
 // update status of a contract
@@ -395,38 +401,49 @@ router.put('/contracts/:id', async (req, res) => {
   try {
     await Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
       if (err) throw err
-      console.log('contract result: ', contractResult)
+      var contractId = contractResult.id
+      var itemTypeId = findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId') ?
+        findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId').value : "None"
+      console.log('contarct id: ', contractId)
+      console.log('itemtype id: ', itemTypeId)
+
       // add property only when the contract is approved
       if (contractResult.contractStatus === 'approved') {
         try {
           await Warehouse.findOne({ store: contractResult.store.value }).exec(async (err, warehouseResult) => {
             if (err) throw err
-            console.log('warehouse result: ', warehouseResult)
             if (contractResult.items.length !== 0) {
-              await contractResult.items.forEach(item => {
+              await contractResult.items.forEach(async (item, index) => {
+                var propertyId = await createPropertyId(contractId, itemTypeId, index)
                 if (warehouseResult) {
-                  var newItem = createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
+                  
+                  console.log('property id 1: ', propertyId)
+                  var newItem = await createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
                     item.infos, item.status, item.evaluationItem, contractResult._id,
                     warehouseResult._id, warehouseResult._id, [warehouseResult._id])
-                  var property = new Property(newItem)
-                  console.log('new item: ', property)
+                  var property = new Property({...newItem, id: propertyId})
+                  console.log('new item: ', property.id)
 
                   property.save((err, result) => {
                     if (err) throw err
                   })
                 } else {
+                  console.log('property id 2: ', propertyId)
+
                   var newItem = createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
                     item.infos, item.status, item.evaluationItem, contractResult._id,
                     contractResult.store.value, contractResult.store.value, [contractResult.store.value])
 
-                  var property = new Property(newItem)
-                  console.log('new item: ', property)
+                  var property = new Property({...newItem, id: propertyId})
+                  console.log('new item 2: ', property.id)
+
 
                   property.save((err, result) => {
                     if (err) throw err
                   })
                 }
               })
+            
               res.send({ message: 'Saved property successfully!', result: contractResult })
 
             }

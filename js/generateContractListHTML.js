@@ -18,6 +18,10 @@ export const generateContractListHTML = (itemObj, template, elementName, payload
   var contractName = findNestedObj(itemObj, 'name', 'templateName')
   clone.querySelector('.contract-title').innerHTML = contractName ? contractName.value : "Contract name"
 
+  // contract id
+  var contractId = itemObj.id
+  clone.querySelector('.contract-id').innerHTML = `Ma hop dong: ${contractId}`
+
   // contract info
   itemObj.contractMetadata.forEach(item => {
     if (item.name === "creator" || item.name === "customer" || item.name === "createdDate") {

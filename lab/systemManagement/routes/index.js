@@ -88,16 +88,16 @@ router.post('/employees', (req, res, next) => {
         console.error(err)
       }
     })
-  } 
+  }
 })
 
 // upload multiple employees
-router.post('/multEmployee', async (req, res)=>{
+router.post('/multEmployee', async (req, res) => {
   console.log('req.body: ', req.body)
-  await req.body.dbObjects.forEach(object=>{
+  await req.body.dbObjects.forEach(object => {
     var employee = new Employee(object)
-    employee.save((err, result)=>{
-      if(err) throw err
+    employee.save((err, result) => {
+      if (err) throw err
     })
   })
   res.send('Upload successfully!')
@@ -212,37 +212,34 @@ const createMetadata = (name = "", value = null, cType = "text", dataVie = "viet
 router.post('/stores', (req, res, next) => {
   console.log('req.body: ', req.body)
   var store = new Store(req.body)
+
+  // create warehouse
+  var warehouseBasedOnStore = { ...req.body, metadata: [] }
+  req.body.metadata.forEach(data => {
+    if (data.name === "name" || data.name === "id" || data.name === "address"
+      || data.name === "phoneNumber" || data.name === "email" || data.name === "note") {
+      warehouseBasedOnStore.metadata.push(data)
+    }
+  })
+  findNestedObj(warehouseBasedOnStore.metadata, 'name', 'name').dataVie = 'tenKho'
+  findNestedObj(warehouseBasedOnStore, 'name', 'id').dataVie = 'maKho'
+  var warehouse = new Warehouse(warehouseBasedOnStore)
+  console.log('warehouse based on store: ', warehouse)
   try {
-    store.save((err, result) => {
-      if (err) throw err
-      var warehouseMetadataArray = []
-      result.metadata.forEach(data => {
-        if (data.name === "name" || data.name === "id" || data.name === "address"
-          || data.name === "phoneNumber" || data.name === "email" || data.name === "note") {
-          warehouseMetadataArray.push(data)
-        }
-      })
-      var warehouse = new Warehouse({
-        metadata: warehouseMetadataArray,
-        infos: [],
-        representatives: result.representatives,
-        store: result._id,
-        deactive: false
-      })
-      try {
-        warehouse.save((err, result) => {
-          if (err) throw err
-          res.status(200).send('Save store and warehouse sucessfully!')
-        })
-      } catch (error) {
-        console.error(error)
+    async.parallel({
+      store: callback => {
+        store.save(callback)
+      },
+      warehouse: callback => {
+        warehouse.save(callback)
       }
+    }, (err, results) => {
+      if (err) throw err
+      res.status(200).send('Save store and warehouse sucessfully!')
     })
-  } catch (error) {
-    console.error(error)
+  } catch (err) {
+    console.error(err)
   }
-
-
 })
 
 // update store
@@ -309,7 +306,7 @@ router.get('/warehouses', (req, res, next) => {
           {
             path: 'store',
             model: 'Store'
-          }, 
+          },
           {
             path: 'representatives',
             model: 'Employee'
@@ -432,7 +429,7 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
             model: 'Warehouse'
           },
           {
-            path: 'contract', 
+            path: 'contract',
             model: 'Contract'
           }
         ]).exec(callback)
@@ -490,7 +487,7 @@ router.get('/properties', (req, res, next) => {
             model: 'Warehouse'
           },
           {
-            path: 'contract', 
+            path: 'contract',
             model: 'Contract'
           }
         ]).exec(callback)

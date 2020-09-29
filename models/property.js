@@ -17,7 +17,8 @@ const propertySchema = new mongoose.Schema({
   importDate: {type: Date, default: new Date(Date.now())},
   exportDate: {type: Date, default: null},
   exportStatus: {type: String, default: ''},
-  note: {type: String, default: ''}
+  note: {type: String, default: ''},
+  id: {type: String}
 
 })
 
