@@ -135,9 +135,10 @@
         for (var i = 0; i < object.items.length; i++) {
           // item name
           var itemName = []
-          object.items[i].infos.forEach(info=>{
-            itemName.push(`<strong>${info.name}</strong>: ${info.value}`)
-          })
+          for (var j = 0; j <= 3; j++) {
+            itemName.push(`<strong>${object.items[i].infos[j].name}</strong>: ${object.items[i].infos[j].value}`)
+          }
+
           // var itemName = findNestedObj(object.items[i].evaluationItem, 'name', 'type') ?
           //   findNestedObj(object.items[i].evaluationItem, 'name', 'type').value : 'None'
 
