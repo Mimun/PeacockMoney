@@ -350,7 +350,7 @@
             console.log('event: ', event.target)
 
             makeRequest('POST', 'multEmployee', 'application/json', JSON.stringify({dbObjects}), ()=>{
-
+              window.location.reload()
             })
           })
         }
@@ -368,7 +368,7 @@
         const line = lines[i].split(",")
         for (var j = 0; j < line.length; j++) {
           employeeArray.push({
-            name: labels[j],
+            name: labels[j].trim(),
             value: line[j]
           })
         }
@@ -387,6 +387,7 @@
           metadata: []
         }
         objectArray.forEach(object=>{
+
           if(object.name === "avatar"){
             sampleObj[object.name].value = '/images/userPicture.png'
           } else {
