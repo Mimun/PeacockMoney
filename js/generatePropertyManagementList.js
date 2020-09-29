@@ -66,7 +66,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
       var storeName = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name').value : 'None'
       var contractId = itemObj.contract ? itemObj.contract.id : 'None'
       var propertyId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
-      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value!== ''? itemObj.info[0].value : 'None') : 'None'
+      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value!== ''? itemObj.infos[0].value : 'None') : 'None'
 
       var tr = displayInfoToTable(transformToSimpleObject(storeId, storeName, contractId, propertyId, propertyName), elementName)
       tr.C_DATA = itemObj
