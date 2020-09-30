@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+
+    <div id="page-content-wrapper">
+      <h2>Statistic/Report</h2>
+      <!-- property table -->
+      <div id="property-list-container" class="list-container">
+        <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
+          <thead>
+            <tr>
+              <th data-resizable-column-id="warehouseId">Ma kho</th>
+              <th data-resizable-column-id="name">Ten kho</th>
+              <th data-resizable-column-id="contractId">Ma hop dong</th>
+              <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
+              <th data-resizable-column-id="propertyId">Ma tai san</th>
+              <th data-resizable-column-id="name">Ten tai san</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <!-- modal -->
+      <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- type of report -->
+              <form action="" id="form-radio">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                    Get today report
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Get reports from:
+                    <div class="form-inline date-selector"></div>
+                  </label>
+                </div>
+              </form>
+
+              <!-- warehouse selector -->
+              <div class="select-container"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="submit">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script type="module">
+    import { makeRequest } from "/makeRequest.js"
+    import { createSelect } from "/createSelect.js"
+    import { generatePropertyManagementList } from '/generatePropertyInStatistic.js'
+
+    var warehouseList = <%- JSON.stringify(warehouseList) %>;
+    console.log('warehouse lsit: ', warehouseList)
+
+    var csv = ""
+
+    // select parts
+    var selectContainer = document.createElement('div')
+    selectContainer.className = 'select-container'
+
+    var select = document.createElement('select')
+    select.className = "browser-default custom-select"
+
+    var selectLabel = document.createElement('label')
+
+    var selectOption = warehouseList.map(warehouse => {
+      var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
+      return option
+    })
+    selectOption.unshift('<option value="">All warehouses</option>')
+
+
+    // end of select parts
+
+    $('.modal').modal('show')
+    var checkRadios = document.querySelectorAll('input[type="radio"]')
+    console.log('checked radios: ', checkRadios)
+
+    var inputOption1 = document.querySelector('input#optionsRadios1')
+    var inputOption2 = document.querySelector('input#optionsRadios2')
+    console.log('inputOption1: ', inputOption1)
+    console.log('inputOption2: ', inputOption2)
+
+    // event when option 1 is clicked
+    inputOption1.addEventListener('click', (event) => {
+      document.querySelector('.date-selector').innerHTML = ''
+      // remove "all warehouse" option 
+      document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
+        if (option.value === "") {
+          option.style.display = 'block'
+          document.querySelector('#warehouse-select').value = option.value
+        }
+
+      })
+    })
+
+    // event when option 2 is clicked
+    inputOption2.addEventListener('click', (event) => {
+      console.log('event: ', event.target.checked)
+      var from = document.createElement('input')
+      from.className = "form-control"
+      from.id = 'from'
+      from.type = 'date'
+
+      var to = document.createElement('input')
+      to.className = "form-control"
+      to.id = 'to'
+      to.type = 'date'
+      if (document.querySelector('.date-selector').firstChild === null) {
+        document.querySelector('.date-selector').appendChild(from)
+        document.querySelector('.date-selector').appendChild(to)
+      }
+      // remove "all warehouse" option 
+      document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
+        if (option.value === "") {
+          option.style.display = 'none'
+          document.querySelector('#warehouse-select').value = document.querySelector('#warehouse-select')[1].value
+        }
+      })
+    })
+
+    // warehouse selector
+    if (document.querySelector('.select-container').firstChild === null) {
+      createSelect(select, '', 'warehouse-select', 'select-warehouse',
+        selectOption, selectLabel, 'Kho', selectContainer, document.querySelector('.select-container'), false)
+    }
+
+    document.querySelector('button#submit').addEventListener('click', (event) => {
+      var getWarehouseReportObj = {
+        warehouses: document.querySelector('#warehouse-select').value,
+        dateConditions: {}
+      }
+      var checkedRadio = document.querySelector('input[type="radio"]:checked').value
+      console.log('value: ', checkedRadio)
+
+      if (checkedRadio === "option2") {
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+          getWarehouseReportObj.dateConditions[input.id] = input.value
+        })
+      }
+      makeRequest('POST', 'statistic/import', 'application/json', JSON.stringify(getWarehouseReportObj), (result) => { 
+        generatePropertyManagementList(result.result, warehouseList, 'property-list-container')
+        $(".modal").modal('hide')
+        csv = result.csv
+        var exportBtn = document.querySelector('button')
+        exportBtn.className = 'btn btn-sm btn-primary'
+        exportBtn.id = 'export'
+        exportBtn.innerHTML = 'export'
+        exportBtn.addEventListener('click', (event)=>{
+          var blob = new Blob([result.csv], { type: 'application/vnd.ms-excel' })
+          var link = document.createElement('a')
+          link.href = URL.createObjectURL(blob)
+          link.download = 'abc.csv'
+          link.click()
+        })
+        document.querySelector('#page-content-wrapper').appendChild(exportBtn)
+      })
+    })
+
+
+  </script>
+</body>
+
+</html>

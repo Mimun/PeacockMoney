@@ -171,7 +171,8 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
     case ("change"):
       var updateObj = {
         currentWarehouse: null,
-        movement: itemObj.movement
+        movement: itemObj.movement,
+        importDate: new Date(Date.now())
       }
       if (itemObj.currentWarehouse &&
         modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {

@@ -9,11 +9,24 @@ var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
 var fs = require('fs');
-var auth = require('../../authentication/routes/checkAuthentication')
+var _ = require('lodash');
+var json2csv = require('json2csv').parse
 
 function escapeRegex(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
+
+// create regexp for search
+const createRegexp = (array) => {
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  array.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'metadata.value': regex })
+  })
+  return { arrayMetadataConditions, arrayInfosConditions }
+}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -524,7 +537,7 @@ router.get('/properties', (req, res, next) => {
 router.put('/properties/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
-  Property.findOneAndUpdate({ _id: req.params.id }, { $set: { currentWarehouse: req.body.currentWarehouse, movement: req.body.movement } }, { new: true }, (err, result) => {
+  Property.findOneAndUpdate({ _id: req.params.id }, { $set: { currentWarehouse: req.body.currentWarehouse, movement: req.body.movement, importDate: req.body.importDate } }, { new: true }, (err, result) => {
     if (err) throw err
     res.send({ message: 'Updated successfully!', result })
   })
@@ -550,6 +563,150 @@ const checkBase64 = (str) => {
     console.log('test result from checkBase64 2: ', false)
 
     return false;
+  }
+}
+
+
+// STATISTIC
+// get statistic page
+router.get('/statistic', (req, res) => {
+  Warehouse.find({ deactive: false }).exec((err, result) => {
+    if (err) throw err
+    var warehouseList = result.map(res => {
+      return {
+        _id: res._id,
+        id: res.id,
+        name: findNestedObj(res, 'name', 'name') ? findNestedObj(res, 'name', 'name').value : 'None',
+        address: findNestedObj(res, 'name', 'address') ? findNestedObj(res, 'name', 'address').value : 'None',
+
+      }
+    })
+    res.render('statistics', { warehouseList })
+
+  })
+})
+
+// get statistic for type
+router.post('/statistic/import', (req, res) => {
+  console.log('req body: ', req.body)
+  var chosenWarehouse = req.body.warehouses
+  var dateConditions = req.body.dateConditions
+  if (chosenWarehouse !== '') {
+    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }] }).populate([
+      {
+        path: 'evaluationItem',
+        model: 'Item'
+      },
+      {
+        path: 'currentWarehouse',
+        model: 'Warehouse'
+      },
+      {
+        path: 'contract',
+        model: 'Contract'
+      }
+    ]).exec((err, result)=>{
+      if(err) throw err
+      callback(result, chosenWarehouse, dateConditions, res)
+    })
+  } else {
+    Property.find({}).populate([
+      {
+        path: 'evaluationItem',
+        model: 'Item'
+      },
+      {
+        path: 'currentWarehouse',
+        model: 'Warehouse'
+      },
+      {
+        path: 'contract',
+        model: 'Contract'
+      }
+    ]).exec((err, result)=>{
+      if(err) throw err
+      callback(result, chosenWarehouse, dateConditions, res)
+    })
+  }
+
+  
+
+
+})
+
+const callback = (result, chosenWarehouse, dateConditions, res) => {
+  console.log('date conditions: ', dateConditions)
+  var array = []
+  // property list
+  if (dateConditions.from && dateConditions.to) {
+    var fromDate = formatDate(dateConditions.from)
+    var toDate = formatDate(dateConditions.to)
+    result.forEach(res => {
+      var importDate = formatDate(res.importDate)
+      console.log('fromdate: ', fromDate)
+      console.log('todate: ', toDate)
+      console.log('importDate: ', importDate)
+      console.log('compare: ', +importDate <= +toDate)
+      if (fromDate <= importDate && importDate <= toDate) {
+        array.push(res)
+        // return res
+      }
+    })
+  } else {
+    var compareDate = formatDate(Date.now())
+    result.forEach(res => {
+      var importDate = formatDate(res.importDate)
+      
+      console.log('importDate: ', res.importDate, 'type:', typeof res.importDate)
+      console.log('compare: ', new Date(Date.now()))
+      if (importDate === compareDate) {
+        array.push(res)
+        // return res
+      }
+    })
+  }
+
+  // flat json for csv content
+  const fields = ["storeId", "warehouseId", "warehouseName", "importDate", "contractId", "propertyId", "propertyName"]
+  let csv = json2csv(flatJson(result), { fields })
+  res.status(200).send({ result: array, originResult: result, csv })
+}
+
+
+const formatDate = (date) => {
+  var d = new Date(date),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+  if (month.length < 2)
+    month = '0' + month;
+  if (day.length < 2)
+    day = '0' + day;
+
+  return [year, month, day].join('-');
+}
+
+const getNestedValue = (obj) => {
+  var value = obj ? (obj.value !== '' ? obj.value : 'None') : 'None'
+  return value
+}
+
+const flatJson = (results) => {
+
+  if (results.length !== 0) {
+    var flatArray = results.map(result => {
+      const storeId = getNestedValue(findNestedObj(result.contract.store.value.metadata, 'name', 'id'))
+      const warehouseId = getNestedValue(findNestedObj(result.currentWarehouse, 'name', 'id'))
+      const warehouseName = getNestedValue(findNestedObj(result.currentWarehouse, 'name', 'name'))
+      const importDate = new Date(result.importDate)
+      const contractId = result.contract.id
+      const propertyId = result._id
+      const propertyName = getNestedValue(result.infos[0].value)
+      return { storeId, warehouseId, warehouseName, importDate, contractId, propertyId, propertyName }
+
+    })
+    return flatArray
   }
 }
 
