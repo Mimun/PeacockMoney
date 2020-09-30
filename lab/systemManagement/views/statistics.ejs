@@ -43,17 +43,34 @@
             </div>
             <div class="modal-body">
               <!-- type of report -->
-              <form action="" id="form-radio">
+              <label for="form-radio-report-type">Report type</label>
+              <form action="" id="form-radio-report-type">
                 <div class="radio">
                   <label>
-                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                    <input type="radio" name="optionsRadios" id="importReport" value="import" checked>
+                    Imported Property Report
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="exportReport" value="export">
+                    Exported Property Report
+                  </label>
+                </div>
+              </form>
+              <!-- type of report -->
+              <label for="form-radio-report-time">Report time</label>
+              <form action="" id="form-radio-report-time">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="optionsRadios" id="today" value="today" checked>
                     Get today report
                   </label>
                 </div>
                 <div class="radio">
                   <label>
-                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                    Get reports from:
+                    <input type="radio" name="optionsRadios" id="fromTo" value="fromTo">
+                    Get reports from-to
                     <div class="form-inline date-selector"></div>
                   </label>
                 </div>
@@ -74,7 +91,7 @@
   <script type="module">
     import { makeRequest } from "/makeRequest.js"
     import { createSelect } from "/createSelect.js"
-    import { generatePropertyManagementList } from '/generatePropertyInStatistic.js'
+    import { generateImportingReport, generateExportingReport } from '/generatePropertyInStatistic.js'
 
     var warehouseList = <%- JSON.stringify(warehouseList) %>;
     console.log('warehouse lsit: ', warehouseList)
@@ -95,21 +112,16 @@
       return option
     })
     selectOption.unshift('<option value="">All warehouses</option>')
-
-
     // end of select parts
 
+    // show modal when browser loading
     $('.modal').modal('show')
-    var checkRadios = document.querySelectorAll('input[type="radio"]')
-    console.log('checked radios: ', checkRadios)
 
-    var inputOption1 = document.querySelector('input#optionsRadios1')
-    var inputOption2 = document.querySelector('input#optionsRadios2')
-    console.log('inputOption1: ', inputOption1)
-    console.log('inputOption2: ', inputOption2)
+    var inputtoday = document.querySelector('form#form-radio-report-time').querySelector('input#today')
+    var inputfromTo = document.querySelector('form#form-radio-report-time').querySelector('input#fromTo')
 
     // event when option 1 is clicked
-    inputOption1.addEventListener('click', (event) => {
+    inputtoday.addEventListener('click', (event) => {
       document.querySelector('.date-selector').innerHTML = ''
       // remove "all warehouse" option 
       document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
@@ -122,8 +134,9 @@
     })
 
     // event when option 2 is clicked
-    inputOption2.addEventListener('click', (event) => {
+    inputfromTo.addEventListener('click', (event) => {
       console.log('event: ', event.target.checked)
+      // create input date to select date
       var from = document.createElement('input')
       from.className = "form-control"
       from.id = 'from'
@@ -152,38 +165,56 @@
         selectOption, selectLabel, 'Kho', selectContainer, document.querySelector('.select-container'), false)
     }
 
+    // find property|submit button event
     document.querySelector('button#submit').addEventListener('click', (event) => {
       var getWarehouseReportObj = {
         warehouses: document.querySelector('#warehouse-select').value,
         dateConditions: {}
       }
-      var checkedRadio = document.querySelector('input[type="radio"]:checked').value
-      console.log('value: ', checkedRadio)
+      // report time checked radio
+      var reportTimeCheckedRadio = document.querySelector('form#form-radio-report-time').querySelector('input[type="radio"]:checked').value
+      console.log('report time: ', reportTimeCheckedRadio)
 
-      if (checkedRadio === "option2") {
-        document.querySelectorAll('input[type="date"]').forEach(input => {
+      if (reportTimeCheckedRadio === "fromTo") {
+        document.querySelector('form#form-radio-report-time').querySelectorAll('input[type="date"]').forEach(input => {
           getWarehouseReportObj.dateConditions[input.id] = input.value
         })
       }
-      makeRequest('POST', 'statistic/import', 'application/json', JSON.stringify(getWarehouseReportObj), (result) => { 
-        generatePropertyManagementList(result.result, warehouseList, 'property-list-container')
-        $(".modal").modal('hide')
-        csv = result.csv
-        var exportBtn = document.querySelector('button')
-        exportBtn.className = 'btn btn-sm btn-primary'
-        exportBtn.id = 'export'
-        exportBtn.innerHTML = 'export'
-        exportBtn.addEventListener('click', (event)=>{
-          var blob = new Blob([result.csv], { type: 'application/vnd.ms-excel' })
-          var link = document.createElement('a')
-          link.href = URL.createObjectURL(blob)
-          link.download = 'abc.csv'
-          link.click()
-        })
-        document.querySelector('#page-content-wrapper').appendChild(exportBtn)
-      })
+
+      // report type checked radio
+      var reportTypeCheckedRadio = document.querySelector('form#form-radio-report-type').querySelector('input[type="radio"]:checked').value
+      console.log('report type: ', reportTypeCheckedRadio)
+
+      makeRequest('POST', `statistic/${reportTypeCheckedRadio}`, 'application/json', JSON.stringify(getWarehouseReportObj), callback)
+
     })
 
+    // callback function for request
+    const callback = (result) => {
+      result.reportType === 'import'? 
+      generateImportingReport(result.result, warehouseList, 'property-list-container') : 
+      generateExportingReport(result.result, warehouseList, 'property-list-container') 
+
+      $(".modal").modal('hide')
+      var exportBtn = document.querySelector('button')
+      exportBtn.className = 'btn btn-sm btn-primary'
+      exportBtn.id = 'export'
+      exportBtn.innerHTML = 'export'
+      exportBtn.addEventListener('click', (event) => {
+        exportCSV(result.csv)
+      })
+      document.querySelector('#page-content-wrapper').appendChild(exportBtn)
+
+    }
+
+    // export csv function
+    const exportCSV = (csv) => {
+      var blob = new Blob([csv], { type: 'application/vnd.ms-excel' })
+      var link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = 'abc.csv'
+      link.click()
+    }
 
   </script>
 </body>

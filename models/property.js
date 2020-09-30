@@ -10,15 +10,16 @@ const propertySchema = new mongoose.Schema({
   }],
   evaluationItem: { type: Object },
   status: [{type: Object}],
-  contract: { type: mongoose.Types.ObjectId, ref: 'Contract' },
-  originWarehouse: { type: mongoose.Types.ObjectId, ref: 'Warehouse' },
-  currentWarehouse: {type: mongoose.Types.ObjectId, ref: 'Warehouse'},
+  contract: { type: mongoose.Types.ObjectId, ref: 'Contract', default: null },
+  originWarehouse: { type: mongoose.Types.ObjectId, ref: 'Warehouse', default: null },
+  currentWarehouse: {type: mongoose.Types.ObjectId, ref: 'Warehouse', default: null},
   movement: [{type: mongoose.Types.ObjectId, ref: 'Warehouse'}],
   importDate: {type: Date, default: new Date(Date.now())},
   exportDate: {type: Date, default: null},
-  exportStatus: {type: String, default: ''},
-  note: {type: String, default: ''},
-  id: {type: String}
+  isIn: {type: Boolean, default: true},
+  importNote: {type: String, default: ''},
+  exportNote: {type: String, default: ''},
+  id: {type: String, default: null}
 
 })
 

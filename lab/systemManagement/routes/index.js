@@ -490,7 +490,7 @@ router.get('/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({}).populate([
+        Property.find({isIn: true}).populate([
           {
             path: 'evaluationItem',
             model: 'Item'
@@ -537,7 +537,10 @@ router.get('/properties', (req, res, next) => {
 router.put('/properties/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
-  Property.findOneAndUpdate({ _id: req.params.id }, { $set: { currentWarehouse: req.body.currentWarehouse, movement: req.body.movement, importDate: req.body.importDate } }, { new: true }, (err, result) => {
+  var updateObj = req.body
+  delete updateObj.contract
+  Property.findOneAndUpdate({ _id: req.params.id }, 
+    { $set: updateObj}, { new: true }, (err, result) => {
     if (err) throw err
     res.send({ message: 'Updated successfully!', result })
   })
@@ -586,13 +589,13 @@ router.get('/statistic', (req, res) => {
   })
 })
 
-// get statistic for type
+// get statistic/report for imported properties
 router.post('/statistic/import', (req, res) => {
   console.log('req body: ', req.body)
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
   if (chosenWarehouse !== '') {
-    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }] }).populate([
+    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }, {isIn: true}] }).populate([
       {
         path: 'evaluationItem',
         model: 'Item'
@@ -605,12 +608,12 @@ router.post('/statistic/import', (req, res) => {
         path: 'contract',
         model: 'Contract'
       }
-    ]).exec((err, result)=>{
-      if(err) throw err
+    ]).exec((err, result) => {
+      if (err) throw err
       callback(result, chosenWarehouse, dateConditions, res)
     })
   } else {
-    Property.find({}).populate([
+    Property.find({isIn: true}).populate([
       {
         path: 'evaluationItem',
         model: 'Item'
@@ -623,15 +626,59 @@ router.post('/statistic/import', (req, res) => {
         path: 'contract',
         model: 'Contract'
       }
-    ]).exec((err, result)=>{
-      if(err) throw err
+    ]).exec((err, result) => {
+      if (err) throw err
       callback(result, chosenWarehouse, dateConditions, res)
     })
   }
 
-  
 
 
+
+})
+
+// get statistic/report for exported properties
+router.post('/statistic/export', (req, res) => {
+  console.log('req body: ', req.body)
+  var chosenWarehouse = req.body.warehouses
+  var dateConditions = req.body.dateConditions
+  if (chosenWarehouse !== '') {
+    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse, isIn: false }] }).populate([
+      {
+        path: 'evaluationItem',
+        model: 'Item'
+      },
+      {
+        path: 'currentWarehouse',
+        model: 'Warehouse'
+      },
+      {
+        path: 'contract',
+        model: 'Contract'
+      }
+    ]).exec((err, result) => {
+      if (err) throw err
+      callback2(result, chosenWarehouse, dateConditions, res)
+    })
+  } else {
+    Property.find({isIn: false}).populate([
+      {
+        path: 'evaluationItem',
+        model: 'Item'
+      },
+      {
+        path: 'currentWarehouse',
+        model: 'Warehouse'
+      },
+      {
+        path: 'contract',
+        model: 'Contract'
+      }
+    ]).exec((err, result) => {
+      if (err) throw err
+      callback2(result, chosenWarehouse, dateConditions, res)
+    })
+  }
 })
 
 const callback = (result, chosenWarehouse, dateConditions, res) => {
@@ -656,7 +703,7 @@ const callback = (result, chosenWarehouse, dateConditions, res) => {
     var compareDate = formatDate(Date.now())
     result.forEach(res => {
       var importDate = formatDate(res.importDate)
-      
+
       console.log('importDate: ', res.importDate, 'type:', typeof res.importDate)
       console.log('compare: ', new Date(Date.now()))
       if (importDate === compareDate) {
@@ -669,7 +716,51 @@ const callback = (result, chosenWarehouse, dateConditions, res) => {
   // flat json for csv content
   const fields = ["storeId", "warehouseId", "warehouseName", "importDate", "contractId", "propertyId", "propertyName"]
   let csv = json2csv(flatJson(result), { fields })
-  res.status(200).send({ result: array, originResult: result, csv })
+  res.status(200).send({ result: array, originResult: result, csv, reportType: 'import' })
+}
+
+const callback2 = (result, chosenWarehouse, dateConditions, res) => {
+  console.log('date conditions: ', dateConditions)
+  var array = []
+  // property list
+  if (dateConditions.from && dateConditions.to) {
+    var fromDate = formatDate(dateConditions.from)
+    var toDate = formatDate(dateConditions.to)
+    result.forEach(res => {
+      if (res.exportDate) {
+        var exportDate = formatDate(res.exportDate)
+        console.log('fromdate: ', fromDate)
+        console.log('todate: ', toDate)
+        console.log('exportDate: ', exportDate)
+        console.log('compare: ', +exportDate <= +toDate)
+        if (fromDate <= exportDate && exportDate <= toDate) {
+          array.push(res)
+          // return res
+        }
+      }
+
+    })
+  } else {
+    var compareDate = formatDate(Date.now())
+    result.forEach(res => {
+      if (res.exportDate) {
+        var exportDate = formatDate(res.exportDate)
+
+        console.log('exportDate: ', res.exportDate, 'type:', typeof res.exportDate)
+        console.log('compare: ', new Date(Date.now()))
+        if (exportDate === compareDate) {
+          array.push(res)
+          // return res
+        }
+      }
+
+    })
+  }
+
+  // flat json for csv content
+  const fields = ["storeId", "warehouseId", "warehouseName", "exportDate", "contractId", "propertyId", "propertyName"]
+  let csv = json2csv(flatJson(result), { fields })
+  res.status(200).send({ result: array, originResult: result, csv, reportType: 'export' })
 }
 
 

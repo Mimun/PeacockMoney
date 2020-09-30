@@ -77,7 +77,12 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
         $("#centralModalSm").on('show.bs.modal', () => {
           modalBody.C_DATA = propertyData
           modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
+          modalFooter.querySelector('#btn-export').innerHTML = 'export property'
 
+          modalFooter.querySelector('#btn-move'). removeAttribute('disabled')
+          modalFooter.querySelector('#btn-export').removeAttribute('disabled')
+
+          
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
 
@@ -127,9 +132,11 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
 }
 
+// move property button
 modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
   var itemObj = event.target.closest('.modal-content').querySelector('.modal-body').C_DATA
   console.log('text content: ', itemObj)
+  modalFooter.querySelector('#btn-export').setAttribute('disabled', true)
 
   // create warehouse selector options
   var { warehouseList } = params
@@ -170,12 +177,15 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
       break
     case ("change"):
       var updateObj = {
+        ...modalBody.C_DATA,
         currentWarehouse: null,
-        movement: itemObj.movement,
-        importDate: new Date(Date.now())
+        movement: modalBody.C_DATA.movement,
+        importDate: new Date(Date.now()),
+        importNote: ''
       }
       if (itemObj.currentWarehouse &&
         modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {
+        console.log('updateObj: ', updateObj)
         window.alert("Property's already in this warehouse!")
       } else {
         if (modalBody.querySelector('select.select-warehouse').value ||
@@ -183,7 +193,7 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
           updateObj.currentWarehouse = modalBody.querySelector('select.select-warehouse').value
           updateObj.movement.push(modalBody.querySelector('select.select-warehouse').value)
           console.log('updateObj: ', updateObj)
-          makeRequest("PUT", '/systemMng/properties/' + itemObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
+          makeRequest("PUT", '/systemMng/properties/' + updateObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
             // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
             window.location.reload()
           })
@@ -194,6 +204,45 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
     default:
   }
   event.target.textContent === "change warehouse" ? event.target.textContent = "change" : event.target.textContent = "change"
+
+})
+
+// export property button
+modalFooter.querySelector('#btn-export').addEventListener('click', (event) => {
+  console.log('event: ', event.target.textContent)
+  modalFooter.querySelector('#btn-move').setAttribute('disabled', true)
+
+  switch (event.target.textContent) {
+    case ("export property"):
+      modalBody.innerHTML = ""
+      // create exporting reason selector
+      const exportingReasonOptions = `
+        <option value="0">Xuat tra giai chap</option>
+        <option value="1">Xuat gui thanh ly</option>
+        <option value="2">Xuat dieu chuyen</option>
+      `
+      createSelect(select, '0', 'exporting-reason-select', 'select-exporting-reason',
+        exportingReasonOptions, selectLabel, 'Reason to export ', selectContainer, modalBody, false)
+      break
+    case ("export"):
+      var updateObj = {
+        ...modalBody.C_DATA,
+        isIn: false,
+        exportNote: '',
+        exportDate: new Date(Date.now()),
+        currentWarehouse: null,
+      }
+      var exportingSelect = modalBody.querySelector('select.select-exporting-reason')
+      updateObj.exportNote = exportingSelect.options[exportingSelect.selectedIndex].text
+      console.log('update obj: ', updateObj)
+      makeRequest("PUT", '/systemMng/properties/' + updateObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
+        // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
+        window.location.reload()
+      })
+      break
+    default:
+  }
+  event.target.textContent === "export property" ? event.target.textContent = "export" : event.target.textContent = "export"
 
 })
 
