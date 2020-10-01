@@ -86,7 +86,10 @@
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Loai tai san</label>
-      <input type="text" class="form-control validate" name="itemType" data-vie="loaiTaiSan">
+      <!-- <input type="text" class="form-control validate" name="itemType" data-vie="loaiTaiSan"> -->
+      <select class="form-control" id="itemType">
+       
+      </select>
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ma loai tai san</label>
@@ -161,15 +164,15 @@
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">So tien min</label>
-            <input type="text" class="form-control currency-field"
-            data-type="currency" min="0" max="9999999999" name="min" data-vie="soTienMin">
+            <input type="text" class="form-control currency-field" data-type="currency" min="0" max="9999999999"
+              name="min" data-vie="soTienMin">
           </div>
         </div>
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">So tien max</label>
-            <input type="text" class="form-control currency-field"  
-            data-type="currency" min="0" max="9999999999" name="max" data-vie="soTienMax">
+            <input type="text" class="form-control currency-field" data-type="currency" min="0" max="9999999999"
+              name="max" data-vie="soTienMax">
           </div>
         </div>
 
@@ -188,18 +191,20 @@
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">Ti le phan ngan theo ngay(<span>&#8240;</span>)</label>
-            <input id="permillePerDay" type="number" class="form-control validate" name="interrestRatePermillePerDay" data-vie="tiLePhanNganTheoNgay">
+            <input id="permillePerDay" type="number" class="form-control validate" name="interrestRatePermillePerDay"
+              data-vie="tiLePhanNganTheoNgay">
           </div>
         </div>
         <div class="col">
           <div class="form-group">
             <label class="bmd-label-floating" data-error="Empty">Ti le phan tram theo thang(%)</label>
-            <input id="percentagePerMonth" type="number" class="form-control validate" name="interrestRatePercentagePerDay" data-vie="tiLeLaiTheoNgay">
+            <input id="percentagePerMonth" type="number" class="form-control validate"
+              name="interrestRatePercentagePerDay" data-vie="tiLeLaiTheoNgay">
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ti le phat theo ngay(%)</label>
       <input type="number" class="form-control validate" name="percentagePenaltyPerDay" data-vie="tiLePhatTheoNgay">
@@ -227,7 +232,8 @@
     </div>
     <div class="form-group">
       <label class="bmd-label-floating" data-error="Empty">Ten tai san</label>
-      <input type="text" class="form-control validate" name="propertyName" data-vie="tenTaiSan" data-kor="koreanString" disabled>
+      <input type="text" class="form-control validate" name="propertyName" data-vie="tenTaiSan" data-kor="koreanString"
+        disabled>
     </div>
     <div id="contract-template-container"></div>
   </div>
@@ -263,6 +269,7 @@
   import { findNestedObj } from '/findNestedObj.js'
   import { makeRequest } from '/makeRequest.js'
   import { removeSeperator } from '/addSeparatorOnInputChange.js'
+  
 
 
   var currentTab = 0; // Current tab is set to be the first tab (0)
@@ -340,6 +347,13 @@
         var dataVie = element.getAttribute('data-vie')
         templateItem.templateMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
       })
+      templateItem.templateMetadata.push({
+        name: 'itemType',
+        value: document.querySelector('select#itemType').options[document.querySelector('select#itemType').selectedIndex].getAttribute('name'),
+        type: 'text',
+        dataVie: 'loaiTaiSan',
+        dataKor: 'koreanString'
+      })
 
       // payment method for template metadata
       templateItem.templateMetadata.push(getObj('paymentMethod', document.querySelector('.custom-select').value, 'text', 'kieuThanhToan', 'koreanString'))
@@ -347,14 +361,14 @@
       // contract metadata:
       // - contract metadata
       document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
-        if(element.getAttribute('id') !== "percentagePerMonth"){
+        if (element.getAttribute('id') !== "percentagePerMonth") {
           var name = element.getAttribute('name')
-          var value = element.getAttribute('data-type') === 'currency'? removeSeperator(element.value) : element.value
+          var value = element.getAttribute('data-type') === 'currency' ? removeSeperator(element.value) : element.value
           var type = element.type
           var dataVie = element.getAttribute('data-vie')
           templateItem.contractMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
         }
-       
+
       })
 
       // custom info
@@ -374,10 +388,9 @@
       })
 
       console.log('item is about to save: ', templateItem)
-      makeRequest('POST', 'createNewContractTemplate', 'application/json', JSON.stringify(templateItem), ()=>{
+      makeRequest('POST', 'createNewContractTemplate', 'application/json', JSON.stringify(templateItem), () => {
         window.location.reload()
       })
-
 
       return false;
     }
@@ -478,10 +491,10 @@
   }
 
   // calculate percentage per month
-  document.querySelector("#permillePerDay").addEventListener('change', (event)=>{
+  document.querySelector("#permillePerDay").addEventListener('change', (event) => {
     var value = event.target.value
     console.log('value: ', event.target.value)
-    document.querySelector("#percentagePerMonth").value = event.target.value*30/10
+    document.querySelector("#percentagePerMonth").value = event.target.value * 30 / 10
   })
 
 

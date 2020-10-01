@@ -10,6 +10,7 @@ const Property = require('../../../models/property')
 const Store = require('../../../models/store')
 const Employee = require('../../../models/employee')
 const Warehouse = require('../../../models/warehouse')
+const ItemType = require('../../../models/itemType')
 
 var fs = require('fs');
 var async = require('async');
@@ -49,9 +50,16 @@ function formatDate(date) {
 // CONTRACT TEMPLATE
 // contract template list for admin
 router.get('/', function (req, res, next) {
-  ContractTemplate.find({}, (err, result) => {
-    if (err) throw err
-    res.render('index', { contractTemplateList: result })
+  async.parallel({
+    contractTemplateList: callback=>{
+      ContractTemplate.find({}).exec(callback)
+    },
+    itemTypeList: callback=>{
+      ItemType.find().exec(callback)
+    }
+  }, (err, results)=>{
+    if(err) throw err
+    res.render('index', { contractTemplateList: results.contractTemplateList, itemTypeList: results.itemTypeList })
 
   })
 })

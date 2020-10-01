@@ -25,6 +25,7 @@ var params = {}
 
 export const generateImportingReport = async (itemObjs, warehouseList, elementName) => {
   await Object.assign(params, { itemObjs, warehouseList })
+  document.querySelector('#' + elementName + '').querySelector('tbody').innerHTML = ""
 
   // var tableContainer = document.createElement('div')
   // tableContainer.innerHTML = tableTemplate
@@ -73,6 +74,7 @@ export const generateImportingReport = async (itemObjs, warehouseList, elementNa
         $("#centralModalSm").modal('show')
       })
       // tableContainer.querySelector('#table>tbody').appendChild(tr)
+
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
     })
@@ -87,6 +89,7 @@ export const generateExportingReport = async (itemObjs, warehouseList, elementNa
 
   // var tableContainer = document.createElement('div')
   // tableContainer.innerHTML = tableTemplate
+  document.querySelector('#' + elementName + '').querySelector('tbody').innerHTML = ''
 
   if (itemObjs.length !== 0) {
     // table header
@@ -130,6 +133,7 @@ export const generateExportingReport = async (itemObjs, warehouseList, elementNa
         $("#centralModalSm").modal('show')
       })
       // tableContainer.querySelector('#table>tbody').appendChild(tr)
+
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
     })

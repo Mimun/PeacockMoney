@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Item list</h2>
+      <!-- itemType table -->
+      <div id="itemType-list-container" class="list-container">
+        <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
+          <thead>
+            <tr>
+              <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
+              <th data-resizable-column-id="name">Loai tai san</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- modal -->
+      <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label class="bmd-label-floating">Ma loai tai san</label>
+                <input type="text" class="form-control" name="id">
+              </div>
+              <div class="form-group">
+                <label class="bmd-label-floating">Ten loai tai san</label>
+                <input type="text" class="form-control" name="name">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="submit">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- create new itemTYpe button -->
+      <button class="btn btn-sm btn-primary" id="btn-create-item-type">Create item type</button>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+
+    var itemTypeList = <%- JSON.stringify(itemTypeList) %>;
+    console.log('itemType: ', itemTypeList)
+
+    // generate item type list
+    if (itemTypeList.length !== 0) {
+      itemTypeList.forEach(itemType => {
+        var tr = document.createElement('tr')
+        for (var prop in itemType) {
+          if (prop === 'name' || prop === 'id') {
+            var td = document.createElement('td')
+            td.innerHTML = itemType[prop]
+            tr.appendChild(td)
+          }
+
+
+        }
+        document.querySelector('.table').querySelector('tbody').appendChild(tr)
+      })
+    }
+
+    // btn create item type
+    document.querySelector('#btn-create-item-type').addEventListener('click', (event) => {
+      console.log('event: ', event)
+      $(".modal").modal('show')
+    })
+
+    // submit button
+    document.querySelector('#submit').addEventListener('click', (event) => {
+      console.log('event: ', event)
+
+      var postObj = {}
+      document.querySelector('.modal-body').querySelectorAll('input').forEach(input => {
+        postObj[input.name] = input.value
+      })
+      console.log('postObj: ', postObj)
+      makeRequest('POST', 'itemType', 'application/json', JSON.stringify(postObj), () => {
+        window.location.reload()
+      })
+    })
+
+  </script>
+</body>
+
+</html>

@@ -5,6 +5,7 @@ var Store = require('../../../models/store')
 var Warehouse = require('../../../models/warehouse')
 var Property = require('../../../models/property')
 var Item = require('../../../models/item')
+var ItemType = require('../../../models/itemType')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -490,7 +491,7 @@ router.get('/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({isIn: true}).populate([
+        Property.find({ isIn: true }).populate([
           {
             path: 'evaluationItem',
             model: 'Item'
@@ -539,11 +540,11 @@ router.put('/properties/:id', (req, res, next) => {
   console.log('body: ', req.body)
   var updateObj = req.body
   delete updateObj.contract
-  Property.findOneAndUpdate({ _id: req.params.id }, 
-    { $set: updateObj}, { new: true }, (err, result) => {
-    if (err) throw err
-    res.send({ message: 'Updated successfully!', result })
-  })
+  Property.findOneAndUpdate({ _id: req.params.id },
+    { $set: updateObj }, { new: true }, (err, result) => {
+      if (err) throw err
+      res.send({ message: 'Updated successfully!', result })
+    })
 })
 
 const findNestedObj = (entireObj, keyToFind, valToFind) => {
@@ -595,7 +596,7 @@ router.post('/statistic/import', (req, res) => {
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
   if (chosenWarehouse !== '') {
-    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }, {isIn: true}] }).populate([
+    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }, { isIn: true }] }).populate([
       {
         path: 'evaluationItem',
         model: 'Item'
@@ -613,7 +614,7 @@ router.post('/statistic/import', (req, res) => {
       callback(result, chosenWarehouse, dateConditions, res)
     })
   } else {
-    Property.find({isIn: true}).populate([
+    Property.find({ isIn: true }).populate([
       {
         path: 'evaluationItem',
         model: 'Item'
@@ -643,7 +644,7 @@ router.post('/statistic/export', (req, res) => {
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
   if (chosenWarehouse !== '') {
-    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse, isIn: false }] }).populate([
+    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }, { isIn: false }] }).populate([
       {
         path: 'evaluationItem',
         model: 'Item'
@@ -661,7 +662,7 @@ router.post('/statistic/export', (req, res) => {
       callback2(result, chosenWarehouse, dateConditions, res)
     })
   } else {
-    Property.find({isIn: false}).populate([
+    Property.find({ isIn: false }).populate([
       {
         path: 'evaluationItem',
         model: 'Item'
@@ -762,6 +763,25 @@ const callback2 = (result, chosenWarehouse, dateConditions, res) => {
   let csv = json2csv(flatJson(result), { fields })
   res.status(200).send({ result: array, originResult: result, csv, reportType: 'export' })
 }
+
+// ITEM TYPE
+// get item type
+router.get('/itemType', (req, res) => {
+  ItemType.find().exec((err, result) => {
+    if (err) throw err
+    res.render('itemTypes', { itemTypeList: result })
+  })
+})
+
+// create new item type
+router.post('/itemType', (req, res)=>{
+  console.log('req body: ', req.body)
+  var itemType = new ItemType(req.body)
+  itemType.save((err, result)=>{
+    if(err) throw err
+    res.send('Save item type successfully!')
+  })
+})
 
 
 const formatDate = (date) => {

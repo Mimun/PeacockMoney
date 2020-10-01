@@ -80,8 +80,14 @@
     import { ObjectId } from '/createMongooseID.js'
     import { findNestedObj } from '/findNestedObj.js'
     const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
+    const itemTypeList = <%- JSON.stringify(itemTypeList) %>;
+    console.log('item type list: ', itemTypeList)
+
+
     const contractTemplate = document.getElementById('temp_contract');
+
     console.log('contract template list: ', contractTemplateList)
+
 
     // card_handler = document.querySelector('template-handler')
     for (var i = 0; i < contractTemplateList.length; i++) {
@@ -94,19 +100,41 @@
       const modalFooter = document.querySelector('.modal-footer')
 
       modalBody.innerHTML = ""
-      if(modalFooter.querySelector('.btn-options')){
+      if (modalFooter.querySelector('.btn-options')) {
         modalFooter.querySelector('.btn-options').innerHTML = ""
 
       }
       var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
       modalBody.appendChild(tmpContent)
       $("#centralModalSm").modal('show');
+      // create item type list option
+      if (itemTypeList.length !== 0) {
+        var itemTypeOptions = []
+        itemTypeList.forEach(itemType => {
+          var option = `<option value=${itemType._id} id="${itemType.id}" name="${itemType.name}" >${itemType.name}</option>`
+          itemTypeOptions.push(option)
+        })
+        var selectItemType = document.querySelector('select#itemType')
+        console.log('select: ', document.querySelector('select#itemType'))
+        selectItemType ? selectItemType.innerHTML= itemTypeOptions : null
+        console.log('value: ', selectItemType.options[selectItemType.selectedIndex].id)
+        var itemTypeId = document.querySelector('input[name="itemTypeId"]')
+        itemTypeId? itemTypeId.value = selectItemType.options[selectItemType.selectedIndex].id : ''
+        // to fix the label is rendered wrongly
+        itemTypeId.closest('.form-group').classList.add('is-filled')
+        selectItemType.addEventListener('change', (event)=>{
+          itemTypeId? itemTypeId.value = event.target.options[event.target.selectedIndex].id : ''
+        })
+
+        
+      }
+
       $(tmpContent).bootstrapMaterialDesign()
     })
 
     // go to contract list button
     var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
-      window.location.href = "contracts?token="+window.localStorage.getItem('accessToken')
+      window.location.href = "contracts?token=" + window.localStorage.getItem('accessToken')
 
     })
 

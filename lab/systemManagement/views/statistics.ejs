@@ -31,6 +31,13 @@
           <tbody></tbody>
         </table>
       </div>
+
+      <!-- choose report -->
+      <button class="btn btn-sm btn-primary btn-raised" id="btn-choose-report-type">Choose report type</button>
+
+      <!-- export csv button -->
+      <button class="btn btn-sm btn-primary" id="export" style="display: none;">Export csv</button>
+
       <!-- modal -->
       <div class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-md" role="document">
@@ -189,23 +196,28 @@
 
     })
 
+    // button to choose report type
+    document.querySelector('button#btn-choose-report-type').addEventListener('click', (event) => {
+      $('.modal').modal('show')
+    })
+
     // callback function for request
     const callback = (result) => {
-      result.reportType === 'import'? 
-      generateImportingReport(result.result, warehouseList, 'property-list-container') : 
-      generateExportingReport(result.result, warehouseList, 'property-list-container') 
+      result.reportType === 'import' ?
+        generateImportingReport(result.result, warehouseList, 'property-list-container') :
+        generateExportingReport(result.result, warehouseList, 'property-list-container')
 
       $(".modal").modal('hide')
-      var exportBtn = document.querySelector('button')
-      exportBtn.className = 'btn btn-sm btn-primary'
-      exportBtn.id = 'export'
-      exportBtn.innerHTML = 'export'
-      exportBtn.addEventListener('click', (event) => {
-        exportCSV(result.csv)
-      })
-      document.querySelector('#page-content-wrapper').appendChild(exportBtn)
+      var exportBtn = document.querySelector('#export')
+      exportBtn.style.display = 'block'
 
     }
+
+    // export button event handler
+    var exportBtn = document.querySelector('#export')
+    exportBtn.addEventListener('click', (event) => {
+      exportCSV(result.csv)
+    })
 
     // export csv function
     const exportCSV = (csv) => {
