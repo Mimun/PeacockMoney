@@ -230,6 +230,7 @@ modalFooter.querySelector('#btn-export').addEventListener('click', (event) => {
         isIn: false,
         exportNote: '',
         exportDate: new Date(Date.now()),
+        lastWarehouse: modalBody.C_DATA.currentWarehouse._id,
         currentWarehouse: null,
       }
       var exportingSelect = modalBody.querySelector('select.select-exporting-reason')

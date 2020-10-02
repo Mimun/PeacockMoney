@@ -644,7 +644,7 @@ router.post('/statistic/export', (req, res) => {
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
   if (chosenWarehouse !== '') {
-    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }, { isIn: false }] }).populate([
+    Property.find({ $and: [{ 'lastWarehouse': chosenWarehouse }, { isIn: false }] }).populate([
       {
         path: 'evaluationItem',
         model: 'Item'

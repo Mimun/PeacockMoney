@@ -13,6 +13,7 @@ const propertySchema = new mongoose.Schema({
   contract: { type: mongoose.Types.ObjectId, ref: 'Contract', default: null },
   originWarehouse: { type: mongoose.Types.ObjectId, ref: 'Warehouse', default: null },
   currentWarehouse: {type: mongoose.Types.ObjectId, ref: 'Warehouse', default: null},
+  lastWarehouse: {type: mongoose.Types.ObjectId, ref: 'Warehouse', default: null},
   movement: [{type: mongoose.Types.ObjectId, ref: 'Warehouse'}],
   importDate: {type: Date, default: new Date(Date.now())},
   exportDate: {type: Date, default: null},
