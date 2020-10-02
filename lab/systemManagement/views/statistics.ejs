@@ -210,21 +210,23 @@
       $(".modal").modal('hide')
       var exportBtn = document.querySelector('#export')
       exportBtn.style.display = 'block'
-
+      exportBtn.onclick =  ()=>{
+        exportCSV(result.csv)
+      }
     }
 
     // export button event handler
     var exportBtn = document.querySelector('#export')
-    exportBtn.addEventListener('click', (event) => {
-      exportCSV(result.csv)
-    })
+    
 
     // export csv function
     const exportCSV = (csv) => {
+      const dateTime = new Date().toISOString().slice(-24).replace(/\D/g, 
+'').slice(0, 14); 
       var blob = new Blob([csv], { type: 'application/vnd.ms-excel' })
       var link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
-      link.download = 'abc.csv'
+      link.download = `${dateTime}.csv`
       link.click()
     }
 

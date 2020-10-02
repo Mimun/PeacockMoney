@@ -716,7 +716,7 @@ const callback = (result, chosenWarehouse, dateConditions, res) => {
 
   // flat json for csv content
   const fields = ["storeId", "warehouseId", "warehouseName", "importDate", "contractId", "propertyId", "propertyName"]
-  let csv = json2csv(flatJson(result), { fields })
+  let csv = json2csv(flatJson(array, 'import'), { fields })
   res.status(200).send({ result: array, originResult: result, csv, reportType: 'import' })
 }
 
@@ -760,7 +760,7 @@ const callback2 = (result, chosenWarehouse, dateConditions, res) => {
 
   // flat json for csv content
   const fields = ["storeId", "warehouseId", "warehouseName", "exportDate", "contractId", "propertyId", "propertyName"]
-  let csv = json2csv(flatJson(result), { fields })
+  let csv = json2csv(flatJson(array, 'export'), { fields })
   res.status(200).send({ result: array, originResult: result, csv, reportType: 'export' })
 }
 
@@ -803,19 +803,23 @@ const getNestedValue = (obj) => {
   return value
 }
 
-const flatJson = (results) => {
+const flatJson = (results, reportType) => {
 
   if (results.length !== 0) {
     var flatArray = results.map(result => {
       const storeId = getNestedValue(findNestedObj(result.contract.store.value.metadata, 'name', 'id'))
       const warehouseId = getNestedValue(findNestedObj(result.currentWarehouse, 'name', 'id'))
       const warehouseName = getNestedValue(findNestedObj(result.currentWarehouse, 'name', 'name'))
-      const importDate = new Date(result.importDate)
+      const importDate = formatDate(new Date(result.importDate))
+      const exportDate = formatDate(new Date(result.exportDate))
       const contractId = result.contract.id
-      const propertyId = result._id
+      const propertyId = result.id
       const propertyName = getNestedValue(result.infos[0].value)
-      return { storeId, warehouseId, warehouseName, importDate, contractId, propertyId, propertyName }
-
+      if(reportType === 'import'){
+        return { storeId, warehouseId, warehouseName, importDate, contractId, propertyId, propertyName }
+      } else {
+        return { storeId, warehouseId, warehouseName, exportDate, contractId, propertyId, propertyName }
+      }
     })
     return flatArray
   }
