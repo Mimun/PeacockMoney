@@ -33,13 +33,22 @@ export const generateImportingReport = async (itemObjs, warehouseList, elementNa
   if (itemObjs.length !== 0) {
     // table header
     itemObjs.forEach(itemObj => {
-      var storeId = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id').value : 'None'
-      var storeName = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name').value : 'None'
-      var contractId = itemObj.contract ? itemObj.contract.id : 'None'
-      var itemTypeId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
-      var propertyId = itemObj.id
-      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None'
-      var tr = displayInfoToTable(transformToSimpleObject(storeId, storeName, contractId, itemTypeId, propertyId, propertyName), elementName)
+      var tr = document.createElement('tr')
+      document.querySelector('thead').querySelectorAll('th').forEach(th => {
+        var td = document.createElement('td')
+        if(th.getAttribute('data-resizable-column-id') === "contractId"){
+          var a = document.createElement('a')
+          a.href = `/contractMng/contracts/${itemObj.contract_Id}?token=${window.localStorage.getItem('accessToken')}`
+          a.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+          td.appendChild(a)
+        } else {
+          td.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+
+        }
+        tr.appendChild(td)
+      })
+      document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+
       tr.C_DATA = itemObj
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
@@ -50,7 +59,7 @@ export const generateImportingReport = async (itemObjs, warehouseList, elementNa
 
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
-        
+
           // property id
           var propertyIdClone = detailInfoTemplate.cloneNode(true)
           propertyIdClone.querySelector('label').innerHTML = 'ID'
@@ -63,7 +72,7 @@ export const generateImportingReport = async (itemObjs, warehouseList, elementNa
             detailInfoTemplateClone.querySelector('input').value = info.value
             propertyInfoContainer.appendChild(detailInfoTemplateClone)
           })
-         
+
           propertyInfoContainer.appendChild(detailInfoTemplateClone)
 
           modalBody.innerHTML = ""
@@ -86,19 +95,22 @@ export const generateImportingReport = async (itemObjs, warehouseList, elementNa
 
 export const generateExportingReport = async (itemObjs, warehouseList, elementName) => {
   await Object.assign(params, { itemObjs, warehouseList })
+  document.querySelector('#' + elementName + '').querySelector('tbody').innerHTML = ""
 
   // var tableContainer = document.createElement('div')
   // tableContainer.innerHTML = tableTemplate
-  document.querySelector('#' + elementName + '').querySelector('tbody').innerHTML = ''
 
   if (itemObjs.length !== 0) {
     // table header
     itemObjs.forEach(itemObj => {
-      var contractId = itemObj.contract ? itemObj.contract.id : 'None'
-      var itemTypeId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
-      var propertyId = itemObj.id
-      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None'
-      var tr = displayInfoToTable(transformToSimpleObject('Out of store', 'Out of store', contractId, itemTypeId, propertyId, propertyName), elementName)
+      var tr = document.createElement('tr')
+      document.querySelector('thead').querySelectorAll('th').forEach(th => {
+        var td = document.createElement('td')
+        td.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+        tr.appendChild(td)
+      })
+      document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+
       tr.C_DATA = itemObj
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
@@ -109,7 +121,7 @@ export const generateExportingReport = async (itemObjs, warehouseList, elementNa
 
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
-        
+
           // property id
           var propertyIdClone = detailInfoTemplate.cloneNode(true)
           propertyIdClone.querySelector('label').innerHTML = 'ID'
@@ -122,7 +134,7 @@ export const generateExportingReport = async (itemObjs, warehouseList, elementNa
             detailInfoTemplateClone.querySelector('input').value = info.value
             propertyInfoContainer.appendChild(detailInfoTemplateClone)
           })
-         
+
           propertyInfoContainer.appendChild(detailInfoTemplateClone)
 
           modalBody.innerHTML = ""
@@ -139,7 +151,6 @@ export const generateExportingReport = async (itemObjs, warehouseList, elementNa
     })
 
   }
-
 
 }
 

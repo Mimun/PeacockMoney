@@ -51,14 +51,14 @@ function formatDate(date) {
 // contract template list for admin
 router.get('/', function (req, res, next) {
   async.parallel({
-    contractTemplateList: callback=>{
+    contractTemplateList: callback => {
       ContractTemplate.find({}).exec(callback)
     },
-    itemTypeList: callback=>{
+    itemTypeList: callback => {
       ItemType.find().exec(callback)
     }
-  }, (err, results)=>{
-    if(err) throw err
+  }, (err, results) => {
+    if (err) throw err
     res.render('index', { contractTemplateList: results.contractTemplateList, itemTypeList: results.itemTypeList })
 
   })
@@ -235,7 +235,7 @@ router.post('/getStores', (req, res, next) => {
   console.log('req.body: ', req.body)
   Store.findOne({ _id: req.body.data }).exec((err, result) => {
     if (err) throw err
-    console.log('results: ', result.representatives)
+    console.log('results: ', result)
     // find representative
     if (result) {
       async.parallel({
@@ -243,7 +243,7 @@ router.post('/getStores', (req, res, next) => {
           Employee.find({ _id: { $in: result.representatives } }).exec(callback)
         },
         employees: callback => {
-          Employee.find({ "metadata.value": result._id }).exec(callback)
+          Employee.find({ "metadata.value": findNestedObj(result, 'name', 'id').value }).exec(callback)
         }
       }, async (err, results) => {
         if (err) throw err
@@ -379,26 +379,26 @@ router.delete('/contracts/:id', (req, res, next) => {
 })
 
 // function to create property
-const createProperty = (metadata, infos, status, evaluationItem = null, contract = null,
-  originWarehouse = null, currentWarehouse = null, movement = [],
-  importDate = new Date(Date.now()), exportDate = null) => {
+const createProperty = (metadata, infos, evaluationItem, status, contract, originWarehouse,
+  currentWarehouse, lastWarehouse, movement, isIn, id) => {
   return {
     metadata,
     infos,
-    status,
     evaluationItem,
+    status,
     contract,
     originWarehouse,
     currentWarehouse,
+    lastWarehouse,
     movement,
-    importDate,
-    exportDate,
-    
+    isIn,
+    id
+
   }
 }
 
 // function to generate property id
-const createPropertyId = (contractId, itemTypeId, index=0) => {
+const createPropertyId = (contractId, itemTypeId, index = 0) => {
   return `${itemTypeId !== '' ? itemTypeId : 'None'}.${contractId !== '' ? contractId : 'None'}.${index}`
 }
 
@@ -407,61 +407,104 @@ router.put('/contracts/:id', async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body.contractStatus)
   try {
-    await Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { "contractStatus": req.body.contractStatus } }, { new: true }, async (err, contractResult) => {
-      if (err) throw err
-      var contractId = contractResult.id
-      var itemTypeId = findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId') ?
-        findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId').value : "None"
-      console.log('contarct id: ', contractId)
-      console.log('itemtype id: ', itemTypeId)
-
-      // add property only when the contract is approved
-      if (contractResult.contractStatus === 'approved') {
-        try {
-          await Warehouse.findOne({ store: contractResult.store.value }).exec(async (err, warehouseResult) => {
-            if (err) throw err
-            if (contractResult.items.length !== 0) {
-              await contractResult.items.forEach(async (item, index) => {
-                var propertyId = await createPropertyId(contractId, itemTypeId, index)
-                if (warehouseResult) {
-                  
-                  console.log('property id 1: ', propertyId)
-                  var newItem = await createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
-                    item.infos, item.status, item.evaluationItem, contractResult._id,
-                    warehouseResult._id, warehouseResult._id, [warehouseResult._id])
-                  var property = new Property({...newItem, id: propertyId})
-                  console.log('new item: ', property.id)
-
-                  property.save((err, result) => {
-                    if (err) throw err
-                  })
-                } else {
-                  console.log('property id 2: ', propertyId)
-
-                  var newItem = createProperty(item.evaluationItem ? item.evaluationItem.metadata : [null],
-                    item.infos, item.status, item.evaluationItem, contractResult._id,
-                    contractResult.store.value, contractResult.store.value, [contractResult.store.value])
-
-                  var property = new Property({...newItem, id: propertyId})
-                  console.log('new item 2: ', property.id)
-
-
-                  property.save((err, result) => {
-                    if (err) throw err
-                  })
-                }
-              })
-            
-              res.send({ message: 'Saved property successfully!', result: contractResult })
-
-            }
-
-          })
-        } catch (err) {
-          console.error(err)
+    await Contract.findOneAndUpdate({ _id: req.params.id },
+      { $set: { "contractStatus": req.body.contractStatus } }, { new: true })
+      .populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
         }
-      }
-    })
+      ])
+      .exec(async (err, contractResult) => {
+        if (err) throw err
+        var contractId = contractResult.id
+        var itemTypeId = findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId') ?
+          findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId').value : "None"
+        console.log('contarct id: ', contractId)
+        console.log('itemtype id: ', itemTypeId)
+
+        // add property only when the contract is approved
+        if (contractResult.contractStatus === 'approved') {
+          try {
+            async.parallel({
+              warehouseResult: callback => {
+                Warehouse.findOne({ store: contractResult.store.value }).exec(callback)
+              },
+              storeResult: callback => {
+                Store.findOne({ _id: contractResult.store.value }).exec(callback)
+              }
+            }, async (err, results) => {
+              if (err) throw err
+              if (contractResult.items.length !== 0) {
+                await contractResult.items.forEach(async (item, index) => {
+                  var warehouseResult = results.warehouseResult
+                  var storeResult = results.storeResult
+                  if (warehouseResult) {
+                    // property metadata
+                    var propertyMetadata = item.evaluationItem ? item.evaluationItem.metadata : [null]
+
+                    // property infos
+                    var propertyInfos = item.infos
+
+                    // property evaluation
+                    var propertyEvaluation = item.evaluationItem ? item.evaluationItem : null
+
+                    // property status
+                    var propertyStatus = item.status
+
+                    // property contract
+                    var propertyContract = contractResult
+
+                    // property origin warehouse
+                    var propertyOriginWarehouse = results.warehouseResult
+
+                    // property current warehouse
+                    var propertyCurrentWarehouse = results.warehouseResult
+
+                    // property last warehouse
+                    var propertyLastWarehouse = null
+
+                    // property movement
+                    var propertyMovement = [{
+                      storeId: findNestedObj(storeResult.metadata, 'name', 'id') ? findNestedObj(storeResult.metadata, 'name', 'id').value : '',
+                      warehouseFrom: '',
+                      warehouseTo: '',
+                      importDate: new Date(Date.now()),
+                      importNote: 'Nhap cam co',
+                      exportDate: null,
+                      exportNote: ''
+                    }]
+
+                    // property is in 
+                    var propertyIsIn = true
+
+                    // property id
+                    var propertyId = await createPropertyId(contractId, itemTypeId, index)
+
+                    console.log('property id 1: ', propertyId)
+                    var newItem = await createProperty(propertyMetadata, propertyInfos, propertyEvaluation, propertyStatus,
+                      propertyContract, propertyOriginWarehouse, propertyCurrentWarehouse, propertyLastWarehouse, propertyMovement,
+                      propertyIsIn, propertyId)
+                    var property = new Property({ ...newItem })
+                    console.log('new item: ', property)
+
+                    property.save((err, result) => {
+                      if (err) throw err
+                    })
+                  }
+                })
+                res.send({ message: 'Saved property successfully!', result: contractResult })
+              }
+            })
+          } catch (err) {
+            console.error(err)
+          }
+        }
+      })
   } catch (err) {
     console.error(err)
   }

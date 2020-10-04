@@ -62,8 +62,8 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
   if (itemObjs.length !== 0) {
     // table header
     itemObjs.forEach(itemObj => {
-      var storeId = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id').value : 'None'
-      var storeName = findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name') ? findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name').value : 'None'
+      var storeId = itemObj.currentWarehouse? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')): 'None'
+      var storeName = itemObj.currentWarehouse? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None'
       var contractId = itemObj.contract ? itemObj.contract.id : 'None'
       var itemTypeId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
       var propertyId = itemObj.id
@@ -78,11 +78,12 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
           modalBody.C_DATA = propertyData
           modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
           modalFooter.querySelector('#btn-export').innerHTML = 'export property'
+          console.log('current warehouse: ', modalBody.C_DATA.currentWarehouse)
+          if(modalBody.C_DATA.currentWarehouse){
+            modalFooter.querySelector('#btn-move').removeAttribute('disabled')
+            modalFooter.querySelector('#btn-export').removeAttribute('disabled')
+          }
 
-          modalFooter.querySelector('#btn-move'). removeAttribute('disabled')
-          modalFooter.querySelector('#btn-export').removeAttribute('disabled')
-
-          
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
 
@@ -143,7 +144,8 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
   var warehouseSelectOptions = []
   if (warehouseList.length !== 0) {
     warehouseList.map(warehouse => {
-      var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
+      var option = `<option value="${warehouse._id}" storeid="${warehouse.storeId}" warehouseid="${warehouse.warehouseId}" 
+      warehousename="${warehouse.warehouseName}">${warehouse.warehouseName}-${warehouse.warehouseAddress}</option>`
       warehouseSelectOptions.push(option)
     })
   } else {
@@ -176,22 +178,29 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
         warehouseSelectOptions, selectLabel, 'Move to: ', selectContainer, modalBody, false)
       break
     case ("change"):
-      var updateObj = {
-        ...modalBody.C_DATA,
-        currentWarehouse: null,
-        movement: modalBody.C_DATA.movement,
-        importDate: new Date(Date.now()),
-        importNote: ''
-      }
       if (itemObj.currentWarehouse &&
         modalBody.querySelector('select.select-warehouse').value === itemObj.currentWarehouse._id) {
-        console.log('updateObj: ', updateObj)
         window.alert("Property's already in this warehouse!")
       } else {
-        if (modalBody.querySelector('select.select-warehouse').value ||
-          modalBody.querySelector('select.select-warehouse').value !== "") {
-          updateObj.currentWarehouse = modalBody.querySelector('select.select-warehouse').value
-          updateObj.movement.push(modalBody.querySelector('select.select-warehouse').value)
+        var warehouseSelect = modalBody.querySelector('select.select-warehouse')
+        if (warehouseSelect.value || warehouseSelect.value !== "") {
+
+          var updateObj = {
+            ...modalBody.C_DATA,
+            currentWarehouse: warehouseSelect.value,
+            movement: modalBody.C_DATA.movement.slice(),
+          }
+          updateObj.movement.push({
+            storeId: warehouseSelect.options[warehouseSelect.selectedIndex].getAttribute('storeid'),
+            warehouseFrom: findNestedObj(modalBody.C_DATA.currentWarehouse.metadata, 'name', 'name') ?
+              findNestedObj(modalBody.C_DATA.currentWarehouse.metadata, 'name', 'name').value : 'None',
+            warehouseTo: warehouseSelect.options[warehouseSelect.selectedIndex].getAttribute('warehousename'),
+            importDate: new Date(Date.now()).toISOString(),
+            importNote: 'Nhap dieu chuyen',
+            exportDate: new Date(Date.now()).toISOString(),
+            exportNote: 'Xuat dieu chuyen',
+          })
+
           console.log('updateObj: ', updateObj)
           makeRequest("PUT", '/systemMng/properties/' + updateObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
             // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
@@ -219,7 +228,6 @@ modalFooter.querySelector('#btn-export').addEventListener('click', (event) => {
       const exportingReasonOptions = `
         <option value="0">Xuat tra giai chap</option>
         <option value="1">Xuat gui thanh ly</option>
-        <option value="2">Xuat dieu chuyen</option>
       `
       createSelect(select, '0', 'exporting-reason-select', 'select-exporting-reason',
         exportingReasonOptions, selectLabel, 'Reason to export ', selectContainer, modalBody, false)
@@ -228,13 +236,24 @@ modalFooter.querySelector('#btn-export').addEventListener('click', (event) => {
       var updateObj = {
         ...modalBody.C_DATA,
         isIn: false,
-        exportNote: '',
-        exportDate: new Date(Date.now()),
-        lastWarehouse: modalBody.C_DATA.currentWarehouse._id,
+        lastWarehouse: modalBody.C_DATA.currentWarehouse,
         currentWarehouse: null,
+        movement: modalBody.C_DATA.movement.slice()
       }
+
+      // exporting reason select
       var exportingSelect = modalBody.querySelector('select.select-exporting-reason')
-      updateObj.exportNote = exportingSelect.options[exportingSelect.selectedIndex].text
+      updateObj.movement.push({
+        storeId: '',
+        warehouseFrom: findNestedObj(modalBody.C_DATA.currentWarehouse.metadata, 'name', 'name') ?
+          findNestedObj(modalBody.C_DATA.currentWarehouse.metadata, 'name', 'name').value : 'None',
+        warehouseTo: '',
+        importDate: '',
+        importNote: '',
+        exportDate: new Date(Date.now()).toISOString(),
+        exportNote: exportingSelect.options[exportingSelect.selectedIndex].text,
+      })
+      
       console.log('update obj: ', updateObj)
       makeRequest("PUT", '/systemMng/properties/' + updateObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
         // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`
@@ -266,4 +285,10 @@ const displayInfoToTable = (itemObj, elementName) => {
 
   document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
   return tr
+}
+
+// get nested value
+const getNestedValue = (obj) => {
+  var value = obj ? (obj.value !== '' ? obj.value : 'None') : 'None'
+  return value
 }

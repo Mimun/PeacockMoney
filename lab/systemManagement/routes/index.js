@@ -11,6 +11,7 @@ var atob = require('atob')
 var btoa = require('btoa')
 var fs = require('fs');
 var _ = require('lodash');
+const { find } = require('../../../models/employee');
 var json2csv = require('json2csv').parse
 
 function escapeRegex(text) {
@@ -228,7 +229,7 @@ router.post('/stores', (req, res, next) => {
   var store = new Store(req.body)
 
   // create warehouse
-  var warehouseBasedOnStore = { ...req.body, metadata: [] }
+  var warehouseBasedOnStore = { ...req.body, metadata: [], store: store._id }
   req.body.metadata.forEach(data => {
     if (data.name === "name" || data.name === "id" || data.name === "address"
       || data.name === "phoneNumber" || data.name === "email" || data.name === "note") {
@@ -491,27 +492,19 @@ router.get('/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({ isIn: true }).populate([
-          {
-            path: 'evaluationItem',
-            model: 'Item'
-          },
-          {
-            path: 'currentWarehouse',
-            model: 'Warehouse'
-          },
-          {
-            path: 'contract',
-            model: 'Contract'
-          }
-        ]).exec(callback)
+        Property.find({}).exec(callback)
       } catch (error) {
         console.log(error)
       }
     },
     warehouseList: callback => {
       try {
-        Warehouse.find({ deactive: false }).exec(callback)
+        Warehouse.find({ deactive: false }).populate([
+          {
+            path: 'store',
+            model: 'Store'
+          }
+        ]).exec(callback)
       } catch (error) {
         console.log(error)
       }
@@ -521,10 +514,13 @@ router.get('/properties', (req, res, next) => {
     var warehouseList = []
     if (result.warehouseList.length !== 0) {
       result.warehouseList.map(warehouse => {
+        console.log('warehouse name: ', findNestedObj(warehouse.metadata, 'name', 'name'))
         warehouseList.push({
           _id: warehouse._id,
-          name: findNestedObj(warehouse, 'name', 'name') ? findNestedObj(warehouse, 'name', 'name').value : 'None',
-          address: findNestedObj(warehouse, 'name', 'address') ? findNestedObj(warehouse, 'name', 'address').value : 'None'
+          warehouseName: findNestedObj(warehouse.metadata, 'name', 'name') ? findNestedObj(warehouse.metadata, 'name', 'name').value : 'None',
+          warehouseAddress: findNestedObj(warehouse.metadata, 'name', 'address') ? findNestedObj(warehouse.metadata, 'name', 'address').value : 'None',
+          warehouseId: findNestedObj(warehouse.metadata, 'name', 'id') ? findNestedObj(warehouse.metadata, 'name', 'id').value : 'None',
+          storeId: findNestedObj(warehouse.store, 'name', 'id') ? findNestedObj(warehouse.store, 'name', 'id').value : 'None'
         })
       })
     }
@@ -539,12 +535,17 @@ router.put('/properties/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
   var updateObj = req.body
-  delete updateObj.contract
-  Property.findOneAndUpdate({ _id: req.params.id },
-    { $set: updateObj }, { new: true }, (err, result) => {
-      if (err) throw err
-      res.send({ message: 'Updated successfully!', result })
-    })
+  Warehouse.findOne({ _id: updateObj.currentWarehouse }).exec((err, result) => {
+    if (err) throw err
+    updateObj.currentWarehouse = result
+    console.log('updateObj: ', updateObj)
+    Property.findOneAndUpdate({ _id: req.params.id },
+      { $set: updateObj }, { new: true }, (err, result) => {
+        if (err) throw err
+        res.send({ message: 'Updated successfully!', result })
+      })
+  })
+
 })
 
 const findNestedObj = (entireObj, keyToFind, valToFind) => {
@@ -595,46 +596,10 @@ router.post('/statistic/import', (req, res) => {
   console.log('req body: ', req.body)
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
-  if (chosenWarehouse !== '') {
-    Property.find({ $and: [{ 'currentWarehouse': chosenWarehouse }, { isIn: true }] }).populate([
-      {
-        path: 'evaluationItem',
-        model: 'Item'
-      },
-      {
-        path: 'currentWarehouse',
-        model: 'Warehouse'
-      },
-      {
-        path: 'contract',
-        model: 'Contract'
-      }
-    ]).exec((err, result) => {
-      if (err) throw err
-      callback(result, chosenWarehouse, dateConditions, res)
-    })
-  } else {
-    Property.find({ isIn: true }).populate([
-      {
-        path: 'evaluationItem',
-        model: 'Item'
-      },
-      {
-        path: 'currentWarehouse',
-        model: 'Warehouse'
-      },
-      {
-        path: 'contract',
-        model: 'Contract'
-      }
-    ]).exec((err, result) => {
-      if (err) throw err
-      callback(result, chosenWarehouse, dateConditions, res)
-    })
-  }
-
-
-
+  Property.find({}).sort({ _id: -1 }).exec((err, result) => {
+    if (err) throw err
+    callback(result, chosenWarehouse, dateConditions, res)
+  })
 
 })
 
@@ -643,80 +608,71 @@ router.post('/statistic/export', (req, res) => {
   console.log('req body: ', req.body)
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
-  if (chosenWarehouse !== '') {
-    Property.find({ $and: [{ 'lastWarehouse': chosenWarehouse }, { isIn: false }] }).populate([
-      {
-        path: 'evaluationItem',
-        model: 'Item'
-      },
-      {
-        path: 'currentWarehouse',
-        model: 'Warehouse'
-      },
-      {
-        path: 'contract',
-        model: 'Contract'
-      }
-    ]).exec((err, result) => {
-      if (err) throw err
-      callback2(result, chosenWarehouse, dateConditions, res)
-    })
-  } else {
-    Property.find({ isIn: false }).populate([
-      {
-        path: 'evaluationItem',
-        model: 'Item'
-      },
-      {
-        path: 'currentWarehouse',
-        model: 'Warehouse'
-      },
-      {
-        path: 'contract',
-        model: 'Contract'
-      }
-    ]).exec((err, result) => {
-      if (err) throw err
-      callback2(result, chosenWarehouse, dateConditions, res)
-    })
-  }
+  Property.find({}).sort({ _id: -1 }).exec((err, result) => {
+    if (err) throw err
+    callback2(result, chosenWarehouse, dateConditions, res)
+  })
 })
 
 const callback = (result, chosenWarehouse, dateConditions, res) => {
   console.log('date conditions: ', dateConditions)
   var array = []
   // property list
-  if (dateConditions.from && dateConditions.to) {
-    var fromDate = formatDate(dateConditions.from)
-    var toDate = formatDate(dateConditions.to)
-    result.forEach(res => {
-      var importDate = formatDate(res.importDate)
-      console.log('fromdate: ', fromDate)
-      console.log('todate: ', toDate)
-      console.log('importDate: ', importDate)
-      console.log('compare: ', +importDate <= +toDate)
-      if (fromDate <= importDate && importDate <= toDate) {
-        array.push(res)
-        // return res
+  result.forEach(res => {
+    res.movement.forEach(movement => {
+      var importDate = formatDate(movement.importDate)
+      if (dateConditions.from && dateConditions.to) {
+        var fromDate = formatDate(dateConditions.from)
+        var toDate = formatDate(dateConditions.to)
+        if (fromDate <= importDate && importDate <= toDate) {
+          array.push({
+            importDate: formatDate(movement.importDate),
+            importNote: movement.importNote,
+            storeId: movement.storeId,
+            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+            warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
+            warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
+            contractId: res.contract ? res.contract.id : 'None',
+            propertyId: res.id,
+            propertyName: res.infos ? res.infos[0].value : 'None',
+            customerId: 'None',
+            customerName: 'None',
+            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+            contract_Id: res.contract._id
+          })
+          // return res
+        }
+      } else {
+        var compareDate = formatDate(Date.now())
+        if (importDate === compareDate) {
+          array.push({
+            importDate: formatDate(movement.importDate),
+            importNote: movement.importNote,
+            storeId: movement.storeId,
+            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+            warehouseFrom: movement.warehouseFrom,
+            warehouseTo: movement.warehouseTo,
+            contractId: res.contract ? res.contract.id : 'None',
+            propertyId: res.id,
+            propertyName: res.infos ? res.infos[0].value : 'None',
+            customerId: 'None',
+            customerName: 'None',
+            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+            contract_Id: res.contract._id
+
+          })
+          // return res
+        }
       }
     })
-  } else {
-    var compareDate = formatDate(Date.now())
-    result.forEach(res => {
-      var importDate = formatDate(res.importDate)
-
-      console.log('importDate: ', res.importDate, 'type:', typeof res.importDate)
-      console.log('compare: ', new Date(Date.now()))
-      if (importDate === compareDate) {
-        array.push(res)
-        // return res
-      }
-    })
-  }
-
-  // flat json for csv content
-  const fields = ["storeId", "warehouseId", "warehouseName", "importDate", "contractId", "propertyId", "propertyName"]
-  let csv = json2csv(flatJson(array, 'import'), { fields })
+  })
+  const fields = ["storeId", "warehouseId", "warehouseName", "importDate", "contractId", "propertyId", "propertyName",
+    "customerId", "customerName", "itemTypeId", "itemType", "warehouseFrom", "importNote"]
+  let csv = json2csv(array, { fields })
   res.status(200).send({ result: array, originResult: result, csv, reportType: 'import' })
 }
 
@@ -724,43 +680,59 @@ const callback2 = (result, chosenWarehouse, dateConditions, res) => {
   console.log('date conditions: ', dateConditions)
   var array = []
   // property list
-  if (dateConditions.from && dateConditions.to) {
-    var fromDate = formatDate(dateConditions.from)
-    var toDate = formatDate(dateConditions.to)
-    result.forEach(res => {
-      if (res.exportDate) {
-        var exportDate = formatDate(res.exportDate)
-        console.log('fromdate: ', fromDate)
-        console.log('todate: ', toDate)
-        console.log('exportDate: ', exportDate)
-        console.log('compare: ', +exportDate <= +toDate)
+  result.forEach(res => {
+    res.movement.forEach(movement => {
+      var exportDate = formatDate(movement.exportDate)
+      if (dateConditions.from && dateConditions.to) {
+        var fromDate = formatDate(dateConditions.from)
+        var toDate = formatDate(dateConditions.to)
         if (fromDate <= exportDate && exportDate <= toDate) {
-          array.push(res)
+          array.push({
+            exportDate: formatDate(movement.exportDate),
+            exportNote: movement.exportNote,
+            storeId: movement.storeId,
+            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+            warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
+            warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
+            contractId: res.contract ? res.contract.id : 'None',
+            propertyId: res.id,
+            propertyName: res.infos ? res.infos[0].value : 'None',
+            customerId: 'None',
+            customerName: 'None',
+            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType'))
+          })
           // return res
         }
-      }
-
-    })
-  } else {
-    var compareDate = formatDate(Date.now())
-    result.forEach(res => {
-      if (res.exportDate) {
-        var exportDate = formatDate(res.exportDate)
-
-        console.log('exportDate: ', res.exportDate, 'type:', typeof res.exportDate)
-        console.log('compare: ', new Date(Date.now()))
+      } else {
+        var compareDate = formatDate(Date.now())
         if (exportDate === compareDate) {
-          array.push(res)
+          array.push({
+            exportDate: formatDate(movement.exportDate),
+            exportNote: movement.exportNote,
+            storeId: movement.storeId,
+            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+            warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
+            warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
+            contractId: res.contract ? res.contract.id : 'None',
+            propertyId: res.id,
+            propertyName: res.infos ? res.infos[0].value : 'None',
+            customerId: 'None',
+            customerName: 'None',
+            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType'))
+          })
           // return res
         }
       }
-
     })
-  }
 
-  // flat json for csv content
-  const fields = ["storeId", "warehouseId", "warehouseName", "exportDate", "contractId", "propertyId", "propertyName"]
-  let csv = json2csv(flatJson(array, 'export'), { fields })
+  })
+  const fields = ["storeId", "warehouseId", "warehouseName", "exportDate", "contractId", "propertyId", "propertyName",
+    "customerId", "customerName", "itemTypeId", "itemType", "warehouseTo", "exportNote"]
+  let csv = json2csv(array, { fields })
   res.status(200).send({ result: array, originResult: result, csv, reportType: 'export' })
 }
 
@@ -774,11 +746,11 @@ router.get('/itemType', (req, res) => {
 })
 
 // create new item type
-router.post('/itemType', (req, res)=>{
+router.post('/itemType', (req, res) => {
   console.log('req body: ', req.body)
   var itemType = new ItemType(req.body)
-  itemType.save((err, result)=>{
-    if(err) throw err
+  itemType.save((err, result) => {
+    if (err) throw err
     res.send('Save item type successfully!')
   })
 })
@@ -807,16 +779,25 @@ const flatJson = (results, reportType) => {
 
   if (results.length !== 0) {
     var flatArray = results.map(result => {
-      const storeId = getNestedValue(findNestedObj(result.contract.store.value.metadata, 'name', 'id'))
-      const warehouseId = getNestedValue(findNestedObj(result.currentWarehouse, 'name', 'id'))
-      const warehouseName = getNestedValue(findNestedObj(result.currentWarehouse, 'name', 'name'))
-      const importDate = formatDate(new Date(result.importDate))
-      const exportDate = formatDate(new Date(result.exportDate))
-      const contractId = result.contract.id
-      const propertyId = result.id
-      const propertyName = getNestedValue(result.infos[0].value)
-      if(reportType === 'import'){
-        return { storeId, warehouseId, warehouseName, importDate, contractId, propertyId, propertyName }
+      var importDate = result.importDate,
+        importNote = result.importNote,
+        storeId = result.storeId,
+        warehouseId = result.warehouseId,
+        warehouseName = result.warehouseName,
+        warehouseFrom = result.warehouseFrom,
+        warehouseTo = result.warehouseTo,
+        contractId = result.contractId,
+        propertyId = result.propertyId,
+        propertyName = result.propertyName,
+        customerId = result.customerId,
+        customerName = result.customerName,
+        itemTypeId = result.itemTypeId,
+        itemType = result.itemType
+      if (reportType === 'import') {
+        return {
+          storeId, warehouseId, warehouseName, importDate, contractid, propertyId, propertyName,
+          customerId, customerName, itemTypeId, itemTypeName, warehouseFrom, importNote
+        }
       } else {
         return { storeId, warehouseId, warehouseName, exportDate, contractId, propertyId, propertyName }
       }

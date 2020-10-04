@@ -20,12 +20,20 @@
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
           <thead>
             <tr>
-              <th data-resizable-column-id="warehouseId">Ma kho</th>
-              <th data-resizable-column-id="name">Ten kho</th>
+              <th data-resizable-column-id="storeId">Ma PGD</th>
+              <th data-resizable-column-id="warehouseId">Ma kho</th> <!-- current warehouse id-->
+              <th data-resizable-column-id="warehouseName">Ten kho</th> <!-- current warehouse-->
+              <th id="date" data-resizable-column-id="date">Ngay nhap</th>
               <th data-resizable-column-id="contractId">Ma hop dong</th>
-              <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
               <th data-resizable-column-id="propertyId">Ma tai san</th>
-              <th data-resizable-column-id="name">Ten tai san</th>
+              <th data-resizable-column-id="propertyName">Ten tai san</th>
+              <th data-resizable-column-id="customerId">Ma khach hang</th>
+              <th data-resizable-column-id="customerName">Ten khach hang</th>
+              <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
+              <th data-resizable-column-id="itemType">Ten loai tai san</th>
+              <th id="warehouseDirection" data-resizable-column-id="warehouseDirection">Kho dieu chuyen</th>
+              <th id="note" data-resizable-column-id="note">Ly do nhap</th>
+
             </tr>
           </thead>
           <tbody></tbody>
@@ -43,7 +51,7 @@
         <div class="modal-dialog modal-md" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
+              <h5 class="modal-title">Thong ke kho</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -84,7 +92,7 @@
               </form>
 
               <!-- warehouse selector -->
-              <div class="select-container"></div>
+              <!-- <div class="select-container"></div> -->
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" id="submit">Submit</button>
@@ -106,19 +114,19 @@
     var csv = ""
 
     // select parts
-    var selectContainer = document.createElement('div')
-    selectContainer.className = 'select-container'
+    // var selectContainer = document.createElement('div')
+    // selectContainer.className = 'select-container'
 
-    var select = document.createElement('select')
-    select.className = "browser-default custom-select"
+    // var select = document.createElement('select')
+    // select.className = "browser-default custom-select"
 
-    var selectLabel = document.createElement('label')
+    // var selectLabel = document.createElement('label')
 
-    var selectOption = warehouseList.map(warehouse => {
-      var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
-      return option
-    })
-    selectOption.unshift('<option value="">All warehouses</option>')
+    // var selectOption = warehouseList.map(warehouse => {
+    //   var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
+    //   return option
+    // })
+    // selectOption.unshift('<option value="">All warehouses</option>')
     // end of select parts
 
     // show modal when browser loading
@@ -158,24 +166,24 @@
         document.querySelector('.date-selector').appendChild(to)
       }
       // remove "all warehouse" option 
-      document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
-        if (option.value === "") {
-          option.style.display = 'none'
-          document.querySelector('#warehouse-select').value = document.querySelector('#warehouse-select')[1].value
-        }
-      })
+      // document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
+      //   if (option.value === "") {
+      //     option.style.display = 'none'
+      //     document.querySelector('#warehouse-select').value = document.querySelector('#warehouse-select')[1].value
+      //   }
+      // })
     })
 
     // warehouse selector
-    if (document.querySelector('.select-container').firstChild === null) {
-      createSelect(select, '', 'warehouse-select', 'select-warehouse',
-        selectOption, selectLabel, 'Kho', selectContainer, document.querySelector('.select-container'), false)
-    }
+    // if (document.querySelector('.select-container').firstChild === null) {
+    //   createSelect(select, '', 'warehouse-select', 'select-warehouse',
+    //     selectOption, selectLabel, 'Kho', selectContainer, document.querySelector('.select-container'), false)
+    // }
 
     // find property|submit button event
     document.querySelector('button#submit').addEventListener('click', (event) => {
       var getWarehouseReportObj = {
-        warehouses: document.querySelector('#warehouse-select').value,
+        // warehouses: document.querySelector('#warehouse-select').value,
         dateConditions: {}
       }
       // report time checked radio
@@ -203,11 +211,23 @@
 
     // callback function for request
     const callback = (result) => {
-      result.reportType === 'import' ?
-        generateImportingReport(result.result, warehouseList, 'property-list-container') :
-        generateExportingReport(result.result, warehouseList, 'property-list-container')
-
       $(".modal").modal('hide')
+      if(result.reportType === 'import'){
+        document.querySelector('th#date').innerHTML = 'Ngay nhap'
+        document.querySelector('th#date').setAttribute('data-resizable-column-id', 'importDate')
+        document.querySelector('th#warehouseDirection').setAttribute('data-resizable-column-id', 'warehouseFrom')
+        document.querySelector('th#note').setAttribute('data-resizable-column-id', 'importNote')
+        generateImportingReport(result.result, warehouseList, 'property-list-container')
+
+      } else {
+        document.querySelector('th#date').innerHTML = 'Ngay xuat'
+        document.querySelector('th#date').setAttribute('data-resizable-column-id', 'exportDate')
+        document.querySelector('th#warehouseDirection').setAttribute('data-resizable-column-id', 'warehouseTo')
+        document.querySelector('th#note').setAttribute('data-resizable-column-id', 'exportNote')
+        generateExportingReport(result.result, warehouseList, 'property-list-container')
+        
+      }
+
       var exportBtn = document.querySelector('#export')
       exportBtn.style.display = 'block'
       exportBtn.onclick =  ()=>{
