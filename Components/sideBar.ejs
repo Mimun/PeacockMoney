@@ -58,12 +58,12 @@
     width: fit-content;
   }
 
-  .list-group-item-light {
+  .list-group-item-secondary {
     color: black;
     border: none;
   }
 
-  .list-group-item-secondary {
+  .list-group-item-dark {
     border: none;
     font-size: 14px;
   }
@@ -136,47 +136,47 @@
   <div class="sidebar-container d-flex">
     <div class="sidebar">
       <div class="list-group list-group-flush justify-content-center">
-        <a href="#" class="list-group-item list-group-item-action list-group-item-light">Dashboard</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Dashboard</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
           data-toggle="collapse" data-target="#reminding-item">
           Nhắc nhở
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="reminding-item">
-          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Hợp đồng chờ</a>
-          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoản thu quá hạn</a>
-          <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Khoản thu sắp phải thực hiện</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Hợp đồng chờ</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Khoản thu quá hạn</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Khoản thu sắp phải thực hiện</a>
         </div>
         <a onclick="getPage('/contractMng/contracts')"
-          class="list-group-item list-group-item-action list-group-item-light">Quản lý hợp đồng</a>
+          class="list-group-item list-group-item-action list-group-item-secondary">Quản lý hợp đồng</a>
         <a onclick="getPage('/evaluationMng/evaluation')"
-          class="list-group-item list-group-item-action list-group-item-light">Thẩm định giá</a>
+          class="list-group-item list-group-item-action list-group-item-secondary">Thẩm định giá</a>
         <a onclick="getPage('/contractMng/contractTemplates')" id="createNewContract"
-          class="list-group-item list-group-item-action list-group-item-light">Tạo mới hợp đồng</a>
+          class="list-group-item list-group-item-action list-group-item-secondary">Tạo mới hợp đồng</a>
         <a onclick="getPage('/systemMng/properties')"
-          class="list-group-item list-group-item-action list-group-item-light">Quản lý tài sản</a>
+          class="list-group-item list-group-item-action list-group-item-secondary">Quản lý tài sản</a>
         <a onclick="getPage('/systemMng/statistic')"
-          class="list-group-item list-group-item-action list-group-item-light">Thống kê/ báo cáo</a>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-light rotate-list-item"
+          class="list-group-item list-group-item-action list-group-item-secondary">Thống kê/ báo cáo</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
           data-toggle="collapse" data-target="#management-item">Quản lý hệ thống
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="management-item">
           <a onclick="getPage('/contractMng')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý mẫu hợp đồng</a>
-          <!-- <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Quan ly mau phieu</a> -->
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý mẫu hợp đồng</a>
+          <!-- <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Quan ly mau phieu</a> -->
           <a onclick="getPage('/systemMng/stores')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý cửa hàng</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý cửa hàng</a>
           <a onclick="getPage('/systemMng/warehouses')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý kho</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý kho</a>
           <a onclick="getPage('/evaluationMng/itemStatus')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý tình trạng tài sản</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý tình trạng tài sản</a>
           <a onclick="getPage('/systemMng/employees')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý nhân viên</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý nhân viên</a>
           <a onclick="getPage('/evaluationMng')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý thẩm định giá</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý thẩm định giá</a>
           <a onclick="getPage('/systemMng/itemType')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý loại tài sản</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý loại tài sản</a>
         </div>
       </div>
     </div>
