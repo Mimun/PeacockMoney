@@ -471,8 +471,8 @@ router.put('/contracts/:id', async (req, res) => {
                     // property movement
                     var propertyMovement = [{
                       storeId: findNestedObj(storeResult.metadata, 'name', 'id') ? findNestedObj(storeResult.metadata, 'name', 'id').value : '',
-                      warehouseFrom: '',
-                      warehouseTo: '',
+                      warehouseFrom: 'Hop dong',
+                      warehouseTo: findNestedObj(results.warehouseResult, 'name', 'name') ? findNestedObj(results.warehouseResult, 'name', 'name').value : 'None',
                       importDate: new Date(Date.now()),
                       importNote: 'Nhap cam co',
                       exportDate: null,

@@ -139,13 +139,13 @@
     inputtoday.addEventListener('click', (event) => {
       document.querySelector('.date-selector').innerHTML = ''
       // remove "all warehouse" option 
-      document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
-        if (option.value === "") {
-          option.style.display = 'block'
-          document.querySelector('#warehouse-select').value = option.value
-        }
+      // document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
+      //   if (option.value === "") {
+      //     option.style.display = 'block'
+      //     document.querySelector('#warehouse-select').value = option.value
+      //   }
 
-      })
+      // })
     })
 
     // event when option 2 is clicked

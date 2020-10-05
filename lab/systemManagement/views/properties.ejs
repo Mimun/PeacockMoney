@@ -28,11 +28,11 @@
           <thead>
             <tr>
               <th data-resizable-column-id="warehouseId">Ma kho</th>
-              <th data-resizable-column-id="name">Ten kho</th>
+              <th data-resizable-column-id="warehouseName">Ten kho</th>
               <th data-resizable-column-id="contractId">Ma hop dong</th>
               <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
               <th data-resizable-column-id="propertyId">Ma tai san</th>
-              <th data-resizable-column-id="name">Ten tai san</th>
+              <th data-resizable-column-id="propertyName">Ten tai san</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -44,16 +44,22 @@
         aria-hidden="true">
 
         <!-- Change class .modal-sm to change the size of the modal -->
-        <div class="modal-dialog modal-md" role="document">
+        <div class="modal-dialog" role="document" style="max-width: 960px;">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title w-100" id="myModalLabel">Modal title</h4>
+              <h4 class="modal-title w-100" id="myModalLabel">Property detail</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-
+              <div class="container" id="property" style="display: block;">
+                <div class="row">
+                  <div class="col" id="property-infos"></div>
+                  <div class="col" id="property-movement"></div>
+                </div>
+              </div>
+              <div id="property-options" style="display: none;"></div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary btn-sm" id="btn-move" disabled>change warehouse</button>
@@ -70,12 +76,16 @@
     import { generatePropertyManagementList } from '/generatePropertyManagementList.js'
     var propertyList = <%- JSON.stringify(propertyList) %>;
     var warehouseList = <%- JSON.stringify(warehouseList) %>;
+    var originPropertyList = <%- JSON.stringify(originPropertyList) %>;
+
 
     console.log('property list: ', propertyList)
     console.log('warehouse list: ', warehouseList)
+    console.log('origin list: ', originPropertyList)
 
 
-    generatePropertyManagementList(propertyList, warehouseList, 'property-list-container')
+    generatePropertyManagementList(propertyList, originPropertyList,
+     warehouseList, 'property-list-container')
   </script>
 </body>
 

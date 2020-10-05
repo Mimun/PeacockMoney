@@ -46,6 +46,10 @@ var selectLabel = document.createElement('label')
 
 const modalBody = document.querySelector('.modal-body')
 const modalFooter = document.querySelector('.modal-footer')
+// property div
+const propertyDiv = modalBody.querySelector('div#property')
+// property options div
+const propertyOptionsDiv = modalBody.querySelector('div#property-options')
 
 import { findNestedObj } from './findNestedObj.js'
 import { createSelect } from './createSelect.js'
@@ -53,7 +57,7 @@ import { makeRequest } from './makeRequest.js'
 
 var params = {}
 
-export const generatePropertyManagementList = async (itemObjs, warehouseList, elementName) => {
+export const generatePropertyManagementList = async (itemObjs, originItemObjs, warehouseList, elementName) => {
   await Object.assign(params, { itemObjs, warehouseList })
 
   // var tableContainer = document.createElement('div')
@@ -62,28 +66,34 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
   if (itemObjs.length !== 0) {
     // table header
     itemObjs.forEach(itemObj => {
-      var storeId = itemObj.currentWarehouse? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')): 'None'
-      var storeName = itemObj.currentWarehouse? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None'
-      var contractId = itemObj.contract ? itemObj.contract.id : 'None'
-      var itemTypeId = findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None'
-      var propertyId = itemObj.id
-      var propertyName = itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None'
-      var tr = displayInfoToTable(transformToSimpleObject(storeId, storeName, contractId, itemTypeId, propertyId, propertyName), elementName)
-      tr.C_DATA = itemObj
+      var originItemObj = originItemObjs.find(object => object._id === itemObj._id)
+      var tr = document.createElement('tr')
+      document.querySelector('table').querySelector('thead').querySelectorAll('th').forEach(th => {
+        var td = document.createElement('td')
+        td.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+        tr.appendChild(td)
+
+        document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
+      })
+
+      tr.C_DATA = originItemObj
       tr.addEventListener('click', (event) => {
         console.log('event: ', event.target.closest('tr').C_DATA)
         var propertyData = event.target.closest('tr').C_DATA
+        modalBody.C_DATA = propertyData
+        console.log('current warehouse: ', modalBody.C_DATA.currentWarehouse)
+
+        if (modalBody.C_DATA.currentWarehouse !== null) {
+          modalFooter.querySelector('#btn-move').removeAttribute('disabled')
+          modalFooter.querySelector('#btn-export').removeAttribute('disabled')
+        } else {
+          modalFooter.querySelector('#btn-move').setAttribute('disabled', true)
+          modalFooter.querySelector('#btn-export').setAttribute('disabled', true)
+        }
 
         $("#centralModalSm").on('show.bs.modal', () => {
-          modalBody.C_DATA = propertyData
           modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
           modalFooter.querySelector('#btn-export').innerHTML = 'export property'
-          console.log('current warehouse: ', modalBody.C_DATA.currentWarehouse)
-          if(modalBody.C_DATA.currentWarehouse){
-            modalFooter.querySelector('#btn-move').removeAttribute('disabled')
-            modalFooter.querySelector('#btn-export').removeAttribute('disabled')
-          }
-
           var propertyInfoContainer = document.createElement('div')
           propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
 
@@ -95,7 +105,7 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
           // property id
           var propertyIdClone = detailInfoTemplate.cloneNode(true)
           propertyIdClone.querySelector('label').innerHTML = 'ID'
-          propertyIdClone.querySelector('input').value = propertyId
+          propertyIdClone.querySelector('input').value = itemObj.propertyId
           propertyInfoContainer.appendChild(propertyIdClone)
           // property infos
           propertyData.infos.forEach(info => {
@@ -104,8 +114,6 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
             detailInfoTemplateClone.querySelector('input').value = info.value
             propertyInfoContainer.appendChild(detailInfoTemplateClone)
           })
-
-
 
           // current warehouse
           var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
@@ -117,11 +125,39 @@ export const generatePropertyManagementList = async (itemObjs, warehouseList, el
 
           propertyInfoContainer.appendChild(detailInfoTemplateClone)
 
-          modalBody.innerHTML = ""
-          modalBody.appendChild(propertyInfoContainer)
+          propertyDiv.querySelector('div#property-infos').innerHTML = ""
+          propertyDiv.querySelector('div#property-infos').appendChild(propertyInfoContainer)
+
+          // property movement
+          propertyDiv.querySelector('div#property-movement').innerHTML = ""
+
+          var h4_2 = document.createElement('h4')
+          h4_2.innerHTML = "II. Property movement"
+          h4_2.style.width = "100%"
+          propertyDiv.querySelector('div#property-movement').appendChild(h4_2)
+
+          itemObj.movement.forEach(movement => {
+            var propertyMovementContainer = document.createElement('div')
+            propertyMovementContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
+            for (var prop in movement) {
+              if (prop === 'warehouseFrom' || prop === 'warehouseTo') {
+                var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
+                detailInfoTemplateClone.querySelector('label').innerHTML = prop
+                detailInfoTemplateClone.querySelector('input').value = movement[prop]
+                propertyMovementContainer.appendChild(detailInfoTemplateClone)
+              }
+            }
+            propertyDiv.querySelector('div#property-movement').appendChild(propertyMovementContainer)
+
+          })
+
 
         })
         $("#centralModalSm").modal('show')
+        $("#centralModalSm").on('hidden.bs.modal', () => {
+          propertyDiv.style.display = 'block'
+          propertyOptionsDiv.style.display = 'none'
+        })
       })
       // tableContainer.querySelector('#table>tbody').appendChild(tr)
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
@@ -154,8 +190,10 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
 
   switch (event.target.textContent) {
     case ("change warehouse"):
-      modalBody.innerHTML = ""
       // current warehouse
+      propertyDiv.style.display = "none"
+      propertyOptionsDiv.style.display = "block"
+      propertyOptionsDiv.innerHTML = ''
       const currentWarehouseContainer = document.createElement('div')
       currentWarehouseContainer.className = "current-warehouse"
 
@@ -171,11 +209,13 @@ modalFooter.querySelector('#btn-move').addEventListener('click', (event) => {
         currentWarehouse.innerHTML = `${findNestedObj(itemObj.currentWarehouse, 'name', 'name').value}
  -${findNestedObj(itemObj.currentWarehouse, 'name', 'address').value}` : currentWarehouse.innerHTML = `No warehouse/store`
       currentWarehouseContainer.appendChild(currentWarehouse)
-      modalBody.appendChild(currentWarehouseContainer)
+      propertyOptionsDiv.appendChild(currentWarehouseContainer)
 
       // warehouse selector
       createSelect(select, warehouseList[0]._id, 'warehouse-select', 'select-warehouse',
-        warehouseSelectOptions, selectLabel, 'Move to: ', selectContainer, modalBody, false)
+        warehouseSelectOptions, selectLabel, 'Move to: ', selectContainer, propertyOptionsDiv, false)
+
+
       break
     case ("change"):
       if (itemObj.currentWarehouse &&
@@ -223,14 +263,17 @@ modalFooter.querySelector('#btn-export').addEventListener('click', (event) => {
 
   switch (event.target.textContent) {
     case ("export property"):
-      modalBody.innerHTML = ""
+      propertyDiv.style.display = "none"
+      propertyOptionsDiv.style.display = "block"
+      propertyOptionsDiv.innerHTML = ''
       // create exporting reason selector
       const exportingReasonOptions = `
         <option value="0">Xuat tra giai chap</option>
         <option value="1">Xuat gui thanh ly</option>
       `
       createSelect(select, '0', 'exporting-reason-select', 'select-exporting-reason',
-        exportingReasonOptions, selectLabel, 'Reason to export ', selectContainer, modalBody, false)
+        exportingReasonOptions, selectLabel, 'Reason to export ', selectContainer, propertyOptionsDiv, false)
+
       break
     case ("export"):
       var updateObj = {
@@ -253,7 +296,7 @@ modalFooter.querySelector('#btn-export').addEventListener('click', (event) => {
         exportDate: new Date(Date.now()).toISOString(),
         exportNote: exportingSelect.options[exportingSelect.selectedIndex].text,
       })
-      
+
       console.log('update obj: ', updateObj)
       makeRequest("PUT", '/systemMng/properties/' + updateObj._id, 'application/json', JSON.stringify(updateObj), (result) => {
         // window.location.href = `/systemMng/warehouses/${result.result.currentWarehouse}/properties?token=${window.localStorage.getItem('accessToken')}`

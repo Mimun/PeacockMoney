@@ -50,40 +50,6 @@ export const generateImportingReport = async (itemObjs, warehouseList, elementNa
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
       tr.C_DATA = itemObj
-      tr.addEventListener('click', (event) => {
-        console.log('event: ', event.target.closest('tr').C_DATA)
-        var propertyData = event.target.closest('tr').C_DATA
-        $("#centralModalSm").on('show.bs.modal', () => {
-          modalBody.C_DATA = propertyData
-          modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
-
-          var propertyInfoContainer = document.createElement('div')
-          propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
-
-          // property id
-          var propertyIdClone = detailInfoTemplate.cloneNode(true)
-          propertyIdClone.querySelector('label').innerHTML = 'ID'
-          propertyIdClone.querySelector('input').value = propertyId
-          propertyInfoContainer.appendChild(propertyIdClone)
-          // property infos
-          propertyData.infos.forEach(info => {
-            var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
-            detailInfoTemplateClone.querySelector('label').innerHTML = info.name
-            detailInfoTemplateClone.querySelector('input').value = info.value
-            propertyInfoContainer.appendChild(detailInfoTemplateClone)
-          })
-
-          propertyInfoContainer.appendChild(detailInfoTemplateClone)
-
-          modalBody.innerHTML = ""
-          modalBody.appendChild(propertyInfoContainer)
-
-        })
-
-        $("#centralModalSm").modal('show')
-      })
-      // tableContainer.querySelector('#table>tbody').appendChild(tr)
-
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
     })
@@ -106,46 +72,20 @@ export const generateExportingReport = async (itemObjs, warehouseList, elementNa
       var tr = document.createElement('tr')
       document.querySelector('thead').querySelectorAll('th').forEach(th => {
         var td = document.createElement('td')
-        td.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+        if(th.getAttribute('data-resizable-column-id') === "contractId"){
+          var a = document.createElement('a')
+          a.href = `/contractMng/contracts/${itemObj.contract_Id}?token=${window.localStorage.getItem('accessToken')}`
+          a.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+          td.appendChild(a)
+        } else {
+          td.innerHTML = itemObj[th.getAttribute('data-resizable-column-id')]
+
+        }
         tr.appendChild(td)
       })
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
       tr.C_DATA = itemObj
-      tr.addEventListener('click', (event) => {
-        console.log('event: ', event.target.closest('tr').C_DATA)
-        var propertyData = event.target.closest('tr').C_DATA
-        $("#centralModalSm").on('show.bs.modal', () => {
-          modalBody.C_DATA = propertyData
-          modalFooter.querySelector('#btn-move').innerHTML = 'change warehouse'
-
-          var propertyInfoContainer = document.createElement('div')
-          propertyInfoContainer.className = 'property-info-container d-flex flex-wrap justify-content-between'
-
-          // property id
-          var propertyIdClone = detailInfoTemplate.cloneNode(true)
-          propertyIdClone.querySelector('label').innerHTML = 'ID'
-          propertyIdClone.querySelector('input').value = propertyId
-          propertyInfoContainer.appendChild(propertyIdClone)
-          // property infos
-          propertyData.infos.forEach(info => {
-            var detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
-            detailInfoTemplateClone.querySelector('label').innerHTML = info.name
-            detailInfoTemplateClone.querySelector('input').value = info.value
-            propertyInfoContainer.appendChild(detailInfoTemplateClone)
-          })
-
-          propertyInfoContainer.appendChild(detailInfoTemplateClone)
-
-          modalBody.innerHTML = ""
-          modalBody.appendChild(propertyInfoContainer)
-
-        })
-
-        $("#centralModalSm").modal('show')
-      })
-      // tableContainer.querySelector('#table>tbody').appendChild(tr)
-
       document.querySelector('#' + elementName + '').querySelector('tbody').appendChild(tr)
 
     })

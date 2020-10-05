@@ -525,7 +525,24 @@ router.get('/properties', (req, res, next) => {
       })
     }
 
-    res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: '' })
+    var propertyList = []
+    if (result.propertyList.length !== 0) {
+      result.propertyList.map(itemObj => {
+        propertyList.push({
+          _id: itemObj._id,
+          currentWarehouse: itemObj.currentWarehouse,
+          warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
+          warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
+          contractId: itemObj.contract ? itemObj.contract.id : 'None',
+          itemTypeId: findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None',
+          propertyId: itemObj.id,
+          propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
+          movement: itemObj.movement
+        })
+      })
+    }
+
+    res.render('properties', { propertyList, originPropertyList: result.propertyList, warehouseList, pageTitle: '' })
   })
 
 })
@@ -701,7 +718,9 @@ const callback2 = (result, chosenWarehouse, dateConditions, res) => {
             customerId: 'None',
             customerName: 'None',
             itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
-            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType'))
+            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+            contract_Id: res.contract._id
+
           })
           // return res
         }
@@ -722,7 +741,9 @@ const callback2 = (result, chosenWarehouse, dateConditions, res) => {
             customerId: 'None',
             customerName: 'None',
             itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
-            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType'))
+            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+            contract_Id: res.contract._id
+
           })
           // return res
         }
