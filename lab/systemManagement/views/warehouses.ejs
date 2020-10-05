@@ -34,32 +34,32 @@
   <!-- create warehouse template for modal -->
   <template id="create-warehouse-template">
     <div class="modal-header text-center">
-      <h4 class="modal-title w-100 font-weight-bold">Tao moi kho</h4>
+      <h4 class="modal-title w-100 font-weight-bold">Tạo kho</h4>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Ten kho</label>
-        <input type="text" class="form-control validate" name="name" data-vie="tenKho"
+        <label data-error="wrong" data-success="right">Tên kho</label>
+        <input type="text" class="form-control validate" name="name" data-vie="Tên kho"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Ma kho</label>
-        <input type="text" class="form-control validate" name="id" data-vie="maKho"
+        <label data-error="wrong" data-success="right">Mã kho</label>
+        <input type="text" class="form-control validate" name="id" data-vie="Mã kho"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Dia chi</label>
-        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
+        <label data-error="wrong" data-success="right">Địa chỉ</label>
+        <input type="text" class="form-control validate" name="address" data-vie="Địa chỉ" data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">So dien thoai</label>
-        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
+        <label data-error="wrong" data-success="right">Số điện thoại</label>
+        <input type="number" class="form-control validate" name="phoneNumber" data-vie="Số điện thoại"
           data-kor="koreanString">
       </div>
 
@@ -70,14 +70,14 @@
 
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right">Ghi chu</label>
-        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
+        <label data-error="wrong" data-success="right">Ghi chú</label>
+        <input type="text" class="form-control validate" name="note" data-vie="Ghi chú" data-kor="koreanString">
       </div>
 
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      <button class="btn btn-raised btn-primary" id="btn-add-representative">Add representative</button>
-      <button class="btn btn-unique" id="btn-create-warehouse">Create</button>
+      <button class="btn btn-raised btn-primary" id="btn-add-representative">Thêm người liên hệ</button>
+      <button class="btn btn-unique" id="btn-create-warehouse">Tạo </button>
     </div>
 
   </template>
@@ -96,7 +96,7 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h2>List of warehouses</h2>
+      <h2>Danh sách kho</h2>
       <!-- Search form -->
       <div class="search-container">
         <form id="form-search">
@@ -110,18 +110,18 @@
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
           <thead>
             <tr>
-              <th data-resizable-column-id="id">Ma kho</th>
-              <th data-resizable-column-id="name">Ten kho</th>
-              <th data-resizable-column-id="address">Dia chi</th>
-              <th data-resizable-column-id="representative">Nguoi lien he</th>
-              <th data-resizable-column-id="phoneNumber">So dien thoai</th>
-              <th data-resizable-column-id="active">Ngung theo doi</th>
+              <th data-resizable-column-id="id">Mã kho</th>
+              <th data-resizable-column-id="name">Tên kho</th>
+              <th data-resizable-column-id="address">Địa chỉ</th>
+              <th data-resizable-column-id="representative">Người liên hệ</th>
+              <th data-resizable-column-id="phoneNumber">Số điện thoại</th>
+              <th data-resizable-column-id="active">Dừng theo dõi</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <button class="btn btn-raised btn-primary btn-sm" id="create-new-warehouse">Create new warehouse</button>
+      <button class="btn btn-raised btn-primary btn-sm" id="create-new-warehouse">Tạo kho</button>
 
       <!-- modal to create new warehouse -->
       <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -164,13 +164,13 @@
       var option = `<option value="${store._id}">${store.name}-${store.address}</option>`
       return option
     })
-    storeSelectOptions.unshift('<option value="">No store</option>')
+    storeSelectOptions.unshift('<option value="">Không có cửa hàng</option>')
 
     var employeeSelectOptions = employeeList.map(employee => {
       var option = `<option value="${employee._id}">${employee.name}-${employee.role}</option>`
       return option
     })
-    employeeSelectOptions.unshift('<option value="">No employee</option>')
+    employeeSelectOptions.unshift('<option value="">Không có nhân viên</option>')
 
 
     // create warehouse list
@@ -190,11 +190,11 @@
 
         // create store select
         createSelect(select, '', 'store-select', 'select-store',
-          storeSelectOptions, selectLabel, 'Cua hang', selectContainer, modalBody, false)
+          storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer, modalBody, false)
 
         // create employee select
         createSelect(select, '', 'representative-select', 'select-representative',
-          employeeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, false)
+          employeeSelectOptions, selectLabel, 'Người liên hệ', selectContainer, modalBody, false)
 
         // for adding representatives button
         createwarehouse.querySelector('#btn-add-representative').addEventListener('click', (event) => {

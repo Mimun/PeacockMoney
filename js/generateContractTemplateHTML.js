@@ -46,13 +46,13 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   // contract A side
   const aSideInfoDiv = document.createElement('div')
   aSideInfoDiv.className = 'a-side-info info-container'
-  aSideInfoDiv.innerHTML = `<div class="title">I. Thong tin ben A</div>`
+  aSideInfoDiv.innerHTML = `<div class="title">I. Thông tin bên A</div>`
   infoContainer.appendChild(aSideInfoDiv)
 
   // contract B side
   const bSideInfoDiv = document.createElement('div')
   bSideInfoDiv.className = 'b-side-info-container info-container'
-  bSideInfoDiv.innerHTML = `<div class="title">II. Thong tin ben B</div>
+  bSideInfoDiv.innerHTML = `<div class="title">II. Thông tin bên B</div>
     <div class="b-side-info d-flex flex-wrap justify-content-start info-div"></div>
   `
   infoContainer.appendChild(bSideInfoDiv)
@@ -60,7 +60,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
   // contract Info 
   const contractInfoDiv = document.createElement('div')
   contractInfoDiv.className = 'contract-info-container info-container'
-  contractInfoDiv.innerHTML = `<div class="title">III. Thong tin hop dong</div>
+  contractInfoDiv.innerHTML = `<div class="title">III. Thông tin hợp đồng</div>
     <div class="contract-info d-flex flex-wrap justify-content-start info-div"></div>
   `
 
@@ -71,6 +71,10 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
     if (info.name !== "creator" && info.name !== 'store') {
       const clone = document.importNode(template.content, true)
       var input = clone.querySelector('input')
+      if(info.cType === 'date'){
+        console.log('info date: ', clone.querySelector('.form-group'))
+        $(clone.querySelector('.form-group')).addClass('is-filled')
+      }
 
       if (info.value === null || info.value === "") {
         input.removeAttribute('disabled')
@@ -102,13 +106,11 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
             findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm').value : 0
           var contractEndingDate = new Date(new Date(event.target.value).getTime() + numberOfAcceptanceTerms * numberOfDaysPerTerm * 24 * 60 * 60 * 1000)
           contractInfoDiv.querySelector('input[name="contractEndingDate"]').value = formatDate(contractEndingDate)
-
-
         })
       }
 
       var label = clone.querySelector('label')
-      label.innerHTML = displayInfoLang(info.dataVie)
+      label.innerHTML = info.dataVie
       if (info.name === 'customer' || info.name === 'customerId' || info.name === 'customerIdProvidingPlace' || info.name === 'customerIdProvidingDate' || info.name === 'customerAddress' || info.name === 'customerPhoneNumber' || info.name === 'customerFamilyRegister') {
         bSideInfoDiv.querySelector('.b-side-info').appendChild(clone)
       } else {
@@ -116,11 +118,11 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
       }
     } else if (info.name === 'store') {
       var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang',
-        'koreanString', storeSelectOptions, selectLabel, 'Cua hang', selectContainer)
+        'koreanString', storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer)
       aSideInfoDiv.appendChild(selectContainerClone)
 
       var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien',
-        'koreanString', [], selectLabel, 'Nguoi dai dien', selectContainer)
+        'koreanString', [], selectLabel, 'Người đại diện', selectContainer)
       selectContainerClone2.querySelector('#employee').disabled = true
       aSideInfoDiv.appendChild(selectContainerClone2)
 
@@ -142,12 +144,6 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
       })
     }
-
-
-    // if (info.name === 'creator' || info.name === 'store') {
-    //   aSideInfoDiv.appendChild(clone)
-    // } else 
-
   })
 
   // contract custom infos
@@ -188,9 +184,16 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
 
   })
 
-
   document.body.querySelector('#' + elementName + '').appendChild(infoContainer)
 
+
+  // // fixed label rendering wrongly 
+  // document.querySelector('div#contract-template-container').querySelectorAll('input[type="date"]').forEach(input => {
+  //   console.log('date input: ', input.closest('.form-group'))
+  //   input.closest('div.form-group').className = 'form-group is-filled'
+  //   console.log('date input: ', input.closest('.form-group').classList)
+
+  // })
 }
 
 const displayInfoLang = (info) => {
@@ -243,3 +246,4 @@ const createSelect = (selectTemplate, selecteValue, selectId, selectClassName, d
   selectContainerClone.appendChild(select)
   return selectContainerClone
 }
+

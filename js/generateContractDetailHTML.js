@@ -25,7 +25,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
             || name === "customerPhoneNumber" || name === "customerFamilyRegister") {
             // B side info
             const cloneBSide = infoTemplate.content.cloneNode(true)
-            cloneBSide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+            cloneBSide.querySelector('label').innerHTML = infoLang
             cloneBSide.querySelector('input').value = value
             clone.querySelector('.b-side-info-container').querySelector('.section').appendChild(cloneBSide)
           } else {
@@ -33,7 +33,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
               name !== 'store' && name !== "customer" && name !== "contractContent") {
               // contract info
               const infoTemplatelone = infoTemplate.content.cloneNode(true)
-              infoTemplatelone.querySelector('label').innerHTML = displayInfoLang(infoLang)
+              infoTemplatelone.querySelector('label').innerHTML = infoLang
               infoTemplatelone.querySelector('input').value = name === "loan" || name === "min" || name === "max" ? 
               addSeparator(value) : value
               clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
@@ -47,7 +47,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
         const infoLang = contractDetail[property].dataVie
         // A side info
         const cloneASide = infoTemplate.content.cloneNode(true)
-        cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+        cloneASide.querySelector('label').innerHTML = infoLang
         cloneASide.querySelector('input').value = typeof value === "object" ?
           (findNestedObj(value, 'name', 'name') ? findNestedObj(value, 'name', 'name').value : 'No store') : value
         clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
@@ -60,7 +60,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
         const infoLang = contractDetail[property].dataVie
         // A side info
         const cloneASide = infoTemplate.content.cloneNode(true)
-        cloneASide.querySelector('label').innerHTML = displayInfoLang(infoLang)
+        cloneASide.querySelector('label').innerHTML = infoLang
         cloneASide.querySelector('input').value = typeof value === "object" ?
           (findNestedObj(value, 'name', 'name') ? findNestedObj(value, 'name', 'name').value : 'No employee') : value
         clone.querySelector('.a-side-info-container').querySelector('.section').appendChild(cloneASide)
@@ -93,7 +93,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
       const infoTemplatelone = infoTemplate.content.cloneNode(true)
       infoTemplatelone.querySelector('.form-group').className = "form-group"
 
-      infoTemplatelone.querySelector('label').innerHTML = statusName.name === "type" ? displayInfoLang('tinhTrang') : displayInfoLang(statusName.dataVie)
+      infoTemplatelone.querySelector('label').innerHTML = statusName.name === "type" ? 'Tình trạng' : statusName.dataVie
       infoTemplatelone.querySelector('input').value = statusName.value
 
       itemDiv.querySelector('.item-status').appendChild(infoTemplatelone)
@@ -101,7 +101,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
         const infoTemplatelone = infoTemplate.content.cloneNode(true)
         infoTemplatelone.querySelector('.form-group').className = "form-group"
 
-        infoTemplatelone.querySelector('label').innerHTML = info.name === "loai" ? "Tinh trang" : info.name.charAt(0).toUpperCase() + info.name.slice(1)
+        infoTemplatelone.querySelector('label').innerHTML = info.name === "loai" ? "Tình trạng" : info.name.charAt(0).toUpperCase() + info.name.slice(1)
         infoTemplatelone.querySelector('input').value = info.value
 
         itemDiv.querySelector('.item-status').appendChild(infoTemplatelone)

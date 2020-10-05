@@ -86,7 +86,7 @@ export const generateContractTemplateCard = (itemObj, template, elementName) => 
 
         const label = document.createElement('div')
         label.className = 'label'
-        label.innerHTML = displayInfoLang(info.dataVie) + ": " + info.value
+        label.innerHTML = info.dataVie + ": " + info.value
         infoContainer.appendChild(label)
         templateInfoContainer.appendChild(infoContainer)
       }

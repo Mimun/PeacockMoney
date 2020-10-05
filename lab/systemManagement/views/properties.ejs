@@ -18,7 +18,7 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h2>List of properties <%= pageTitle %> </h2>
+      <h2>Danh sách tài sản <%= pageTitle %> </h2>
       <div class="form-group">
         <input type="text" class="form-control" id="search" placeholder="Search...">
       </div>
@@ -27,12 +27,12 @@
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
           <thead>
             <tr>
-              <th data-resizable-column-id="warehouseId">Ma kho</th>
-              <th data-resizable-column-id="warehouseName">Ten kho</th>
-              <th data-resizable-column-id="contractId">Ma hop dong</th>
-              <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
-              <th data-resizable-column-id="propertyId">Ma tai san</th>
-              <th data-resizable-column-id="propertyName">Ten tai san</th>
+              <th data-resizable-column-id="warehouseId">Mã kho</th>
+              <th data-resizable-column-id="warehouseName">Tên kho</th>
+              <th data-resizable-column-id="contractId">Mã hợp đồng</th>
+              <th data-resizable-column-id="itemTypeId">Mã loại tài sản</th>
+              <th data-resizable-column-id="propertyId">Mã tài sản</th>
+              <th data-resizable-column-id="propertyName">Tên tài sản</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -47,7 +47,7 @@
         <div class="modal-dialog" role="document" style="max-width: 960px;">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title w-100" id="myModalLabel">Property detail</h4>
+              <h4 class="modal-title w-100" id="myModalLabel">Thông tin chi tiết tài sản</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>

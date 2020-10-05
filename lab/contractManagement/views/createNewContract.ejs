@@ -87,25 +87,25 @@
             <!-- Default form contact -->
             <form action="" style="width: 100%;">
 
-              <p class="h4 mb-4">Tao Moi Hop Dong</p>
+              <p class="h4 mb-4">Tạo mới hợp đồng</p>
 
               <!-- contract template -->
               <div id="contract-template-container"></div>
 
               <!-- contract item  -->
               <div class="contract-item info-container">
-                <div class="title">IV. Thong tin tai san</div>
+                <div class="title">IV. Thông tin tài sản</div>
 
                 <!-- custom info -->
                 <div class="contract-item-container">
                   <div class="item-container info-div" style="margin-bottom: 32px;">
-                    <p class="h5">Tai san <span id="number"></span></p>
+                    <p class="h5">Tài sản <span id="number"></span></p>
                     <div id="custom-info" class="d-flex flex-wrap justify-content-start"></div>
-                    <p class="h6 mb-4">Thong tin tai san tham dinh</p>
+                    <p class="h6 mb-4">Thông tin tài sản thẩm định</p>
                     <div id="item-evaluation">
 
                     </div>
-                    <p class="h6 mb-4">Thong tin tinh trang tai san</p>
+                    <p class="h6 mb-4">Thông tin tình trạng tài sản</p>
                     <div id="item-status">
 
                     </div>
@@ -115,10 +115,10 @@
 
             </form>
 
-            <button class="btn btn-raised btn-primary" id="btn-add-item">Add new item</button>
+            <button class="btn btn-raised btn-primary" id="btn-add-item">Thêm tài sản</button>
 
             <!-- Send button -->
-            <button class="btn btn-primary" id="btn-submit">Create</button>
+            <button class="btn btn-primary" id="btn-submit">Tạo</button>
             <!-- Default form contact -->
           </div>
 
@@ -130,11 +130,11 @@
               <ul class="nav nav-tabs " id="myTab" role="tablist">
                 <li class="nav-item">
                   <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                    aria-controls="home" aria-selected="true">Tham dinh tai san</a>
+                    aria-controls="home" aria-selected="true">Tài sản thẩm định</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                    aria-controls="profile" aria-selected="false">Tinh trang tai san</a>
+                    aria-controls="profile" aria-selected="false">Tình trạng tài sản</a>
                 </li>
 
               </ul>
@@ -300,6 +300,7 @@
     }
     generateContractTemplateHTML(originContractTemplate, contractTemplate, 'contract-template-container', stores)
 
+
     document.querySelector('#btn-add-item').addEventListener('click', (event) => {
       const cData = event.target.closest('#contract-info-container').querySelector('.object-div').C_DATA
       const itemTemplateClone = document.querySelector('.item-container').cloneNode(true)
@@ -432,14 +433,14 @@
     }
 
     const createContractCustomId = (contractNow, storeId, createdDate) => {
-      var date = createdDate? formatDate(createdDate): formatDate(new Date(Date.now())), index = 0
+      var date = createdDate ? formatDate(createdDate) : formatDate(new Date(Date.now())), index = 0
       console.log('created date: ', createdDate)
       console.log('formatted date: ', date)
 
       if (contractNow.length === 0) {
         return `${storeId}.${date}.${index}`
       } else {
-        var latestContract = contractNow[contractNow.length -1]
+        var latestContract = contractNow[contractNow.length - 1]
         return `${storeId}.${date}.${parseInt(latestContract.id.split('.')[2]) + 1}`
       }
     }
@@ -472,7 +473,7 @@
           dataVie,
           dataKor
         }
-    
+
 
       })
 

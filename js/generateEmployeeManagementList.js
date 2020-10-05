@@ -91,7 +91,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
               var inputDiv = detailInfoTemplateClone.querySelector('input')
               var labelDiv = detailInfoTemplateClone.querySelector('label')
               setInfo(data, inputDiv)
-              labelDiv.innerHTML = displayInfoLang(data.dataVie)
+              labelDiv.innerHTML = data.dataVie
               modalBody.appendChild(detailInfoTemplateClone)
             }
           }

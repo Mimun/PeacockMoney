@@ -33,7 +33,7 @@
 
       <!-- papge content -->
       <div class="container-fluid page-content" style="display: flex; flex-direction: column">
-        <h1 class="mt-4">Quan ly tinh trang tai san</h1>
+        <h1 class="mt-4">Quản lý tình trạng tài sản</h1>
 
         <!-- template of list of items -->
         <%- include('itemList.ejs') %>
@@ -42,11 +42,11 @@
         <template id="data-field-template">
           <div class="data-field-container" style="display: flex;">
             <div class="form-group">
-              <label for="name" class="bmd-label-floating">Ten Truong</label>
+              <label for="name" class="bmd-label-floating">Tên trường dữ liệu</label>
               <input type="text" obj_property="name" class="form-control cell-div">
             </div>
             <div class="form-group">
-              <label for="value" class="bmd-label-floating">Gia Tri</label>
+              <label for="value" class="bmd-label-floating">Giá trị</label>
               <input type="text" obj_property="value" class="form-control cell-div">
             </div>
             <!-- <button id="remove-field-button" type="button" class="btn btn-primary px-3"><i
@@ -123,12 +123,12 @@
                       <!-- item type -->
                       <div class="data-field-container-metadata" style="display: flex;">
                         <div class="form-group">
-                          <label for="name">Ten Truong</label>
+                          <label for="name">Tên trường dữ liệu</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Loai Tai San"
                             required data-eng="itemType" data-vie="loaiTaiSan">
                         </div>
                         <div class="form-group">
-                          <label for="value">Gia Tri</label>
+                          <label for="value">Giá trị</label>
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
@@ -140,12 +140,12 @@
                       <!-- item category -->
                       <div class="data-field-container-metadata" style="display: flex;">
                         <div class="form-group">
-                          <label for="name">Ten Truong</label>
+                          <label for="name">Tên trường dữ liệu</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Phan loai"
                             required data-eng="itemCategory" data-vie="loaiTaiSan">
                         </div>
                         <div class="form-group">
-                          <label for="value">Gia Tri</label>
+                          <label for="value">Giá trị</label>
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">
@@ -156,12 +156,12 @@
                       <!-- type -->
                       <div class="data-field-container-metadata" style="display: flex;">
                         <div class="form-group">
-                          <label for="name">Ten Truong</label>
+                          <label for="name">Tên trường dữ liệu</label>
                           <input type="text" obj_property="name" class="form-control cell-div" value="Loai" required
                             data-eng="type" data-vie="loai">
                         </div>
                         <div class="form-group">
-                          <label for="value">Gia Tri</label>
+                          <label for="value">Giá trị</label>
                           <input type="text" obj_property="value" class="form-control cell-div" required>
                         </div>
                         <button type="button" class="close" style="visibility: hidden;">

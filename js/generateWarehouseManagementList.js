@@ -101,13 +101,13 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
         if (cData.store) {
           typeof cData.store === "object" ?
             createSelect(select, cData.store._id, 'store-select', 'select-store',
-              optionsForSingleSelect, selectLabel, 'Cua hang', selectContainer, modalBody, true)
+              optionsForSingleSelect, selectLabel, 'Cửa hàng', selectContainer, modalBody, true)
             :
             createSelect(select, cData.store, 'store-select', 'select-store',
-              optionsForSingleSelect, selectLabel, 'Cua hang', selectContainer, modalBody, true)
+              optionsForSingleSelect, selectLabel, 'Cửa hàng', selectContainer, modalBody, true)
         } else {
           createSelect(select, '', 'store-select', 'select-store',
-            optionsForSingleSelect, selectLabel, 'Cua hang', selectContainer, modalBody, true)
+            optionsForSingleSelect, selectLabel, 'Cửa hàng', selectContainer, modalBody, true)
         }
 
 
@@ -115,14 +115,14 @@ export const generateWarehouseManagementList = async (mainList, optionsForSingle
           cData.representatives.forEach(representative => {
             typeof representative === "object" ?
               createSelect(select, representative._id, 'representative-select', 'select-representative',
-                optionsForMultipleSelects, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+                optionsForMultipleSelects, selectLabel, 'Người liên hệ', selectContainer, modalBody, true)
               : createSelect(select, representative, 'representative-select', 'select-representative',
-                optionsForMultipleSelects, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+                optionsForMultipleSelects, selectLabel, 'Người liên hệ', selectContainer, modalBody, true)
           })
 
         } else {
           createSelect(select, '', 'representative-select', 'select-representative',
-            optionsForMultipleSelects, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+            optionsForMultipleSelects, selectLabel, 'Người liên hệ', selectContainer, modalBody, true)
 
         }
 
@@ -156,7 +156,7 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
         })
         if (modalBody.querySelectorAll('select').length === 0) {
           createSelect(select, '', 'representative-select', 'select-representative',
-            representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer, modalBody, true)
+            representativeSelectOptions, selectLabel, 'Người liên hệ', selectContainer, modalBody, true)
 
         }
         modalBody.querySelectorAll('select').forEach(select => {

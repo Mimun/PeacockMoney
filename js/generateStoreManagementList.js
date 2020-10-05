@@ -43,7 +43,7 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
     var option = `<option value=${select._id}>${select.name} - ${select.role}</option>`
     return option
   })
-  representativeSelectOptions.unshift('<option value="">No representative</option>')
+  representativeSelectOptions.unshift('<option value="">Không có nhân viên</option>')
   console.log('represnetative option: ', representativeSelectOptions)
   mainList.forEach(itemObj => {
     var id = findNestedObj(itemObj, 'name', 'id') ? findNestedObj(itemObj, 'name', 'id').value : 'None'
@@ -72,7 +72,7 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
             var inputDiv = detailInfoTemplateClone.querySelector('input')
             var labelDiv = detailInfoTemplateClone.querySelector('label')
             setInfo(data, inputDiv)
-            labelDiv.innerHTML = displayInfoLang(data.dataVie)
+            labelDiv.innerHTML = data.dataVie
             // const script = document.createElement('script')
             // script.src = '/mdbootstrap/js/mdb.min.js'
             // detailInfoTemplateClone.prepend(script)
@@ -89,9 +89,9 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
                 }
               })
               if (isInSelectList) {
-                createSelect(select, representative._id, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+                createSelect(select, representative._id, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
               } else {
-                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
               }
             } else if (typeof representative === "string") {
               selectList.forEach(selectOption => {
@@ -100,10 +100,10 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
                 }
               })
               if (isInSelectList) {
-                createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+                createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
 
               } else {
-                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
 
               }
             }
@@ -112,7 +112,7 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
           })
 
         } else {
-          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
 
         }
         modalContent.appendChild(detailStoreTemplate)
@@ -139,7 +139,7 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
         input.removeAttribute('disabled')
       })
       if (modalBody.querySelectorAll('select').length === 0) {
-        createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Nguoi dai dien', selectContainer)
+        createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
 
       }
       modalBody.querySelectorAll('select').forEach(select => {

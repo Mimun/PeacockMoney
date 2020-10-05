@@ -14,7 +14,7 @@
     <%- include('../Components/sideBar.ejs') %>
 
     <div id="page-content-wrapper">
-      <h2>Statistic/Report</h2>
+      <h2>Thống kê/báo cáo</h2>
       <form action="#" id="search" style="display: none;">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search...">
@@ -25,20 +25,19 @@
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
           <thead>
             <tr>
-              <th data-resizable-column-id="storeId">Ma PGD</th>
-              <th data-resizable-column-id="warehouseId">Ma kho</th> <!-- current warehouse id-->
-              <th data-resizable-column-id="warehouseName">Ten kho</th> <!-- current warehouse-->
-              <th id="date" data-resizable-column-id="date">Ngay nhap</th>
-              <th data-resizable-column-id="contractId">Ma hop dong</th>
-              <th data-resizable-column-id="propertyId">Ma tai san</th>
-              <th data-resizable-column-id="propertyName">Ten tai san</th>
-              <th data-resizable-column-id="customerId">Ma khach hang</th>
-              <th data-resizable-column-id="customerName">Ten khach hang</th>
-              <th data-resizable-column-id="itemTypeId">Ma loai tai san</th>
-              <th data-resizable-column-id="itemType">Ten loai tai san</th>
-              <th id="warehouseDirection" data-resizable-column-id="warehouseDirection">Kho dieu chuyen</th>
-              <th id="note" data-resizable-column-id="note">Ly do nhap</th>
-
+              <th data-resizable-column-id="storeId">Mã PGD</th>
+              <th data-resizable-column-id="warehouseId">Mã kho (kho hiện tại)</th> <!-- current warehouse id-->
+              <th data-resizable-column-id="warehouseName">Tên kho (kho hiện tại)</th> <!-- current warehouse-->
+              <th id="date" data-resizable-column-id="date">Ngày nhập </th>
+              <th data-resizable-column-id="contractId">Mã hợp đồng</th>
+              <th data-resizable-column-id="propertyId">Mã tài sản</th>
+              <th data-resizable-column-id="propertyName">Tên tài sản</th>
+              <th data-resizable-column-id="customerId">Mã khách hàng</th>
+              <th data-resizable-column-id="customerName">Tên khách hàng</th>
+              <th data-resizable-column-id="itemTypeId">Mã loại tài sản</th>
+              <th data-resizable-column-id="itemType">Tên loại tài sản</th>
+              <th id="warehouseDirection" data-resizable-column-id="warehouseDirection">Kho điều chuyển</th>
+              <th id="note" data-resizable-column-id="note">Lý do nhập</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -46,51 +45,51 @@
       </div>
 
       <!-- choose report -->
-      <button class="btn btn-sm btn-primary btn-raised" id="btn-choose-report-type">Choose report type</button>
+      <button class="btn btn-sm btn-primary btn-raised" id="btn-choose-report-type">Chọn lọai báo cáo</button>
 
       <!-- export csv button -->
-      <button class="btn btn-sm btn-primary" id="export" style="display: none;">Export csv</button>
+      <button class="btn btn-sm btn-primary" id="export" style="display: none;">Xuất file csv</button>
 
       <!-- modal -->
       <div class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-md" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Thong ke kho</h5>
+              <h5 class="modal-title">Báo cáo kho</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
               <!-- type of report -->
-              <label for="form-radio-report-type">Report type</label>
+              <label for="form-radio-report-type">Chọn lọai báo cáo</label>
               <form action="" id="form-radio-report-type">
                 <div class="radio">
                   <label>
                     <input type="radio" name="optionsRadios" id="importReport" value="import" checked>
-                    Imported Property Report
+                    Báo cáo nhập kho
                   </label>
                 </div>
                 <div class="radio">
                   <label>
                     <input type="radio" name="optionsRadios" id="exportReport" value="export">
-                    Exported Property Report
+                    Báo cáo xuất kho
                   </label>
                 </div>
               </form>
               <!-- type of report -->
-              <label for="form-radio-report-time">Report time</label>
+              <label for="form-radio-report-time">Chọn Thời gian</label>
               <form action="" id="form-radio-report-time">
                 <div class="radio">
                   <label>
                     <input type="radio" name="optionsRadios" id="today" value="today" checked>
-                    Get today report
+                    Lấy thời gian hôm nay
                   </label>
                 </div>
                 <div class="radio">
                   <label>
                     <input type="radio" name="optionsRadios" id="fromTo" value="fromTo">
-                    Get reports from-to
+                    Lấy thời gian từ-đến
                     <div class="form-inline date-selector"></div>
                   </label>
                 </div>
@@ -100,7 +99,7 @@
               <!-- <div class="select-container"></div> -->
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="submit">Submit</button>
+              <button type="button" class="btn btn-primary" id="submit">Nhận báo cáo</button>
             </div>
           </div>
         </div>

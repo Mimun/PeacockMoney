@@ -34,42 +34,42 @@
   <!-- create store template for modal -->
   <template id="create-store-template">
     <div class="modal-header text-center">
-      <h4 class="modal-title w-100 font-weight-bold">Tao moi cua hang</h4>
+      <h4 class="modal-title w-100 font-weight-bold">Tạo cửa hàng</h4>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="modal-body mx-3 object-div d-flex justify-content-between flex-wrap">
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ten cua hang</label>
-        <input type="text" class="form-control validate" name="name" data-vie="tenCuaHang" data-kor="koreanString">
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Tên cửa hàng</label>
+        <input type="text" class="form-control validate" name="name" data-vie="Tên cửa hàng" data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ma cua hang</label>
-        <input type="text" class="form-control validate" name="id" data-vie="maCuaHang" data-kor="koreanString">
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Mã cửa hàng</label>
+        <input type="text" class="form-control validate" name="id" data-vie="Mã cửa hàng" data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">So tai khoan</label>
-        <input type="text" class="form-control validate" name="creditNumber" data-vie="soTaiKhoan"
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Số tài khoản</label>
+        <input type="text" class="form-control validate" name="creditNumber" data-vie="Số tài khoản"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Dia chi</label>
-        <input type="text" class="form-control validate" name="address" data-vie="diaChi" data-kor="koreanString">
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Địa chỉ</label>
+        <input type="text" class="form-control validate" name="address" data-vie="Địa chỉ" data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">So dien thoai</label>
-        <input type="number" class="form-control validate" name="phoneNumber" data-vie="soDienThoai"
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Số điện thoại</label>
+        <input type="number" class="form-control validate" name="phoneNumber" data-vie="Số điện thoại"
           data-kor="koreanString">
       </div>
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngay khai truong</label>
-        <input type="date" class="form-control validate" name="openingDay" data-vie="ngayKhaiTruong"
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ngày khai trương</label>
+        <input type="date" class="form-control validate" name="openingDay" data-vie="Ngày khai trương"
           data-kor="koreanString">
       </div>
 
@@ -80,23 +80,23 @@
 
 
       <div class="form-group">
-        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ghi chu</label>
-        <input type="text" class="form-control validate" name="note" data-vie="ghiChu" data-kor="koreanString">
+        <label data-error="wrong" data-success="right" class="bmd-label-floating">Ghi chú</label>
+        <input type="text" class="form-control validate" name="note" data-vie="Ghi chú" data-kor="koreanString">
       </div>
 
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      <button class="btn btn-raised btn-primary btn-sm" id="btn-add-representative">Add representative</button>
-      <button class="btn btn-outline-primary btn-sm" id="btn-create-store">Create</button>
+      <button class="btn btn-raised btn-primary btn-sm" id="btn-add-representative">Thêm người đại diện</button>
+      <button class="btn btn-outline-primary btn-sm" id="btn-create-store">Tạo</button>
     </div>
 
   </template>
 
   <template id="store-representative-select-template">
     <div class="representative-select-container select-container">
-      <label>Nguoi dai dien</label>
+      <label>Người đại diện</label>
       <select class="browser-default custom-select">
-        <option value="">No employee</option>
+        <option value="">Không có nhân viên</option>
       </select>
     </div>
 
@@ -106,7 +106,7 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h2>List of stores</h2>
+      <h2>Danh sách cửa hàng</h2>
       <!-- Search form -->
       <div class="search-container">
         <form id="form-search">
@@ -120,27 +120,25 @@
         <table class="table table-hover table-bordered table-responsive table-striped">
           <thead>
             <tr>
-              <th data-resizable-column-id="id">Ma cua hang</th>
-              <th data-resizable-column-id="name">Ten cua hang</th>
-              <th data-resizable-column-id="address">Dia chi</th>
-              <th data-resizable-column-id="creditNumber">So tai khoan</th>
-              <th data-resizable-column-id="representative">Cua hang truong</th>
-              <th data-resizable-column-id="phoneNumber">So dien thoai</th>
-              <th data-resizable-column-id="openingDay">Opening</th>
+              <th data-resizable-column-id="id">Mã cửa hàng</th>
+              <th data-resizable-column-id="name">Tên cửa hàng</th>
+              <th data-resizable-column-id="address">Địa chỉ</th>
+              <th data-resizable-column-id="creditNumber">Số tài khoản</th>
+              <th data-resizable-column-id="representative">Người đại diện</th>
+              <th data-resizable-column-id="phoneNumber">Số điện thoại</th>
+              <th data-resizable-column-id="openingDay">Ngày khai trương</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <button class="btn btn-raised btn-primary btn-sm" id="create-new-store">Create new store</button>
+      <button class="btn btn-raised btn-primary btn-sm" id="create-new-store">Tạo cửa hàng</button>
 
       <!-- modal to create new store -->
       <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
-
-
           </div>
         </div>
       </div>

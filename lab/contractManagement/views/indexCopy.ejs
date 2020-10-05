@@ -33,13 +33,13 @@
 
         <header>
           <h2>
-            <b>Quản lý và Tạo mau hợp đồng</b>
+            <b>Mẫu hợp đồng</b>
           </h2>
         </header>
         <submain>
           <div id="template-handler" class="card-deck"></div>
-          <button type="button" class="btn btn-primary btn-sm" id="chooseTemplate">Choose contract template</button>
-          <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Contract List</button>
+          <button type="button" class="btn btn-primary btn-sm" id="chooseTemplate">Chọn mẫu hợp đồng</button>
+          <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Danh sách hợp đồng</button>
         </submain>
       </main>
 
@@ -54,7 +54,7 @@
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title w-100 title" id="myModalLabel">Create new contract template</h4>
+                <h4 class="modal-title w-100 title" id="myModalLabel">Chọn mẫu hợp đống</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -126,19 +126,19 @@
 
       // create selector
       const typeTitle = document.createElement('p')
-      typeTitle.innerHTML = 'Loai tai san'
+      typeTitle.innerHTML = 'Loại tài sản'
       modalBody.appendChild(typeTitle)
       createSelect(types, '.modal-body', 'types')
 
       const payMethodTitle = document.createElement('p')
-      payMethodTitle.innerHTML = 'Kieu thanh toan'
+      payMethodTitle.innerHTML = 'Kiểu thanh toán'
       modalBody.appendChild(payMethodTitle)
       createSelect(payOptions, '.modal-body', 'payOptions')
 
       const inputDiv = document.createElement('div')
       inputDiv.className = "form-group"
       inputDiv.innerHTML = `
-      <label for="form1" class="bmd-label-floating">So tien vay</label>
+      <label for="form1" class="bmd-label-floating">Số tiền vay</label>
       <input type="text" id="form1" class="form-control" data-type="currency">
         `
       inputDiv.style.margin = '0 0 2vh 0'

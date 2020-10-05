@@ -31,13 +31,13 @@
 
         <header>
           <h2>
-            <b>Quản lý và Tạo mau hợp đồng</b>
+            <b>Quản lý và tạo mẫu hợp đồng</b>
           </h2>
         </header>
         <submain>
           <div id="template-handler" class="card-deck"></div>
-          <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Add Contract Template</button>
-          <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Contract List</button>
+          <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Thêm mẫu hợp đồng</button>
+          <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Danh sách hợp đồng</button>
         </submain>
       </main>
 
@@ -52,7 +52,7 @@
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title w-100" id="myModalLabel">Create new contract template</h4>
+                <h4 class="modal-title w-100" id="myModalLabel">Tạo mẫu hợp đồng</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -125,20 +125,14 @@
         selectItemType.addEventListener('change', (event)=>{
           itemTypeId? itemTypeId.value = event.target.options[event.target.selectedIndex].id : ''
         })
-
-        
       }
-
       $(tmpContent).bootstrapMaterialDesign()
     })
 
     // go to contract list button
     var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
       window.location.href = "contracts?token=" + window.localStorage.getItem('accessToken')
-
     })
-
-
   </script>
 </body>
 
