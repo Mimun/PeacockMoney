@@ -15,6 +15,11 @@
 
     <div id="page-content-wrapper">
       <h2>Statistic/Report</h2>
+      <form action="#" id="search" style="display: none;">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search...">
+        </div>
+      </form>
       <!-- property table -->
       <div id="property-list-container" class="list-container">
         <table class="table table-hover table-bordered table-responsive table-stripped table-responsive">
@@ -211,6 +216,7 @@
 
     // callback function for request
     const callback = (result) => {
+      document.querySelector('form#search').style.display = 'block'
       $(".modal").modal('hide')
       if(result.reportType === 'import'){
         document.querySelector('th#date').innerHTML = 'Ngay nhap'
@@ -235,8 +241,35 @@
       }
     }
 
-    // export button event handler
-    var exportBtn = document.querySelector('#export')
+    // search
+    document.querySelector('form#search').addEventListener('submit', (event)=>{
+      event.preventDefault()
+
+      // report type checked radio
+      var reportTypeCheckedRadio = document.querySelector('form#form-radio-report-type').querySelector('input[type="radio"]:checked').value
+      console.log('report type: ', reportTypeCheckedRadio)
+
+      var getWarehouseReportObj = {
+        // warehouses: document.querySelector('#warehouse-select').value,
+        dateConditions: {},
+        searchArray: event.target.querySelector('input').value.split(' '),
+        type: reportTypeCheckedRadio
+      }
+      // report time checked radio
+      var reportTimeCheckedRadio = document.querySelector('form#form-radio-report-time').querySelector('input[type="radio"]:checked').value
+      console.log('report time: ', reportTimeCheckedRadio)
+
+      if (reportTimeCheckedRadio === "fromTo") {
+        document.querySelector('form#form-radio-report-time').querySelectorAll('input[type="date"]').forEach(input => {
+          getWarehouseReportObj.dateConditions[input.id] = input.value
+        })
+      }
+
+      
+
+      makeRequest('POST', `statistic/search`, 'application/json', JSON.stringify(getWarehouseReportObj), callback)
+
+    })
     
 
     // export csv function

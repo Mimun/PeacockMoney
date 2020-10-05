@@ -14,21 +14,7 @@ var _ = require('lodash');
 const { find } = require('../../../models/employee');
 var json2csv = require('json2csv').parse
 
-function escapeRegex(text) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
 
-// create regexp for search
-const createRegexp = (array) => {
-  var arrayMetadataConditions = []
-  var arrayInfosConditions = []
-  array.forEach(value => {
-    const regex = new RegExp(escapeRegex(value), 'gi')
-    arrayMetadataConditions.push({ 'metadata.value': regex })
-    arrayInfosConditions.push({ 'metadata.value': regex })
-  })
-  return { arrayMetadataConditions, arrayInfosConditions }
-}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -615,7 +601,7 @@ router.post('/statistic/import', (req, res) => {
   var dateConditions = req.body.dateConditions
   Property.find({}).sort({ _id: -1 }).exec((err, result) => {
     if (err) throw err
-    callback(result, chosenWarehouse, dateConditions, res)
+    callback(result, dateConditions, res)
   })
 
 })
@@ -627,11 +613,47 @@ router.post('/statistic/export', (req, res) => {
   var dateConditions = req.body.dateConditions
   Property.find({}).sort({ _id: -1 }).exec((err, result) => {
     if (err) throw err
-    callback2(result, chosenWarehouse, dateConditions, res)
+    callback2(result, dateConditions, res)
   })
 })
 
-const callback = (result, chosenWarehouse, dateConditions, res) => {
+// search report
+router.post('/statistic/search', (req, res) => {
+  console.log('req : ', req.body)
+  var dateConditions = req.body.dateConditions
+  var {
+    arrayMetadataConditions,
+    arrayInfosConditions,
+    arrayCurrentWarehouseConditions,
+    arrayOriginWarehouseConditions,
+    arrayContractIdConditions,
+    arrayPropertyIdConditions,
+    arrayItemTypeIdConditions,
+    arrayItemTypeConditions,
+    arrayImportDateConditions,
+    arrayExportDateConditions,
+  } = createSearchArrayForReport(req.body.searchArray)
+  console.log('reg exp: ', arrayMetadataConditions, arrayInfosConditions)
+  Property.find({
+    $or: [
+      { $and: arrayMetadataConditions },
+      { $and: arrayInfosConditions },
+      { $and: arrayCurrentWarehouseConditions },
+      { $and: arrayOriginWarehouseConditions },
+      { $and: arrayContractIdConditions },
+      { $and: arrayPropertyIdConditions },
+      { $and: arrayItemTypeConditions },
+      { $and: arrayItemTypeIdConditions },
+      
+    ]
+  }).sort({_id: -1}).exec((err, result) => {
+    if (err) throw err
+    req.body.type === 'import' ? callback(result, dateConditions, res)
+      : callback2(result, dateConditions, res)
+  })
+})
+
+const callback = (result, dateConditions, res) => {
   console.log('date conditions: ', dateConditions)
   var array = []
   // property list
@@ -693,7 +715,7 @@ const callback = (result, chosenWarehouse, dateConditions, res) => {
   res.status(200).send({ result: array, originResult: result, csv, reportType: 'import' })
 }
 
-const callback2 = (result, chosenWarehouse, dateConditions, res) => {
+const callback2 = (result, dateConditions, res) => {
   console.log('date conditions: ', dateConditions)
   var array = []
   // property list
@@ -825,6 +847,68 @@ const flatJson = (results, reportType) => {
     })
     return flatArray
   }
+}
+
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
+// create regexp for search
+const createRegexp = (array) => {
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  array.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'metadata.value': regex })
+  })
+
+  return { arrayMetadataConditions, arrayInfosConditions }
+}
+
+// create search array for report
+const createSearchArrayForReport = (array) => {
+  var searchArray = []
+  // search for metadata, infos, current warehouse
+  var arrayMetadataConditions = []
+  var arrayInfosConditions = []
+  var arrayCurrentWarehouseConditions = []
+  var arrayOriginWarehouseConditions = []
+  var arrayContractIdConditions = []
+  var arrayPropertyIdConditions = []
+  var arrayItemTypeIdConditions = []
+  var arrayItemTypeConditions = []
+  var arrayImportDateConditions = []
+  var arrayExportDateConditions = []
+
+  array.forEach(value => {
+    const regex = new RegExp(escapeRegex(value), 'gi')
+    arrayMetadataConditions.push({ 'metadata.value': regex })
+    arrayInfosConditions.push({ 'infos.value': regex })
+    arrayCurrentWarehouseConditions.push({ 'currentWarehouse.metadata.value': regex })
+    arrayOriginWarehouseConditions.push({ 'originWarehouse.metadata.value': regex })
+    arrayContractIdConditions.push({ 'id': regex })
+    arrayPropertyIdConditions.push({ 'id': regex })
+    arrayItemTypeIdConditions.push({ 'contract.templateMetadata.value': regex })
+    arrayItemTypeConditions.push({ 'contract.templateMetadata.value': regex })
+    // arrayImportDateConditions.push({ 'movement.importDate': regex })
+    // arrayExportDateConditions.push({ 'movement.exportDate': regex })
+
+  })
+
+  return {
+    arrayMetadataConditions,
+    arrayInfosConditions,
+    arrayCurrentWarehouseConditions,
+    arrayOriginWarehouseConditions,
+    arrayContractIdConditions,
+    arrayPropertyIdConditions,
+    arrayItemTypeIdConditions,
+    arrayItemTypeConditions,
+    arrayImportDateConditions,
+    arrayExportDateConditions,
+  }
+
 }
 
 module.exports = router;
