@@ -921,4 +921,18 @@ const createSearchArrayForReport = (array) => {
 
 }
 
+// test loan 
+router.get('/testLoan1', (req, res)=>{
+  res.render('testLoan1')
+})
+
+router.get('/testLoan2', (req, res)=>{
+  res.render('testLoan2')
+})
+
+router.get('/testLoan3', (req, res)=>{
+  res.render('testLoan3')
+})
+
+
 module.exports = router;
