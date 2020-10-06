@@ -13,7 +13,7 @@ var fs = require('fs');
 var _ = require('lodash');
 const { find } = require('../../../models/employee');
 var json2csv = require('json2csv').parse
-
+var mongoose = require('mongoose')
 
 
 /* GET home page. */
@@ -420,31 +420,21 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({ currentWarehouse: req.params.id }).populate([
-          {
-            path: 'evaluationItem',
-            model: 'Item'
-          },
-          {
-            path: 'currentWarehouse',
-            model: 'Warehouse'
-          },
-          {
-            path: 'contract',
-            model: 'Contract'
-          }
-        ]).exec(callback)
+        Property.find({'currentWarehouse._id': mongoose.Types.ObjectId(req.params.id)}).exec(callback)
       } catch (error) {
-        console.error(error)
+        console.log(error)
       }
-
     },
     warehouseList: callback => {
       try {
-        Warehouse.find({}).exec(callback)
-
+        Warehouse.find({ deactive: false }).populate([
+          {
+            path: 'store',
+            model: 'Store'
+          }
+        ]).exec(callback)
       } catch (error) {
-        console.error(error)
+        console.log(error)
       }
     },
     warehouse: callback => {
@@ -458,16 +448,36 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
     if (err) throw err
     var warehouseList = []
     if (result.warehouseList.length !== 0) {
-      warehouseList = result.warehouseList.map(warehouse => {
-        return {
+      result.warehouseList.map(warehouse => {
+        console.log('warehouse name: ', findNestedObj(warehouse.metadata, 'name', 'name'))
+        warehouseList.push({
           _id: warehouse._id,
-          name: findNestedObj(warehouse, 'name', 'name') ? findNestedObj(warehouse, 'name', 'name').value : 'None',
-          address: findNestedObj(warehouse, 'name', 'address') ? findNestedObj(warehouse, 'name', 'address').value : 'None'
-        }
+          warehouseName: findNestedObj(warehouse.metadata, 'name', 'name') ? findNestedObj(warehouse.metadata, 'name', 'name').value : 'None',
+          warehouseAddress: findNestedObj(warehouse.metadata, 'name', 'address') ? findNestedObj(warehouse.metadata, 'name', 'address').value : 'None',
+          warehouseId: findNestedObj(warehouse.metadata, 'name', 'id') ? findNestedObj(warehouse.metadata, 'name', 'id').value : 'None',
+          storeId: findNestedObj(warehouse.store, 'name', 'id') ? findNestedObj(warehouse.store, 'name', 'id').value : 'None'
+        })
       })
     }
 
-    res.render('properties', { propertyList: result.propertyList, warehouseList, pageTitle: findNestedObj(result.warehouse, 'name', 'name').value })
+    var propertyList = []
+    if (result.propertyList.length !== 0) {
+      result.propertyList.map(itemObj => {
+        propertyList.push({
+          _id: itemObj._id,
+          currentWarehouse: itemObj.currentWarehouse,
+          warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
+          warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
+          contractId: itemObj.contract ? itemObj.contract.id : 'None',
+          itemTypeId: findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None',
+          propertyId: itemObj.id,
+          propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
+          movement: itemObj.movement
+        })
+      })
+    }
+
+    res.render('properties', { propertyList, originPropertyList: result.propertyList, warehouseList, pageTitle: findNestedObj(result.warehouse, 'name', 'name').value })
   })
 
 })
