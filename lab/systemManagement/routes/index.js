@@ -923,15 +923,15 @@ const createSearchArrayForReport = (array) => {
 
 // test loan 
 router.get('/testLoan1', (req, res)=>{
-  res.render('testLoan1')
+  res.render('testLoan1_v2')
 })
 
 router.get('/testLoan2', (req, res)=>{
-  res.render('testLoan2')
+  res.render('testLoan2_v2')
 })
 
 router.get('/testLoan3', (req, res)=>{
-  res.render('testLoan3')
+  res.render('testLoan3_v2')
 })
 
 
