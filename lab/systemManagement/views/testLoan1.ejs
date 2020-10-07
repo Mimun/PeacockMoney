@@ -19,11 +19,11 @@
         <div class="row">
           <div class="col d-flex">
             <div class="form-group">
-              <label>Goi vay</label>
+              <label>So tien vay</label>
               <input type="number" class="form-control" id="presentValue">
             </div>
             <div class="form-group">
-              <label>Thoi han vay</label>
+              <label>Thoi han vay(thang)</label>
               <input type="number" class="form-control" id="termOfLoan">
             </div>
             <div class="form-group">
@@ -32,7 +32,7 @@
             </div>
             <div class="form-group">
               <label>Ngay bat dau goi vay</label>
-              <input type="number" class="form-control" id="agreementDate">
+              <input type="date" class="form-control" id="agreementDate">
             </div>
           </div>
 
@@ -61,10 +61,14 @@
       <table class="table table-striped table-bordered table-hover">
         <thead>
           <tr>
-            <th scope="col" id="times">Times</th>
+            <th scope="col" id="times">So lan dong lai</th>
+            <th scope="col" id="redemptionDate">Ngay dong lai</th>
             <th scope="col" id="redemption">Redemption</th>
             <th scope="col" id="principal">Principal</th>
+            <th scope="col" id="incrementalPayedPrincipal">Goc da tra cong don</th>
             <th scope="col" id="interest">Interest</th>
+            <th scope="col" id="accumulatedPayedInterest">Lai da tra luy ke</th>
+            <th scope="col" id="remainedPrincipal">Tien goc con lai</th>
 
           </tr>
         </thead>
@@ -80,7 +84,11 @@
       console.log('event: ', event.target)
       var obj = {}
       event.target.closest('.container').querySelectorAll('input').forEach(input => {
-        obj[input.id] = parseFloat(input.value)
+        if (input.type === 'number') {
+          obj[input.id] = parseFloat(input.value)
+        } else {
+          obj[input.id] = input.value
+        }
       });
       calculateRedemption(obj)
 
@@ -88,40 +96,64 @@
   </script>
 
   <script>
-    const displayDept = (times, redemption, principal, interest) => {
+    function displayDept(times, redemptionDate, redemption, principal,
+      incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal) {
       var tr = document.createElement('tr')
-
-      var thTimes = document.createElement('th')
-      thTimes.innerHTML = times
-      tr.appendChild(thTimes)
-
-      var thRedemption = document.createElement('th')
-      thRedemption.innerHTML = `${redemption}`
-      tr.appendChild(thRedemption)
-
-      var thPrincipal = document.createElement('th')
-      thPrincipal.innerHTML = `${principal}`
-      tr.appendChild(thPrincipal)
-
-      var thInterest = document.createElement('th')
-      thInterest.innerHTML = `${interest}`
-      tr.appendChild(thInterest)
-
+      for (var i = 0; i < arguments.length; i++) {
+        var th = document.createElement('th')
+        th.innerHTML = arguments[i]
+        tr.appendChild(th)
+      }
       document.querySelector('table').querySelector('tbody').appendChild(tr)
     }
   </script>
 
   <script>
+    const getDateAfterAnAmountOfTime = (date, amount) => {
+      return formatDate(new Date(date.setDate(date.getDate() + amount)))
+    }
+
+    const formatDate = (date) => {
+      var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2)
+        month = '0' + month;
+      if (day.length < 2)
+        day = '0' + day;
+
+      return [day, month, year].join('-');
+    }
+
+    // redemption, principal, incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal
+    // tien tra theo ky, tien goc, goc da tra cong don, lai, lai da tra luy ke, goc con lai
+
     const calculateRedemption = (package) => {
       console.log('package: ', package)
-      var interest = (package.interestRatePerMonth * package.presentValue) / 100
-      var presentValue = package.presentValue
-      var numberOfPayments = package.numberOfPayments
+      var presentValue = package.presentValue,
+        numberOfPayments = package.numberOfPayments,
+        interestRatePerMonth = package.interestRatePerMonth,
+        interest = (package.interestRatePerMonth * package.presentValue) / 100,
+        redemption = 0,
+        principal = 0,
+        incrementalPayedPrincipal = 0,
+        accumulatedPayedInterest = 0,
+        remainedPrincipal = 0
+      document.querySelector('table').querySelector('tbody').innerHTML = ''
+
 
       for (var i = 1; i <= numberOfPayments; i++) {
-        var principal = 0
-        var redemption = i === 12 ? presentValue + interest : principal + interest
-        displayDept(i, redemption, principal, interest)
+        var agreementDate = new Date(package.agreementDate)
+        principal = i === numberOfPayments ? presentValue : 0
+        redemption = principal + interest
+        var redemptionDate = getDateAfterAnAmountOfTime(agreementDate, 30 * (i - 1))
+
+        incrementalPayedPrincipal = i === numberOfPayments ? presentValue : 0
+        accumulatedPayedInterest += interest
+        remainedPrincipal = presentValue - principal
+        displayDept(i, redemptionDate, redemption, principal, incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal)
       }
     }
   </script>
