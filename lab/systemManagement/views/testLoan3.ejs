@@ -27,14 +27,6 @@
               <input type="number" class="form-control" id="presentValue">
             </div>
             <div class="form-group">
-              <label>Thoi han vay(thang)</label>
-              <input type="number" class="form-control" id="termOfLoan">
-            </div>
-            <div class="form-group">
-              <label>Ti le lai theo nam</label>
-              <input type="number" class="form-control" id="interestRatePerYear">
-            </div>
-            <div class="form-group">
               <label>Ngay bat dau goi vay</label>
               <input type="date" class="form-control" id="agreementDate">
             </div>
@@ -48,11 +40,7 @@
               <input type="number" class="form-control" id="interestRatePerMonth">
             </div>
             <div class="form-group">
-              <label>Lai suat ky</label>
-              <input type="number" class="form-control" id="interestRatePerTerm">
-            </div>
-            <div class="form-group">
-              <label>So lan tra</label>
+              <label>So lan tra(theo thang)</label>
               <input type="number" class="form-control" id="numberOfPayments">
             </div>
           </div>
@@ -113,8 +101,42 @@
   </script>
 
   <script>
-    const getDateAfterAnAmountOfTime = (date, amount) => {
+     Date.isLeapYear = function (year) {
+      return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
+    };
+
+    Date.getDaysInMonth = function (year, month) {
+      return [31, (Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    };
+
+    Date.prototype.isLeapYear = function () {
+      return Date.isLeapYear(this.getFullYear());
+    };
+
+    Date.prototype.getDaysInMonth = function () {
+      return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
+    };
+
+    Date.prototype.addMonths = function (value) {
+      var n = this.getDate();
+      this.setDate(1);
+      this.setMonth(this.getMonth() + value);
+      this.setDate(Math.min(n, this.getDaysInMonth()));
+      return this;
+    };
+
+    const getDateAfterAnAmountOfDates = (date, amount) => {
       return formatDate(new Date(date.setDate(date.getDate() + amount)))
+    }
+
+    const getDateAfterAnAmountOfMonths = (originalDate, amount) => {
+      var date = new Date(originalDate)
+      var redemptionDate = new Date(date.setMonth(date.getMonth() + amount))
+      const oneDay = 24 * 60 * 60 * 1000
+      var daysInMonth = Math.abs((redemptionDate - originalDate) / oneDay)
+      return {
+        redemptionDate, daysInMonth
+      }
     }
 
     const formatDate = (date) => {
@@ -130,6 +152,7 @@
 
       return [day, month, year].join('-');
     }
+
 
     function pmt(rate_per_period, number_of_payments, present_value, future_value, type) {
       future_value = typeof future_value !== 'undefined' ? future_value : 0;
@@ -165,13 +188,21 @@
         principal = presentValue / numberOfPayments,
         incrementalPayedPrincipal = 0,
         accumulatedPayedInterest = 0,
-        remainedPrincipal = 0
+        remainedPrincipal = 0,
+        // date
+        agreementDate = new Date(package.agreementDate),
+        oneDay = 24 * 60 * 60 * 1000,
+        lastDate = null, redemptionDate = null
 
       document.querySelector('table').querySelector('tbody').innerHTML = ''
 
 
       for (var i = 1; i <= numberOfPayments; i++) {
-        var redemptionDate = getDateAfterAnAmountOfTime(new Date(package.agreementDate), 30 * (i - 1))
+        var tempDate = new Date(agreementDate)
+        lastDate = redemptionDate? redemptionDate : agreementDate
+        redemptionDate = tempDate.addMonths(i)
+        var daysInMonth = (redemptionDate - lastDate) / oneDay
+
         redemption = pmt(package.interestRatePerMonth / 100, numberOfPayments, -presentValue)
         interest = (interestRatePerMonth * (presentValue - incrementalPayedPrincipal)) / 100
         principal = redemption - interest
@@ -179,7 +210,7 @@
         accumulatedPayedInterest += interest
         remainedPrincipal = presentValue - incrementalPayedPrincipal
 
-        displayDept(i, redemptionDate, Math.round(redemption, -1), Math.round(principal, -1), Math.round(incrementalPayedPrincipal, -1),
+        displayDept(i, formatDate(redemptionDate), Math.round(redemption, -1), Math.round(principal, -1), Math.round(incrementalPayedPrincipal, -1),
           Math.round(interest, -1), Math.round(accumulatedPayedInterest, -1), Math.round(remainedPrincipal, -1))
       }
     }

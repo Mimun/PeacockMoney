@@ -36,7 +36,7 @@
               <input type="number" class="form-control" id="interestRatePerDay">
             </div>
             <div class="form-group">
-              <label>So lan tra theo thang</label>
+              <label>So lan tra(theo thang)</label>
               <input type="number" class="form-control" id="numberOfPayments">
             </div>
           </div>
@@ -97,6 +97,30 @@
   </script>
 
   <script>
+    Date.isLeapYear = function (year) {
+      return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
+    };
+
+    Date.getDaysInMonth = function (year, month) {
+      return [31, (Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    };
+
+    Date.prototype.isLeapYear = function () {
+      return Date.isLeapYear(this.getFullYear());
+    };
+
+    Date.prototype.getDaysInMonth = function () {
+      return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
+    };
+
+    Date.prototype.addMonths = function (value) {
+      var n = this.getDate();
+      this.setDate(1);
+      this.setMonth(this.getMonth() + value);
+      this.setDate(Math.min(n, this.getDaysInMonth()));
+      return this;
+    };
+
     const getDateAfterAnAmountOfDates = (date, amount) => {
       return formatDate(new Date(date.setDate(date.getDate() + amount)))
     }
@@ -125,6 +149,9 @@
       return [day, month, year].join('-');
     }
 
+  </script>
+
+  <script>
     // redemption, principal, incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal
     // tien tra theo ky, tien goc, goc da tra cong don, lai, lai da tra luy ke, goc con lai
 
@@ -138,23 +165,29 @@
         principal = 0,
         incrementalPayedPrincipal = 0,
         accumulatedPayedInterest = 0,
-        remainedPrincipal = 0
+        remainedPrincipal = 0,
+        // date
+        agreementDate = new Date(package.agreementDate),
+        oneDay = 24 * 60 * 60 * 1000,
+        lastDate = null, redemptionDate = null
+
       document.querySelector('table').querySelector('tbody').innerHTML = ''
+
       var termArray = []
-      for (var i = 0; i < numberOfPayments; i++) {
-        var agreementDate = new Date(package.agreementDate)
-        var { redemptionDate, daysInMonth } = getDateAfterAnAmountOfMonths(termArray.length === 0 ?
-          agreementDate : termArray[termArray.length - 1], 1)
-        termArray.push(redemptionDate)
-        console.log('redemption date: ', formatDate(redemptionDate), ', days in month: ', daysInMonth)
+      for (var i = 1; i <= numberOfPayments; i++) {
+        var tempDate = new Date(agreementDate)
+        lastDate = redemptionDate? redemptionDate : agreementDate
+        redemptionDate = tempDate.addMonths(i)
+        var daysInMonth = (redemptionDate - lastDate) / oneDay
+
         interest = (interestRatePerDay * daysInMonth * presentValue) / 100
-        principal = i === numberOfPayments - 1 ? presentValue : 0
+        principal = i === numberOfPayments ? presentValue : 0
         redemption = principal + interest
 
-        incrementalPayedPrincipal = i === numberOfPayments - 1 ? presentValue : 0
+        incrementalPayedPrincipal = i === numberOfPayments ? presentValue : 0
         accumulatedPayedInterest += interest
         remainedPrincipal = presentValue - principal
-        displayDept(i + 1, formatDate(redemptionDate), redemption, principal, incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal)
+        displayDept(i, formatDate(redemptionDate), redemption, principal, incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal)
       }
     }
   </script>
