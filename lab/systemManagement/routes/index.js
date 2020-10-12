@@ -420,7 +420,7 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({'currentWarehouse._id': mongoose.Types.ObjectId(req.params.id)}).exec(callback)
+        Property.find({ 'currentWarehouse._id': mongoose.Types.ObjectId(req.params.id) }).exec(callback)
       } catch (error) {
         console.log(error)
       }
@@ -654,9 +654,9 @@ router.post('/statistic/search', (req, res) => {
       { $and: arrayPropertyIdConditions },
       { $and: arrayItemTypeConditions },
       { $and: arrayItemTypeIdConditions },
-      
+
     ]
-  }).sort({_id: -1}).exec((err, result) => {
+  }).sort({ _id: -1 }).exec((err, result) => {
     if (err) throw err
     req.body.type === 'import' ? callback(result, dateConditions, res)
       : callback2(result, dateConditions, res)
@@ -685,8 +685,8 @@ const callback = (result, dateConditions, res) => {
             contractId: res.contract ? res.contract.id : 'None',
             propertyId: res.id,
             propertyName: res.infos ? res.infos[0].value : 'None',
-            customerId: 'None',
-            customerName: 'None',
+            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
             itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
             itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
             contract_Id: res.contract._id
@@ -707,8 +707,8 @@ const callback = (result, dateConditions, res) => {
             contractId: res.contract ? res.contract.id : 'None',
             propertyId: res.id,
             propertyName: res.infos ? res.infos[0].value : 'None',
-            customerId: 'None',
-            customerName: 'None',
+            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
             itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
             itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
             contract_Id: res.contract._id
@@ -747,8 +747,8 @@ const callback2 = (result, dateConditions, res) => {
             contractId: res.contract ? res.contract.id : 'None',
             propertyId: res.id,
             propertyName: res.infos ? res.infos[0].value : 'None',
-            customerId: 'None',
-            customerName: 'None',
+            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
             itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
             itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
             contract_Id: res.contract._id
@@ -770,8 +770,8 @@ const callback2 = (result, dateConditions, res) => {
             contractId: res.contract ? res.contract.id : 'None',
             propertyId: res.id,
             propertyName: res.infos ? res.infos[0].value : 'None',
-            customerId: 'None',
-            customerName: 'None',
+            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
             itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
             itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
             contract_Id: res.contract._id
@@ -922,15 +922,15 @@ const createSearchArrayForReport = (array) => {
 }
 
 // test loan 
-router.get('/testLoan1', (req, res)=>{
+router.get('/testLoan1', (req, res) => {
   res.render('testLoan1_v2')
 })
 
-router.get('/testLoan2', (req, res)=>{
+router.get('/testLoan2', (req, res) => {
   res.render('testLoan2_v2')
 })
 
-router.get('/testLoan3', (req, res)=>{
+router.get('/testLoan3', (req, res) => {
   res.render('testLoan3')
 })
 

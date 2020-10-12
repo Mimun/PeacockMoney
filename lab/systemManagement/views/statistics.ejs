@@ -36,7 +36,8 @@
               <th data-resizable-column-id="customerName">Tên khách hàng</th>
               <th data-resizable-column-id="itemTypeId">Mã loại tài sản</th>
               <th data-resizable-column-id="itemType">Tên loại tài sản</th>
-              <th id="warehouseDirection" data-resizable-column-id="warehouseDirection">Kho điều chuyển</th>
+              <th data-resizable-column-id="warehouseFrom">Kho điều chuyển(đi)</th>
+              <th data-resizable-column-id="warehouseTo">Kho đến</th>
               <th id="note" data-resizable-column-id="note">Lý do nhập</th>
             </tr>
           </thead>
@@ -117,22 +118,6 @@
 
     var csv = ""
 
-    // select parts
-    // var selectContainer = document.createElement('div')
-    // selectContainer.className = 'select-container'
-
-    // var select = document.createElement('select')
-    // select.className = "browser-default custom-select"
-
-    // var selectLabel = document.createElement('label')
-
-    // var selectOption = warehouseList.map(warehouse => {
-    //   var option = `<option value="${warehouse._id}">${warehouse.name}-${warehouse.address}</option>`
-    //   return option
-    // })
-    // selectOption.unshift('<option value="">All warehouses</option>')
-    // end of select parts
-
     // show modal when browser loading
     $('.modal').modal('show')
 
@@ -142,14 +127,6 @@
     // event when option 1 is clicked
     inputtoday.addEventListener('click', (event) => {
       document.querySelector('.date-selector').innerHTML = ''
-      // remove "all warehouse" option 
-      // document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
-      //   if (option.value === "") {
-      //     option.style.display = 'block'
-      //     document.querySelector('#warehouse-select').value = option.value
-      //   }
-
-      // })
     })
 
     // event when option 2 is clicked
@@ -169,25 +146,10 @@
         document.querySelector('.date-selector').appendChild(from)
         document.querySelector('.date-selector').appendChild(to)
       }
-      // remove "all warehouse" option 
-      // document.querySelector('#warehouse-select').querySelectorAll('option').forEach(option => {
-      //   if (option.value === "") {
-      //     option.style.display = 'none'
-      //     document.querySelector('#warehouse-select').value = document.querySelector('#warehouse-select')[1].value
-      //   }
-      // })
     })
-
-    // warehouse selector
-    // if (document.querySelector('.select-container').firstChild === null) {
-    //   createSelect(select, '', 'warehouse-select', 'select-warehouse',
-    //     selectOption, selectLabel, 'Kho', selectContainer, document.querySelector('.select-container'), false)
-    // }
-
     // find property|submit button event
     document.querySelector('button#submit').addEventListener('click', (event) => {
       var getWarehouseReportObj = {
-        // warehouses: document.querySelector('#warehouse-select').value,
         dateConditions: {}
       }
       // report time checked radio
@@ -220,14 +182,14 @@
       if(result.reportType === 'import'){
         document.querySelector('th#date').innerHTML = 'Ngay nhap'
         document.querySelector('th#date').setAttribute('data-resizable-column-id', 'importDate')
-        document.querySelector('th#warehouseDirection').setAttribute('data-resizable-column-id', 'warehouseFrom')
+        // document.querySelector('th#warehouseDirection').setAttribute('data-resizable-column-id', 'warehouseFrom')
         document.querySelector('th#note').setAttribute('data-resizable-column-id', 'importNote')
         generateImportingReport(result.result, warehouseList, 'property-list-container')
 
       } else {
         document.querySelector('th#date').innerHTML = 'Ngay xuat'
         document.querySelector('th#date').setAttribute('data-resizable-column-id', 'exportDate')
-        document.querySelector('th#warehouseDirection').setAttribute('data-resizable-column-id', 'warehouseTo')
+        // document.querySelector('th#warehouseDirection').setAttribute('data-resizable-column-id', 'warehouseTo')
         document.querySelector('th#note').setAttribute('data-resizable-column-id', 'exportNote')
         generateExportingReport(result.result, warehouseList, 'property-list-container')
         
