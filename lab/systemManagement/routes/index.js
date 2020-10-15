@@ -934,5 +934,9 @@ router.get('/testLoan3', (req, res) => {
   res.render('testLoan3')
 })
 
+router.get('/testPayment', (req, res)=>{
+  res.render('testPayment')
+})
+
 
 module.exports = router;

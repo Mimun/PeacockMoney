@@ -1,0 +1,108 @@
+<div class="contract-metadata-container" id="contract-metadata-container">
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Cửa hàng</label>
+    <input type="text" class="form-control validate" name="store" data-vie="Cửa hàng">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Người lập</label>
+    <input type="text" class="form-control validate" name="creator" data-vie="Người lập" disabled>
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Khách hàng</label>
+    <input type="text" class="form-control validate" name="customer" data-vie="Khách hàng" disabled>
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">CMND</label>
+    <input type="text" class="form-control validate" name="customerId" data-vie="CMND">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Nơi cấp</label>
+    <input type="text" class="form-control validate" name="customerIdProvidingPlace" data-vie="Nơi cấp">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Ngày cấp</label>
+    <input type="date" class="form-control validate" name="customerIdProvidingDate" data-vie="Ngày cấp">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Địa chỉ</label>
+    <input type="text" class="form-control validate" name="customerAddress" data-vie="Địa chỉ">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Số điện thoại</label>
+    <input type="number" class="form-control validate" name="customerPhoneNumber" data-vie="Số điện thoại">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Hộ khẩu thường trú</label>
+    <input type="text" class="form-control validate" name="customerFamilyRegister" data-vie="Hộ khẩu thường trú">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Số tiền vay</label>
+    <input type="text" class="form-control validate" name="loan" data-vie="Số tiền vay">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Bằng chữ</label>
+    <input type="text" class="form-control validate" name="loanInWord" data-vie="Bằng chữ">
+  </div>
+  <div class="container" style="padding: 0;">
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label class="bmd-label-floating" data-error="Empty">Số tiền min </label>
+          <input type="text" class="form-control currency-field" data-type="currency" min="0" max="9999999999"
+            name="min" data-vie="Số tiền min">
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label class="bmd-label-floating" data-error="Empty">Số tiền max</label>
+          <input type="text" class="form-control currency-field" data-type="currency" min="0" max="9999999999"
+            name="max" data-vie="Số tiền max">
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Ngày lập</label>
+    <input type="date" class="form-control validate" name="contractCreatedDate" data-vie="Ngày lập">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Thời hạn vay tối thiểu</label>
+    <input type="number" class="form-control validate" name="minLoanTerm" data-vie="Thời hạn vay tối thiểu">
+  </div>
+  <div class="container" style="padding: 0;">
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần ngàn theo ngày(<span>&#8240;</span>)</label>
+          <input id="permillePerDay" type="number" class="form-control validate" name="interrestRatePermillePerDay"
+            data-vie="Tỉ lệ phần ngàn theo ngày">
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần trăm theo tháng(%)</label>
+          <input id="percentagePerMonth" type="number" class="form-control validate"
+            name="interrestRatePercentagePerDay" data-vie="Tỉ lệ phần trăm theo tháng">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phạt theo ngày(%)</label>
+    <input type="number" class="form-control validate" name="percentagePenaltyPerDay" data-vie="Tỉ lệ phạt theo ngày">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Số kỳ thu</label>
+    <input type="number" class="form-control validate" name="numberOfAcceptanceTerms" data-vie="Số kỳ thu">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Số ngày của 1 kỳ</label>
+    <input type="number" class="form-control validate" name="numberOfDaysPerTerm" data-vie="Số ngày của 1 kỳ">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Ngày kết thúc hợp đồng</label>
+    <input type="date" class="form-control validate" name="contractEndingDate" data-vie="Ngày kết thúc hợp đồng">
+  </div>
+</div>

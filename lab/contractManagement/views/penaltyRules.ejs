@@ -1,0 +1,75 @@
+<div class="penalty-rule-container" id="penalty-rule-container">
+  <h3>Penalty rule</h3>
+  <div class="form-group form-inline is-filled" id="policy">
+    <label>Thoi gian qua han</label>
+    <input type="number" class="form-control" id="from" placeholder="From...">
+    <input type="number" class="form-control" id="to" placeholder="To...">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating">Kieu phat</label>
+    <select class="form-control penalty-rule" id="policyType">
+      <option value="static">Static</option>
+      <option value="dynamic1">Dynamic 1(based on time)</option>
+      <option value="dynamic2">Dynamic 2(based on loan package value)</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating">Phi phat</label>
+    <input type="text" class="form-control" id="penaltyRate">
+  </div>
+  <div class="form-group form-inline is-filled" id="original-debt">
+    <label>No goc</label>
+    <input type="number" class="form-control" id="debtFrom" placeholder="From...">
+    <input type="number" class="form-control" id="debtTo" placeholder="To...">
+  </div>
+  <button class="btn btn-sm btn-primary" id="btn-add-rule">Add rule</button>
+  <div class="penalty-rules-table">
+    <table class="table table-hover table-responsive">
+      <thead>
+        <tr>
+          <th id="from">Tu</th>
+          <th id="to">Den</th>
+          <th id="penaltyRate">Phat</th>
+          <th id="debtFrom">No goc tu</th>
+          <th id="debtTo">No goc den</th>
+          <th id="policyType">Kieu phat</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  var rules = []
+  document.querySelector('button#btn-add-rule').addEventListener('click', (event) => {
+    event.preventDefault()
+    var lastRule = rules[rules.length - 1]
+    if (lastRule && lastRule.to === '') {
+      window.alert("You cannot add more rules because last rule's time stamp is to infinity!")
+    } else {
+      var ruleObj = {}
+      document.querySelectorAll('div.penalty-rule-container input,select.penalty-rule').forEach(element => {
+        ruleObj[element.id] = element.value
+      })
+      rules.push(ruleObj)
+
+      document.querySelector('input#from').value = ruleObj.to
+      document.querySelector('input#to').value = ''
+      document.querySelector('input#from').setAttribute('disabled', ruleObj.to === '' ? false : true)
+      displayRule(ruleObj)
+    }
+  })
+
+  const displayRule = (obj) => {
+    var tr = document.createElement('tr')
+    tr.C_DATA = obj
+    document.querySelectorAll('.penalty-rules-table table thead th').forEach(element => {
+      var th = document.createElement('th')
+      th.innerHTML = obj[element.id]
+      th.id = element.id
+      tr.appendChild(th)
+    })
+    document.querySelector('.penalty-rules-table table tbody').appendChild(tr)
+  }  
+</script>

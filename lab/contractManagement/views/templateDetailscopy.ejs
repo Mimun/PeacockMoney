@@ -76,169 +76,28 @@
 
   <!-- Step2: Template Metadata -->
   <div class="tab md-tabs template-metadata">Template metadata:
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Tên mẫu hợp đồng</label>
-      <input type="text" class="form-control validate" name="templateName" data-vie="Tên mẫu hợp đồng">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Category</label>
-      <input type="text" class="form-control validate" name="category" data-vie="phanLoai">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Loại tài sản</label>
-      <!-- <input type="text" class="form-control validate" name="itemType" data-vie="loaiTaiSan"> -->
-      <select class="form-control" id="itemType"></select>
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Mã loại tài sản</label>
-      <input type="text" class="form-control validate" name="itemTypeId" data-vie="Mã loại tài sản">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Phí thu</label>
-      <input type="number" class="form-control validate" name="fee" data-vie="Phí thu">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Phí khác</label>
-      <input type="text" class="form-control validate" name="anotherFee" data-vie="Phí khác">
-    </div>
-    <select class="browser-default custom-select">
-      <option value="thanhToanLai" name="interestPayment" data-vie="Thanh toán lãi">Phương thức thanh toán</option>
-      <option value="thanhToanLai" name="interestPayment" data-vie="Thanh toán lãi">Chỉ thanh toán lãi</option>
-      <option value="thanhToanGocLai" name="originalProfitPayment" data-vie="Thanh toán gốc lãi">Thanh toán gốc + lãi
-      </option>
-    </select>
+    <%- include('./templateMetadata.ejs') %>
 
   </div>
 
   <!-- Step 3: Contract metadata -->
   <div class="tab md-tabs contract-metadata">Contract metadata:
-
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Cửa hàng</label>
-      <input type="text" class="form-control validate" name="store" data-vie="Cửa hàng">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Người lập</label>
-      <input type="text" class="form-control validate" name="creator" data-vie="Người lập" disabled>
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Khách hàng</label>
-      <input type="text" class="form-control validate" name="customer" data-vie="Khách hàng" disabled>
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">CMND</label>
-      <input type="text" class="form-control validate" name="customerId" data-vie="CMND">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Nơi cấp</label>
-      <input type="text" class="form-control validate" name="customerIdProvidingPlace" data-vie="Nơi cấp">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Ngày cấp</label>
-      <input type="date" class="form-control validate" name="customerIdProvidingDate" data-vie="Ngày cấp">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Địa chỉ</label>
-      <input type="text" class="form-control validate" name="customerAddress" data-vie="Địa chỉ">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Số điện thoại</label>
-      <input type="number" class="form-control validate" name="customerPhoneNumber" data-vie="Số điện thoại">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Hộ khẩu thường trú</label>
-      <input type="text" class="form-control validate" name="customerFamilyRegister" data-vie="Hộ khẩu thường trú">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Số tiền vay</label>
-      <input type="text" class="form-control validate" name="loan" data-vie="Số tiền vay">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Bằng chữ</label>
-      <input type="text" class="form-control validate" name="loanInWord" data-vie="Bằng chữ">
-    </div>
-    <div class="container" style="padding: 0;">
-      <div class="row">
-        <div class="col">
-          <div class="form-group">
-            <label class="bmd-label-floating" data-error="Empty">Số tiền min </label>
-            <input type="text" class="form-control currency-field" data-type="currency" min="0" max="9999999999"
-              name="min" data-vie="Số tiền min">
-          </div>
-        </div>
-        <div class="col">
-          <div class="form-group">
-            <label class="bmd-label-floating" data-error="Empty">Số tiền max</label>
-            <input type="text" class="form-control currency-field" data-type="currency" min="0" max="9999999999"
-              name="max" data-vie="Số tiền max">
-          </div>
-        </div>
-
-      </div>
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Ngày lập</label>
-      <input type="date" class="form-control validate" name="contractCreatedDate" data-vie="Ngày lập">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Thời hạn vay tối thiểu</label>
-      <input type="number" class="form-control validate" name="minLoanTerm" data-vie="Thời hạn vay tối thiểu">
-    </div>
-    <div class="container" style="padding: 0;">
-      <div class="row">
-        <div class="col">
-          <div class="form-group">
-            <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần ngàn theo ngày(<span>&#8240;</span>)</label>
-            <input id="permillePerDay" type="number" class="form-control validate" name="interrestRatePermillePerDay"
-              data-vie="Tỉ lệ phần ngàn theo ngày">
-          </div>
-        </div>
-        <div class="col">
-          <div class="form-group">
-            <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần trăm theo tháng(%)</label>
-            <input id="percentagePerMonth" type="number" class="form-control validate"
-              name="interrestRatePercentagePerDay" data-vie="Tỉ lệ phần trăm theo tháng">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phạt theo ngày(%)</label>
-      <input type="number" class="form-control validate" name="percentagePenaltyPerDay" data-vie="Tỉ lệ phạt theo ngày">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Số kỳ thu</label>
-      <input type="number" class="form-control validate" name="numberOfAcceptanceTerms" data-vie="Số kỳ thu">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Số ngày của 1 kỳ</label>
-      <input type="number" class="form-control validate" name="numberOfDaysPerTerm" data-vie="Số ngày của 1 kỳ">
-    </div>
-    <div class="form-group" style="display: none;">
-      <label class="bmd-label-floating" data-error="Empty">Ngày kết thúc hợp đồng</label>
-      <input type="date" class="form-control validate" name="contractEndingDate" data-vie="Ngày kết thúc hợp đồng">
-    </div>
-
+    <%- include('./contractMetadata.ejs') %>
   </div>
 
   <!-- Step 4: Custom info -->
   <div class="tab md-tabs custom-info">Custom info:
-    <div class="form-group">
-      <label for="exampleInputFile" class="bmd-label-floating">File input</label>
-      <input type="file" class="form-control-file" id="inputTemplateFile" accept=".csv">
-    </div>
-    <div class="form-group">
-      <label class="bmd-label-floating" data-error="Empty">Tên tài sản</label>
-      <input type="text" class="form-control validate" name="propertyName" data-vie="tenTaiSan" data-kor="koreanString"
-        disabled>
-    </div>
-    <div id="contract-template-container"></div>
+    <%- include('./customInfo.ejs') %>
   </div>
 
   <!-- Step 5: Quill editor -->
   <div class="tab md-tabs contract-content">Contract content:
     <%- include('./quillEditor.ejs')  %>
+  </div>
+
+  <!-- Step 6: Create penalty rule -->
+  <div class="tab md-tabs penalty-rules">Penalty rules:
+    <%- include('./penaltyRules.ejs') %>
   </div>
 
   <div class="modal-footer" style="display: flex; flex-direction: column;">
@@ -249,6 +108,8 @@
       <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
+      <span class="step"></span>
+
     </div>
     <div style="float:right;">
       <button type="button" class="btn btn-raised btn-primary btn-sm" id="prevBtn">Previous</button>
@@ -256,8 +117,6 @@
     </div>
 
   </div>
-
-
 
 </form>
 
@@ -267,8 +126,6 @@
   import { findNestedObj } from '/findNestedObj.js'
   import { makeRequest } from '/makeRequest.js'
   import { removeSeperator } from '/addSeparatorOnInputChange.js'
-
-
 
   var currentTab = 0; // Current tab is set to be the first tab (0)
   var payOption = {}
@@ -322,10 +179,11 @@
         templateMetadata: [],
         contractMetadata: [],
         infos: [],
-        _id: ObjectId()
+        _id: ObjectId(),
+        penaltyRules: [],
       }
 
-      // contract template metadata
+      // TEMPLATE METADATA
       // - contract template image for contractMetadata
       var imgData = document.querySelector('cropper-wc').getImageData()
       templateItem.templateMetadata.push({
@@ -338,27 +196,18 @@
       templateItem.templateMetadata.push(getObj('contractContent', quill.root.innerHTML, 'text', 'noiDungHopDong', 'korean string'))
 
       // - metadata for template
-      document.querySelector('.template-metadata').querySelectorAll('input').forEach(element => {
+      console.log('element: ', document.querySelectorAll('div.template-metadata #template-metadata-container input,select.template-metadata'))
+      document.querySelectorAll('.template-metadata #template-metadata-container input,select.template-metadata').forEach(element => {
         var name = element.getAttribute('name')
         var value = element.value
         var type = element.getAttribute('type')
         var dataVie = element.getAttribute('data-vie')
         templateItem.templateMetadata.push(getObj(name, value, type, dataVie, 'korean string'))
       })
-      templateItem.templateMetadata.push({
-        name: 'itemType',
-        value: document.querySelector('select#itemType').options[document.querySelector('select#itemType').selectedIndex].getAttribute('name'),
-        type: 'text',
-        dataVie: 'Loại tài sản',
-        dataKor: 'koreanString'
-      })
 
-      // payment method for template metadata
-      templateItem.templateMetadata.push(getObj('paymentMethod', document.querySelector('.custom-select').value, 'text', 'Kiểu thanh toán', 'koreanString'))
-
-      // contract metadata:
+      // CONTRACT METADATA
       // - contract metadata
-      document.querySelector('.contract-metadata').querySelectorAll('input').forEach(element => {
+      document.querySelectorAll('.contract-metadata #contract-metadata-container input').forEach(element => {
         if (element.getAttribute('id') !== "percentagePerMonth") {
           var name = element.getAttribute('name')
           var value = element.getAttribute('data-type') === 'currency' ? removeSeperator(element.value) : element.value
@@ -369,8 +218,8 @@
 
       })
 
-      // custom info
-      document.querySelector('.custom-info').querySelectorAll('input').forEach(element => {
+      // CUSTOM INFO
+      document.querySelectorAll('.custom-info #custom-info-container input').forEach(element => {
         if (element.type !== 'file') {
           var info = {}
           var name = element.closest('.form-group').querySelector('label').innerHTML.toLowerCase()
@@ -383,6 +232,11 @@
             cType: type
           })
         }
+      })
+
+      // PENALTY RULES
+      document.querySelectorAll('.penalty-rules #penalty-rule-container .table tbody tr').forEach(element => {
+        templateItem.penaltyRules.push(element.C_DATA)
       })
 
       console.log('item is about to save: ', templateItem)
@@ -448,45 +302,7 @@
   // generate template after choosing file
   import { generateCustomInfoTemplate } from '/generateCustomInfoTemplate.js'
   import { addSeparatorOnInputChange } from '/addSeparatorOnInputChange.js'
-  const template = document.querySelector('#contract-template')
 
-  document.querySelector('#inputTemplateFile').addEventListener('change', (event) => {
-    const file = event.target.files[0]
-    var fileReader = new FileReader()
-    fileReader.onload = (e) => {
-      var csv = e.target.result
-      console.log('result: ', csv)
-      convertToArray(csv)
-
-    }
-    fileReader.readAsText(file, 'ISO-8859-1')
-  })
-
-  const convertToArray = (csv) => {
-    const lines = csv.split('\n')
-    const linesClone = lines
-    var linesBreakPoint = []
-    for (var i = 0; i < lines.length; i++) {
-      if (lines[i] === "") {
-        linesBreakPoint.push(i)
-      }
-    }
-
-    var j = 0;
-    for (var i = 0; i < linesBreakPoint.length; i++) {
-      var array = []
-      while (j < linesBreakPoint[i]) {
-        array.push(lines[j])
-        j += 1
-      }
-      j = linesBreakPoint[i] + 1
-      console.log('array: ', array)
-      document.querySelector('#contract-template-container').innerHTML = ""
-      generateCustomInfoTemplate(array, template, 'contract-template-container')
-    }
-
-
-  }
 
   // calculate percentage per month
   document.querySelector("#permillePerDay").addEventListener('change', (event) => {
@@ -494,7 +310,6 @@
     console.log('value: ', event.target.value)
     document.querySelector("#percentagePerMonth").value = event.target.value * 30 / 10
   })
-
 
   // add separator to number
   addSeparatorOnInputChange()

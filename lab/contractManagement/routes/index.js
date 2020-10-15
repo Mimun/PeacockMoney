@@ -192,8 +192,8 @@ router.post('/createNewContractTemplate', (req, res, next) => {
     const contractTemplate = new ContractTemplate(itemObject)
     contractTemplate.save((err, result) => {
       if (err) throw err
-      // res.send('Saved new contract template successfully!')
-      res.send({ contractTemplateList: result })
+      res.send('Saved new contract template successfully!')
+      // res.send({ contractTemplateList: result })
 
 
     })

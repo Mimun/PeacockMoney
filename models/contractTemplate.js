@@ -22,6 +22,7 @@ const contractTemplateSchema = new mongoose.Schema({
     dataVie: {type: String},
     dataKor: {type: String, default: 'korean string'}
   }],
+  penaltyRules: [{type: Object}]
 })
 
 module.exports = mongoose.model('ContractTemplate', contractTemplateSchema)

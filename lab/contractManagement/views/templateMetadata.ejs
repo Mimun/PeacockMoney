@@ -1,0 +1,36 @@
+<div class="template-metadata-container" id="template-metadata-container">
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Tên mẫu hợp đồng</label>
+    <input type="text" class="form-control validate" name="templateName" data-vie="Tên mẫu hợp đồng">
+  </div>
+  <div class="form-group" style="display: none;">
+    <label class="bmd-label-floating" data-error="Empty">Category</label>
+    <input type="text" class="form-control validate" name="category" data-vie="phanLoai">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Loại tài sản</label>
+    <!-- <input type="text" class="form-control validate" name="itemType" data-vie="loaiTaiSan"> -->
+    <select class="form-control template-metadata" id="itemType" name="itemType" type="text" data-vie="Loại tài sản"></select>
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Mã loại tài sản</label>
+    <input type="text" class="form-control validate" name="itemTypeId" data-vie="Mã loại tài sản">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Phí thu</label>
+    <input type="number" class="form-control validate" name="fee" data-vie="Phí thu">
+  </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Phí khác</label>
+    <input type="text" class="form-control validate" name="anotherFee" data-vie="Phí khác">
+  </div>
+  <div class="form-group">
+    <label for="">Kieu thanh toan</label>
+    <select class="form-control template-metadata" type="text" name="pamentMethod" data-vie="Kiểu thanh toán">
+      <option value="thanhToanLai" name="interestPayment" data-vie="Thanh toán lãi">Chỉ thanh toán lãi</option>
+      <option value="thanhToanGocLai" name="originalProfitPayment" data-vie="Thanh toán gốc lãi">Thanh toán gốc + lãi
+      </option>
+    </select>
+  </div>
+
+</div>
