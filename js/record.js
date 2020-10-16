@@ -39,9 +39,9 @@ export default class Record {
           date: payedDate
         })
         record.updatePaymentRecord(updateObj.period, updateObj)
-        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'payed', updateObj.payed)
-        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain)
-        updateObj.updateHistoryPayment('payment-history')
+        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'payed', updateObj.payed.toLocaleString())
+        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
+        updateObj.updateHistoryPayment('payment-history', payedDate)
 
         console.log('record after paying: ', record)
         i++
@@ -64,6 +64,10 @@ export default class Record {
     if (this.periodRecords[period]) {
       this.periodRecords[period].pauseCounting()
     }
+  }
+
+  createPeriodRecordForRecord(periodRecord) {
+    this.periodRecords.push(periodRecord)
   }
 
 }

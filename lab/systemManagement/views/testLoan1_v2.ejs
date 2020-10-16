@@ -11,6 +11,9 @@
       margin: 16px 0;
       padding: 32px 48px;
     }
+    table th{
+      text-align: right;
+    }
   </style>
 </head>
 
@@ -218,6 +221,7 @@
     var period = -1
     var isPause = false
     var originalValue = 0
+    var realLifeDate = null
   </script>
 
   <!-- common function -->
@@ -355,11 +359,22 @@
       document.querySelectorAll(`div.${elementName} table thead th`).forEach((element, index) => {
         var th = document.createElement('th')
         if (object[element.id] !== undefined) {
-          th.innerHTML = element.id === 'addedDate' ? formatDate(object[element.id]) : object[element.id]
+          switch (element.id) {
+            case ('redemptionDate'):
+              th.innerHTML = formatDate(object[element.id])
+              break
+            case ('redemption'):
+            case ('totalPayment'):
+            case ('payed'):
+            case ('remain'):
+              th.innerHTML = Math.round(object[element.id], -1).toLocaleString()
+              break
+            default:
+              th.innerHTML = object[element.id]
+
+          }
         }
-        if (element.id === 'redemptionDate') {
-          th.innerHTML = formatDate(object[element.id])
-        }
+
         th.id = element.id
         tr.id = object.period
         tr.appendChild(th)
@@ -422,7 +437,6 @@
 
     const startSimulation = (ruleArray, periodArray, realDate, originalValue) => {
       var days = 0
-      var date = new Date(realDate)
       var record = new Record()
 
       periodArray.forEach((period, index) => {
@@ -431,8 +445,8 @@
         console.log('period: ', period)
         var tempdate = new Date(redemptionDate)
         var periodEndDate = new Date(tempdate.setDate(tempdate.getDate() + (getDaysInMonth(tempdate.getMonth(), tempdate.getFullYear()) - 1)))
-        var periodRecord = new PeriodRecord(record, redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue)
-        periodRecord.createPeriodRecordForRecord()
+        var periodRecord = new PeriodRecord(redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue)
+        record.createPeriodRecordForRecord(periodRecord)
 
       })
       console.log('record: ', record)
@@ -446,13 +460,13 @@
           var redemptionDateToCompare = new Date(periodArray[period + 1].redemptionDate)
           console.log('period: ', period)
 
-          if (date.getTime() === (redemptionDateToCompare.getTime() - (1000 * 24 * 60 * 60))) {
+          if (realDate.getTime() === (redemptionDateToCompare.getTime() - (1000 * 24 * 60 * 60))) {
             record.periodRecords[period + 1].count(1)
             period++
           }
-          date.setDate(date.getDate() + 1)
-          console.log('real time date: ', date)
-          document.querySelector('p#real-date-counter span').innerHTML = formatDate(date)
+          realDate.setDate(realDate.getDate() + 1)
+          console.log('real time date: ', realDate)
+          document.querySelector('p#real-date-counter span').innerHTML = formatDate(realDate)
 
           days++
         }
@@ -462,9 +476,9 @@
     }
 
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
-      var realDate = document.querySelector('div.date input#real-date').value
-      console.log('real date input value: ', realDate)
-      record = startSimulation(ruleArray, periodArray, realDate, originalValue)
+      realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
+      console.log('real date input value: ', realLifeDate)
+      record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
       event.target.setAttribute('disabled', true)
     })
 
@@ -483,7 +497,7 @@
   <script>
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
       var paymentSlipObj = {
-        addedDate: new Date(Date.now())
+        addedDate: realLifeDate
       }
       document.querySelector('div.payment').querySelectorAll('input').forEach(input => {
         paymentSlipObj[input.getAttribute('id')] = input.value

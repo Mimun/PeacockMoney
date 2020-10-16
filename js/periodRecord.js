@@ -1,6 +1,6 @@
 export default class PeriodRecord {
   // period status: is done or not
-  constructor(record, realLifeDate, redemptionDate, periodEndDate, redemption, periodStatus, period, ruleArray, originalValue) {
+  constructor(realLifeDate, redemptionDate, periodEndDate, redemption, periodStatus, period, ruleArray, originalValue) {
     this.realLifeDate = new Date(realLifeDate)
     this.daysBetween = 0
     this.originalValue = originalValue
@@ -19,7 +19,7 @@ export default class PeriodRecord {
     this.payed = 0
     this.remain = this.redemption
     this.isPause = false
-    this.record = record
+    // this.record = record
     this.countInterval = () => { }
   }
 
@@ -98,17 +98,17 @@ export default class PeriodRecord {
   }
 
   applyStaticRule(appliedRule) {
-    this.record.periodRecords[this.period].penaltyRecord.push({
+    this.penaltyRecord.push({
       reason: 'penalty',
       policyType: 'static',
       value: parseFloat(appliedRule.penaltyRate),
       date: this.realLifeDate,
     })
 
-    this.record.periodRecords[this.period].totalPayment = this.record.periodRecords[this.period].redemption + parseFloat(appliedRule.penaltyRate)
-    this.record.periodRecords[this.period].remain = this.record.periodRecords[this.period].totalPayment - this.record.periodRecords[this.period].payed
-    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.record.periodRecords[this.period].totalPayment)
-    this.updatePeriodTable('period-table-container', this.period, 'remain', this.record.periodRecords[this.period].remain)
+    this.totalPayment = this.redemption + parseFloat(appliedRule.penaltyRate)
+    this.remain = this.totalPayment - this.payed
+    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
 
     console.log('applied static rule:', this.record)
   }
@@ -117,55 +117,51 @@ export default class PeriodRecord {
   applyDynamic1Rule(appliedRule) {
     console.log('penalty rate: ', appliedRule.penaltyRate)
     console.log('days between: ', this.daysBetween)
-    console.log('original value: ', this.record.periodRecords[this.period].originalValue)
+    console.log('original value: ', this.originalValue)
 
-    this.record.periodRecords[this.period].penaltyRecord.push({
+    this.penaltyRecord.push({
       reason: 'penalty',
       policyType: 'static',
-      value: parseFloat((appliedRule.penaltyRate * this.daysBetween * this.record.periodRecords[this.period].originalValue) / 100),
+      value: parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100),
       date: this.realLifeDate,
     })
 
-    this.record.periodRecords[this.period].totalPayment = this.record.periodRecords[this.period].redemption + 
-    parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100)
-    this.record.periodRecords[this.period].remain = this.record.periodRecords[this.period].totalPayment - this.record.periodRecords[this.period].payed
-    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.record.periodRecords[this.period].totalPayment)
-    this.updatePeriodTable('period-table-container', this.period, 'remain', this.record.periodRecords[this.period].remain)
+    this.totalPayment = this.redemption +
+      parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100)
+    this.remain = this.totalPayment - this.payed
+    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
 
     console.log('applied static rule:', this.record)
   }
 
   // dynamic 2: based on late payments
   applyDynamic2Rule(appliedRule) {
-    this.record.periodRecords[this.period].totalPayment = this.record.periodRecords[this.period].redemption +
-      parseFloat((appliedRule.penaltyRate * (this.record.periodRecords[this.period].redemption - this.record.periodRecords[this.period].payed)) / 100)
+    this.totalPayment = this.redemption +
+      parseFloat((appliedRule.penaltyRate * (this.redemption - this.payed)) / 100)
 
-    this.record.periodRecords[this.period].remain = this.record.periodRecords[this.period].totalPayment - this.record.periodRecords[this.period].payed
-    this.record.periodRecords[this.period].penaltyRecord.push({
+    this.remain = this.totalPayment - this.payed
+    this.penaltyRecord.push({
       reason: 'penalty',
       policyType: 'static',
-      value: parseFloat((appliedRule.penaltyRate * this.record.periodRecords[this.period].remain) / 100),
+      value: parseFloat((appliedRule.penaltyRate * this.remain) / 100),
       date: this.realLifeDate,
     })
-    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.record.periodRecords[this.period].totalPayment)
-    this.updatePeriodTable('period-table-container', this.period, 'remain', this.record.periodRecords[this.period].remain)
+    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
 
     console.log('applied static rule:', this.record)
-  }
-
-  createPeriodRecordForRecord() {
-    this.record.periodRecords.push(this)
   }
 
   updatePeriodTable(elementName, period, updateElement, updateValue) {
     document.querySelector(`div.${elementName} table tbody tr[id='${period}'] th#${updateElement}`).innerHTML = updateValue
   }
 
-  updateHistoryPayment(elementName) {
+  updateHistoryPayment(elementName, payedDate) {
     var tr = document.createElement('tr')
     document.querySelectorAll(`div.${elementName} table thead th`).forEach(element => {
       var th = document.createElement('th')
-      th.innerHTML = this[element.id]
+      th.innerHTML = element.id === "realLifeDate" ? payedDate : this[element.id].toLocaleString()
       tr.appendChild(th)
     })
 
