@@ -92,8 +92,8 @@
                 <input type="date" class="form-control" id="agreementDate">
               </div>
               <div class="form-group">
-                <label>Lai suat ngay(%)</label>
-                <input type="number" class="form-control" id="interestRatePerDay">
+                <label>Lai suat thang(%)</label>
+                <input type="number" class="form-control" id="interestRatePerMonth">
               </div>
               <div class="form-group">
                 <label>So lan tra(theo thang)</label>
@@ -113,7 +113,7 @@
                     <th scope="col" id="period">No</th>
                     <th scope="col" id="redemptionDate">Date</th>
                     <th scope="col" id="redemption">Redemption</th>
-                    <th scope="col" id="totalPayment">Total(Redemption+Penalty)</th>
+                    <th scope="col" id="totalPayment">Total(Redemption+Penalty+Interest)</th>
                     <th scope="col" id="payed">Payed</th>
                     <th scope="col" id="remain">Remain</th>
                     <th scope="col" id="periodStatus">Status</th>
@@ -392,7 +392,7 @@
           obj[input.id] = input.value
         }
       });
-      originalValue = obj[presentValue]
+      originalValue = obj.presentValue
       calculateRedemption(obj)
 
     })
@@ -417,7 +417,7 @@
       } else {
         var ruleObj = {}
         document.querySelectorAll('div.penalty-rules input,select').forEach(element => {
-          ruleObj[element.id] = element.value
+          ruleObj[element.id] = element.id === 'penaltyRate' ? parseFloat(element.value) : element.value
         })
         ruleArray.push(ruleObj)
         console.log('rule obj: ', ruleObj)
@@ -478,7 +478,7 @@
 
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
       var realDate = document.querySelector('div.date input#real-date').value
-      console.log('real date input value: ', realDate)
+      console.log('original value input: ', originalValue)
       record = startSimulation(ruleArray, periodArray, realDate, originalValue)
       event.target.setAttribute('disabled', true)
     })

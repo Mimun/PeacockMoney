@@ -115,14 +115,19 @@ export default class PeriodRecord {
 
   // dynamic 1: based on late days
   applyDynamic1Rule(appliedRule) {
+    console.log('penalty rate: ', appliedRule.penaltyRate)
+    console.log('days between: ', this.daysBetween)
+    console.log('original value: ', this.record.periodRecords[this.period].originalValue)
+
     this.record.periodRecords[this.period].penaltyRecord.push({
       reason: 'penalty',
       policyType: 'static',
-      value: parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100),
+      value: parseFloat((appliedRule.penaltyRate * this.daysBetween * this.record.periodRecords[this.period].originalValue) / 100),
       date: this.realLifeDate,
     })
 
-    this.record.periodRecords[this.period].totalPayment = this.record.periodRecords[this.period].redemption + parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100)
+    this.record.periodRecords[this.period].totalPayment = this.record.periodRecords[this.period].redemption + 
+    parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100)
     this.record.periodRecords[this.period].remain = this.record.periodRecords[this.period].totalPayment - this.record.periodRecords[this.period].payed
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.record.periodRecords[this.period].totalPayment)
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.record.periodRecords[this.period].remain)
