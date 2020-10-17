@@ -123,11 +123,13 @@
                     <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
                     <th scope="col" id="interest">Lai</th>
                     <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
+                    <th scope="col" id="remainOrigin">Goc con lai</th>
                     <th scope="col" id="totalPayment">Tong tien dong(phat+ so tien dong)</th>
                     <th scope="col" id="paid">Da tra</th>
                     <th scope="col" id="remain">Con lai</th>
                     <th scope="col" id="periodStatus">Tinh trang</th>
                     <th scope="col" id="counter">Days pass</th>
+                    <th scope="col" id="penalty">Penalty</th>
 
                   </tr>
                 </thead>
@@ -292,6 +294,7 @@
         principal = 0,
         incrementalPaidPrincipal = 0,
         accumulatedPaidInterest = 0,
+        remainOrigin =0,
         remainedPrincipal = 0,
         // date
         agreementDate = new Date(package.agreementDate),
@@ -326,6 +329,7 @@
           incrementalPaidPrincipal,
           interest,
           accumulatedPaidInterest,
+          remainOrigin,
 
           totalPayment: redemption,
           paid: 0,
@@ -443,7 +447,7 @@
         var periodEndDate = new Date(tempdate.setDate(tempdate.getDate() + (getDaysInMonth(tempdate.getMonth(), tempdate.getFullYear()) - 1)))
         var periodRecord = new PeriodRecord(
           index, period.redemptionDate, redemption, period.principal, period.incrementalPaidPrincipal, period.interest,
-          period.accumulatedPaidInterest, periodEndDate, false, ruleArray, originalValue, redemptionDate
+          period.accumulatedPaidInterest,period.remainOrigin, periodEndDate, false, ruleArray, originalValue, redemptionDate
           // redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue
         )
         record.createPeriodRecordForRecord(periodRecord)

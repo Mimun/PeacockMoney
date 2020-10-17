@@ -2,7 +2,7 @@ export default class PeriodRecord {
   // period status: is done or not
   // period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
   // periodEndDate, periodStatus, ruleArray, originalValue, realLifeDate
-  constructor(period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
+  constructor(period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainOrigin,
     periodEndDate, periodStatus, ruleArray, originalValue, realLifeDate) {
     this.period = period
     this.redemptionDate = new Date(redemptionDate)
@@ -11,6 +11,7 @@ export default class PeriodRecord {
     this.incrementalPaidPrincipal = incrementalPaidPrincipal
     this.interest = interest
     this.accumulatedPaidInterest = accumulatedPaidInterest
+    this.remainOrigin = remainOrigin
 
     this.periodEndDate = periodEndDate
     this.periodStatus = periodStatus
@@ -26,7 +27,7 @@ export default class PeriodRecord {
     this.appliedRule = null
     this.penaltyRecord = []
     this.paymentRecords = []
-   
+
     this.isPause = false
     // this.record = record
     this.countInterval = () => { }
@@ -44,7 +45,6 @@ export default class PeriodRecord {
         // check rule
         this.checkRule()
         console.log(`days between of period ${this.period}: ${this.daysBetween}\n<--------------->`)
-
 
         if (this.periodStatus) {
           clearInterval(this.countInterval)
@@ -90,47 +90,49 @@ export default class PeriodRecord {
   // }
   checkRule() {
     console.log('this original value: ', this.originalValue)
+    if (this.ruleArray.length !== 0) {
+      this.ruleArray.filter(rule => {
+        var debtFrom = rule.debtFrom === undefined || rule.debtFrom === null || rule.debtFrom === '' ? 0 : parseFloat(rule.debtFrom)
+        var debtTo = rule.debtTo === undefined || rule.debtTo === null || rule.debtTo === '' ? 0 : parseFloat(rule.debtTo)
+        console.log('debt from: ', debtFrom)
+        console.log('debt to: ', debtTo)
 
-    this.ruleArray.filter(rule => {
-      var debtFrom = rule.debtFrom === undefined || rule.debtFrom === null || rule.debtFrom === '' ? 0 : parseFloat(rule.debtFrom)
-      var debtTo = rule.debtTo === undefined || rule.debtTo === null || rule.debtTo === '' ? 0 : parseFloat(rule.debtTo)
-      console.log('debt from: ', debtFrom)
-      console.log('debt to: ', debtTo)
-
-      if ((debtTo - debtFrom) > 0 && debtFrom < this.originalValue && this.originalValue <= debtTo) {
-        return rule
-      } else if ((debtTo - debtFrom) < 0 && debtFrom < this.originalValue) {
-        return rule
-      } else if ((debtTo - debtFrom) === 0 && debtFrom !== 0 && debtTo !== 0 && debtFrom === this.originalValue) {
-        return rule
-      } else if ((debtTo - debtFrom) === 0 && debtFrom === 0 && debtTo === 0 && debtFrom !== this.originalValue) {
-        return rule
-      }
-    }).filter(rule => {
-      if (this.daysBetween === parseInt(rule.from)) {
-        this.appliedRule = rule
-      }
-      // return daysBetween === parseInt(rule.from)
-    })
-    console.log('this applied rule: ', this.appliedRule)
-    if (this.appliedRule) {
-      switch (this.appliedRule.policyType) {
-        case ('static'):
-          this.applyStaticRule(this.appliedRule)
-          this.appliedRule = null
-          break
-        // dynamic 1: based on time
-        case ('dynamic1'):
-          this.applyDynamic1Rule(this.appliedRule)
-          break
-        // dynamic 2: based on the amount of money that is Paid late
-        case ('dynamic2'):
-          this.applyDynamic2Rule(this.appliedRule)
-          this.appliedRule = null
-          break
-        default:
+        if ((debtTo - debtFrom) > 0 && debtFrom < this.originalValue && this.originalValue <= debtTo) {
+          return rule
+        } else if ((debtTo - debtFrom) < 0 && debtFrom < this.originalValue) {
+          return rule
+        } else if ((debtTo - debtFrom) === 0 && debtFrom !== 0 && debtTo !== 0 && debtFrom === this.originalValue) {
+          return rule
+        } else if ((debtTo - debtFrom) === 0 && debtFrom === 0 && debtTo === 0 && debtFrom !== this.originalValue) {
+          return rule
+        }
+      }).filter(rule => {
+        if (this.daysBetween === parseInt(rule.from)) {
+          this.appliedRule = rule
+        }
+        // return daysBetween === parseInt(rule.from)
+      })
+      console.log('this applied rule: ', this.appliedRule)
+      if (this.appliedRule) {
+        switch (this.appliedRule.policyType) {
+          case ('static'):
+            this.applyStaticRule(this.appliedRule)
+            this.appliedRule = null
+            break
+          // dynamic 1: based on time
+          case ('dynamic1'):
+            this.applyDynamic1Rule(this.appliedRule)
+            break
+          // dynamic 2: based on the amount of money that is Paid late
+          case ('dynamic2'):
+            this.applyDynamic2Rule(this.appliedRule)
+            this.appliedRule = null
+            break
+          default:
+        }
       }
     }
+
   }
 
   applyStaticRule(appliedRule) {

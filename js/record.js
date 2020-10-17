@@ -47,12 +47,14 @@ export default class Record {
           }).forEach(rec => {
             updateObj.accumulatedPaidInterest += rec.interest
             updateObj.incrementalPaidPrincipal += rec.principal
+            updateObj.remainOrigin = updateObj.originalValue - updateObj.incrementalPaidPrincipal
           })
 
           updateObj.stopCounting()
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'periodStatus', updateObj.periodStatus)
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'accumulatedPaidInterest', updateObj.accumulatedPaidInterest.toLocaleString())
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'incrementalPaidPrincipal', updateObj.incrementalPaidPrincipal.toLocaleString())
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remainOrigin', updateObj.remainOrigin.toLocaleString())
 
         }
 
