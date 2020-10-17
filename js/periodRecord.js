@@ -117,15 +117,21 @@ export default class PeriodRecord {
         switch (this.appliedRule.policyType) {
           case ('static'):
             this.applyStaticRule(this.appliedRule)
+            this.updatePeriodTable('period-table-container', this.period, 'penalty', this.appliedRule.penaltyRate.toLocaleString())
+
             this.appliedRule = null
             break
           // dynamic 1: based on time
           case ('dynamic1'):
             this.applyDynamic1Rule(this.appliedRule)
+            this.updatePeriodTable('period-table-container', this.period, 'penalty', this.appliedRule.penaltyRate.toLocaleString())
+
             break
           // dynamic 2: based on the amount of money that is Paid late
           case ('dynamic2'):
             this.applyDynamic2Rule(this.appliedRule)
+            this.updatePeriodTable('period-table-container', this.period, 'penalty', this.appliedRule.penaltyRate.toLocaleString())
+
             this.appliedRule = null
             break
           default:
