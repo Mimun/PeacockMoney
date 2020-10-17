@@ -16,16 +16,16 @@ export default class Record {
     this.balance += amount
   }
 
-  payedNotDonePeriod(amount, payedDate, notDonePeriodArray) {
+  paidNotDonePeriod(amount, paidDate, notDonePeriodArray) {
     this.balance += amount
     var i = 0
-    const recursive = (balance, payedDate, notDonePeriod, record) => {
+    const recursive = (balance, paidDate, notDonePeriod, record) => {
       if (balance > 0) {
         var updateObj = notDonePeriod
         console.log('update obj: ', updateObj)
         // enough money for total payment of that period
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
-        updateObj.payed = updateObj.payed + payment
+        updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
         balance = balance - payment
         if (updateObj.remain === 0) {
@@ -35,18 +35,18 @@ export default class Record {
 
         }
         updateObj.paymentRecords.push({
-          payed: payment,
-          date: payedDate
+          paid: payment,
+          date: paidDate
         })
         record.updatePaymentRecord(updateObj.period, updateObj)
-        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'payed', updateObj.payed.toLocaleString())
+        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'paid', updateObj.paid.toLocaleString())
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
-        updateObj.updateHistoryPayment('payment-history', payedDate)
+        updateObj.updateHistoryPayment('payment-history', paidDate)
 
         console.log('record after paying: ', record)
         i++
         if (notDonePeriodArray[i]) {
-          return recursive(balance, payedDate, notDonePeriodArray[i], record)
+          return recursive(balance, paidDate, notDonePeriodArray[i], record)
 
         } else {
           return balance
@@ -55,7 +55,7 @@ export default class Record {
         return balance
       }
     }
-    var balance = recursive(this.balance, payedDate, notDonePeriodArray[i], this)
+    var balance = recursive(this.balance, paidDate, notDonePeriodArray[i], this)
     this.balance = balance
 
   }

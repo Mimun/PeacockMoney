@@ -1,23 +1,32 @@
 export default class PeriodRecord {
   // period status: is done or not
-  constructor(realLifeDate, redemptionDate, periodEndDate, redemption, periodStatus, period, ruleArray, originalValue) {
-    this.realLifeDate = new Date(realLifeDate)
-    this.daysBetween = 0
-    this.originalValue = originalValue
-
-    this.ruleArray = ruleArray
-    this.appliedRule = null
-
+  // period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
+  // periodEndDate, periodStatus, ruleArray, originalValue, realLifeDate
+  constructor(period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
+    periodEndDate, periodStatus, ruleArray, originalValue, realLifeDate) {
     this.period = period
+    this.redemptionDate = new Date(redemptionDate)
+    this.redemption = redemption
+    this.principal = principal
+    this.incrementalPaidPrincipal = incrementalPaidPrincipal
+    this.interest = interest
+    this.accumulatedPaidInterest = accumulatedPaidInterest
+
+    this.periodEndDate = periodEndDate
     this.periodStatus = periodStatus
+    this.ruleArray = ruleArray
+    this.originalValue = originalValue
+    this.realLifeDate = new Date(realLifeDate)
+
+    this.totalPayment = this.redemption
+    this.paid = 0
+    this.remain = this.redemption
+
+    this.daysBetween = 0
+    this.appliedRule = null
     this.penaltyRecord = []
     this.paymentRecords = []
-    this.redemptionDate = new Date(redemptionDate)
-    this.periodEndDate = periodEndDate
-    this.redemption = redemption
-    this.totalPayment = this.redemption
-    this.payed = 0
-    this.remain = this.redemption
+   
     this.isPause = false
     // this.record = record
     this.countInterval = () => { }
@@ -35,7 +44,7 @@ export default class PeriodRecord {
         // check rule
         this.checkRule()
         console.log(`days between of period ${this.period}: ${this.daysBetween}\n<--------------->`)
-        
+
 
         if (this.periodStatus) {
           clearInterval(this.countInterval)
@@ -114,7 +123,7 @@ export default class PeriodRecord {
         case ('dynamic1'):
           this.applyDynamic1Rule(this.appliedRule)
           break
-        // dynamic 2: based on the amount of money that is payed late
+        // dynamic 2: based on the amount of money that is Paid late
         case ('dynamic2'):
           this.applyDynamic2Rule(this.appliedRule)
           this.appliedRule = null
@@ -133,7 +142,7 @@ export default class PeriodRecord {
     })
 
     this.totalPayment = this.redemption + parseFloat(appliedRule.penaltyRate)
-    this.remain = this.totalPayment - this.payed
+    this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
 
@@ -155,7 +164,7 @@ export default class PeriodRecord {
 
     this.totalPayment = this.redemption +
       parseFloat((appliedRule.penaltyRate * this.daysBetween * this.originalValue) / 100)
-    this.remain = this.totalPayment - this.payed
+    this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
 
@@ -165,9 +174,9 @@ export default class PeriodRecord {
   // dynamic 2: based on late payments
   applyDynamic2Rule(appliedRule) {
     this.totalPayment = this.redemption +
-      parseFloat((appliedRule.penaltyRate * (this.redemption - this.payed)) / 100)
+      parseFloat((appliedRule.penaltyRate * (this.redemption - this.paid)) / 100)
 
-    this.remain = this.totalPayment - this.payed
+    this.remain = this.totalPayment - this.paid
     this.penaltyRecord.push({
       reason: 'penalty',
       policyType: 'static',
@@ -184,11 +193,11 @@ export default class PeriodRecord {
     document.querySelector(`div.${elementName} table tbody tr[id='${period}'] th#${updateElement}`).innerHTML = updateValue
   }
 
-  updateHistoryPayment(elementName, payedDate) {
+  updateHistoryPayment(elementName, paidDate) {
     var tr = document.createElement('tr')
     document.querySelectorAll(`div.${elementName} table thead th`).forEach(element => {
       var th = document.createElement('th')
-      th.innerHTML = element.id === "realLifeDate" ? payedDate : this[element.id].toLocaleString()
+      th.innerHTML = element.id === "realLifeDate" ? paidDate : this[element.id].toLocaleString()
       tr.appendChild(th)
     })
 

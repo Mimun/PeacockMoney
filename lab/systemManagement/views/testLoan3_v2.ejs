@@ -58,9 +58,9 @@
             <th scope="col" id="redemptionDate">Ngay dong lai(dd/mm/yyyy)</th>
             <th scope="col" id="redemption">Redemption</th>
             <th scope="col" id="principal">Principal</th>
-            <th scope="col" id="incrementalPayedPrincipal">Goc da tra cong don</th>
+            <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
             <th scope="col" id="interest">Interest</th>
-            <th scope="col" id="accumulatedPayedInterest">Lai da tra luy ke</th>
+            <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
             <th scope="col" id="remainedPrincipal">Tien goc con lai</th>
 
           </tr>
@@ -90,7 +90,7 @@
 
   <script>
     function displayDept(times, redemptionDate, redemption, principal,
-      incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal) {
+      incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainedPrincipal) {
       var tr = document.createElement('tr')
       for (var i = 0; i < arguments.length; i++) {
         var th = document.createElement('th')
@@ -151,7 +151,7 @@
 
   <script>
 
-    // redemption, principal, incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal
+    // redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainedPrincipal
     // tien tra theo ky, tien goc, goc da tra cong don, lai, lai da tra luy ke, goc con lai
 
     const calculateRedemption = (package) => {
@@ -162,8 +162,8 @@
         interest = 0,
         redemption = 0,
         principal = presentValue / numberOfPayments,
-        incrementalPayedPrincipal = 0,
-        accumulatedPayedInterest = 0,
+        incrementalPaidPrincipal = 0,
+        accumulatedPaidInterest = 0,
         remainedPrincipal = 0
 
       document.querySelector('table').querySelector('tbody').innerHTML = ''
@@ -176,14 +176,14 @@
         termArray.push(redemptionDate)
         console.log('redemption date: ', formatDate(redemptionDate), ', days in month: ', daysInMonth)
         redemption = pmt((interestRatePerDay * daysInMonth) / 100, numberOfPayments, -presentValue)
-        interest = ((interestRatePerDay * daysInMonth) * (presentValue - incrementalPayedPrincipal)) / 100
+        interest = ((interestRatePerDay * daysInMonth) * (presentValue - incrementalPaidPrincipal)) / 100
         principal = redemption - interest
-        incrementalPayedPrincipal += principal
-        accumulatedPayedInterest += interest
-        remainedPrincipal = presentValue - incrementalPayedPrincipal
+        incrementalPaidPrincipal += principal
+        accumulatedPaidInterest += interest
+        remainedPrincipal = presentValue - incrementalPaidPrincipal
 
-        displayDept(i, formatDate(redemptionDate), Math.round(redemption, -1), Math.round(principal, -1), Math.round(incrementalPayedPrincipal, -1),
-          Math.round(interest, -1), Math.round(accumulatedPayedInterest, -1), Math.round(remainedPrincipal, -1))
+        displayDept(i, formatDate(redemptionDate), Math.round(redemption, -1), Math.round(principal, -1), Math.round(incrementalPaidPrincipal, -1),
+          Math.round(interest, -1), Math.round(accumulatedPaidInterest, -1), Math.round(remainedPrincipal, -1))
       }
     }
   </script>

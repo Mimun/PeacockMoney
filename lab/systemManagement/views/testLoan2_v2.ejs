@@ -118,7 +118,7 @@
                     <th scope="col" id="redemptionDate">Date</th>
                     <th scope="col" id="redemption">Redemption</th>
                     <th scope="col" id="totalPayment">Total(Redemption+Penalty)</th>
-                    <th scope="col" id="payed">Payed</th>
+                    <th scope="col" id="paid">Paid</th>
                     <th scope="col" id="remain">Remain</th>
                     <th scope="col" id="periodStatus">Status</th>
                     <th scope="col" id="counter">Days pass</th>
@@ -177,7 +177,7 @@
                   <tr>
                     <th scope="col" id="period">No</th>
                     <th scope="col" id="totalPayment">Total payment</th>
-                    <th scope="col" id="payed">Total payed</th>
+                    <th scope="col" id="paid">Total Paid</th>
                     <th scope="col" id="remain">Remain</th>
                     <th scope="col" id="realLifeDate">Date</th>
                     <th scope="col" id="periodStatus">Status</th>
@@ -284,8 +284,8 @@
         interest = 0,
         redemption = 0,
         principal = presentValue / numberOfPayments,
-        incrementalPayedPrincipal = 0,
-        accumulatedPayedInterest = 0,
+        incrementalPaidPrincipal = 0,
+        accumulatedPaidInterest = 0,
         remainedPrincipal = 0,
         // date
         agreementDate = new Date(package.agreementDate),
@@ -304,29 +304,29 @@
 
         interest = (interestRatePerDay * daysInMonth * (presentValue - principal * (i - 1))) / 100
         redemption = principal + interest
-        incrementalPayedPrincipal += principal
-        accumulatedPayedInterest += interest
-        remainedPrincipal = presentValue - incrementalPayedPrincipal
+        incrementalPaidPrincipal += principal
+        accumulatedPaidInterest += interest
+        remainedPrincipal = presentValue - incrementalPaidPrincipal
 
         var obj = {
           period: i - 1,
           redemptionDate: redemptionDate,
           redemption,
           totalPayment: redemption,
-          payed: 0,
+          paid: 0,
           remain: redemption,
           periodStatus: false
         }
         periodArray.push(obj)
         displayTable(obj, 'period-table-container')
 
-        // displayDept(i, formatDate(redemptionDate), Math.round(redemption, -1), Math.round(principal, -1), Math.round(incrementalPayedPrincipal, -1),
-        //   Math.round(interest, -1), Math.round(accumulatedPayedInterest, -1), Math.round(remainedPrincipal, -1))
+        // displayDept(i, formatDate(redemptionDate), Math.round(redemption, -1), Math.round(principal, -1), Math.round(incrementalPaidPrincipal, -1),
+        //   Math.round(interest, -1), Math.round(accumulatedPaidInterest, -1), Math.round(remainedPrincipal, -1))
       }
     }
     
     function displayDept(times, redemptionDate, redemption, principal,
-      incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal) {
+      incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainedPrincipal) {
       var tr = document.createElement('tr')
       for (var i = 0; i < arguments.length; i++) {
         var th = document.createElement('th')
@@ -347,7 +347,7 @@
               break
             case ('redemption'):
             case ('totalPayment'):
-            case ('payed'):
+            case ('paid'):
             case ('remain'):
               th.innerHTML = Math.round(object[element.id], -1).toLocaleString()
               break
@@ -490,11 +490,11 @@
       if (notDonePeriodArray.length !== 0) {
         console.log('not done period array: ', notDonePeriodArray)
 
-        record.payedNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
+        record.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
 
       } else {
-        // record.payed(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
-        window.alert('You have payed all the periods.')
+        // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
+        window.alert('You have Paid all the periods.')
       }
     })
   </script>
