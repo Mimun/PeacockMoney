@@ -27,13 +27,9 @@ export default class Record {
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
-        balance = balance - payment
-        if (updateObj.remain === 0) {
-          updateObj.periodStatus = true
-          updateObj.stopCounting()
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'periodStatus', updateObj.periodStatus)
 
-        }
+        balance = balance - payment
+
         updateObj.paymentRecords.push({
           paid: payment,
           date: paidDate
@@ -42,6 +38,23 @@ export default class Record {
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'paid', updateObj.paid.toLocaleString())
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
         updateObj.updateHistoryPayment('payment-history', paidDate)
+
+        if (updateObj.remain === 0) {
+          updateObj.periodStatus = true
+          record.periodRecords.filter(rec => {
+            return rec.period <= updateObj.period
+
+          }).forEach(rec => {
+            updateObj.accumulatedPaidInterest += rec.interest
+            updateObj.incrementalPaidPrincipal += rec.principal
+          })
+
+          updateObj.stopCounting()
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'periodStatus', updateObj.periodStatus)
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'accumulatedPaidInterest', updateObj.accumulatedPaidInterest.toLocaleString())
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'incrementalPaidPrincipal', updateObj.incrementalPaidPrincipal.toLocaleString())
+
+        }
 
         console.log('record after paying: ', record)
         i++

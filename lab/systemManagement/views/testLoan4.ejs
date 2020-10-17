@@ -11,7 +11,8 @@
       margin: 16px 0;
       padding: 32px 48px;
     }
-    table th{
+
+    table th {
       text-align: right;
     }
   </style>
@@ -77,10 +78,6 @@
             </div>
           </div>
 
-        </div>
-
-        <!-- package -->
-        <div class="row">
           <!-- loan package -->
           <div class="col-3">
             <div class="loan-package">
@@ -106,6 +103,12 @@
 
             </div>
           </div>
+
+        </div>
+
+        <!-- package -->
+        <div class="row">
+
           <!-- simulation -->
           <div class="col">
             <div class="simulation period-table-container">
@@ -113,13 +116,17 @@
               <table class="table table-hover table-responsive period-table">
                 <thead>
                   <tr>
-                    <th scope="col" id="period">No</th>
-                    <th scope="col" id="redemptionDate">Date</th>
-                    <th scope="col" id="redemption">Redemption</th>
-                    <th scope="col" id="totalPayment">Total(Redemption+Penalty)</th>
-                    <th scope="col" id="paid">Paid</th>
-                    <th scope="col" id="remain">Remain</th>
-                    <th scope="col" id="periodStatus">Status</th>
+                    <th scope="col" id="period">Ky</th>
+                    <th scope="col" id="redemptionDate">Ngay dong</th>
+                    <th scope="col" id="redemption">So tien dong(principal+interest)</th>
+                    <th scope="col" id="principal">Principal</th>
+                    <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
+                    <th scope="col" id="interest">Lai</th>
+                    <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
+                    <th scope="col" id="totalPayment">Tong tien dong(phat+ so tien dong)</th>
+                    <th scope="col" id="paid">Da tra</th>
+                    <th scope="col" id="remain">Con lai</th>
+                    <th scope="col" id="periodStatus">Tinh trang</th>
                     <th scope="col" id="counter">Days pass</th>
 
                   </tr>
@@ -129,26 +136,6 @@
               </table>
             </div>
           </div>
-          <!-- <div class="col">
-            <h4>Bang chi tiet</h4>
-            <table class="table table-striped table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th scope="col" id="times">So lan dong lai</th>
-                  <th scope="col" id="redemptionDate">Ngay dong lai(dd/mm/yyyy)</th>
-                  <th scope="col" id="redemption">Redemption</th>
-                  <th scope="col" id="principal">Principal</th>
-                  <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
-                  <th scope="col" id="interest">Interest</th>
-                  <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
-                  <th scope="col" id="remainedPrincipal">Tien goc con lai</th>
-
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div> -->
 
         </div>
 
@@ -319,7 +306,7 @@
         // redemptionDate = tempDate.addMonths(i)
         // var daysInMonth = (redemptionDate - lastDate) / oneDay
 
-        redemptionDate = i===1? agreementDate: tempDate.addMonths(i-1)
+        redemptionDate = i === 1 ? agreementDate : tempDate.addMonths(i - 1)
         var daysInMonth = redemptionDate.getDaysInMonth()
 
 
@@ -327,14 +314,19 @@
         principal = i === numberOfPayments ? presentValue : 0
         redemption = principal + interest
 
-        incrementalPaidPrincipal = i === numberOfPayments ? presentValue : 0
-        accumulatedPaidInterest += interest
+        incrementalPaidPrincipal = 0
+        accumulatedPaidInterest = 0
         remainedPrincipal = presentValue - principal
 
         var obj = {
           period: i - 1,
           redemptionDate: redemptionDate,
           redemption,
+          principal,
+          incrementalPaidPrincipal,
+          interest,
+          accumulatedPaidInterest,
+
           totalPayment: redemption,
           paid: 0,
           remain: redemption,
@@ -449,7 +441,11 @@
         console.log('period: ', period)
         var tempdate = new Date(redemptionDate)
         var periodEndDate = new Date(tempdate.setDate(tempdate.getDate() + (getDaysInMonth(tempdate.getMonth(), tempdate.getFullYear()) - 1)))
-        var periodRecord = new PeriodRecord(redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue)
+        var periodRecord = new PeriodRecord(
+          index, period.redemptionDate, redemption, period.principal, period.incrementalPaidPrincipal, period.interest,
+          period.accumulatedPaidInterest, periodEndDate, false, ruleArray, originalValue, redemptionDate
+          // redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue
+        )
         record.createPeriodRecordForRecord(periodRecord)
 
       })

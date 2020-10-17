@@ -78,8 +78,8 @@
             </div>
           </div>
 
-           <!-- loan package -->
-           <div class="col-3">
+          <!-- loan package -->
+          <div class="col-3">
             <div class="loan-package">
               <h4>Tao goi vay</h4>
 
@@ -108,7 +108,7 @@
 
         <!-- package -->
         <div class="row">
-         
+
           <!-- simulation -->
           <div class="col">
             <div class="simulation period-table-container">
@@ -305,12 +305,12 @@
         lastDate = redemptionDate ? redemptionDate : agreementDate
         redemptionDate = tempDate.addMonths(i)
         var daysInMonth = (redemptionDate - lastDate) / oneDay
+        interest = (interestRatePerDay * daysInMonth * presentValue) / 100
+        principal = i === numberOfPayments ? presentValue : 0
 
         redemption = principal + interest
-        principal = i === numberOfPayments ? presentValue : 0
-        incrementalPaidPrincipal = i === numberOfPayments ? presentValue : 0
-        interest = (interestRatePerDay * daysInMonth * presentValue) / 100
-        accumulatedPaidInterest += interest
+        incrementalPaidPrincipal = 0
+        accumulatedPaidInterest = 0
 
         // remainedPrincipal = presentValue - principal
 
@@ -438,9 +438,9 @@
         var tempdate = new Date(redemptionDate)
         var periodEndDate = new Date(tempdate.setDate(tempdate.getDate() + (getDaysInMonth(tempdate.getMonth(), tempdate.getFullYear()) - 1)))
         var periodRecord = new PeriodRecord(
-          period.period, period.redemptionDate, period.redemption, period.principal, period.incrementalPaidPrincipal, period.interest,
-          period.accumulatedPaidInterest,
-        // redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue
+          index, period.redemptionDate, redemption, period.principal, period.incrementalPaidPrincipal, period.interest,
+          period.accumulatedPaidInterest, periodEndDate, false, ruleArray, originalValue, redemptionDate
+          // redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue
         )
         record.createPeriodRecordForRecord(periodRecord)
 
