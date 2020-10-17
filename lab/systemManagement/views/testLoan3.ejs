@@ -108,7 +108,7 @@
 
         <!-- package -->
         <div class="row">
-          
+
           <!-- simulation -->
           <div class="col">
             <div class="simulation period-table-container">
@@ -183,7 +183,7 @@
                   <tr>
                     <th scope="col" id="period">No</th>
                     <th scope="col" id="totalPayment">Total payment</th>
-                    <th scope="col" id="payed">Total payed</th>
+                    <th scope="col" id="paid">Total Paid</th>
                     <th scope="col" id="remain">Remain</th>
                     <th scope="col" id="realLifeDate">Date</th>
                     <th scope="col" id="periodStatus">Status</th>
@@ -307,8 +307,8 @@
         interest = 0,
         redemption = 0,
         principal = presentValue / numberOfPayments,
-        incrementalPayedPrincipal = 0,
-        accumulatedPayedInterest = 0,
+        incrementalPaidPrincipal = 0,
+        accumulatedPaidInterest = 0,
         remainedPrincipal = 0,
         // date
         agreementDate = new Date(package.agreementDate),
@@ -317,6 +317,7 @@
 
       document.querySelector('table.period-table').querySelector('tbody').innerHTML = ''
       periodArray = []
+      var tempIncrementalPaidPrincipal = 0
 
 
       for (var i = 1; i <= numberOfPayments; i++) {
@@ -326,11 +327,15 @@
         var daysInMonth = (redemptionDate - lastDate) / oneDay
 
         redemption = pmt(package.interestRatePerMonth / 100, numberOfPayments, -presentValue)
-        interest = (interestRatePerMonth * (presentValue - incrementalPayedPrincipal)) / 100
+
+
+        interest = (interestRatePerMonth * (presentValue - tempIncrementalPaidPrincipal)) / 100
         principal = redemption - interest
         incrementalPaidPrincipal = 0
         accumulatedPaidInterest = 0
-        remainedPrincipal = presentValue - incrementalPayedPrincipal
+        remainedPrincipal = presentValue - incrementalPaidPrincipal
+
+        tempIncrementalPaidPrincipal += principal
         var obj = {
           period: i - 1,
           redemptionDate: redemptionDate,
@@ -352,7 +357,7 @@
     }
 
     function displayDept(times, redemptionDate, redemption, principal,
-      incrementalPayedPrincipal, interest, accumulatedPayedInterest, remainedPrincipal) {
+      incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainedPrincipal) {
       var tr = document.createElement('tr')
       for (var i = 0; i < arguments.length; i++) {
         var th = document.createElement('th')
@@ -373,9 +378,11 @@
               break
             case ('redemption'):
             case ('totalPayment'):
-            case ('payed'):
+            case ('paid'):
             case ('remain'):
-              th.innerHTML = Math.round(object[element.id], -1).toLocaleString()
+            case ('principal'):
+            case ('interest'):
+              th.innerHTML = Math.round(object[element.id], 3).toLocaleString()
               break
             default:
               th.innerHTML = object[element.id]
@@ -519,11 +526,11 @@
       if (notDonePeriodArray.length !== 0) {
         console.log('not done period array: ', notDonePeriodArray)
 
-        record.payedNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
+        record.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
 
       } else {
-        // record.payed(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
-        window.alert('You have payed all the periods.')
+        // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
+        window.alert('You have Paid all the periods.')
       }
     })
   </script>

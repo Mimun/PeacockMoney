@@ -196,8 +196,41 @@
           </div>
 
         </div>
+
+        <!-- loan more, pay the origin -->
+        <div class="row">
+          <div class="col">
+            <h4>Vay them</h4>
+            <div class="form-group">
+              <label>So tien</label>
+              <input type="number" class="form-control" id="loanMore">
+            </div>
+            <button class="btn btn-sm btn-primary" id="btn-loan-more">Add</button>
+          </div>
+
+          <div class="col">
+            <h4>Tra bot</h4>
+            <div class="form-group">
+              <label>So tien</label>
+              <input type="number" class="form-control" id="loanMore">
+            </div>
+            <button class="btn btn-sm btn-primary" id="btn-pay-origin">Add</button>
+          </div>
+
+          <div class="col">
+            <h4>Quy dinh block</h4>
+            <div class="form-group">
+              <label for="">So ngay</label>
+              <input type="number" class="form-control" id="block">
+              <button class="btn btn-sm btn-primary" id="btn-set-block">Set</button>
+            </div>
+          </div>
+        </div>
+
+
       </div>
     </div>
+  </div>
   </div>
 
   <!-- global variable -->
@@ -511,6 +544,18 @@
         // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
         window.alert('You have paid all the periods.')
       }
+    })
+  </script>
+
+  <!-- calculate and display loan more, pay the origin -->
+  <script>
+    document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
+      console.log('event: ', event.target.value)
+      console.log('real date at the moment the user clicks to the loan more button: ', realLifeDate)
+      const filteredRecord = record.periodRecords.filter(rec => {
+        return rec.realLifeDate.getTime() <= realLifeDate && rec.paid === 0
+      })
+      console.log('paid period: ', filteredRecord)
     })
   </script>
 </body>
