@@ -77,23 +77,41 @@ export default class PeriodRecord {
 
   }
 
-  checkRule() {
+  // checkRule() {
+  //   this.ruleArray.filter(rule => {
+  //     var debtFrom = rule.debtFrom && rule.debtFrom !== 0 && rule.debtFrom !== '' ? parseFloat(rule.debtFrom) : 0
+  //     var debtTo = rule.debtTo && rule.debtTo !== 0 && rule.debtTo !== '' ? parseFloat(rule.debtTo) : 0
+  //     if (debtTo !== 0 && this.originalValue <= debtTo && this.daysBetween === parseInt(rule.from)) {
+  //       this.appliedRule = rule
+  //       console.log('this.appliedRule 1: ', this.appliedRule)
+
+  //     } else if (debtFrom !== 0 && this.originalValue > debtFrom && this.daysBetween === parseInt(rule.from)) {
+  //       this.appliedRule = rule
+  //       console.log('this.appliedRule 2: ', this.appliedRule)
+
+
+  //     } else if (this.daysBetween === parseInt(rule.from)) {
+  //       this.appliedRule = rule
+  //       console.log('this.appliedRule 3: ', this.appliedRule)
+  //     }
+  //   })
+  // }
+  checkRule(){
     this.ruleArray.filter(rule => {
-      var debtFrom = rule.debtFrom && rule.debtFrom !== 0 && rule.debtFrom !== '' ? parseFloat(rule.debtFrom) : 0
-      var debtTo = rule.debtTo && rule.debtTo !== 0 && rule.debtTo !== '' ? parseFloat(rule.debtTo) : 0
-      if (debtTo !== 0 && this.originalValue <= debtTo && this.daysBetween === parseInt(rule.from)) {
-        this.appliedRule = rule
-        console.log('this.appliedRule 1: ', this.appliedRule)
-
-      } else if (debtFrom !== 0 && this.originalValue > debtFrom && this.daysBetween === parseInt(rule.from)) {
-        this.appliedRule = rule
-        console.log('this.appliedRule 2: ', this.appliedRule)
-
-
-      } else if (this.daysBetween === parseInt(rule.from)) {
-        this.appliedRule = rule
-        console.log('this.appliedRule 3: ', this.appliedRule)
+      var debtFrom = rule.debtFrom === undefined || rule.debtFrom === null || rule.debtFrom === '' ? 0 : parseFloat(rule.debtFrom)
+      var debtTo = rule.debtTo === undefined || rule.debtTo === null || rule.debtTo === '' ? 0 : parseFloat(rule.debtTo)
+      if ((debtTo - debtFrom) >= 0 && debtFrom < this.originalValue && this.originalValue <= debtTo) {
+        console.log('applied 1')
+        return rule
+      } else if ((debtTo - debtFrom) < 0 && debtFrom < this.originalValue) {
+        console.log('applied 2')
+        return rule
       }
+    }).filter(rule=>{
+      if(this.daysBetween === parseInt(rule.from)){
+        this.appliedRule = rule
+      }
+      // return daysBetween === parseInt(rule.from)
     })
   }
 

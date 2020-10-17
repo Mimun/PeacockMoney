@@ -491,7 +491,7 @@
     }
 
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
-      realLifeDate = document.querySelector('div.date input#real-date').value
+      realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
       console.log('original value input: ', originalValue)
       record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
       event.target.setAttribute('disabled', true)
