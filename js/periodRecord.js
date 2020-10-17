@@ -35,31 +35,14 @@ export default class PeriodRecord {
         // check rule
         this.checkRule()
         console.log(`days between of period ${this.period}: ${this.daysBetween}\n<--------------->`)
-        if (this.appliedRule) {
-          switch (this.appliedRule.policyType) {
-            case ('static'):
-              this.applyStaticRule(this.appliedRule)
-              this.appliedRule = null
-              break
-            // dynamic 1: based on time
-            case ('dynamic1'):
-              this.applyDynamic1Rule(this.appliedRule)
-              break
-            // dynamic 2: based on the amount of money that is payed late
-            case ('dynamic2'):
-              this.applyDynamic2Rule(this.appliedRule)
-              this.appliedRule = null
-              break
-            default:
-          }
-        }
+        
 
         if (this.periodStatus) {
           clearInterval(this.countInterval)
         }
       }
 
-    }, 5000)
+    }, 2000)
   }
 
   stopCounting() {
@@ -96,23 +79,49 @@ export default class PeriodRecord {
   //     }
   //   })
   // }
-  checkRule(){
+  checkRule() {
+    console.log('this original value: ', this.originalValue)
+
     this.ruleArray.filter(rule => {
       var debtFrom = rule.debtFrom === undefined || rule.debtFrom === null || rule.debtFrom === '' ? 0 : parseFloat(rule.debtFrom)
       var debtTo = rule.debtTo === undefined || rule.debtTo === null || rule.debtTo === '' ? 0 : parseFloat(rule.debtTo)
-      if ((debtTo - debtFrom) >= 0 && debtFrom < this.originalValue && this.originalValue <= debtTo) {
-        console.log('applied 1')
+      console.log('debt from: ', debtFrom)
+      console.log('debt to: ', debtTo)
+
+      if ((debtTo - debtFrom) > 0 && debtFrom < this.originalValue && this.originalValue <= debtTo) {
         return rule
       } else if ((debtTo - debtFrom) < 0 && debtFrom < this.originalValue) {
-        console.log('applied 2')
+        return rule
+      } else if ((debtTo - debtFrom) === 0 && debtFrom !== 0 && debtTo !== 0 && debtFrom === this.originalValue) {
+        return rule
+      } else if ((debtTo - debtFrom) === 0 && debtFrom === 0 && debtTo === 0 && debtFrom !== this.originalValue) {
         return rule
       }
-    }).filter(rule=>{
-      if(this.daysBetween === parseInt(rule.from)){
+    }).filter(rule => {
+      if (this.daysBetween === parseInt(rule.from)) {
         this.appliedRule = rule
       }
       // return daysBetween === parseInt(rule.from)
     })
+    console.log('this applied rule: ', this.appliedRule)
+    if (this.appliedRule) {
+      switch (this.appliedRule.policyType) {
+        case ('static'):
+          this.applyStaticRule(this.appliedRule)
+          this.appliedRule = null
+          break
+        // dynamic 1: based on time
+        case ('dynamic1'):
+          this.applyDynamic1Rule(this.appliedRule)
+          break
+        // dynamic 2: based on the amount of money that is payed late
+        case ('dynamic2'):
+          this.applyDynamic2Rule(this.appliedRule)
+          this.appliedRule = null
+          break
+        default:
+      }
+    }
   }
 
   applyStaticRule(appliedRule) {
