@@ -23,211 +23,15 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ CỐ ĐỊNH</h1>
+      <h1><%- title %></h1>
       <div class="container" style="margin: 0 !important;
       padding: 0 !important;
       max-width: 100%;">
-        <!-- penalty rule -->
-        <div class="row">
-          <!-- penalty rule -->
-          <div class="col-3">
-            <div class="penalty-rules">
-              <h4>Penalty rule</h4>
-              <div class="form-group" id="policy">
-                <label>Thoi gian qua han</label>
-                <input type="number" class="form-control" id="from" placeholder="From...">
-                <input type="number" class="form-control" id="to" placeholder="To...">
-              </div>
-              <div class="form-group">
-                <label class="bmd-label-floating">Kieu phat</label>
-                <select class="form-control" id="policyType">
-                  <option value="static">Static</option>
-                  <option value="dynamic1">Dynamic 1: % * No goc * so ngay dong cham</option>
-                  <option value="dynamic2">Dynamic 2: % * so tien dong cham</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="bmd-label-floating">Phi phat</label>
-                <input type="text" class="form-control" id="penaltyRate">
-              </div>
-              <div class="form-group is-filled" id="original-debt">
-                <label>No goc</label>
-                <input type="number" class="form-control" id="debtFrom" placeholder="From...">
-                <input type="number" class="form-control" id="debtTo" placeholder="To...">
-              </div>
-              <button class="btn btn-sm btn-primary" id="btn-add-rule">Add rule</button>
-            </div>
-          </div>
-
-          <div class="col">
-            <div class="penalty-table">
-              <h3>Bang quy dinh cach phat</h3>
-              <table class="table table-hover table-responsive penalty-table">
-                <thead>
-                  <tr>
-                    <th id="from">Tu</th>
-                    <th id="to">Den</th>
-                    <th id="penaltyRate">Phat</th>
-                    <th id="debtFrom">No goc tu</th>
-                    <th id="debtTo">No goc den</th>
-                    <th id="policyType">Kieu phat</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- loan package -->
-          <div class="col-3">
-            <div class="loan-package">
-              <h4>Tao goi vay</h4>
-
-              <div class="form-group">
-                <label>So tien vay</label>
-                <input type="number" class="form-control" id="presentValue">
-              </div>
-              <div class="form-group">
-                <label>Ngay bat dau goi vay</label>
-                <input type="date" class="form-control" id="agreementDate">
-              </div>
-              <div class="form-group">
-                <label>Lai suat ngay(%)</label>
-                <input type="number" class="form-control" id="interestRatePerDay">
-              </div>
-              <div class="form-group">
-                <label>So lan tra(theo thang)</label>
-                <input type="number" class="form-control" id="numberOfPayments">
-              </div>
-              <button class="btn btn-sm btn-primary" id="createLoanPackage">Kich hoat goi vay</button>
-
-            </div>
-          </div>
-
-        </div>
-
-        <!-- package -->
-        <div class="row">
-
-          <!-- simulation -->
-          <div class="col">
-            <div class="simulation period-table-container">
-              <h4>Simulation</h4>
-              <table class="table table-hover table-responsive period-table">
-                <thead>
-                  <tr>
-                    <th scope="col" id="period">Ky</th>
-                    <th scope="col" id="redemptionDate">Ngay dong</th>
-                    <th scope="col" id="redemption">So tien dong(principal+interest)</th>
-                    <th scope="col" id="principal">Principal</th>
-                    <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
-                    <th scope="col" id="interest">Lai</th>
-                    <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
-                    <th scope="col" id="remainOrigin">Goc con lai</th>
-                    <th scope="col" id="totalPayment">Tong tien dong(phat+ so tien dong)</th>
-                    <th scope="col" id="paid">Da tra</th>
-                    <th scope="col" id="remain">Con lai</th>
-                    <th scope="col" id="periodStatus">Tinh trang</th>
-                    <th scope="col" id="counter">Days pass</th>
-                    <th scope="col" id="penalty">Penalty</th>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- date for simulation -->
-        <div class="row">
-          <div class="col-3">
-            <div class="date">
-              <h4>Choose date to start simulation</h4>
-              <label for="real-date">Thoi gian thuc</label>
-              <input type="date" id="real-date" class="form-control">
-              <button class="btn btn-sm btn-primary" id="btn-simulation">Start simulation</button>
-              <button class="btn btn-sm btn-info" id="btn-pause">Pause</button>
-            </div>
-          </div>
-
-          <div class="col">
-            <div class="time-counter">
-              <h4>Time counter</h4>
-              <p id="real-date-counter">Date counter: <span></span></p>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- simulation -->
-        <div class="row">
-          <!-- payment section -->
-          <div class="col-3">
-            <div class="payment">
-              <h4>Payment</h4>
-              <div class="form-group">
-                <label>So tien</label>
-                <input type="number" class="form-control" id="paymentSlip">
-              </div>
-              <button class="btn btn-sm btn-primary" id="btn-payment-slip">Add</button>
-            </div>
-          </div>
-
-          <!-- payment history -->
-          <div class="col">
-            <div class="payment-history">
-              <h4>Payment history</h4>
-              <table class="table table-hover table-responsive payment-history-table">
-                <thead>
-                  <tr>
-                    <th scope="col" id="period">No</th>
-                    <th scope="col" id="totalPayment">Total payment</th>
-                    <th scope="col" id="paid">Total paid</th>
-                    <th scope="col" id="remain">Remain</th>
-                    <th scope="col" id="realLifeDate">Date</th>
-                    <th scope="col" id="periodStatus">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- loan more, pay the origin -->
-        <div class="row">
-          <div class="col">
-            <h4>Vay them</h4>
-            <div class="form-group">
-              <label>So tien</label>
-              <input type="number" class="form-control" id="loanMore">
-            </div>
-            <button class="btn btn-sm btn-primary" id="btn-loan-more">Add</button>
-          </div>
-
-          <div class="col">
-            <h4>Tra bot</h4>
-            <div class="form-group">
-              <label>So tien</label>
-              <input type="number" class="form-control" id="loanMore">
-            </div>
-            <button class="btn btn-sm btn-primary" id="btn-pay-origin">Add</button>
-          </div>
-
-          <div class="col">
-            <h4>Quy dinh block</h4>
-            <div class="form-group">
-              <label for="">So ngay</label>
-              <input type="number" class="form-control" id="block">
-              <button class="btn btn-sm btn-primary" id="btn-set-block">Set</button>
-            </div>
-          </div>
-        </div>
-
+        <%- include('./loan_penalty/penalty') %>
+        <%- include('./loan_penalty/periodTable') %>
+        <%- include('./loan_penalty/dateSimulation') %>
+        <%- include('./loan_penalty/paymentHistory') %>
+        <%- include('./loan_penalty/loanMore') %>
       </div>
     </div>
   </div>
@@ -242,6 +46,11 @@
     var isPause = false
     var originalValue = 0
     var realLifeDate = null
+    var simulation = JSON.parse('<%- simulation %>')
+    console.log('simulation: ', simulation)
+  </script>
+
+  <script type="text/javascript">
   </script>
 
   <!-- common function -->
@@ -311,246 +120,27 @@
 
       return [day, month, year].join('-');
     }
-  </script>
 
-  <!-- create and display loan package -->
-  <script>
-    const calculateRedemption = (package) => {
-      console.log('package info: ', package)
-      var presentValue = package.presentValue,
-        numberOfPayments = package.numberOfPayments,
-        interestRatePerDay = package.interestRatePerDay,
-        interest = 0,
-        redemption = 0,
-        principal = 0,
-        incrementalPaidPrincipal = 0,
-        accumulatedPaidInterest = 0,
-        remainOrigin =0,
-        remainedPrincipal = 0,
-        // date
-        agreementDate = new Date(package.agreementDate),
-        oneDay = 24 * 60 * 60 * 1000,
-        lastDate = null, redemptionDate = null
+    function pmt(rate_per_period, number_of_payments, present_value, future_value, type) {
+      future_value = typeof future_value !== 'undefined' ? future_value : 0;
+      type = typeof type !== 'undefined' ? type : 0;
 
-      document.querySelector('table.period-table').querySelector('tbody').innerHTML = ''
-      periodArray = []
-      for (var i = 1; i <= numberOfPayments; i++) {
-        var tempDate = new Date(agreementDate)
-        lastDate = redemptionDate ? redemptionDate : agreementDate
-        redemptionDate = tempDate.addMonths(i)
-        var daysInMonth = (redemptionDate - lastDate) / oneDay
-        interest = (interestRatePerDay * daysInMonth * presentValue) / 100
-        principal = i === numberOfPayments ? presentValue : 0
+      if (rate_per_period != 0.0) {
+        // Interest rate exists
+        var q = Math.pow(1 + rate_per_period, number_of_payments);
+        return -(rate_per_period * (future_value + (q * present_value))) / ((-1 + q) * (1 + rate_per_period * (type)));
 
-        redemption = principal + interest
-        incrementalPaidPrincipal = 0
-        accumulatedPaidInterest = 0
-
-        // remainedPrincipal = presentValue - principal
-
-        var obj = {
-          period: i - 1,
-          redemptionDate: redemptionDate,
-          redemption,
-          principal,
-          incrementalPaidPrincipal,
-          interest,
-          accumulatedPaidInterest,
-          remainOrigin,
-
-          totalPayment: redemption,
-          paid: 0,
-          remain: redemption,
-          periodStatus: false
-        }
-        periodArray.push(obj)
-        // displayDept(i - 1, formatDate(redemptionDate), redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainedPrincipal)
-        displayTable(obj, 'period-table-container')
+      } else if (number_of_payments != 0.0) {
+        // No interest rate, but number of payments exists
+        return -(future_value + present_value) / number_of_payments;
       }
-      console.log('term array: ', periodArray)
+
+      return 0;
     }
-
-    function displayDept(times, redemptionDate, redemption, principal,
-      incrementalPaidPrincipal, interest, accumulatedPaidInterest, remainOrigin) {
-      var tr = document.createElement('tr')
-      for (var i = 0; i < arguments.length; i++) {
-        var th = document.createElement('th')
-        th.innerHTML = arguments[i]
-        tr.appendChild(th)
-      }
-      document.querySelector('table').querySelector('tbody').appendChild(tr)
-    }
-
-    const displayTable = (object, elementName) => {
-      var tr = document.createElement('tr')
-      document.querySelectorAll(`div.${elementName} table thead th`).forEach((element, index) => {
-        var th = document.createElement('th')
-        if (object[element.id] !== undefined) {
-          switch (element.id) {
-            case ('redemptionDate'):
-              th.innerHTML = formatDate(object[element.id])
-              break
-            case ('redemption'):
-            case ('totalPayment'):
-            case ('paid'):
-            case ('remain'):
-              th.innerHTML = Math.round(object[element.id], -1).toLocaleString()
-              break
-            default:
-              th.innerHTML = object[element.id]
-
-          }
-        }
-
-        th.id = element.id
-        tr.id = object.period
-        tr.appendChild(th)
-      })
-      document.querySelector(`div.${elementName} table tbody`).appendChild(tr)
-    }
-
-    document.querySelector('button#createLoanPackage').addEventListener('click', (event) => {
-      var obj = {}
-      document.querySelectorAll('.loan-package input').forEach(input => {
-        if (input.type === 'number') {
-          obj[input.id] = parseFloat(input.value)
-        } else {
-          obj[input.id] = input.value
-        }
-      });
-      originalValue = obj.presentValue
-
-      calculateRedemption(obj)
-
-    })
-  </script>
-
-  <!-- create and display penalty rules -->
-  <script>
-    const displayRule = (ruleObj, elementName) => {
-      var tr = document.createElement('tr')
-      document.querySelectorAll(`table.${elementName} thead th`).forEach(element => {
-        var th = document.createElement('th')
-        th.innerHTML = ruleObj[element.id]
-        tr.appendChild(th)
-      })
-      document.querySelector(`table.${elementName} tbody`).appendChild(tr)
-    }
-
-    document.querySelector('button#btn-add-rule').addEventListener('click', (event) => {
-      var lastRule = ruleArray[ruleArray.length - 1]
-      if (lastRule && lastRule.to === '') {
-        window.alert("You cannot add more rules because last rule's time stamp is to infinity!")
-      } else {
-        var ruleObj = {}
-        document.querySelectorAll('div.penalty-rules input,select').forEach(element => {
-          ruleObj[element.id] = element.value
-        })
-        ruleArray.push(ruleObj)
-        console.log('rule obj: ', ruleObj)
-        document.querySelector('input#from').value = ruleObj.to
-        document.querySelector('input#to').value = ''
-        document.querySelector('input#from').setAttribute('disabled', ruleObj.to === '' ? false : true)
-        displayRule(ruleObj, 'penalty-table')
-      }
-
-    })
-  </script>
-
-  <!-- choose date, display time counter -->
-  <script type="module">
-    import PeriodRecord from './periodRecord.js'
-    import Record from './record.js'
-
-    const startSimulation = (ruleArray, periodArray, realDate, originalValue) => {
-      var days = 0
-      var record = new Record()
-
-      periodArray.forEach((period, index) => {
-        var redemptionDate = new Date(periodArray[index].redemptionDate)
-        var redemption = parseFloat(periodArray[index].redemption)
-        console.log('period: ', period)
-        var tempdate = new Date(redemptionDate)
-        var periodEndDate = new Date(tempdate.setDate(tempdate.getDate() + (getDaysInMonth(tempdate.getMonth(), tempdate.getFullYear()) - 1)))
-        var periodRecord = new PeriodRecord(
-          index, period.redemptionDate, redemption, period.principal, period.incrementalPaidPrincipal, period.interest,
-          period.accumulatedPaidInterest, period.remainOrigin, periodEndDate, false, ruleArray, originalValue, redemptionDate
-          // redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue
-        )
-        record.createPeriodRecordForRecord(periodRecord)
-
-      })
-      console.log('record: ', record)
-      // clear interval
-      var interval = setInterval(async () => {
-        if (!isPause) {
-          if (period === periodArray.length) {
-            clearInterval(interval)
-            return
-          }
-          var redemptionDateToCompare = new Date(periodArray[period + 1].redemptionDate)
-          console.log('period: ', period)
-
-          if (realDate.getTime() === (redemptionDateToCompare.getTime() - (1000 * 24 * 60 * 60))) {
-            record.periodRecords[period + 1].count(1)
-            period++
-          }
-          realDate.setDate(realDate.getDate() + 1)
-          console.log('real time date: ', realDate)
-          document.querySelector('p#real-date-counter span').innerHTML = formatDate(realDate)
-
-          days++
-        }
-      }, 2000)
-      return record
-
-    }
-
-    document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
-      realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
-      console.log('real date input value: ', realLifeDate)
-      record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
-      event.target.setAttribute('disabled', true)
-    })
-
-    document.querySelector('button#btn-pause').addEventListener('click', (event) => {
-      isPause = !isPause
-      for (var i = -1; i <= period; i++) {
-        record.pauseCounting(i)
-
-      }
-      isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
-
-    })
-  </script>
-
-  <!-- calculate and display simualtion table -->
-  <script>
-    document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
-      var paymentSlipObj = {
-        addedDate: realLifeDate
-      }
-      document.querySelector('div.payment').querySelectorAll('input').forEach(input => {
-        paymentSlipObj[input.getAttribute('id')] = input.value
-      })
-
-      const notDonePeriodArray = record.periodRecords.filter(period => {
-        return period.periodStatus === false
-      })
-      if (notDonePeriodArray.length !== 0) {
-        console.log('not done period array: ', notDonePeriodArray)
-
-        record.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
-
-      } else {
-        // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
-        window.alert('You have paid all the periods.')
-      }
-    })
   </script>
 
   <!-- calculate and display loan more, pay the origin -->
-  <script>
+  <!-- <script>
     document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
       console.log('event: ', event.target.value)
       console.log('real date at the moment the user clicks to the loan more button: ', realLifeDate)
@@ -559,7 +149,7 @@
       })
       console.log('paid period: ', filteredRecord)
     })
-  </script>
+  </script> -->
 </body>
 
 </html>

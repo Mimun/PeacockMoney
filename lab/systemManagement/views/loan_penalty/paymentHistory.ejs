@@ -1,0 +1,61 @@
+ <!-- simulation -->
+ <div class="row">
+  <!-- payment section -->
+  <div class="col-3">
+    <div class="payment">
+      <h4>Payment</h4>
+      <div class="form-group">
+        <label>So tien</label>
+        <input type="number" class="form-control" id="paymentSlip">
+      </div>
+      <button class="btn btn-sm btn-primary" id="btn-payment-slip">Add</button>
+    </div>
+  </div>
+
+  <!-- payment history -->
+  <div class="col">
+    <div class="payment-history">
+      <h4>Payment history</h4>
+      <table class="table table-hover table-responsive payment-history-table">
+        <thead>
+          <tr>
+            <th scope="col" id="period">No</th>
+            <th scope="col" id="totalPayment">Total payment</th>
+            <th scope="col" id="paid">Total paid</th>
+            <th scope="col" id="remain">Remain</th>
+            <th scope="col" id="realLifeDate">Date</th>
+            <th scope="col" id="periodStatus">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- calculate and display simualtion table -->
+<script>
+  document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
+    var paymentSlipObj = {
+      addedDate: realLifeDate
+    }
+    document.querySelector('div.payment').querySelectorAll('input').forEach(input => {
+      paymentSlipObj[input.getAttribute('id')] = input.value
+    })
+
+    const notDonePeriodArray = record.periodRecords.filter(period => {
+      return period.periodStatus === false
+    })
+    if (notDonePeriodArray.length !== 0) {
+      console.log('not done period array: ', notDonePeriodArray)
+
+      record.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
+
+    } else {
+      // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
+      window.alert('You have paid all the periods.')
+    }
+  })
+</script>

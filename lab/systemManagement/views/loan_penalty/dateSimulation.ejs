@@ -1,0 +1,87 @@
+<!-- date for simulation -->
+<div class="row">
+  <div class="col-3">
+    <div class="date">
+      <h4>Choose date to start simulation</h4>
+      <label for="real-date">Thoi gian thuc</label>
+      <input type="date" id="real-date" class="form-control">
+      <button class="btn btn-sm btn-primary" id="btn-simulation">Start simulation</button>
+      <button class="btn btn-sm btn-info" id="btn-pause">Pause</button>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="time-counter">
+      <h4>Time counter</h4>
+      <p id="real-date-counter">Date counter: <span></span></p>
+    </div>
+
+  </div>
+</div>
+
+<!-- choose date, display time counter -->
+<script type="module">
+  import PeriodRecord from '../periodRecord.js'
+  import Record from '../record.js'
+
+  const startSimulation = (ruleArray, periodArray, realDate, originalValue) => {
+    var days = 0
+    var record = new Record()
+
+    periodArray.forEach((period, index) => {
+      var redemptionDate = new Date(periodArray[index].redemptionDate)
+      var redemption = parseFloat(periodArray[index].redemption)
+      console.log('period: ', period)
+      var tempdate = new Date(redemptionDate)
+      var periodEndDate = new Date(tempdate.setDate(tempdate.getDate() + (getDaysInMonth(tempdate.getMonth(), tempdate.getFullYear()) - 1)))
+      var periodRecord = new PeriodRecord(
+        index, period.redemptionDate, redemption, period.principal, period.incrementalPaidPrincipal, period.interest,
+        period.accumulatedPaidInterest, period.remainOrigin, periodEndDate, false, ruleArray, originalValue, redemptionDate
+        // redemptionDate, redemptionDate, periodEndDate, redemption, false, index, ruleArray, originalValue
+      )
+      record.createPeriodRecordForRecord(periodRecord)
+
+    })
+    console.log('record: ', record)
+    // clear interval
+    var interval = setInterval(async () => {
+      if (!isPause) {
+        if (period === periodArray.length) {
+          clearInterval(interval)
+          return
+        }
+        var redemptionDateToCompare = new Date(periodArray[period + 1].redemptionDate)
+        console.log('period: ', period)
+
+        if (realDate.getTime() === (redemptionDateToCompare.getTime() - (1000 * 24 * 60 * 60))) {
+          record.periodRecords[period + 1].count(1)
+          period++
+        }
+        realDate.setDate(realDate.getDate() + 1)
+        console.log('real time date: ', realDate)
+        document.querySelector('p#real-date-counter span').innerHTML = formatDate(realDate)
+
+        days++
+      }
+    }, 2000)
+    return record
+
+  }
+
+  document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
+    realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
+    console.log('real date input value: ', realLifeDate)
+    record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
+    event.target.setAttribute('disabled', true)
+  })
+
+  document.querySelector('button#btn-pause').addEventListener('click', (event) => {
+    isPause = !isPause
+    for (var i = -1; i <= period; i++) {
+      record.pauseCounting(i)
+
+    }
+    isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
+
+  })
+</script>

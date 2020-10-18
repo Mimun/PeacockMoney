@@ -923,19 +923,19 @@ const createSearchArrayForReport = (array) => {
 
 // test loan 
 router.get('/testLoan1', (req, res) => {
-  res.render('testLoan1_v2')
+  res.render('testLoan1_v2', { simulation: 1, title: 'Bảng tính lãi theo dư nợ cố định', penaltyRateTitle: 'ngày' })
 })
 
 router.get('/testLoan2', (req, res) => {
-  res.render('testLoan2_v2')
+  res.render('testLoan1_v2', { simulation: 2, title: 'Bảng tính lãi theo dư nợ giảm dần gốc cố định', penaltyRateTitle: 'ngày' })
 })
 
 router.get('/testLoan3', (req, res) => {
-  res.render('testLoan3')
+  res.render('testLoan1_v2', { simulation: 3, title: 'Bảng tính lãi theo dư nợ giảm dần hàng tháng', penaltyRateTitle: 'tháng' })
 })
 
-router.get('/testLoan4', (req, res)=>{
-  res.render('testLoan4')
+router.get('/testLoan4', (req, res) => {
+  res.render('testLoan1_v2', { simulation: 4, title: 'Bảng tính lãi theo dư nợ cố định (trả đầu kỳ)', penaltyRateTitle: 'ngày' })
 })
 
 
