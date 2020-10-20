@@ -938,5 +938,9 @@ router.get('/testLoan4', (req, res) => {
   res.render('testLoan1_v2', { simulation: 4, title: 'Bảng tính lãi theo dư nợ cố định (trả đầu kỳ)', penaltyRateTitle: 'ngày' })
 })
 
+router.get('/testPaydown', (req, res)=>{
+  res.render('testPaydown', {})
+})
+
 
 module.exports = router;
