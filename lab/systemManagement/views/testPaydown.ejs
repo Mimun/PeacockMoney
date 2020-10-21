@@ -649,7 +649,17 @@
         date: realLifeDate,
         value: parseFloat(document.querySelector('input#payDown').value)
       }
-      record.payDown(payDownObj, block)
+      var totalRemain = 0
+      record.periodRecords.filter(rec => {
+        return rec.redemptionDate < realLifeDate
+      }).forEach(rec => {
+        totalRemain += rec.remain
+      })
+      if (totalRemain !== 0) {
+        document.querySelector('input#paymentSlip').value = totalRemain
+      } else {
+        record.payDown(payDownObj, block)
+      }
       document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
       record.periodRecords.forEach(rec => {
