@@ -570,16 +570,18 @@
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
       realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
       console.log('real date input value: ', realLifeDate)
-      record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
+      // record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
+      record.count(realLifeDate)
       event.target.setAttribute('disabled', true)
     })
 
     document.querySelector('button#btn-pause').addEventListener('click', (event) => {
-      isPause = !isPause
-      for (var i = -1; i <= period; i++) {
-        record.pauseCounting(i)
+      // isPause = !isPause
+      // for (var i = -1; i <= period; i++) {
+      //   record.pauseCounting(i)
 
-      }
+      // }
+      record.pauseCounting()
       isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
 
     })
@@ -644,9 +646,8 @@
   <!-- calculate and display pay down -->
   <script>
     document.querySelector('button#btn-pay-down').addEventListener('click', (event) => {
-      console.log('pay down date: ', realLifeDate)
       var payDownObj = {
-        date: realLifeDate,
+        date: record.realLifeDate,
         value: parseFloat(document.querySelector('input#payDown').value)
       }
       var totalRemain = 0

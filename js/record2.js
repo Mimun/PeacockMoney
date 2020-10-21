@@ -1,6 +1,7 @@
 import PeriodRecord from './periodRecord2.js'
 export default class Record {
-  constructor(interestRate = 0, presentValue = 0, agreementDate = new Date(Date.now()), numberOfPeriods = 0, ruleArray = []) {
+  constructor(interestRate = 0, presentValue = 0, agreementDate = new Date(Date.now()),
+    numberOfPeriods = 0, ruleArray = [], realLifeDate) {
     this.interestRate = interestRate
     this.presentValue = presentValue
     this.agreementDate = agreementDate
@@ -12,6 +13,10 @@ export default class Record {
     this.periodRecords = []
     this.balance = 0
     this.ruleArray = ruleArray
+
+    this.realLifeDate = realLifeDate
+    this.isPause = false
+    this.currentPeriod = 0
   }
 
   updatePaymentRecord(period, obj) {
@@ -85,11 +90,34 @@ export default class Record {
 
   }
 
-  pauseCounting(period) {
-    console.log('period from counting: ', period)
-    if (this.periodRecords[period]) {
-      this.periodRecords[period].pauseCounting()
+  count(date) {
+    this.realLifeDate = new Date(date)
+    var period = 0
+    var interval = setInterval(() => {
+      if (!this.isPause) {
+        this.currentPeriod = period
+        if (this.realLifeDate.getTime() === (this.periodRecords[period].redemptionDate.getTime() - (1000 * 24 * 60 * 60))) {
+          console.log('is equal')
+          this.periodRecords[period].count()
+          period++
+        }
+        this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
+        document.querySelector('p#real-date-counter span').innerHTML = formatDate(this.realLifeDate)
+
+      }
+    }, 2000)
+
+  }
+
+  pauseCounting() {
+    console.log('period from counting: ', this.currentPeriod)
+    this.isPause = !this.isPause
+    for (var i = 0; i <= this.currentPeriod; i++) {
+      if (this.periodRecords[i]) {
+        this.periodRecords[i].pauseCounting()
+      }
     }
+
   }
 
   createPeriodRecordForRecord(periodRecord) {

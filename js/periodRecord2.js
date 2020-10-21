@@ -142,8 +142,7 @@ export default class PeriodRecord {
       value: Math.round(parseFloat((appliedRule.penaltyRate * this.daysBetween * this.presentValue) / 100)),
       date: this.realLifeDate,
     })
-    this.penalty = parseFloat((appliedRule.penaltyRate * this.daysBetween * this.presentValue) / 100)
-    this.penalty = parseFloat(appliedRule.penaltyRate)
+    this.penalty = Math.round(parseFloat((appliedRule.penaltyRate * this.daysBetween * this.presentValue) / 100))
     this.totalPayment = Math.round(this.redemption + this.penalty)
     this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
