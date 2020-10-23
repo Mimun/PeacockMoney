@@ -1,7 +1,7 @@
 import PeriodRecord from './periodRecord2.js'
 export default class Record {
   constructor(interestRate = 0, presentValue = 0, agreementDate = new Date(Date.now()),
-    numberOfPeriods = 0, ruleArray = [], realLifeDate) {
+    numberOfPeriods = 0, ruleArray = [], realLifeDate, simulation) {
     this.interestRate = interestRate
     this.presentValue = presentValue
     this.agreementDate = agreementDate
@@ -17,6 +17,8 @@ export default class Record {
     this.realLifeDate = realLifeDate
     this.isPause = false
     this.currentPeriod = 0
+    this.simulation = simulation
+    this.tempIncrementalPaidPrincipal = 0
   }
 
   updatePaymentRecord(period, obj) {
@@ -140,9 +142,6 @@ export default class Record {
   }
 
   createPeriodRecords() {
-    // var i = index !== 0 && index !== null && index !== undefined ? index : 0
-    // numberOfPeriods = numberOfPeriods !== 0 && numberOfPeriods !== null && numberOfPeriods !== undefined ? numberOfPeriods : this.numberOfPeriods
-
     for (var i = 0; i < this.numberOfPeriods; i++) {
       var tempPeriodStartDate = new Date(this.agreementDate)
       var periodStartDate = tempPeriodStartDate.addMonths(i)
@@ -150,22 +149,52 @@ export default class Record {
       var tempPeriodEndDate = new Date(this.agreementDate)
       var periodEndDate = tempPeriodEndDate.addMonths(i + 1)
 
-      var redemptionDate = new Date(periodEndDate)
-      var periodRecord = this.createPeriodRecord(redemptionDate, periodStartDate, periodEndDate,
+      var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate,
         i, this.presentValue, this.numberOfPeriods)
       this.periodRecords.push(periodRecord)
 
     }
+    this.tempIncrementalPaidPrincipal = 0
   }
 
-  createPeriodRecord(redemptionDate, periodStartDate, periodEndDate, period, presentValue, numberOfPeriods, blockPenalty = 0) {
+  createPeriodRecord(periodStartDate, periodEndDate, period, presentValue, numberOfPeriods, blockPenalty = 0) {
+    var redemptionDate = null
     var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60))
-    var { interest, principal, redemption } = this.calculate2(this.interestRate, daysInMonth, presentValue, numberOfPeriods)
+    switch (this.simulation) {
+      case (1):
+        redemptionDate = new Date(periodEndDate)
+        var { interest, principal, redemption } =
+          this.calculate1(this.interestRate, daysInMonth, presentValue, numberOfPeriods, period)
+
+        break
+      case (2):
+        redemptionDate = new Date(periodEndDate)
+        var { interest, principal, redemption } =
+          this.calculate2(this.interestRate, daysInMonth, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
+        this.tempIncrementalPaidPrincipal += principal
+
+        break
+      case (3):
+        redemptionDate = new Date(periodEndDate)
+        var { interest, principal, redemption } =
+          this.calculate3(this.interestRate, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
+        this.tempIncrementalPaidPrincipal += principal
+
+        break
+      case (4):
+        redemptionDate = new Date(periodStartDate)
+        var { interest, principal, redemption } =
+          this.calculate1(this.interestRate, daysInMonth, presentValue, numberOfPeriods, period)
+        break
+      default:
+    }
+
     var periodRecord = new PeriodRecord(period, redemptionDate, redemption, principal, 0, interest,
       0, 0, false, periodStartDate, periodEndDate, this.ruleArray, this.presentValue, redemptionDate, blockPenalty)
     return periodRecord
   }
 
+  // create interest, redemption, principal for the 1st time
   calculate1(interestRate, daysInMonth, presentValue, numberOfPayments, i) {
     var interest = Math.round((interestRate * daysInMonth * presentValue) / 100)
     var principal = i === numberOfPayments - 1 ? presentValue : 0
@@ -174,15 +203,15 @@ export default class Record {
     return { interest, principal, redemption }
   }
 
-  calculate2(interestRate, daysInMonth, presentValue, numberOfPayments) {
+  calculate2(interestRate, daysInMonth, presentValue, numberOfPayments, incrementalPaidPrincipal) {
     var principal = Math.round(presentValue / numberOfPayments)
-    var interest = Math.round((interestRate * daysInMonth * (presentValue - this.incrementalPaidPrincipal)) / 100)
+    var interest = Math.round((interestRate * daysInMonth * (presentValue - incrementalPaidPrincipal)) / 100)
     var redemption = principal + interest
 
     return { interest, principal, redemption }
   }
 
-  calculate3(interestRate, daysInMonth, presentValue, numberOfPayments, i, tempIncrementalPaidPrincipal) {
+  calculate3(interestRate, presentValue, numberOfPayments, tempIncrementalPaidPrincipal) {
     var redemption = Math.round(pmt(interestRate / 100, numberOfPayments, -presentValue))
     var interest = Math.round((interestRate * (presentValue - tempIncrementalPaidPrincipal)) / 100)
     var principal = redemption - interest
@@ -198,23 +227,164 @@ export default class Record {
     return { interest, principal, redemption }
   }
 
+  // create interest, redemption, principal after paying down
+  calculateCustom1(interestRate, principal, daysInMonth, presentValue) {
+    var interest = Math.round((interestRate * daysInMonth * presentValue) / 100)
+    var principal = principal
+    var redemption = principal + interest
+
+    return { interest, principal, redemption }
+  }
+
+  calculateCustom2(interestRate, principal, daysInMonth, presentValue) {
+    var principal = 0
+    var interest = Math.round((interestRate * daysInMonth * presentValue) / 100)
+    var redemption = principal + interest
+
+    return { interest, principal, redemption }
+  }
+
+  calculateCustom4(interestRate, principal, daysInMonth, presentValue) {
+    var interest = Math.round((interestRate * daysInMonth * presentValue) / 100)
+    var principal = principal
+    var redemption = principal + interest
+
+    return { interest, principal, redemption }
+  }
+
   handleFirstHaflPaydownPeriod(periodObj, paydownObj, blockPenalty) {
     const oldPaydownPeriodEndDate = periodObj.periodEndDate
     var tempPaydownDate = new Date(paydownObj.date)
     // update new period end date, handle first half pay down period
     periodObj.periodEndDate = new Date(tempPaydownDate)
-    periodObj.redemptionDate = new Date(periodObj.periodEndDate)
     periodObj.realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
     // periodObj.blockPenalty = blockPenalty
     periodObj.payDown = -parseFloat(paydownObj.value)
-    var principal = 0
-    var interest = Math.round((this.interestRate *
-      (Math.abs((periodObj.periodEndDate - periodObj.periodStartDate) / (1000 * 24 * 60 * 60))) * (this.presentValue)) / 100)
-    var redemption = principal + interest
+    var daysInMonth = Math.abs((periodObj.periodEndDate - periodObj.periodStartDate) / (1000 * 24 * 60 * 60))
+    switch (this.simulation) {
+      case (1):
+        periodObj.redemptionDate = new Date(periodObj.periodEndDate)
 
-    periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+        var { interest, principal, redemption } =
+          this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
+        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+
+        break
+      case (2):
+        periodObj.redemptionDate = new Date(periodObj.periodEndDate)
+
+        var { interest, principal, redemption } =
+          this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
+        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+
+        break
+      case (3):
+        periodObj.redemptionDate = new Date(periodObj.periodEndDate)
+
+        var { interest, principal, redemption } =
+          this.calculate3(this.interestRate, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
+        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+
+        break
+      case (4):
+        periodObj.redemptionDate = new Date(periodObj.periodStartDate)
+
+        var { interest, principal, redemption } =
+          this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
+        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+
+        break
+      default:
+    }
+
 
     return oldPaydownPeriodEndDate
+  }
+
+  // re-create period records
+  reCreatePeriodRecords(obj, period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate) {
+    switch (this.simulation) {
+      case (1):
+        for (var i = period + 1; i < this.numberOfPeriods; i++) {
+          if (i === period + 1) {
+
+            var periodStartDate = new Date(obj.date)
+
+            var periodEndDate = new Date(oldPaydownPeriodEndDate)
+
+            var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
+              this.presentValue, this.numberOfPeriods, 0)
+            this.periodRecords.push(periodRecord)
+          } else {
+            var tempPeriodStartDate = new Date(this.periodRecords[i - 1].periodEndDate)
+            var periodStartDate = tempPeriodStartDate
+
+            var tempPeriodEndDate = new Date(this.periodRecords[i - 1].periodEndDate)
+            var periodEndDate = tempPeriodEndDate.addMonths(1)
+
+            var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
+              this.presentValue, this.numberOfPeriods, 0)
+            this.periodRecords.push(periodRecord)
+          }
+        }
+
+        break
+      case (2):
+        for (var i = period + 1; i < this.numberOfPeriods; i++) {
+          if (i === period + 1) {
+
+            var periodStartDate = new Date(obj.date)
+
+            var periodEndDate = new Date(oldPaydownPeriodEndDate)
+
+            var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
+              this.presentValue, numberOfPaymentsAfterPayingDown, 0)
+            this.periodRecords.push(periodRecord)
+          } else {
+            var tempPeriodStartDate = new Date(this.periodRecords[i - 1].periodEndDate)
+            var periodStartDate = tempPeriodStartDate
+
+            var tempPeriodEndDate = new Date(this.periodRecords[i - 1].periodEndDate)
+            var periodEndDate = tempPeriodEndDate.addMonths(1)
+
+            var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
+              this.presentValue, numberOfPaymentsAfterPayingDown)
+            this.periodRecords.push(periodRecord)
+          }
+        }
+
+        break
+      case (3):
+
+        break
+      case (4):
+        for (var i = period + 1; i < this.numberOfPeriods; i++) {
+          if (i === period + 1) {
+
+            var periodStartDate = new Date(obj.date)
+
+            var periodEndDate = new Date(oldPaydownPeriodEndDate)
+
+            var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
+              this.presentValue, this.numberOfPeriods, 0)
+            this.periodRecords.push(periodRecord)
+          } else {
+            var tempPeriodStartDate = new Date(this.periodRecords[i - 1].periodEndDate)
+            var periodStartDate = tempPeriodStartDate
+
+            var tempPeriodEndDate = new Date(this.periodRecords[i - 1].periodEndDate)
+            var periodEndDate = tempPeriodEndDate.addMonths(1)
+
+            var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
+              this.presentValue, this.numberOfPeriods, 0)
+            this.periodRecords.push(periodRecord)
+          }
+        }
+
+        break
+      default:
+    }
+
   }
 
   loanMore(loanMoreDate) {
@@ -222,7 +392,7 @@ export default class Record {
   }
   // { date: Sun Nov 08 2020 07:00:00 GMT+0700 (Indochina Time),
   // value: 10000000 }
-  payDown(obj, block) {
+  payDown(obj, block, numberOfNewPeriods) {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
@@ -243,7 +413,6 @@ export default class Record {
     console.log('upper half period: ', paydownPeriod)
     var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
 
-
     var oldPaydownPeriodEndDate = this.handleFirstHaflPaydownPeriod(paydownPeriod, obj, blockPenalty)
 
     // update the length of number of payments
@@ -260,30 +429,7 @@ export default class Record {
     this.presentValue -= parseFloat(obj.value)
     this.updatePresentValue()
 
-    for (var i = paydownPeriod.period + 1; i < this.numberOfPeriods; i++) {
-      if (i === paydownPeriod.period + 1) {
-
-        var periodStartDate = new Date(obj.date)
-
-        var periodEndDate = new Date(oldPaydownPeriodEndDate)
-
-        var redemptionDate = new Date(periodEndDate)
-        var periodRecord = this.createPeriodRecord(redemptionDate, periodStartDate, periodEndDate, i,
-          this.presentValue, numberOfPaymentsAfterPayingDown, 0)
-        this.periodRecords.push(periodRecord)
-      } else {
-        var tempPeriodStartDate = new Date(this.periodRecords[i - 1].periodEndDate)
-        var periodStartDate = tempPeriodStartDate
-
-        var tempPeriodEndDate = new Date(this.periodRecords[i - 1].periodEndDate)
-        var periodEndDate = tempPeriodEndDate.addMonths(1)
-
-        var redemptionDate = new Date(periodEndDate)
-        var periodRecord = this.createPeriodRecord(redemptionDate, periodStartDate, periodEndDate, i,
-          this.presentValue, numberOfPaymentsAfterPayingDown)
-        this.periodRecords.push(periodRecord)
-      }
-    }
+    this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
 
   }
 

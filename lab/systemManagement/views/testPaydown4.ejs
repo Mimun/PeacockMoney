@@ -250,36 +250,21 @@
             <h4>Tra bot</h4>
             <div class="form-group">
               <label>So tien</label>
-              <input type="number" class="form-control" id="payDown">
+              <input type="number" class="form-control" id="value">
             </div>
+            <% if(simulation === 3){%>
+            <div class="form-group">
+              <label>So ky tao them</label>
+              <input type="number" class="form-control" id="numberOfNewPeriods">
+            </div>
+            <% } %>
+
             <button class="btn btn-sm btn-primary" id="btn-pay-down">Add</button>
           </div>
 
           <div class="col-2">
             <h4>Vay them</h4>
             <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay them</button>
-          </div>
-          <div class="col loan-more" style="display: none;">
-            <h4>Tao goi vay moi</h4>
-            <div class="loan-more-package">
-              <div class="form-group">
-                <label>So tien vay</label>
-                <input type="number" class="form-control" id="presentValue">
-              </div>
-              <div class="form-group">
-                <label>Ngay bat dau goi vay</label>
-                <input type="date" class="form-control" id="agreementDate">
-              </div>
-              <div class="form-group">
-                <label>Lai suat ngay(%)</label>
-                <input type="number" class="form-control" id="interestRatePerDay">
-              </div>
-              <div class="form-group">
-                <label>So lan tra(theo thang)</label>
-                <input type="number" class="form-control" id="numberOfPayments">
-              </div>
-              <button class="btn btn-sm btn-primary" id="createNewLoanPackage">Kich hoat goi vay moi</button>
-            </div>
           </div>
         </div>
 
@@ -371,6 +356,7 @@
     var realLifeDate = null
     var block = {}
     var totalRemainForLoaningMore = 0
+    var simulation = JSON.parse('<%- simulation %>')
   </script>
 
   <!-- common function -->
@@ -489,7 +475,8 @@
       originalValue = loanPackage.presentValue
       console.log('package: ', loanPackage)
       record = new Record(loanPackage.interestRatePerDay ? loanPackage.interestRatePerDay : loanPackage.interestRatePerMonth
-        , loanPackage.presentValue, new Date(loanPackage.agreementDate), loanPackage.numberOfPayments, ruleArray)
+        , loanPackage.presentValue, new Date(loanPackage.agreementDate),
+        loanPackage.numberOfPayments, ruleArray, new Date(Date.now()), simulation)
       record.createPeriodRecords()
       console.log('record: ', record)
       document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
@@ -501,11 +488,11 @@
 
     })
 
-    record = new Record(0.2, 100000000, new Date('2020-10-08'), 5, ruleArray)
-    console.log('rec: ', record)
-    record.periodRecords.forEach(rec => {
-      displayTable(rec, 'period-table-container')
-    })
+    // record = new Record(0.2, 100000000, new Date('2020-10-08'), 5, ruleArray)
+    // console.log('rec: ', record)
+    // record.periodRecords.forEach(rec => {
+    //   displayTable(rec, 'period-table-container')
+    // })
 
   </script>
 
@@ -614,44 +601,16 @@
     })
   </script>
 
-  <!-- calculate and display loan more -->
-  <script>
-    document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
-      console.log('real date at the moment the user clicks to the loan more button: ', realLifeDate)
-      document.querySelector('div.col.loan-more').style.display = 'block'
-
-    })
-
-    document.querySelector('button#createNewLoanPackage').addEventListener('click', (event) => {
-      const newPackage = {}
-      document.querySelectorAll('div.loan-more-package input, div.loan-more-package select').forEach(element => {
-        newPackage[element.id] = element.value
-      })
-      console.log('new package: ', newPackage)
-
-      // const filteredRecord = record.periodRecords.filter(rec => {
-      //   return rec.period <= period || rec.realLifeDate.getTime() === realLifeDate.getTime()
-      // }).filter(rec => {
-      //   return rec.remain !== 0
-      // })
-      // console.log('paid period: ', filteredRecord)
-      // if (filteredRecord.length !== 0) {
-      //   window.alert('You need to pay all remains of previous periods before you can loan more')
-      //   document.querySelector('input#loanMore').value = 0
-      // } else {
-      //   var loanMore = document.querySelector('input#loanMore').value
-      //   console.log('loan more: ', loanMore)
-      // }
-    })
-  </script>
-
   <!-- calculate and display pay down -->
   <script>
     document.querySelector('button#btn-pay-down').addEventListener('click', (event) => {
       var payDownObj = {
         date: record.realLifeDate,
-        value: parseFloat(document.querySelector('input#payDown').value)
+        // value: parseFloat(document.querySelector('input#payDown').value)
       }
+      document.querySelectorAll(' input').forEach(element => {
+        payDownObj[element.id] = element.value
+      })
       var totalRemain = 0
       record.periodRecords.filter(rec => {
         return rec.redemptionDate < realLifeDate

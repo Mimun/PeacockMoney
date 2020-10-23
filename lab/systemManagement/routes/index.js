@@ -938,8 +938,20 @@ router.get('/testLoan4', (req, res) => {
   res.render('testLoan1_v2', { simulation: 4, title: 'Bảng tính lãi theo dư nợ cố định (trả đầu kỳ)', penaltyRateTitle: 'ngày' })
 })
 
-router.get('/testPaydown', (req, res)=>{
-  res.render('testPaydown', {})
+router.get('/testPaydown1', (req, res) => {
+  res.render('testPaydown1', { simulation: 1 })
+})
+
+router.get('/testPaydown2', (req, res) => {
+  res.render('testPaydown2', { simulation: 2 })
+})
+
+router.get('/testPaydown3', (req, res) => {
+  res.render('testPaydown3', { simulation: 3 })
+})
+
+router.get('/testPaydown4', (req, res) => {
+  res.render('testPaydown4', { simulation: 4 })
 })
 
 
