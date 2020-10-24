@@ -195,7 +195,8 @@ export default class PeriodRecord {
     this.principal = principal
     this.redemption = redemption
     this.blockPenalty = blockPenalty
-    this.totalPayment = this.redemption + this.blockPenalty + this.penalty
+    this.penalty += blockPenalty
+    this.totalPayment = this.redemption + this.penalty
     this.remain = this.totalPayment - this.paid
   }
 
