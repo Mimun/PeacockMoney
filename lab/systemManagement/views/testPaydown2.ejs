@@ -600,12 +600,6 @@
         date: record.realLifeDate,
         value: parseFloat(document.querySelector('input#payDown').value)
       }
-      // var totalRemain = 0
-      // record.periodRecords.filter(rec => {
-      //   return rec.redemptionDate < realLifeDate
-      // }).forEach(rec => {
-      //   totalRemain += rec.remain
-      // })
       var remainPeriods = []
       if (simulation !== 4) {
         remainPeriods = record.periodRecords.filter(rec => {
@@ -625,14 +619,6 @@
           displayTable(rec, 'period-table-container')
         })
       }
-
-      // var newArray = record.periodRecords.filter(rec => {
-      //   return rec.redemptionDate < realLifeDate
-      // })
-      // console.log('array before pay down date ;', newArray)
-
-      // var payDownPeriod = newArray[newArray.length - 1]
-      // console.log('pay down period: ', payDownPeriod)
 
     })
   </script>
