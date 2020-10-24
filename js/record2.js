@@ -355,7 +355,8 @@ export default class Record {
 
         break
       case (3):
-        for (var i = period + 1; i < numberOfPaymentsAfterPayingDown + period + 1; i++) {
+        console.log(`period: ${period}, numberOfPaymentsAfterPayingDown: ${numberOfPaymentsAfterPayingDown + period + 1}`)
+        for (var i = period + 1; i < parseInt(numberOfPaymentsAfterPayingDown) + period + 1; i++) {
           var tempPeriodStartDate = new Date(this.periodRecords[i - 1].periodEndDate)
           var periodStartDate = tempPeriodStartDate
 
@@ -413,7 +414,8 @@ export default class Record {
     // 1st period: from redemptiondate to the day they paydown
     // 2nd period: from the day they paydown to the next period's redemption date
     // after that, re-calculate the period records for the rest of periods
-    if (!numberOfNewPeriods) {
+    console.log(`number of new periods: ${numberOfNewPeriods}`)
+    if (numberOfNewPeriods && numberOfNewPeriods !== 0) {
       if (this.simulation !== 3) {
         {
           console.log('paydown obj: ', obj)
@@ -445,8 +447,14 @@ export default class Record {
 
           this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
         }
-      } else {
-        this.reCreatePeriodRecords(obj, this.periodRecords, numberOfNewPeriods, oldPaydownPeriodEndDate)
+      } else if (this.simulation === 3) {
+        this.periodRecords = this.periodRecords.filter(rec => {
+          return rec.periodStatus === true
+        })
+        // update present value and remain origin
+        this.presentValue -= parseFloat(obj.value)
+        this.updatePresentValue()
+        this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null)
 
       }
 

@@ -624,13 +624,15 @@
       var totalRemain = 0
       var remainPeriods = record.periodRecords.filter(rec => {
         return rec.periodStartDate < record.realLifeDate && rec.periodStatus === false
+      }).map(rec => {
+        return rec.period
       })
       console.log('remain period: ', remainPeriods)
       if (remainPeriods.length !== 0) {
-        window.alert('You need to finish all remain periods to pay down!')
+        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
       } else {
         var numberOfNewPeriods = document.querySelector('input#numberOfNewPeriods').value
-        if(numberOfNewPeriods){
+        if (numberOfNewPeriods) {
           record.payDown(payDownObj, block, numberOfNewPeriods)
 
         } else {
