@@ -49,6 +49,8 @@ export default class Record {
           date: paidDate
         })
         record.updatePaymentRecord(updateObj.period, updateObj)
+        this.incrementalPayment += updateObj.paid
+        console.log('incremental payment: ', this.incrementalPayment)
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'paid', updateObj.paid.toLocaleString())
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
         updateObj.updateHistoryPayment('payment-history', paidDate)
@@ -59,6 +61,7 @@ export default class Record {
           this.presentValue = this.presentValue - updateObj.principal
           this.accumulatedPaidInterest += updateObj.interest
           this.incrementalPaidPrincipal += updateObj.principal
+
           // this.updatePresentValue()
           updateObj.presentValue = this.presentValue
           updateObj.accumulatedPaidInterest = this.accumulatedPaidInterest
@@ -76,13 +79,12 @@ export default class Record {
         console.log('record after paying: ', record)
         i++
         if (notDonePeriodArray[i]) {
-          if (updateObj.remain < 0) {
-            return recursive(Math.abs(update.remain), paidDate, notDonePeriodArray[i], record)
-          } else {
-            return recursive(balance, paidDate, notDonePeriodArray[i], record)
+          // if (updateObj.remain < 0) {
+          //   return recursive(Math.abs(update.remain), paidDate, notDonePeriodArray[i], record)
+          // } else {
 
-          }
-
+          // }
+          return recursive(balance, paidDate, notDonePeriodArray[i], record)
         } else {
           return balance
         }
@@ -304,7 +306,6 @@ export default class Record {
       default:
     }
 
-
     return oldPaydownPeriodEndDate
   }
 
@@ -461,8 +462,15 @@ export default class Record {
 
   loanMore(obj, numberOfNewPeriods) {
     console.log('obj: ', obj)
+    var paidPeriodRecords = this.periodRecords.filter(rec => {
+      return rec.periodStartDate <= obj.date && rec.periodStatus === true
+    })
+    console.log('paid period records: ', paidPeriodRecords)
     if (this.simulation !== 3) {
       console.log('paydown obj: ', obj)
+      // paid periods
+
+
       var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
         return rec.periodStartDate <= obj.date
       })
@@ -507,6 +515,10 @@ export default class Record {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
+    var paidPeriodRecords = this.periodRecords.filter(rec => {
+      return rec.periodStartDate <= obj.date && rec.periodStatus === true
+    })
+    console.log('paid period records: ', paidPeriodRecords)
 
     // handle the period where users pay down in
     // split that period into 2 period: 
@@ -553,6 +565,15 @@ export default class Record {
       this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
 
     }
+    var paidValue = 0
+    paidPeriodRecords.forEach(rec => {
+      paidValue += rec.paid
+    })
+    var remainAfterPaying = this.incrementalPayment - paidValue
+    var notDonePeriodArray = this.periodRecords.filter(rec => {
+      return rec.periodStatus === false
+    })
+    this.paidNotDonePeriod(remainAfterPaying, obj.date, notDonePeriodArray)
 
   }
 
