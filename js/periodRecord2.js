@@ -31,7 +31,8 @@ export default class PeriodRecord {
     this.daysBetween = daysBetween
     this.appliedRule = null
     this.penalty = 0
-    this.blockPenalty = blockPenalty
+    this.blockPenalty = 0
+    this.totalPenalty = 0
     this.penaltyRecord = []
     this.paymentRecords = []
 
@@ -129,7 +130,8 @@ export default class PeriodRecord {
       date: this.realLifeDate,
     })
     this.penalty = parseFloat(appliedRule.penaltyRate)
-    this.totalPayment = this.redemption + this.penalty
+    this.totalPenalty = this.penalty + this.blockPenalty
+    this.totalPayment = this.redemption + this.totalPenalty
     this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
@@ -147,7 +149,8 @@ export default class PeriodRecord {
       date: this.realLifeDate,
     })
     this.penalty = Math.round(parseFloat((appliedRule.penaltyRate * this.daysBetween * this.presentValue) / 100))
-    this.totalPayment = Math.round(this.redemption + this.penalty)
+    this.totalPenalty = this.penalty + this.blockPenalty
+    this.totalPayment = Math.round(this.redemption + this.totalPenalty)
     this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
@@ -159,7 +162,8 @@ export default class PeriodRecord {
   // dynamic 2: based on late payments
   applyDynamic2Rule(appliedRule) {
     this.penalty = parseFloat((appliedRule.penaltyRate * (this.redemption - this.paid)) / 100)
-    this.totalPayment = Math.round(this.redemption + this.penalty)
+    this.totalPenalty = this.penalty + this.blockPenalty
+    this.totalPayment = Math.round(this.redemption + this.totalPenalty)
     this.remain = this.totalPayment - this.paid
     this.penaltyRecord.push({
       reason: 'penalty',
@@ -195,8 +199,8 @@ export default class PeriodRecord {
     this.principal = principal
     this.redemption = redemption
     this.blockPenalty = blockPenalty
-    this.penalty += blockPenalty
-    this.totalPayment = this.redemption + this.penalty
+    this.totalPenalty = this.penalty + this.blockPenalty
+    this.totalPayment = this.redemption + this.totalPenalty
     this.remain = this.totalPayment - this.paid
   }
 

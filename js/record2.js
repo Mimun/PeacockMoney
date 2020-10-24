@@ -349,7 +349,7 @@ export default class Record {
   }
 
   // re-create period records
-  reCreatePeriodRecords(obj, period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate) {
+  reCreatePeriodRecords(obj, period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate, blockPenalty) {
     switch (this.simulation) {
       case (1):
         for (var i = period + 1; i < this.numberOfPeriods; i++) {
@@ -402,7 +402,7 @@ export default class Record {
 
         break
       case (3):
-        console.log(`period: ${period}, numberOfPaymentsAfterPayingDown: ${numberOfPaymentsAfterPayingDown + period + 1}`)
+        console.log(`period: ${period}, numberOfPaymentsAfterPayingDown: ${parseInt(numberOfPaymentsAfterPayingDown) + period + 1}`)
         for (var i = period + 1; i < parseInt(numberOfPaymentsAfterPayingDown) + period + 1; i++) {
           var tempPeriodStartDate = new Date(this.periodRecords[i - 1].periodEndDate)
           var periodStartDate = tempPeriodStartDate
@@ -412,6 +412,12 @@ export default class Record {
 
           var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
             this.presentValue, numberOfPaymentsAfterPayingDown)
+          if(blockPenalty){
+            if(i === period + 1){
+              periodRecord.updateTotalPayment(periodRecord.interest, periodRecord.principal, periodRecord.redemption, blockPenalty)
+            }
+          }
+        
           this.periodRecords.push(periodRecord)
         }
 
@@ -447,6 +453,7 @@ export default class Record {
   }
 
   loanMore(obj, numberOfNewPeriods) {
+    console.log('obj: ', obj)
     if (this.simulation !== 3) {
       console.log('paydown obj: ', obj)
       var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
@@ -487,9 +494,9 @@ export default class Record {
 
     }
   }
-  // { date: Sun Nov 08 2020 07:00:00 GMT+0700 (Indochina Time),
-  // value: 10000000 }
+  
   payDown(obj, block, numberOfNewPeriods) {
+    console.log('obj: ', obj)
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
@@ -536,7 +543,7 @@ export default class Record {
       // update present value and remain origin
       this.presentValue -= parseFloat(obj.value)
       this.updatePresentValue()
-      this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null)
+      this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
 
     }
 
