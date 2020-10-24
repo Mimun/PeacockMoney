@@ -264,6 +264,16 @@
 
           <div class="col-2">
             <h4>Vay them</h4>
+            <div class="form-group">
+              <label>So tien</label>
+              <input type="number" class="form-control" id="loanMore">
+            </div>
+            <% if(simulation === 3){%>
+            <div class="form-group">
+              <label>So ky tao them</label>
+              <input type="number" class="form-control" id="numberOfNewPeriods">
+            </div>
+            <% } %>
             <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay them</button>
           </div>
         </div>
@@ -658,6 +668,40 @@
       block.blockDate = new Date(blockDate.setDate(blockDate.getDate() + block.block))
       console.log('block date: ', block)
       displayRule(block, 'block-table')
+    })
+  </script>
+
+  <!-- loan more -->
+  <script>
+    document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
+      console.log('event', event.target)
+      var payDownObj = {
+        date: record.realLifeDate,
+        value: parseFloat(document.querySelector('input#loanMore').value)
+      }
+      var totalRemain = 0
+      var remainPeriods = record.periodRecords.filter(rec => {
+        return rec.periodStartDate < record.realLifeDate && rec.periodStatus === false
+      }).map(rec => {
+        return rec.period
+      })
+      console.log('remain period: ', remainPeriods)
+      if (remainPeriods.length !== 0) {
+        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to loan more!`)
+      } else {
+        var numberOfNewPeriods = document.querySelector('input#numberOfNewPeriods').value
+        if (numberOfNewPeriods) {
+          record.loanMore(payDownObj, numberOfNewPeriods)
+
+        } else {
+          window.alert('You need to enter the number of new periods!')
+        }
+        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+
+        record.periodRecords.forEach(rec => {
+          displayTable(rec, 'period-table-container')
+        })
+      }
     })
   </script>
 </body>

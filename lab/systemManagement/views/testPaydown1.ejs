@@ -259,7 +259,7 @@
             <h4>Vay them</h4>
             <div class="form-group">
               <label>So tien</label>
-              <input type="number" class="form-control" id="payDown">
+              <input type="number" class="form-control" id="loanMore">
             </div>
             <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay them</button>
           </div>
@@ -647,8 +647,14 @@
       console.log('event', event.target)
       var payDownObj = {
         date: record.realLifeDate,
-        value: parseFloat(document.querySelector('input#payDown').value)
+        value: parseFloat(document.querySelector('input#loanMore').value)
       }
+      record.loanMore(payDownObj)
+      document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+
+      record.periodRecords.forEach(rec => {
+        displayTable(rec, 'period-table-container')
+      })
     })
   </script>
 </body>
