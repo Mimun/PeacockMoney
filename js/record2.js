@@ -19,6 +19,7 @@ export default class Record {
     this.currentPeriod = 0
     this.simulation = simulation
     this.tempIncrementalPaidPrincipal = 0
+    this.incrementalPayment = 0
   }
 
   updatePaymentRecord(period, obj) {
@@ -54,11 +55,12 @@ export default class Record {
 
         if (updateObj.remain === 0) {
           updateObj.periodStatus = true
-          updateObj.penalty = 0
+          // updateObj.penalty = 0
           this.presentValue = this.presentValue - updateObj.principal
           this.accumulatedPaidInterest += updateObj.interest
           this.incrementalPaidPrincipal += updateObj.principal
-          this.updatePresentValue()
+          // this.updatePresentValue()
+          updateObj.presentValue = this.presentValue
           updateObj.accumulatedPaidInterest = this.accumulatedPaidInterest
           updateObj.incrementalPaidPrincipal = this.incrementalPaidPrincipal
 
@@ -66,15 +68,20 @@ export default class Record {
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'periodStatus', updateObj.periodStatus)
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'accumulatedPaidInterest', updateObj.accumulatedPaidInterest.toLocaleString())
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'incrementalPaidPrincipal', updateObj.incrementalPaidPrincipal.toLocaleString())
-          // updateObj.updatePeriodTable('period-table-container', updateObj.period, 'presentValue', updateObj.presentValue.toLocaleString())
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'penalty', '0')
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'presentValue', this.presentValue.toLocaleString())
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'penalty', updateObj.penalty.toLocaleString())
 
         }
 
         console.log('record after paying: ', record)
         i++
         if (notDonePeriodArray[i]) {
-          return recursive(balance, paidDate, notDonePeriodArray[i], record)
+          if (updateObj.remain < 0) {
+            return recursive(Math.abs(update.remain), paidDate, notDonePeriodArray[i], record)
+          } else {
+            return recursive(balance, paidDate, notDonePeriodArray[i], record)
+
+          }
 
         } else {
           return balance
@@ -267,7 +274,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, blockPenalty)
 
         break
       case (2):
@@ -275,7 +282,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, blockPenalty)
 
         break
       case (3):
@@ -283,7 +290,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculate3(this.interestRate, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
-        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, blockPenalty)
 
         break
       case (4):
@@ -291,7 +298,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, blockPenalty)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, blockPenalty)
 
         break
       default:
@@ -316,7 +323,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, 0)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, 0)
 
         break
       case (2):
@@ -324,7 +331,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, 0)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, 0)
 
         break
       case (3):
@@ -332,7 +339,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculate3(this.interestRate, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
-        periodObj.updateTotalPayment(interest, principal, redemption, 0)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, 0)
 
         break
       case (4):
@@ -340,7 +347,7 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, 0)
+        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, 0)
 
         break
       default:
@@ -412,12 +419,12 @@ export default class Record {
 
           var periodRecord = this.createPeriodRecord(periodStartDate, periodEndDate, i,
             this.presentValue, numberOfPaymentsAfterPayingDown)
-          if(blockPenalty){
-            if(i === period + 1){
+          if (blockPenalty) {
+            if (i === period + 1) {
               periodRecord.updateTotalPayment(periodRecord.interest, periodRecord.principal, periodRecord.redemption, blockPenalty)
             }
           }
-        
+
           this.periodRecords.push(periodRecord)
         }
 
@@ -480,7 +487,7 @@ export default class Record {
 
       // update present value and remain origin
       this.presentValue += parseFloat(obj.value)
-      this.updatePresentValue()
+      // this.updatePresentValue()
 
       this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
     } else {
@@ -489,12 +496,12 @@ export default class Record {
       })
       // update present value and remain origin
       this.presentValue += parseFloat(obj.value)
-      this.updatePresentValue()
+      // this.updatePresentValue()
       this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null)
 
     }
   }
-  
+
   payDown(obj, block, numberOfNewPeriods) {
     console.log('obj: ', obj)
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
@@ -533,7 +540,7 @@ export default class Record {
 
       // update present value and remain origin
       this.presentValue -= parseFloat(obj.value)
-      this.updatePresentValue()
+      // this.updatePresentValue()
 
       this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
     } else if (this.simulation === 3) {
@@ -542,7 +549,7 @@ export default class Record {
       })
       // update present value and remain origin
       this.presentValue -= parseFloat(obj.value)
-      this.updatePresentValue()
+      // this.updatePresentValue()
       this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
 
     }

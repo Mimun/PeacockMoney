@@ -600,22 +600,32 @@
         date: record.realLifeDate,
         value: parseFloat(document.querySelector('input#payDown').value)
       }
-      var totalRemain = 0
-      record.periodRecords.filter(rec => {
-        return rec.redemptionDate < realLifeDate
-      }).forEach(rec => {
-        totalRemain += rec.remain
-      })
-      if (totalRemain !== 0) {
-        document.querySelector('input#paymentSlip').value = totalRemain
+      // var totalRemain = 0
+      // record.periodRecords.filter(rec => {
+      //   return rec.redemptionDate < realLifeDate
+      // }).forEach(rec => {
+      //   totalRemain += rec.remain
+      // })
+      var remainPeriods = []
+      if (simulation !== 4) {
+        remainPeriods = record.periodRecords.filter(rec => {
+          return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
+        }).map(rec => {
+          return rec.period
+        })
+      }
+
+      if (remainPeriods.length !== 0) {
+        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
       } else {
         record.payDown(payDownObj, block)
-      }
-      document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
-      record.periodRecords.forEach(rec => {
-        displayTable(rec, 'period-table-container')
-      })
+        record.periodRecords.forEach(rec => {
+          displayTable(rec, 'period-table-container')
+        })
+      }
+
       // var newArray = record.periodRecords.filter(rec => {
       //   return rec.redemptionDate < realLifeDate
       // })
@@ -649,12 +659,26 @@
         date: record.realLifeDate,
         value: parseFloat(document.querySelector('input#loanMore').value)
       }
-      record.loanMore(payDownObj)
-      document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
-      record.periodRecords.forEach(rec => {
-        displayTable(rec, 'period-table-container')
-      })
+      var remainPeriods = []
+      if (simulation !== 4) {
+        remainPeriods = record.periodRecords.filter(rec => {
+          return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
+        }).map(rec => {
+          return rec.period
+        })
+      }
+
+      if (remainPeriods.length !== 0) {
+        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+      } else {
+        record.loanMore(payDownObj)
+        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+
+        record.periodRecords.forEach(rec => {
+          displayTable(rec, 'period-table-container')
+        })
+      }
     })
   </script>
 </body>

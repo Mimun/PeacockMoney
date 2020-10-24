@@ -161,14 +161,14 @@ export default class PeriodRecord {
 
   // dynamic 2: based on late payments
   applyDynamic2Rule(appliedRule) {
-    this.penalty = parseFloat((appliedRule.penaltyRate * (this.redemption - this.paid)) / 100)
+    this.penalty = Math.round(parseFloat((appliedRule.penaltyRate * (this.redemption - this.paid)) / 100))
     this.totalPenalty = this.penalty + this.blockPenalty
     this.totalPayment = Math.round(this.redemption + this.totalPenalty)
     this.remain = this.totalPayment - this.paid
     this.penaltyRecord.push({
       reason: 'penalty',
       policyType: 'static',
-      value: Math.round(parseFloat((appliedRule.penaltyRate * this.remain) / 100)),
+      value: this.penalty,
       date: this.realLifeDate,
     })
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
@@ -194,7 +194,7 @@ export default class PeriodRecord {
 
   }
 
-  updateTotalPayment(interst, principal, redemption, blockPenalty) {
+  updateTotalPayment(interst, principal, redemption, presentValue, blockPenalty) {
     this.interest = interst
     this.principal = principal
     this.redemption = redemption
@@ -202,6 +202,7 @@ export default class PeriodRecord {
     this.totalPenalty = this.penalty + this.blockPenalty
     this.totalPayment = this.redemption + this.totalPenalty
     this.remain = this.totalPayment - this.paid
+    this.presentValue = presentValue
   }
 
 }
