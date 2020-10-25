@@ -644,13 +644,11 @@
       }
 
       var remainPeriods = []
-      if (simulation !== 4) {
-        remainPeriods = record.periodRecords.filter(rec => {
-          return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
-        }).map(rec => {
-          return rec.period
-        })
-      }
+      remainPeriods = record.periodRecords.filter(rec => {
+        return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
+      }).map(rec => {
+        return rec.period
+      })
 
       if (remainPeriods.length !== 0) {
         window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
