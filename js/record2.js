@@ -268,7 +268,7 @@ export default class Record {
     var periodStartDate = new Date(periodObj.periodStartDate)
     var periodEndDate = new Date(tempPaydownDate)
     // var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
-    var realLifeDate = new Date(tempPaydownDate)
+    var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
     // periodObj.blockPenalty = blockPenalty
     var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60))
     switch (this.simulation) {
@@ -327,8 +327,7 @@ export default class Record {
     // update new period end date, handle first half pay down period
     var periodStartDate = new Date(periodObj.periodStartDate)
     var periodEndDate = new Date(tempPaydownDate)
-    // var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
-    var realLifeDate = new Date(tempPaydownDate)
+    var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
     // periodObj.blockPenalty = blockPenalty
     var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60))
     switch (this.simulation) {
@@ -486,8 +485,6 @@ export default class Record {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
-    this.calculateOverFlowPayments(obj)
-    this.presentValue += this.totalPrincipalOfOverflowPayments
 
     // handle the period where users pay down in
     // split that period into 2 period: 
@@ -520,12 +517,6 @@ export default class Record {
 
       this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
 
-      // calculate overflow 
-      var notDonePeriodArray = this.periodRecords.filter(rec => {
-        return rec.periodStatus === false
-      })
-      this.paidNotDonePeriod(this.totalOverflowPayment, obj.date, notDonePeriodArray)
-      this.resetOverFlowPayments()
     } else if (this.simulation === 3) {
       this.periodRecords = this.periodRecords.filter(rec => {
         return rec.periodStatus === true
@@ -534,12 +525,7 @@ export default class Record {
       this.presentValue += parseFloat(obj.value)
       // this.updatePresentValue()
       this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
-      // calculate overflow 
-      var notDonePeriodArray = this.periodRecords.filter(rec => {
-        return rec.periodStatus === false
-      })
-      this.paidNotDonePeriod(this.totalOverflowPayment, obj.date, notDonePeriodArray)
-      this.resetOverFlowPayments()
+      
     }
   }
 
@@ -548,8 +534,6 @@ export default class Record {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
-    this.calculateOverFlowPayments(obj)
-    this.presentValue += this.totalPrincipalOfOverflowPayments
 
     // handle the period where users pay down in
     // split that period into 2 period: 
@@ -581,13 +565,6 @@ export default class Record {
       // this.updatePresentValue()
 
       this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
-
-      // calculate overflow 
-      var notDonePeriodArray = this.periodRecords.filter(rec => {
-        return rec.periodStatus === false
-      })
-      this.paidNotDonePeriod(this.totalOverflowPayment, obj.date, notDonePeriodArray)
-      this.resetOverFlowPayments()
     } else if (this.simulation === 3) {
       this.periodRecords = this.periodRecords.filter(rec => {
         return rec.periodStatus === true
@@ -596,12 +573,6 @@ export default class Record {
       this.presentValue -= parseFloat(obj.value)
       // this.updatePresentValue()
       this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
-      // calculate overflow 
-      var notDonePeriodArray = this.periodRecords.filter(rec => {
-        return rec.periodStatus === false
-      })
-      this.paidNotDonePeriod(this.totalOverflowPayment, obj.date, notDonePeriodArray)
-      this.resetOverFlowPayments()
     }
 
   }
