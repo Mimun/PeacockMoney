@@ -27,7 +27,7 @@
 <body>
   <div class="d-flex" id="wrapper">
     <div id="page-content-wrapper">
-      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ GIẢM DẦN GỐC CỐ ĐỊNH</h1>
+      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ CỐ ĐỊNH</h1>
       <div class="container" style="margin: 0 !important;
       padding: 0 !important;
       max-width: 100%;">
@@ -149,7 +149,7 @@
 
         <!-- date for simulation -->
         <div class="row">
-          <div class="col-3">
+          <div class="col-2">
             <div class="date">
               <h4>Choose date to start simulation</h4>
               <label for="real-date">Thoi gian thuc</label>
@@ -159,19 +159,16 @@
             </div>
           </div>
 
-          <div class="col">
+          <div class="col-2">
             <div class="time-counter">
               <h4>Time counter</h4>
               <p id="real-date-counter">Date counter: <span></span></p>
             </div>
 
           </div>
-        </div>
 
-        <!-- simulation -->
-        <div class="row">
           <!-- payment section -->
-          <div class="col-3">
+          <div class="col2">
             <div class="payment">
               <h4>Payment</h4>
               <div class="form-group">
@@ -202,13 +199,12 @@
               </table>
             </div>
           </div>
-
         </div>
 
         <!-- set block -->
         <div class="row">
           <!-- block rule -->
-          <div class="col-3">
+          <div class="col">
             <div class="block-rules">
               <h4>Block rule</h4>
               <div class="form-group">
@@ -242,11 +238,9 @@
               </table>
             </div>
           </div>
-        </div>
 
-        <!-- loan more, pay the origin -->
-        <div class="row">
-          <div class="col-3">
+          <!-- loan more, pay down -->
+          <div class="col">
             <h4>Tra bot</h4>
             <div class="form-group">
               <label>So tien</label>
@@ -255,7 +249,7 @@
             <button class="btn btn-sm btn-primary" id="btn-pay-down">Add</button>
           </div>
 
-          <div class="col-2">
+          <div class="col">
             <h4>Vay them</h4>
             <div class="form-group">
               <label>So tien</label>
@@ -637,14 +631,11 @@
   <!-- loan more -->
   <script>
     document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
-      console.log('event', event.target)
       var payDownObj = {
         date: record.realLifeDate,
         value: parseFloat(document.querySelector('input#loanMore').value)
       }
-
-      var remainPeriods = []
-      remainPeriods = record.periodRecords.filter(rec => {
+      var remainPeriods = record.periodRecords.filter(rec => {
         return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
       }).map(rec => {
         return rec.period

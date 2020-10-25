@@ -22,8 +22,6 @@ export default class PeriodRecord {
     this.presentValue = presentValue
     this.realLifeDate = new Date(realLifeDate)
 
-    
-
     this.daysBetween = daysBetween
     this.appliedRule = null
     this.penalty = 0
@@ -203,10 +201,19 @@ export default class PeriodRecord {
     this.blockPenalty = blockPenalty
     this.totalPenalty = this.penalty + this.blockPenalty
     this.totalPayment = this.redemption + this.totalPenalty
-    this.paid = 0
+    // this.paid = 0
     this.remain = this.totalPayment - this.paid
+
     this.presentValue = presentValue
     this.periodStatus = false
+    this.checkEqual()
+  }
+
+  checkEqual() {
+    if (this.remain < 0 || this.remain == 0) {
+      this.periodStatus = true
+
+    }
   }
 
 }
