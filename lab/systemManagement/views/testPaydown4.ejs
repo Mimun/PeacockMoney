@@ -27,7 +27,7 @@
 <body>
   <div class="d-flex" id="wrapper">
     <div id="page-content-wrapper">
-      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ CỐ ĐỊNH</h1>
+      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ GIẢM DẦN GỐC CỐ ĐỊNH</h1>
       <div class="container" style="margin: 0 !important;
       padding: 0 !important;
       max-width: 100%;">
@@ -600,7 +600,6 @@
         date: record.realLifeDate,
         value: parseFloat(document.querySelector('input#payDown').value)
       }
-
       var remainPeriods = record.periodRecords.filter(rec => {
         return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
       }).map(rec => {
@@ -644,11 +643,14 @@
         value: parseFloat(document.querySelector('input#loanMore').value)
       }
 
-      var remainPeriods = record.periodRecords.filter(rec => {
-        return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
-      }).map(rec => {
-        return rec.period
-      })
+      var remainPeriods = []
+      if (simulation !== 4) {
+        remainPeriods = record.periodRecords.filter(rec => {
+          return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
+        }).map(rec => {
+          return rec.period
+        })
+      }
 
       if (remainPeriods.length !== 0) {
         window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
