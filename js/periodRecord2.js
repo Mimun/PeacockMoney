@@ -5,7 +5,7 @@ export default class PeriodRecord {
   constructor(period, redemptionDate, redemption, principal, 
     incrementalPaidPrincipal, interest, accumulatedPaidInterest, 
     remainOrigin, periodStatus, periodStartDate, periodEndDate, 
-    ruleArray, presentValue, realLifeDate, blockPenalty, daysBetween = 0, paydDown=0, loanMore=0) {
+    ruleArray, presentValue, realLifeDate, blockPenalty, daysBetween = 0, payDown=0, loanMore=0) {
     this.period = period
     this.redemptionDate = new Date(redemptionDate)
     this.redemption = redemption
@@ -25,7 +25,7 @@ export default class PeriodRecord {
     this.totalPayment = redemption + blockPenalty
     this.paid = 0
     this.remain = this.redemption
-    this.paydDown = paydDown
+    this.payDown = payDown
     this.loanMore = loanMore
 
     this.daysBetween = daysBetween
