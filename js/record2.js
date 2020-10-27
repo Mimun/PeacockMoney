@@ -293,7 +293,6 @@ export default class Record {
 
   handleFirstHaflPaydownPeriod(periodObj, paydownObj, blockPenalty) {
     console.log('current period: ', this.currentPeriod, ', paydown date: ', paydownObj.date)
-    console.log('block penalty: ', blockPenalty)
     const oldPaydownPeriodEndDate = new Date(periodObj.periodEndDate)
     var tempPaydownDate = new Date(paydownObj.date)
     // update new period end date, handle first half pay down period
@@ -522,27 +521,10 @@ export default class Record {
     }
     // console.log('something here')
     this.resetIncrementalPrincipal()
-    this.reCalculatePeriodPayment(this.periodRecords)
 
   }
 
   loanMore(obj, numberOfNewPeriods) {
-<<<<<<< HEAD
-    console.log('obj: ', obj)
-    var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
-      Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
-      Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
-    console.log('block penalty: ', blockPenalty)
-    this.calculateOverFlowPayments(obj)
-    this.presentValue += this.totalPrincipalOfOverflowPayments
-
-    // handle the period where users pay down in
-    // split that period into 2 period: 
-    // 1st period: from redemptiondate to the day they paydown
-    // 2nd period: from the day they paydown to the next period's redemption date
-    // after that, re-calculate the period records for the rest of periods
-=======
->>>>>>> 957ee2106be9085ad090ec148aa309e4930d571d
     if (this.simulation !== 3) {
       var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
         return rec.periodStartDate <= obj.date
@@ -587,12 +569,6 @@ export default class Record {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
-<<<<<<< HEAD
-
-    this.calculateOverFlowPayments(obj)
-    this.presentValue += this.totalPrincipalOfOverflowPayments
-=======
->>>>>>> 957ee2106be9085ad090ec148aa309e4930d571d
 
     // handle the period where users pay down in
     // split that period into 2 period: 
@@ -634,6 +610,8 @@ export default class Record {
       // this.updatePresentValue()
       this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
     }
+    this.reCalculatePeriodPayment(this.periodRecords)
+
 
   }
 
