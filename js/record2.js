@@ -262,6 +262,7 @@ export default class Record {
 
   handleFirstHaflPaydownPeriod(periodObj, paydownObj, blockPenalty) {
     console.log('current period: ', this.currentPeriod, ', paydown date: ', paydownObj.date)
+    console.log('block penalty: ', blockPenalty)
     const oldPaydownPeriodEndDate = new Date(periodObj.periodEndDate)
     var tempPaydownDate = new Date(paydownObj.date)
     // update new period end date, handle first half pay down period
@@ -486,6 +487,7 @@ export default class Record {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
+    console.log('block penalty: ', blockPenalty)
     this.calculateOverFlowPayments(obj)
     this.presentValue += this.totalPrincipalOfOverflowPayments
 
@@ -548,6 +550,7 @@ export default class Record {
     var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
       Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
       Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
+
     this.calculateOverFlowPayments(obj)
     this.presentValue += this.totalPrincipalOfOverflowPayments
 
