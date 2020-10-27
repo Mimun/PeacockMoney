@@ -120,7 +120,7 @@
               <table class="table table-hover table-responsive period-table">
                 <thead>
                   <tr>
-                    <th scope="col" id="period">Ky</th>
+                    <th scope="col" id="numericalOrder">Ky</th>
                     <th scope="col" id="redemptionDate">Ngay dong</th>
                     <th scope="col" id="redemption">So tien dong(principal+interest)</th>
                     <th scope="col" id="principal">Principal</th>
@@ -557,7 +557,7 @@
 
     document.querySelector('button#btn-pause').addEventListener('click', (event) => {
       record.pauseCounting()
-      isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
+      record.isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
 
     })
   </script>
@@ -649,7 +649,7 @@
 
         record.periodRecords.forEach(rec => {
           displayTable(rec, 'period-table-container')
-        })
+        }) 
       }
     })
   </script>

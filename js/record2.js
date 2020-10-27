@@ -20,6 +20,7 @@ export default class Record {
     this.simulation = simulation
     this.tempIncrementalPaidPrincipal = 0
     this.incrementalPayment = 0
+    this.totalPayment = 0
 
     // total overflow payment
     this.totalOverflowPayment = 0
@@ -35,6 +36,7 @@ export default class Record {
   }
 
   paidNotDonePeriod(amount, paidDate, notDonePeriodArray) {
+    this.totalPayment += amount
     this.balance += amount
     var i = 0
     const recursive = (balance, paidDate, notDonePeriod, record) => {
@@ -44,7 +46,6 @@ export default class Record {
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
-
         balance = balance - payment
 
         updateObj.paymentRecords.push({
@@ -89,6 +90,7 @@ export default class Record {
         } else {
           return balance
         }
+
       } else {
         return balance
       }
@@ -96,6 +98,35 @@ export default class Record {
     var balance = recursive(this.balance, paidDate, notDonePeriodArray[i], this)
     this.balance = balance
 
+  }
+
+  reCalculatePeriodPayment(periodArray) {
+    var tempTotalPayment = this.totalPayment
+    var i = 0
+    const recursive = (amount, period) => {
+      console.log(`amount before calculate of period ${i}: ${amount}`)
+      if (amount > 0) {
+        if (period.periodStatus === true) {
+          amount -= period.paid
+        } else {
+          period.paid = amount > period.totalPayment ? period.totalPayment : amount
+          period.remain = period.totalPayment - period.paid
+          period.periodStatus = period.remain === 0 ? true : false
+
+          amount = amount > period.totalPayment ? amount - period.totalPayment : 0
+        }
+        i++
+        if (periodArray[i]) {
+          return recursive(amount, periodArray[i])
+        } else {
+          return
+        }
+      } else {
+        return
+      }
+
+    }
+    recursive(tempTotalPayment, this.periodRecords[i])
   }
 
   updatePresentValue() {
@@ -274,10 +305,11 @@ export default class Record {
     switch (this.simulation) {
       case (1):
         var redemptionDate = new Date(periodEndDate)
+        const period = periodObj.period
 
         var { interest, principal, redemption } =
           this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+        periodObj = Object.assign(periodObj, new PeriodRecord(period, redemptionDate, redemption, principal,
           0, interest, 0, 0, false, periodStartDate, periodEndDate,
           this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
         periodObj.isPause = this.isPause
@@ -487,7 +519,10 @@ export default class Record {
         break
       default:
     }
+    // console.log('something here')
     this.resetIncrementalPrincipal()
+    this.reCalculatePeriodPayment(this.periodRecords)
+
   }
 
   loanMore(obj, numberOfNewPeriods) {
