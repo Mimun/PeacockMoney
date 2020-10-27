@@ -2,10 +2,10 @@ export default class PeriodRecord {
   // period status: is done or not
   // period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
   // periodEndDate, periodStatus, ruleArray, presentValue, realLifeDate
-  constructor(period, redemptionDate, redemption, principal, 
-    incrementalPaidPrincipal, interest, accumulatedPaidInterest, 
-    remainOrigin, periodStatus, periodStartDate, periodEndDate, 
-    ruleArray, presentValue, realLifeDate, blockPenalty, daysBetween = 0, payDown=0, loanMore=0) {
+  constructor(period, redemptionDate, redemption, principal,
+    incrementalPaidPrincipal, interest, accumulatedPaidInterest,
+    remainOrigin, periodStatus, periodStartDate, periodEndDate,
+    ruleArray, presentValue, realLifeDate, blockPenalty = 0, daysBetween = 0, payDown = 0, loanMore = 0) {
     this.period = period
     this.redemptionDate = new Date(redemptionDate)
     this.redemption = redemption
@@ -22,19 +22,19 @@ export default class PeriodRecord {
     this.presentValue = presentValue
     this.realLifeDate = new Date(realLifeDate)
 
-    this.totalPayment = redemption + blockPenalty
-    this.paid = 0
-    this.remain = this.redemption
-    this.payDown = payDown
-    this.loanMore = loanMore
-
     this.daysBetween = daysBetween
     this.appliedRule = null
     this.penalty = 0
-    this.blockPenalty = 0
-    this.totalPenalty = 0
+    this.blockPenalty = blockPenalty
+    this.totalPenalty = this.penalty + this.blockPenalty
     this.penaltyRecord = []
     this.paymentRecords = []
+
+    this.totalPayment = this.redemption + this.blockPenalty + this.penalty
+    this.paid = 0
+    this.remain = this.totalPayment - this.paid
+    this.payDown = payDown
+    this.loanMore = loanMore
 
     this.isPause = false
     // this.record = record
@@ -201,10 +201,19 @@ export default class PeriodRecord {
     this.blockPenalty = blockPenalty
     this.totalPenalty = this.penalty + this.blockPenalty
     this.totalPayment = this.redemption + this.totalPenalty
-    this.paid = 0
+    // this.paid = 0
     this.remain = this.totalPayment - this.paid
+
     this.presentValue = presentValue
     this.periodStatus = false
+    this.checkEqual()
+  }
+
+  checkEqual() {
+    if (this.remain < 0 || this.remain == 0) {
+      this.periodStatus = true
+
+    }
   }
 
 }
