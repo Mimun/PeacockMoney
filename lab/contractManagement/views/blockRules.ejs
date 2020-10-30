@@ -1,0 +1,57 @@
+<div class="block-rule-container" id="block-rule-container">
+  <div class="block-rules">
+    <h3>Block rule</h3>
+    <div class="form-group">
+      <label>Thoi han block</label>
+      <input type="number" class="form-control" id="block" placeholder="Block...">
+    </div>
+    <div class="form-group">
+      <label class="bmd-label-floating">Phat truoc block</label>
+      <input type="text" class="form-control" id="preBlockPenalty">
+    </div>
+    <div class="form-group">
+      <label class="bmd-label-floating">Phat sau block</label>
+      <input type="text" class="form-control" id="postBlockPenalty">
+    </div>
+    <button class="btn btn-sm btn-primary" id="btn-add-block-rule">Set block</button>
+    <div class="block-table">
+      <h3>Bang quy dinh block</h3>
+      <table class="table table-hover table-responsive block-table">
+        <thead>
+          <tr>
+            <th id="block">Block</th>
+            <th id="preBlockPenalty">Phat truoc block</th>
+            <th id="postBlockPenalty">Phat sau block</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<script>
+  const displayRule = (obj) => {
+    var tr = document.createElement('tr')
+    tr.C_DATA = obj
+    document.querySelectorAll('.penalty-rules-table table thead th').forEach(element => {
+      var th = document.createElement('th')
+      th.innerHTML = obj[element.id]
+      th.id = element.id
+      tr.appendChild(th)
+    })
+    document.querySelector('.penalty-rules-table table tbody').appendChild(tr)
+  }
+
+  document.querySelector('button#btn-add-block-rule').addEventListener('click', (event) => {
+    event.preventDefault()
+    document.querySelectorAll('div.block-rules input').forEach(element => {
+      block[element.id] = parseFloat(element.value)
+    })
+    console.log('block: ', block)
+    var blockDate = new Date(loanPackage.agreementDate)
+    block.blockDate = new Date(blockDate.setDate(blockDate.getDate() + block.block))
+    console.log('block date: ', block)
+    displayRule(block, 'block-table')
+  })
+</script>

@@ -270,73 +270,6 @@
   <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
   <!-- global variable -->
   <script>
-    var periodArray = [
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 6200000,
-        paid: 0,
-        period: 0,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 26200000,
-        redemptionDate: "2020-11-08",
-        remain: 26200000,
-        totalPayment: 26200000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 4800000,
-        paid: 0,
-        period: 1,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 24800000,
-        redemptionDate: "2020-12-08",
-        remain: 24800000,
-        totalPayment: 24800000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 3720000,
-        paid: 0,
-        period: 2,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 23720000,
-        redemptionDate: "2021-01-08",
-        remain: 23720000,
-        totalPayment: 23720000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 2480000,
-        paid: 0,
-        period: 3,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 22480000,
-        redemptionDate: "2021-02-08",
-        remain: 22480000,
-        totalPayment: 22480000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 1120000,
-        paid: 0,
-        period: 4,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 21120000,
-        redemptionDate: "2021-02-08",
-        remain: 21120000,
-        totalPayment: 21120000,
-      },
-    ]
     var ruleArray = []
     var blockRuleArray = []
     var loanPackage = {}
@@ -472,18 +405,15 @@
       console.log('record: ', record)
       document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
-      record.periodRecords.forEach(rec => {
+      record.periodRecords.forEach((rec, index) => {
         displayTable(rec, 'period-table-container')
+        if (index === record.periodRecords.length - 1) {
+          document.querySelector('.period-table-container h4').innerHTML = `Ngay ket thuc hop dong: ${formatDate(rec.redemptionDate)}`
+        }
       })
       // calculateRedemption(obj)
 
     })
-
-    // record = new Record(0.2, 100000000, new Date('2020-10-08'), 5, ruleArray)
-    // console.log('rec: ', record)
-    // record.periodRecords.forEach(rec => {
-    //   displayTable(rec, 'period-table-container')
-    // })
 
   </script>
 
@@ -521,36 +451,9 @@
 
   <!-- choose date, display time counter -->
   <script type="module">
-    const startSimulation = (ruleArray, periodArray, realDate, originalValue) => {
-      var days = 0
-      console.log('record: ', record)
-      // clear interval
-      var interval = setInterval(async () => {
-        if (!isPause) {
-          var redemptionDateToCompare = new Date(record.periodRecords[period + 1].redemptionDate)
-          console.log('period: ', period)
-
-          if (realDate.getTime() === (redemptionDateToCompare.getTime() - (1000 * 24 * 60 * 60))) {
-            record.periodRecords[period + 1].count(1)
-            period++
-          }
-          realDate.setDate(realDate.getDate() + 1)
-          console.log('real time date: ', realDate)
-          document.querySelector('p#real-date-counter span').innerHTML = formatDate(realDate)
-
-          days++
-
-        }
-      }, 2000)
-
-      return record
-
-    }
-
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
       realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
       console.log('real date input value: ', realLifeDate)
-      // record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
       record.count(realLifeDate)
       event.target.setAttribute('disabled', true)
     })
@@ -649,7 +552,7 @@
 
         record.periodRecords.forEach(rec => {
           displayTable(rec, 'period-table-container')
-        }) 
+        })
       }
     })
   </script>

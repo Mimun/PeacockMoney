@@ -25,6 +25,7 @@ export default class Record {
     // total overflow payment
     this.totalOverflowPayment = 0
     this.totalPrincipalOfOverflowPayments = 0
+    this.lastCompletedPeriod = null
   }
 
   updatePaymentRecord(period, obj) {
@@ -143,13 +144,20 @@ export default class Record {
     var interval = setInterval(() => {
       if (!this.isPause) {
         this.currentPeriod = period
-        if (this.realLifeDate.getTime() === (this.periodRecords[period].redemptionDate.getTime() - (1000 * 24 * 60 * 60))
-          || this.realLifeDate.getTime() === this.periodRecords[period].redemptionDate.getTime()) {
-          this.periodRecords[period].count()
-          period++
+        if (this.periodRecords[period]) {
+          if (this.realLifeDate.getTime() === (this.periodRecords[period].redemptionDate.getTime() - (1000 * 24 * 60 * 60))
+            || this.realLifeDate.getTime() === this.periodRecords[period].redemptionDate.getTime()) {
+            this.periodRecords[period].count()
+            period++
+          }
+
+
         }
         this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
         document.querySelector('p#real-date-counter span').innerHTML = formatDate(this.realLifeDate)
+        if (this.realLifeDate.getTime() > this.periodRecords[this.periodRecords.length - 1].redemptionDate.getTime()) {
+          this.extendContract()
+        }
 
       }
     }, 2000)
@@ -642,6 +650,13 @@ export default class Record {
   // reset incremental payment
   resetIncrementalPayment() {
     this.incrementalPayment = 0
+  }
+
+  extendContract() {
+    const completedPeriod = this.periodRecords.filter(rec => {
+      return rec.periodStatus === true
+    }).pop()
+    console.log('last completed period: ', completedPeriod)
   }
 
 }
