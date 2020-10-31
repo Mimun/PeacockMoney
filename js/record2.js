@@ -291,6 +291,16 @@ export default class Record {
     return { interest, principal, redemption }
   }
 
+  calculateCustom3(interestRate, principal, daysInMonth, presentValue) {
+    var principal = 0
+    var interestRate = Math.round(((interestRate * 12) / 365) * 100 + Number.EPSILON) / 100
+    console.log('interst rate: ', interestRate)
+    var interest = Math.round((interestRate * daysInMonth * presentValue) / 100)
+    var redemption = principal + interest
+
+    return { interest, principal, redemption }
+  }
+
   calculateCustom4(interestRate, principal, daysInMonth, presentValue) {
     var interest = Math.round((interestRate * daysInMonth * presentValue) / 100)
     var principal = principal
@@ -335,9 +345,8 @@ export default class Record {
         break
       case (3):
         var redemptionDate = new Date(periodEndDate)
-
         var { interest, principal, redemption } =
-          this.calculate3(this.interestRate, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
+          this.calculateCustom3(this.interestRate, 0, daysInMonth, this.presentValue)
         periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
           0, interest, 0, 0, false, periodStartDate, periodEndDate,
           this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
@@ -393,9 +402,8 @@ export default class Record {
         break
       case (3):
         var redemptionDate = new Date(periodEndDate)
-
         var { interest, principal, redemption } =
-          this.calculate3(this.interestRate, presentValue, numberOfPeriods, this.tempIncrementalPaidPrincipal)
+          this.calculateCustom3(this.interestRate, 0, daysInMonth, this.presentValue)
         periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
           0, interest, 0, 0, false, periodStartDate, periodEndDate,
           this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
@@ -533,42 +541,44 @@ export default class Record {
   }
 
   loanMore(obj, numberOfNewPeriods) {
-    if (this.simulation !== 3) {
-      var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
-        return rec.periodStartDate <= obj.date
-      })
+    var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
+      return rec.periodStartDate <= obj.date
+    })
 
-      // paydown period
-      var paydownPeriod = upperHalfPeriodRecords[upperHalfPeriodRecords.length - 1]
-      var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
+    // paydown period
+    var paydownPeriod = upperHalfPeriodRecords[upperHalfPeriodRecords.length - 1]
+    var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
 
-      var oldPaydownPeriodEndDate = this.handleFirstHaflLoanMorePeriod(paydownPeriod, obj)
+    var oldPaydownPeriodEndDate = this.handleFirstHaflLoanMorePeriod(paydownPeriod, obj)
 
 
-      // update the length of number of payments
-      this.numberOfPeriods += 1
+    // update the length of number of payments
+    this.numberOfPeriods += 1
 
-      // number of payments after paying down
-      const numberOfPaymentsAfterPayingDown = this.numberOfPeriods - upperHalfPeriodRecords.length
+    // number of payments after paying down
+    const numberOfPaymentsAfterPayingDown = this.numberOfPeriods - upperHalfPeriodRecords.length
 
-      // update new period records
-      this.periodRecords = [...upperHalfPeriodRecords]
-      console.log('upper half period: ', this.periodRecords)
+    // update new period records
+    this.periodRecords = [...upperHalfPeriodRecords]
+    console.log('upper half period: ', this.periodRecords)
 
-      // update present value and remain origin
-      this.presentValue += parseFloat(obj.value)
-      // this.updatePresentValue()
+    // update present value and remain origin
+    this.presentValue += parseFloat(obj.value)
+    // this.updatePresentValue()
 
-      this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
-    } else if (this.simulation === 3) {
-      this.periodRecords = this.periodRecords.filter(rec => {
-        return rec.periodStatus === true
-      })
-      // update present value and remain origin
-      this.presentValue += parseFloat(obj.value)
-      // this.updatePresentValue()
-      this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, 0)
-    }
+    this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
+    this.reCalculatePeriodPayment(this.periodRecords)
+    // if (this.simulation !== 3) {
+      
+    // } else if (this.simulation === 3) {
+    //   this.periodRecords = this.periodRecords.filter(rec => {
+    //     return rec.periodStatus === true
+    //   })
+    //   // update present value and remain origin
+    //   this.presentValue += parseFloat(obj.value)
+    //   // this.updatePresentValue()
+    //   this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, 0)
+    // }
 
   }
 
@@ -583,41 +593,42 @@ export default class Record {
     // 1st period: from redemptiondate to the day they paydown
     // 2nd period: from the day they paydown to the next period's redemption date
     // after that, re-calculate the period records for the rest of periods
-    if (this.simulation !== 3) {
-      var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
-        return rec.periodStartDate <= obj.date
-        // return rec.period <= this.currentPeriod
-      })
+    var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
+      return rec.periodStartDate <= obj.date
+      // return rec.period <= this.currentPeriod
+    })
 
-      // paydown period
-      var paydownPeriod = upperHalfPeriodRecords[upperHalfPeriodRecords.length - 1]
-      console.log('upper half period: ', paydownPeriod)
-      var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
+    // paydown period
+    var paydownPeriod = upperHalfPeriodRecords[upperHalfPeriodRecords.length - 1]
+    console.log('upper half period: ', paydownPeriod)
+    var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
 
-      var oldPaydownPeriodEndDate = this.handleFirstHaflPaydownPeriod(paydownPeriod, obj, blockPenalty)
+    var oldPaydownPeriodEndDate = this.handleFirstHaflPaydownPeriod(paydownPeriod, obj, blockPenalty)
 
-      // update the length of number of payments
-      this.numberOfPeriods += 1
+    // update the length of number of payments
+    this.numberOfPeriods += 1
 
-      // number of payments after paying down
-      const numberOfPaymentsAfterPayingDown = this.numberOfPeriods - upperHalfPeriodRecords.length
+    // number of payments after paying down
+    const numberOfPaymentsAfterPayingDown = this.numberOfPeriods - upperHalfPeriodRecords.length
 
-      // update new period records
-      this.periodRecords = [...upperHalfPeriodRecords]
-      // update present value and remain origin
-      this.presentValue -= parseFloat(obj.value)
-      // this.updatePresentValue()
+    // update new period records
+    this.periodRecords = [...upperHalfPeriodRecords]
+    // update present value and remain origin
+    this.presentValue -= parseFloat(obj.value)
+    // this.updatePresentValue()
 
-      this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
-    } else if (this.simulation === 3) {
-      this.periodRecords = this.periodRecords.filter(rec => {
-        return rec.periodStatus === true
-      })
-      // update present value and remain origin
-      this.presentValue -= parseFloat(obj.value)
-      // this.updatePresentValue()
-      this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
-    }
+    this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
+    // if (this.simulation !== 3) {
+
+    // } else if (this.simulation === 3) {
+    //   this.periodRecords = this.periodRecords.filter(rec => {
+    //     return rec.periodStatus === true
+    //   })
+    //   // update present value and remain origin
+    //   this.presentValue -= parseFloat(obj.value)
+    //   // this.updatePresentValue()
+    //   this.reCreatePeriodRecords(obj, this.periodRecords[this.periodRecords.length - 1].period, numberOfNewPeriods, null, blockPenalty)
+    // }
     this.reCalculatePeriodPayment(this.periodRecords)
 
 

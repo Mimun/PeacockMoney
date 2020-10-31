@@ -8,7 +8,7 @@
   <link rel="stylesheet"
     href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css">
   <style>
-    .row {
+    .block-container {
       border: 1px solid lightgrey;
       margin: 16px 0;
       padding: 32px 48px;
@@ -32,7 +32,7 @@
       padding: 0 !important;
       max-width: 100%;">
         <!-- penalty rule -->
-        <div class="row">
+        <div class="row block-container">
           <!-- penalty rule -->
           <div class="col-3">
             <div class="penalty-rules">
@@ -111,12 +111,14 @@
         </div>
 
         <!-- package -->
-        <div class="row">
+        <div class="row block-container">
 
           <!-- simulation -->
           <div class="col">
             <div class="simulation period-table-container">
               <h4>Simulation</h4>
+              <!-- button to open modal -->
+              <button class="btn btn-primary" id="btn-choose-column">Choose column</button>
               <table class="table table-hover table-responsive period-table">
                 <thead>
                   <tr>
@@ -148,7 +150,7 @@
         </div>
 
         <!-- date for simulation -->
-        <div class="row">
+        <div class="row block-container">
           <div class="col-2">
             <div class="date">
               <h4>Choose date to start simulation</h4>
@@ -202,7 +204,7 @@
         </div>
 
         <!-- set block -->
-        <div class="row">
+        <div class="row block-container">
           <!-- block rule -->
           <div class="col">
             <div class="block-rules">
@@ -260,6 +262,124 @@
         </div>
 
       </div>
+
+      <!-- modal -->
+      <div class="modal" tabindex="-1" role="dialog" id="choose-column-modal">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Choose columns to display</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="row row-cols-3">
+                <div class="col mb-4 ml-4 mr-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="numericalOrder" data-vie="Ky"> Ky
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="redemptionDate" data-vie="Ngay dong"> Ngay dong
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="redemption" data-vie="So tien dong"> So tien dong
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="principal" data-vie="Principal"> Principal
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="incrementalPaidPrincipal" data-vie="Goc da tra cong don"> Goc da tra
+                      cong don
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="interest" data-vie="lai"> Lai
+                    </label>
+                  </div>
+                </div>
+                <div class="col mb-4 ml-4 mr-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="accumulatedPaidInterest" data-vie="Lai da tra luy ke"> Lai da tra
+                      luy ke
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="presentValue" data-vie="Goc con lai"> Goc con lai
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="payDown" data-vie="Tra bot"> Tra bot
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="loanMore" data-vie="Vay them"> Vay them
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="totalPayment" data-vie="Tong tien dong(Phat+So tien dong)"> Tong
+                      tien dong(phat+so tien dong)
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="paid" data-vie="Da tra"> Da tra
+                    </label>
+                  </div>
+                </div>
+                <div class="col mn-4 ml-4 mr-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="remain" data-vie="Con lai"> Con lai
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="periodStatus" data-vie="Tinh trang"> Tinh trang
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="daysBetween" data-vie="Day pass"> Day pass
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="penalty" data-vie="Penalty"> Penalty
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="blockPenalty" data-vie="Block penalty"> Block penalty
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="save">Save changes</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
   </div>
@@ -268,75 +388,11 @@
   <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"></script>
   <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"></script>
   <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
+
+
+
   <!-- global variable -->
   <script>
-    var periodArray = [
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 6200000,
-        paid: 0,
-        period: 0,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 26200000,
-        redemptionDate: "2020-11-08",
-        remain: 26200000,
-        totalPayment: 26200000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 4800000,
-        paid: 0,
-        period: 1,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 24800000,
-        redemptionDate: "2020-12-08",
-        remain: 24800000,
-        totalPayment: 24800000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 3720000,
-        paid: 0,
-        period: 2,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 23720000,
-        redemptionDate: "2021-01-08",
-        remain: 23720000,
-        totalPayment: 23720000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 2480000,
-        paid: 0,
-        period: 3,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 22480000,
-        redemptionDate: "2021-02-08",
-        remain: 22480000,
-        totalPayment: 22480000,
-      },
-      {
-        accumulatedPaidInterest: 0,
-        incrementalPaidPrincipal: 0,
-        interest: 1120000,
-        paid: 0,
-        period: 4,
-        periodStatus: false,
-        principal: 20000000,
-        redemption: 21120000,
-        redemptionDate: "2021-02-08",
-        remain: 21120000,
-        totalPayment: 21120000,
-      },
-    ]
     var ruleArray = []
     var blockRuleArray = []
     var loanPackage = {}
@@ -401,6 +457,23 @@
 
     const getDaysInMonth = (month, year) => {
       return new Date(year, month + 1, 0).getDate()
+    }
+
+    function pmt(rate_per_period, number_of_payments, present_value, future_value, type) {
+      future_value = typeof future_value !== 'undefined' ? future_value : 0;
+      type = typeof type !== 'undefined' ? type : 0;
+
+      if (rate_per_period != 0.0) {
+        // Interest rate exists
+        var q = Math.pow(1 + rate_per_period, number_of_payments);
+        return -(rate_per_period * (future_value + (q * present_value))) / ((-1 + q) * (1 + rate_per_period * (type)));
+
+      } else if (number_of_payments != 0.0) {
+        // No interest rate, but number of payments exists
+        return -(future_value + present_value) / number_of_payments;
+      }
+
+      return 0;
     }
 
 
@@ -472,18 +545,15 @@
       console.log('record: ', record)
       document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
-      record.periodRecords.forEach(rec => {
+      record.periodRecords.forEach((rec, index) => {
         displayTable(rec, 'period-table-container')
+        if (index === record.periodRecords.length - 1) {
+          document.querySelector('.period-table-container h4').innerHTML = `Ngay ket thuc hop dong: ${formatDate(rec.redemptionDate)}`
+        }
       })
       // calculateRedemption(obj)
 
     })
-
-    // record = new Record(0.2, 100000000, new Date('2020-10-08'), 5, ruleArray)
-    // console.log('rec: ', record)
-    // record.periodRecords.forEach(rec => {
-    //   displayTable(rec, 'period-table-container')
-    // })
 
   </script>
 
@@ -521,43 +591,16 @@
 
   <!-- choose date, display time counter -->
   <script type="module">
-    const startSimulation = (ruleArray, periodArray, realDate, originalValue) => {
-      var days = 0
-      console.log('record: ', record)
-      // clear interval
-      var interval = setInterval(async () => {
-        if (!isPause) {
-          var redemptionDateToCompare = new Date(record.periodRecords[period + 1].redemptionDate)
-          console.log('period: ', period)
-
-          if (realDate.getTime() === (redemptionDateToCompare.getTime() - (1000 * 24 * 60 * 60))) {
-            record.periodRecords[period + 1].count(1)
-            period++
-          }
-          realDate.setDate(realDate.getDate() + 1)
-          console.log('real time date: ', realDate)
-          document.querySelector('p#real-date-counter span').innerHTML = formatDate(realDate)
-
-          days++
-
-        }
-      }, 2000)
-
-      return record
-
-    }
-
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
       realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
       console.log('real date input value: ', realLifeDate)
-      // record = startSimulation(ruleArray, periodArray, realLifeDate, originalValue)
       record.count(realLifeDate)
       event.target.setAttribute('disabled', true)
     })
 
     document.querySelector('button#btn-pause').addEventListener('click', (event) => {
       record.pauseCounting()
-      isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
+      record.isPause ? event.target.innerHTML = 'start' : event.target.innerHTML = 'pause'
 
     })
   </script>
@@ -653,6 +696,37 @@
       }
     })
   </script>
+
+  <!-- choose columns to display -->
+  <script>
+    document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
+      $('#choose-column-modal').modal('show')
+
+    })
+    document.querySelector('button#save').addEventListener('click', (event) => {
+      console.log('event: ', event)
+      document.querySelector('table.period-table thead tr').innerHTML = ''
+      // console.log('all checked element: ', document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked'))
+      document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked').forEach(element => {
+        console.log('checked element: ', element.value)
+        var th = document.createElement('th')
+        th.id = element.value
+        th.innerHTML = element.getAttribute('data-vie')
+        document.querySelector('table.period-table thead tr').appendChild(th)
+      })
+      $('#choose-column-modal').modal('hide')
+      if (record) {
+        document.querySelector('table.period-table tbody').innerHTML = ''
+
+        record.periodRecords.forEach((rec, index) => {
+          displayTable(rec, 'period-table-container')
+        })
+      }
+
+    })
+
+  </script>
+
 </body>
 
 </html>
