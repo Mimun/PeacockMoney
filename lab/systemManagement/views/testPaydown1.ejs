@@ -27,7 +27,7 @@
 <body>
   <div class="d-flex" id="wrapper">
     <div id="page-content-wrapper">
-      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ CỐ ĐỊNH</h1>
+      <h1>Bảng tính lãi theo dư nợ cố định</h1>
       <div class="container" style="margin: 0 !important;
       padding: 0 !important;
       max-width: 100%;">
@@ -500,14 +500,8 @@
             case ('redemptionDate'):
               th.innerHTML = formatDate(object[element.id])
               break
-            case ('redemption'):
-            case ('totalPayment'):
-            case ('paid'):
-            case ('remain'):
-              th.innerHTML = Math.round(object[element.id], -1).toLocaleString()
-              break
             default:
-              th.innerHTML = object[element.id]
+              th.innerHTML = object[element.id].toLocaleString()
 
           }
         }

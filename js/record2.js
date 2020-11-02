@@ -104,17 +104,29 @@ export default class Record {
   reCalculatePeriodPayment(periodArray) {
     var tempTotalPayment = this.totalPayment
     var i = 0
+    this.incrementalPaidPrincipal = 0
+    this.accumulatedPaidInterest = 0
     const recursive = (amount, period) => {
       console.log(`amount before calculate of period ${i}: ${amount}`)
       if (amount > 0) {
         if (period.periodStatus === true) {
           amount -= period.paid
+          this.incrementalPaidPrincipal += period.principal
+          this.accumulatedPaidInterest += period.interest
         } else {
           period.paid = amount > period.totalPayment ? period.totalPayment : amount
           period.remain = period.totalPayment - period.paid
           period.periodStatus = period.remain === 0 ? true : false
 
           amount = amount > period.totalPayment ? amount - period.totalPayment : 0
+
+          if (period.remain === 0) {
+            this.incrementalPaidPrincipal += period.principal
+            this.accumulatedPaidInterest += period.interest
+            period.incrementalPaidPrincipal = this.incrementalPaidPrincipal
+            period.accumulatedPaidInterest = this.accumulatedPaidInterest
+
+          }
         }
         i++
         if (periodArray[i]) {
@@ -320,51 +332,68 @@ export default class Record {
     var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
     // periodObj.blockPenalty = blockPenalty
     var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60))
-    switch (this.simulation) {
-      case (1):
-        var redemptionDate = new Date(periodEndDate)
-        const period = periodObj.period
+    if (this.simulation === 1) {
+      var redemptionDate = new Date(periodEndDate)
 
-        var { interest, principal, redemption } =
-          this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(period, redemptionDate, redemption, principal,
-          0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
-        periodObj.isPause = this.isPause
+      var { interest, principal, redemption } =
+        this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(period, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
+      periodObj.isPause = this.isPause
 
-        break
-      case (2):
-        var redemptionDate = new Date(periodEndDate)
+    } else if (this.simulation === 2) {
+      var redemptionDate = new Date(periodEndDate)
 
-        var { interest, principal, redemption } =
-          this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
-          0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
-        periodObj.isPause = this.isPause
-        break
-      case (3):
-        var redemptionDate = new Date(periodEndDate)
-        var { interest, principal, redemption } =
-          this.calculateCustom3(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
-          0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
-        periodObj.isPause = this.isPause
+      var { interest, principal, redemption } =
+        this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
+      periodObj.isPause = this.isPause
+    } else if (this.simulation === 3) {
+      var redemptionDate = new Date(periodEndDate)
+      var { interest, principal, redemption } =
+        this.calculateCustom3(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
+      periodObj.isPause = this.isPause
 
-        break
-      case (4):
-        var redemptionDate = new Date(periodStartDate)
-        periodObj.periodStartDate = periodStartDate
-        periodObj.periodEndDate = periodEndDate
-        periodObj.redemptionDate = redemptionDate
-        var { interest, principal, redemption } =
-          this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, blockPenalty)
-        periodObj.isPause = this.isPause
-        break
-      default:
+    } else if (this.simulation === 4) {
+      var redemptionDate = new Date(periodStartDate)
+      const period = periodObj.period
+
+      var { interest, principal, redemption } =
+        this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(period, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
+      periodObj.isPause = this.isPause
     }
+    // switch (this.simulation) {
+    //   case (1):
+
+    //     break
+    //   case (2):
+
+    //     break
+    //   case (3):
+
+    //     break
+    //   case (4):
+    //     // var redemptionDate = new Date(periodStartDate)
+    //     // periodObj.periodStartDate = periodStartDate
+    //     // periodObj.periodEndDate = periodEndDate
+    //     // periodObj.redemptionDate = redemptionDate
+    //     // var { interest, principal, redemption } =
+    //     //   this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
+    //     // periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, blockPenalty)
+    //     // periodObj.isPause = this.isPause
+
+    //     break
+    //   default:
+    // }
 
     return oldPaydownPeriodEndDate
   }
@@ -379,49 +408,67 @@ export default class Record {
     var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
     // periodObj.blockPenalty = blockPenalty
     var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60))
-    switch (this.simulation) {
-      case (1):
-        var redemptionDate = new Date(periodEndDate)
-        var { interest, principal, redemption } =
-          this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
-          0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
-        periodObj.isPause = this.isPause
+    if (this.simulation === 1) {
+      let redemptionDate = new Date(periodEndDate)
+      var { interest, principal, redemption } =
+        this.calculateCustom1(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
+      periodObj.isPause = this.isPause
 
-        break
-      case (2):
-        var redemptionDate = new Date(periodEndDate)
+    } else if (this.simulation === 2) {
+      let redemptionDate = new Date(periodEndDate)
 
-        var { interest, principal, redemption } =
-          this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
-          0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
-        periodObj.isPause = this.isPause
-        break
-      case (3):
-        var redemptionDate = new Date(periodEndDate)
-        var { interest, principal, redemption } =
-          this.calculateCustom3(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
-          0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
-        periodObj.isPause = this.isPause
-        break
-      case (4):
-        var redemptionDate = new Date(periodStartDate)
+      var { interest, principal, redemption } =
+        this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
+      periodObj.isPause = this.isPause
+    } else if (this.simulation === 3) {
+      let redemptionDate = new Date(periodEndDate)
+      var { interest, principal, redemption } =
+        this.calculateCustom3(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
+      periodObj.isPause = this.isPause
+    } else if (this.simulation === 4) {
+      let redemptionDate = new Date(periodStartDate)
+      const period = periodObj.period
 
-        periodObj.periodStartDate = periodStartDate
-        periodObj.periodEndDate = periodEndDate
-        periodObj.redemptionDate = redemptionDate
-        var { interest, principal, redemption } =
-          this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, 0)
-        periodObj.isPause = this.isPause
-        break
-      default:
+      var { interest, principal, redemption } =
+        this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
+      periodObj = Object.assign(periodObj, new PeriodRecord(period, redemptionDate, redemption, principal,
+        0, interest, 0, 0, false, periodStartDate, periodEndDate,
+        this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
+      periodObj.isPause = this.isPause
     }
+    // switch (this.simulation) {
+    //   case (1):
+
+    //     break
+    //   case (2):
+
+    //     break
+    //   case (3):
+
+    //     break
+    //   case (4):
+    //     // var redemptionDate = new Date(periodStartDate)
+
+    //     // periodObj.periodStartDate = periodStartDate
+    //     // periodObj.periodEndDate = periodEndDate
+    //     // periodObj.redemptionDate = redemptionDate
+    //     // var { interest, principal, redemption } =
+    //     //   this.calculateCustom4(this.interestRate, 0, daysInMonth, this.presentValue)
+    //     // periodObj.updateTotalPayment(interest, principal, redemption, this.presentValue, 0)
+    //     // periodObj.isPause = this.isPause
+
+    //     break
+    //   default:
+    // }
     return oldPaydownPeriodEndDate
   }
 
@@ -569,7 +616,7 @@ export default class Record {
     this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate)
     this.reCalculatePeriodPayment(this.periodRecords)
     // if (this.simulation !== 3) {
-      
+
     // } else if (this.simulation === 3) {
     //   this.periodRecords = this.periodRecords.filter(rec => {
     //     return rec.periodStatus === true

@@ -180,7 +180,7 @@ export default class PeriodRecord {
   }
 
   updatePeriodTable(elementName, period, updateElement, updateValue) {
-    document.querySelector(`div.${elementName} table tbody tr[id='${period}'] th#${updateElement}`).innerHTML = updateValue
+    document.querySelector(`div.${elementName} table tbody tr[id='${period}'] th#${updateElement}`).innerHTML = updateValue.toLocaleString()
   }
 
   updateHistoryPayment(elementName, paidDate) {

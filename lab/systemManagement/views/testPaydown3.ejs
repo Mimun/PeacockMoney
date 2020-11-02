@@ -27,7 +27,7 @@
 <body>
   <div class="d-flex" id="wrapper">
     <div id="page-content-wrapper">
-      <h1>BẢNG TÍNH LÃI THEO DƯ NỢ CỐ ĐỊNH</h1>
+      <h1>Bảng tính lãi theo dư nợ giảm dần hàng tháng</h1>
       <div class="container" style="margin: 0 !important;
       padding: 0 !important;
       max-width: 100%;">
@@ -241,22 +241,35 @@
             </div>
           </div>
 
-          <!-- loan more, pay down -->
-          <div class="col">
+          <!-- loan more, pay the origin -->
+          <div class="col-3 paydown-container">
             <h4>Tra bot</h4>
             <div class="form-group">
               <label>So tien</label>
               <input type="number" class="form-control" id="payDown">
             </div>
+            <% if(simulation === 3){%>
+            <div class="form-group">
+              <label>So ky tao them</label>
+              <input type="number" class="form-control" id="numberOfNewPeriods">
+            </div>
+            <% } %>
+
             <button class="btn btn-sm btn-primary" id="btn-pay-down">Add</button>
           </div>
 
-          <div class="col">
+          <div class="col-3 loanmore-container">
             <h4>Vay them</h4>
             <div class="form-group">
               <label>So tien</label>
               <input type="number" class="form-control" id="loanMore">
             </div>
+            <% if(simulation === 3){%>
+            <div class="form-group">
+              <label>So ky tao them</label>
+              <input type="number" class="form-control" id="numberOfNewPeriods">
+            </div>
+            <% } %>
             <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay them</button>
           </div>
         </div>
@@ -500,14 +513,8 @@
             case ('redemptionDate'):
               th.innerHTML = formatDate(object[element.id])
               break
-            case ('redemption'):
-            case ('totalPayment'):
-            case ('paid'):
-            case ('remain'):
-              th.innerHTML = Math.round(object[element.id], -1).toLocaleString()
-              break
             default:
-              th.innerHTML = object[element.id]
+              th.innerHTML = object[element.id].toLocaleString()
 
           }
         }
@@ -646,9 +653,13 @@
       if (remainPeriods.length !== 0) {
         window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
       } else {
-        record.payDown(payDownObj, block)
+        var numberOfNewPeriods = document.querySelector('.paydown-container input#numberOfNewPeriods').value
+        if (numberOfNewPeriods) {
+          record.payDown(payDownObj, block, numberOfNewPeriods)
+        } else {
+          window.alert('You need to enter the number of new periods!')
+        }
         document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
-
         record.periodRecords.forEach(rec => {
           displayTable(rec, 'period-table-container')
         })
@@ -685,11 +696,15 @@
       })
 
       if (remainPeriods.length !== 0) {
-        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to loan more!`)
       } else {
-        record.loanMore(payDownObj)
+        var numberOfNewPeriods = document.querySelector('.loanmore-container input#numberOfNewPeriods').value
+        if (numberOfNewPeriods) {
+          record.loanMore(payDownObj, numberOfNewPeriods)
+        } else {
+          window.alert('You need to enter the number of new periods!')
+        }
         document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
-
         record.periodRecords.forEach(rec => {
           displayTable(rec, 'period-table-container')
         })
