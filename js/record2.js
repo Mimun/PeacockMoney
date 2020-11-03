@@ -76,7 +76,13 @@ export default class Record {
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'incrementalPaidPrincipal', updateObj.incrementalPaidPrincipal.toLocaleString())
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'presentValue', this.presentValue.toLocaleString())
           updateObj.updatePeriodTable('period-table-container', updateObj.period, 'penalty', updateObj.penalty.toLocaleString())
+          this.periodRecords.filter(rec => {
+            return rec.periodStatus === false
+          }).forEach(rec => {
+            rec.presentValue = this.presentValue
+            rec.updatePeriodTable('period-table-container', rec.period, 'presentValue', rec.presentValue.toLocaleString())
 
+          })
         }
 
         console.log('record after paying: ', record)

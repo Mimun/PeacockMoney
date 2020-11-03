@@ -531,6 +531,33 @@ router.get('/contracts/:id', (req, res) => {
 
 })
 
+router.get('/testContracts', (req, res)=>{
+  const checkDate = formatDate(new Date())
+  console.log('date now: ', checkDate)
+  async.parallel({
+    contract: callback => {
+      Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    },
+    contractNow: callback => {
+      Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
+    }
+  }, (err, result2) => {
+    if (err) throw err
+    res.render('contractListTest', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+
+  })
+
+})
+
 
 
 module.exports = router;

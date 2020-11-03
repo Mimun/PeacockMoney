@@ -111,7 +111,7 @@
       if (itemTypeList.length !== 0) {
         var itemTypeOptions = []
         itemTypeList.forEach(itemType => {
-          var option = `<option value=${itemType._id} id="${itemType.id}" name="${itemType.name}" >${itemType.name}</option>`
+          var option = `<option value=${itemType.id} id="${itemType.id}" name="${itemType.name}" >${itemType.name}</option>`
           itemTypeOptions.push(option)
         })
         var selectItemType = document.querySelector('select#itemType')
