@@ -18,37 +18,56 @@
       <table class="table table-hover table-responsive period-table">
         <thead>
           <tr>
-            <!-- contract -->
-            <div class="info" id="contractMetadata">
-              <th scope="col" id="id">So hop dong</th>
-              <th scope="col" id="customerId">Ma khach hang</th>
-              <th scope="col" id="customer">Ten khach hang</th>
-              <th scope="col" id="contractCreatedDate">Ngay bat dau cho vay</th>
-              <th scope="col" id="contractEndingDate">Ngay ket thuc hop dong</th>
-              <th scope="col" id="loan">So tien vay</th>
-              <th scope="col" id="itemType">Loai tai san</th>
-              <th scope="col" id="itemName">Ten tai san</th>
-            </div>
-           
-            <div class="info" id="package">
-              <th scope="col" id="">Ngay co dinh dong lai</th>
-              <th scope="col" id="">% lai suat</th>
-              <th scope="col" id="">Phi tham dinh</th>
-              <th scope="col" id="">Phi bao quan</th>
-              <th scope="col" id="">Tong % lai suat</th>
-              <th scope="col" id="">Phi vay/tr/ngay theo HD</th>
-            </div>
-            
-            <div class="info" id="employee">
-              <th scope="col" id="id">Ma nha vien tham dinh</th>
-              <th scope="col" id="name"></th>
-              <th scope="col" id=""></th>
-            </div>
+            <!-- contract
+            <th scope="col" id="contractId" class="contractMetadata">So hop dong</th>
+            <th scope="col" id="customerId" class="contractMetadata">Ma khach hang</th>
+            <th scope="col" id="customer" class="contractMetadata">Ten khach hang</th>
+            <th scope="col" id="contractCreatedDate" class="contractMetadata">Ngay bat dau cho vay</th>
+            <th scope="col" id="contractEndingDate" class="contractMetadata">Ngay ket thuc hop dong</th>
+            <th scope="col" id="loan" class="contractMetadata">So tien vay</th>
+            <th scope="col" id="itemType" class="contractMetadata">Loai tai san</th>
+            <th scope="col" id="itemName" class="contractMetadata">Ten tai san</th>
+            <th scope="col" id="contractStatus" class="contractMetadata">Tinh trang hop dong</th>
+
+            <th scope="col" id="employeeId" class="employee">Ma nha vien tham dinh</th>
+            <th scope="col" id="employeeName" class="employee"></th>
+
+            <th scope="col" id="" class="package">Ngay co dinh dong lai</th>
+            <th scope="col" id="" class="package">% lai suat</th>
+            <th scope="col" id="" class="package">Phi tham dinh</th>
+            <th scope="col" id="" class="package">Phi bao quan</th>
+            <th scope="col" id="" class="package">Tong % lai suat</th>
+            <th scope="col" id="" class="package">Phi vay/tr/ngay theo HD</th>
+            <th scope="col" id="accumulatedPaidInterest" class="package">Lai da tra luy ke</th>
+            <th scope="col" id="incrementalPaidPrincipal" class="package">Goc da tra cong don</th>
+            <th scope="col" id="presentValue" class="package">Du no</th> -->
+
           </tr>
         </thead>
         <tbody>
         </tbody>
       </table>
+      <button class="btn btn-primary" id="btn-choose-column">Choose column</button>
+
+      <!-- modal -->
+      <div class="modal" tabindex="-1" role="dialog" id="choose-column-modal">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Choose columns to display</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="save">Save changes</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -56,6 +75,7 @@
   <script type="module">
     import { generateContractListHTML } from '/generateContractListHTML.js'
     import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
+    import { findNestedObj } from '/findNestedObj.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
@@ -63,11 +83,64 @@
     const contractList = <%- JSON.stringify(contractList) %>;
     const roleAbility = <%- JSON.stringify(roleAbility) %>;
     const payload = <%- JSON.stringify(payload) %>;
-    console.log('contract now: ', <%- JSON.stringify(contractNow)%>)
-
     console.log('contract list: ', contractList)
     console.log('role ability: ', roleAbility)
     console.log('payload: ', payload)
+    console.log('original contract list: ', <%- JSON.stringify(originalContractList) %>)
+
+    // generate table header
+    const generateTableHeader = (contract) => {
+      for (var prop in contract) {
+        var th = document.createElement('th')
+        th.id = prop
+        th.innerHTML = prop
+        document.querySelector('table thead tr').appendChild(th)
+      }
+    }
+    generateTableHeader(contractList[0])
+
+    // generate modal checkboxes
+    const generateModalCheckboxes = (contract) => {
+      for (var prop in contract) {
+        var div = document.createElement('div')
+        div.className = 'checkbox'
+        var label = document.createElement('label')
+        label.innerHTML = prop
+
+        var input = document.createElement('input')
+        input.setAttribute('type', 'checkbox')
+        input.value = prop
+
+        label.appendChild(input)
+        div.appendChild(label)
+        document.querySelector('.modal-body').appendChild(div)
+      }
+    }
+    generateModalCheckboxes(contractList[0])
+
+    // handle modal open
+    document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
+      $('#choose-column-modal').modal('show')
+
+    })
+
+    contractList.forEach(contract => {
+      // fill info to table
+      var tr = document.createElement('tr')
+      tr.id = contract.contractId
+      document.querySelectorAll(`table thead th`).forEach(element => {
+        var th = document.createElement('th')
+        if (contract[element.id]) {
+          th.innerHTML = contract[element.id]
+
+        } else {
+          th.innerHTML = '-'
+        }
+        tr.appendChild(th)
+      })
+      document.querySelector('table tbody').appendChild(tr)
+    });
+
   </script>
 </body>
 

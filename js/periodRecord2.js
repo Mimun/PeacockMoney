@@ -38,6 +38,8 @@ export default class PeriodRecord {
 
     this.isPause = false
     this.numericalOrder = this.period + 1
+    this.isLoanMorePeriod = false
+    this.isPaydownPeriod = false
     // this.record = record
     this.countInterval = () => { }
   }

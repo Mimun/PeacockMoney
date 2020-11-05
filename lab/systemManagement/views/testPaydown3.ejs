@@ -523,6 +523,8 @@
         tr.id = object.period
         tr.appendChild(th)
       })
+      object.isPaydownPeriod ? tr.style.backgroundColor = 'lightblue' : null
+      object.isLoanMorePeriod ? tr.style.backgroundColor = 'lightgreen' : null
       document.querySelector(`div.${elementName} table tbody`).appendChild(tr)
     }
 

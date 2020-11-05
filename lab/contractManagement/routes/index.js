@@ -15,7 +15,6 @@ const ItemType = require('../../../models/itemType')
 var fs = require('fs');
 var async = require('async');
 const auth = require('../../authentication/routes/checkAuthentication');
-const { format } = require('path');
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -325,7 +324,6 @@ router.delete('/deleteContractTemplate/:id', (req, res) => {
 
 // CONTRACT
 // contract list
-
 router.get('/contracts', (req, res) => {
   const checkDate = formatDate(new Date())
   console.log('date now: ', checkDate)
@@ -531,7 +529,7 @@ router.get('/contracts/:id', (req, res) => {
 
 })
 
-router.get('/testContracts', (req, res)=>{
+router.get('/testContracts', (req, res) => {
   const checkDate = formatDate(new Date())
   console.log('date now: ', checkDate)
   async.parallel({
@@ -552,11 +550,32 @@ router.get('/testContracts', (req, res)=>{
     }
   }, (err, result2) => {
     if (err) throw err
-    res.render('contractListTest', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+    var contractList = result2.contract.map(contract => {
+      return {
+        contractId: contract.id,
+        customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+        customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+        contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
+        contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
+        loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
+        itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
+        itemName: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemName')),
+        contractStatus: contract.contractStatus,
+        employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
+        employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
+
+      }
+    })
+    res.render('contractListTest', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
   })
 
 })
+
+const getNestedValue = (obj) => {
+  var value = obj ? (obj.value ? obj.value : '-') : '-'
+  return value
+}
 
 
 
