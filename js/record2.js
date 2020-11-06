@@ -65,7 +65,7 @@ export default class Record {
           this.incrementalPaidPrincipal += updateObj.principal
 
           // this.updatePresentValue()
-          // updateObj.presentValue = this.presentValue
+          updateObj.presentValue = this.presentValue
 
           updateObj.accumulatedPaidInterest = this.accumulatedPaidInterest
           updateObj.incrementalPaidPrincipal = this.incrementalPaidPrincipal
@@ -79,7 +79,7 @@ export default class Record {
 
         }
         this.periodRecords.filter(record => {
-          return record.periodStatus === false
+          return record.periodStatus === false && record.redemptionDate > this.realLifeDate
         }).forEach(rec => {
           rec.presentValue = this.presentValue
           rec.updatePeriodTable('period-table-container', rec.period, 'presentValue', rec.presentValue.toLocaleString())
@@ -128,12 +128,20 @@ export default class Record {
           amount = amount > period.totalPayment ? amount - period.totalPayment : 0
 
           if (period.remain === 0) {
+            this.presentValue -= period.principal
             this.incrementalPaidPrincipal += period.principal
             this.accumulatedPaidInterest += period.interest
+
             period.incrementalPaidPrincipal = this.incrementalPaidPrincipal
             period.accumulatedPaidInterest = this.accumulatedPaidInterest
 
           }
+          this.periodRecords.filter(record => {
+            return record.periodStatus === false && record.redemptionDate > this.realLifeDate
+          }).forEach(rec => {
+            rec.presentValue = this.presentValue
+
+          })
         }
         i++
         if (periodArray[i]) {
