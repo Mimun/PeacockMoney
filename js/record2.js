@@ -605,10 +605,7 @@ export default class Record {
   }
 
   payDown(obj, block, numberOfNewPeriods) {
-    console.log('obj: ', obj)
-    var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
-      Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
-      Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
+    var blockPenalty = this.calculateBlock(obj, block)
 
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
       return rec.periodStartDate <= obj.date
@@ -637,6 +634,30 @@ export default class Record {
     this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate, numberOfNewPeriods)
     this.reCalculatePeriodPayment(this.periodRecords)
 
+  }
+
+  calculateBlock(obj, block) {
+    console.log('block for paying down: ', block)
+    if (this.simulation !== 3) {
+      console.log('call 1')
+      var blockPenalty = new Date(obj.date).getTime() < new Date(block.blockDate).getTime() ?
+        Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
+        Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
+      return blockPenalty
+    } else {
+      console.log('call 2')
+
+      var donePeriodArray = this.periodRecords.map(rec => {
+        return rec.periodStatus === true
+      })
+      var numberOfDonePeriod = donePeriodArray.length
+      console.log('done period: ', numberOfDonePeriod)
+
+      var blockPenalty = numberOfDonePeriod < block.block ?
+        Math.round((parseFloat(block.preBlockPenalty ? block.preBlockPenalty : 0) * parseFloat(obj.value)) / 100) :
+        Math.round((parseFloat(block.postBlockPenalty ? block.postBlockPenalty : 0) * parseFloat(obj.value)) / 100)
+      return blockPenalty
+    }
   }
 
   calculateOverFlowPayments(obj) {
