@@ -12,6 +12,10 @@ const Employee = require('../../../models/employee')
 const Warehouse = require('../../../models/warehouse')
 const ItemType = require('../../../models/itemType')
 
+var Record = require('../../../js/record3')
+var PeriodRecord = require('../../../js/periodRecord3')
+// import Record from '../../../js/record2.js'
+
 var fs = require('fs');
 var async = require('async');
 const auth = require('../../authentication/routes/checkAuthentication');
@@ -355,7 +359,7 @@ router.get('/contracts', (req, res) => {
 router.post('/contracts', (req, res) => {
   var data = req.body
   const contract = new Contract(data)
-  console.log('contract items; ', contract.items)
+  console.log('contract items; ', contract)
   try {
     contract.save((err, result) => {
       if (err) throw err
@@ -403,10 +407,22 @@ const createPropertyId = (contractId, itemTypeId, index = 0) => {
 // update status of a contract
 router.put('/contracts/:id', async (req, res) => {
   console.log('id received: ', req.params.id)
-  console.log('body: ', req.body.contractStatus)
+  console.log('body: ', req.body)
+  var contract = req.body.contract
+  var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
+  var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
+  var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
+  var numberOfPayments = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
+  var ruleArray = contract.penaltyRules
+  var blockArray = contract.blockRules
+  var realLifeDate = new Date(agreementDate)
+  var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
+  var loanPackage = new Record(interestRate, presentValue, agreementDate,
+    numberOfPayments, ruleArray, blockArray, realLifeDate, simulation)
+  loanPackage.createPeriodRecords()
   try {
     await Contract.findOneAndUpdate({ _id: req.params.id },
-      { $set: { "contractStatus": req.body.contractStatus } }, { new: true })
+      { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
       .populate([
         {
           path: 'store.value',
@@ -529,6 +545,14 @@ router.get('/contracts/:id', (req, res) => {
 
 })
 
+// get contract checktable
+router.get('/contracts/:id/checkTable', (req, res) => {
+  console.log('id: ', req.params.id)
+  Contract.findOne({ _id: req.params.id }).exec((err, result) => {
+    res.render('checkTable', { contract: result })
+  })
+})
+
 router.get('/testContracts', (req, res) => {
   const checkDate = formatDate(new Date())
   console.log('date now: ', checkDate)
@@ -547,9 +571,13 @@ router.get('/testContracts', (req, res) => {
     },
     contractNow: callback => {
       Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
+    },
+    property: callback => {
+      Property.find({}).exec(callback)
     }
   }, (err, result2) => {
     if (err) throw err
+    var propertyList = result2.property
     var contractList = result2.contract.map(contract => {
       return {
         contractId: contract.id,
@@ -559,11 +587,11 @@ router.get('/testContracts', (req, res) => {
         contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
         loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
         itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
-        itemName: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemName')),
+        itemName: contract.items[0] ? contract.items[0].infos[0].value : '-',
         contractStatus: contract.contractStatus,
         employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
         employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
-
+        // property: getProperty(propertyList, contract.id)
       }
     })
     res.render('contractListTest', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
@@ -571,6 +599,15 @@ router.get('/testContracts', (req, res) => {
   })
 
 })
+
+const getProperty = (array, value) => {
+  return array.find(element => {
+    if (element.contract.id === value) {
+      return element.isIn
+
+    }
+  })
+}
 
 const getNestedValue = (obj) => {
   var value = obj ? (obj.value ? obj.value : '-') : '-'

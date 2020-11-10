@@ -56,7 +56,7 @@ export const generateContractListHTML = (itemObj, template, elementName, payload
     button.addEventListener('click', (event) => {
       let textContent = event.target.textContent
       if (textContent === "approve") {
-        makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({ contractStatus: 'approved' }), (result) => {
+        makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({ contractStatus: 'approved', contract: itemObj }), (result) => {
           event.target.closest('.object-div').C_DATA = result.result
           console.log('event: ', event.target.closest('.object-div').C_DATA)
           event.target.closest('.object-div').setAttribute('data-status', 'approved')
@@ -86,7 +86,7 @@ export const generateContractListHTML = (itemObj, template, elementName, payload
     delBtn.addEventListener('click', (event) => {
       console.log('event: ', event.target.closest('.object-div').C_DATA._id)
       event.stopPropagation()
-      makeRequest('DELETE', `contracts/${event.target.closest('.object-div').C_DATA._id}`, 'application/json', {}, ()=>{
+      makeRequest('DELETE', `contracts/${event.target.closest('.object-div').C_DATA._id}`, 'application/json', {}, () => {
         window.location.reload()
       })
 

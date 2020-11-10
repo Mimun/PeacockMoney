@@ -70,13 +70,18 @@
     <label class="bmd-label-floating" data-error="Empty">Thời hạn vay tối thiểu</label>
     <input type="number" class="form-control validate" name="minLoanTerm" data-vie="Thời hạn vay tối thiểu">
   </div>
+  <div class="form-group">
+    <label class="bmd-label-floating" data-error="Empty">Tỉ lệ lai(%)</label>
+    <input id="interestRate" type="number" class="form-control validate" name="interestRate"
+      data-vie="Tỉ lệ lai(%)">
+  </div>
   <div class="container" style="padding: 0;">
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần ngàn theo ngày(<span>&#8240;</span>)</label>
-          <input id="permillePerDay" type="number" class="form-control validate" name="interrestRatePermillePerDay"
-            data-vie="Tỉ lệ phần ngàn theo ngày">
+          <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần triệu/ngày</label>
+          <input id="millionPerDay" type="number" class="form-control validate" name="interrestRatePerMillionPerDay"
+            data-vie="Tỉ lệ phần triệu/ngày">
         </div>
       </div>
       <div class="col">
@@ -89,18 +94,18 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phạt theo ngày(%)</label>
     <input type="number" class="form-control validate" name="percentagePenaltyPerDay" data-vie="Tỉ lệ phạt theo ngày">
-  </div>
+  </div> -->
   <div class="form-group">
     <label class="bmd-label-floating" data-error="Empty">Số kỳ thu</label>
     <input type="number" class="form-control validate" name="numberOfAcceptanceTerms" data-vie="Số kỳ thu">
   </div>
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label class="bmd-label-floating" data-error="Empty">Số ngày của 1 kỳ</label>
     <input type="number" class="form-control validate" name="numberOfDaysPerTerm" data-vie="Số ngày của 1 kỳ">
-  </div>
+  </div> -->
   <div class="form-group" style="display: none;">
     <label class="bmd-label-floating" data-error="Empty">Ngày kết thúc hợp đồng</label>
     <input type="date" class="form-control validate" name="contractEndingDate" data-vie="Ngày kết thúc hợp đồng">

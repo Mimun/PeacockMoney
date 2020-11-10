@@ -80,13 +80,15 @@
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
     });
-    const contractList = <%- JSON.stringify(contractList) %>;
-    const roleAbility = <%- JSON.stringify(roleAbility) %>;
-    const payload = <%- JSON.stringify(payload) %>;
+    var abc = <%- JSON.stringify(originalContractList) %>;
+    // console.log(`typeof abc: ${typeof abc}, abc: ${abc}`)
+    // console.log('original list: ', JSON.parse(abc))
+    const contractList = JSON.parse('<%- JSON.stringify(contractList) %>');
+    const roleAbility = JSON.parse('<%- JSON.stringify(roleAbility) %>');
+    const payload = JSON.parse('<%- JSON.stringify(payload) %>');
     console.log('contract list: ', contractList)
-    console.log('role ability: ', roleAbility)
-    console.log('payload: ', payload)
-    console.log('original contract list: ', <%- JSON.stringify(originalContractList) %>)
+    // console.log('role ability: ', roleAbility)
+    // console.log('payload: ', payload)
 
     // generate table header
     const generateTableHeader = (contract) => {
@@ -101,20 +103,23 @@
 
     // generate modal checkboxes
     const generateModalCheckboxes = (contract) => {
-      for (var prop in contract) {
+      document.querySelectorAll(`table thead th`).forEach(element => {
         var div = document.createElement('div')
         div.className = 'checkbox'
         var label = document.createElement('label')
-        label.innerHTML = prop
+        label.innerHTML = element.id
 
         var input = document.createElement('input')
         input.setAttribute('type', 'checkbox')
-        input.value = prop
+        input.value = element.id
 
         label.appendChild(input)
         div.appendChild(label)
         document.querySelector('.modal-body').appendChild(div)
-      }
+      })
+      // for (var prop in contract) {
+
+      // }
     }
     generateModalCheckboxes(contractList[0])
 
@@ -124,22 +129,43 @@
 
     })
 
-    contractList.forEach(contract => {
-      // fill info to table
-      var tr = document.createElement('tr')
-      tr.id = contract.contractId
-      document.querySelectorAll(`table thead th`).forEach(element => {
+    document.querySelector('button#save').addEventListener('click', (event) => {
+      document.querySelector('table.period-table thead tr').innerHTML = ''
+      // console.log('all checked element: ', document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked'))
+      document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked').forEach(element => {
         var th = document.createElement('th')
-        if (contract[element.id]) {
-          th.innerHTML = contract[element.id]
-
-        } else {
-          th.innerHTML = '-'
-        }
-        tr.appendChild(th)
+        th.id = element.value
+        th.innerHTML = element.value
+        document.querySelector('table.period-table thead tr').appendChild(th)
       })
-      document.querySelector('table tbody').appendChild(tr)
-    });
+      $('#choose-column-modal').modal('hide')
+      document.querySelector('table.period-table tbody').innerHTML = ''
+      displayTable(contractList, 'table tbody')
+
+
+    })
+
+    const displayTable = (array, query) => {
+      array.forEach(contract => {
+        // fill info to table
+        var tr = document.createElement('tr')
+        tr.id = contract.contractId
+        document.querySelectorAll(`table thead th`).forEach(element => {
+          var th = document.createElement('th')
+          if (contract[element.id]) {
+            th.innerHTML = contract[element.id]
+
+          } else {
+            th.innerHTML = '-'
+          }
+          tr.appendChild(th)
+        })
+        document.querySelector(query).appendChild(tr)
+      });
+    }
+    displayTable(contractList, 'table tbody')
+
+
 
   </script>
 </body>

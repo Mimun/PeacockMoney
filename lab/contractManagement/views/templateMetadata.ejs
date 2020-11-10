@@ -10,7 +10,8 @@
   <div class="form-group">
     <label class="bmd-label-floating" data-error="Empty">Loại tài sản</label>
     <!-- <input type="text" class="form-control validate" name="itemType" data-vie="loaiTaiSan"> -->
-    <select class="form-control template-metadata" id="itemType" name="itemType" type="text" data-vie="Loại tài sản"></select>
+    <select class="form-control template-metadata" id="itemType" name="itemType" type="text"
+      data-vie="Loại tài sản"></select>
   </div>
   <div class="form-group">
     <label class="bmd-label-floating" data-error="Empty">Mã loại tài sản</label>
@@ -27,9 +28,11 @@
   <div class="form-group">
     <label for="">Kieu thanh toan</label>
     <select class="form-control template-metadata" type="text" name="paymentMethod" data-vie="Kiểu thanh toán">
-      <option value="thanhToanLai" name="interestPayment" data-vie="Thanh toán lãi">Chỉ thanh toán lãi</option>
-      <option value="thanhToanGocLai" name="originalProfitPayment" data-vie="Thanh toán gốc lãi">Thanh toán gốc + lãi
-      </option>
+      <option value="1" name="fixedPresentValue1" data-vie="Gốc cố định">Trả gốc cố định cuối kỳ</option>
+      <option value="2" name="diminutivalPresentValue" data-vie="Gốc giảm dần">Trả gốc giảm dần</option>
+      <option value="3" name="pmt" data-vie="Gốc hàng tháng">Trả gốc hàng tháng</option>
+      <option value="4" name="fixedPresentValue2" data-vie="Gốc cố định đầu kỳ">Trả gốc cố định đầu kỳ</option>
+
     </select>
   </div>
 

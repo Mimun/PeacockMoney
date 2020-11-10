@@ -1,12 +1,38 @@
-import PeriodRecord from './periodRecord2.js'
-// const PeriodRecord = require('./periodRecord2.js')
-export default class Record {
-  constructor(object) {
-    if (object) {
-      for (var prop in object) {
-        this[prop] = object[prop]
-      }
-    }
+// import PeriodRecord from './periodRecord2.js'
+const PeriodRecord = require('./periodRecord3.js')
+module.exports = class Record {
+  constructor(interestRate = 0, presentValue = 0, agreementDate = new Date(Date.now()),
+    numberOfPeriods = 0, ruleArray = [], blockArray = [], realLifeDate, simulation) {
+    this.interestRate = interestRate
+    this.presentValue = presentValue
+    this.agreementDate = agreementDate
+    this.numberOfPeriods = numberOfPeriods
+    this.incrementalPaidPrincipal = 0
+    this.accumulatedPaidInterest = 0
+    this.remainOrigin = presentValue
+    this.paymentSlip = []
+    this.periodRecords = []
+    this.balance = 0
+    this.ruleArray = ruleArray
+    this.blockArray = blockArray
+
+    this.realLifeDate = realLifeDate
+    this.isPause = false
+    this.currentPeriod = 0
+    this.simulation = simulation
+    this.tempIncrementalPaidPrincipal = 0
+    this.incrementalPayment = 0
+    this.totalPayment = 0
+
+    // total overflow payment
+    this.totalOverflowPayment = 0
+    this.totalPrincipalOfOverflowPayments = 0
+
+    // estimating
+    this.estimatingInterest = 0
+    this.numberOfLoaningMoreTimes = 0
+    this.numberOfPayingDownTimes = 0
+    return this
   }
 
   updatePaymentRecord(period, obj) {
@@ -23,7 +49,6 @@ export default class Record {
     var i = 0
     const recursive = (balance, paidDate, notDonePeriod, record) => {
       if (balance > 0) {
-        console.log('is instance in period record: ', notDonePeriod instanceof PeriodRecord)
         var updateObj = notDonePeriod
         // enough money for total payment of that period
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
@@ -36,6 +61,9 @@ export default class Record {
           date: paidDate
         })
         record.updatePaymentRecord(updateObj.period, updateObj)
+        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'paid', updateObj.paid.toLocaleString())
+        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
+        updateObj.updateHistoryPayment('payment-history', paidDate)
 
         if (updateObj.remain <= 0) {
           updateObj.periodStatus = true
@@ -51,12 +79,19 @@ export default class Record {
           updateObj.incrementalPaidPrincipal = this.incrementalPaidPrincipal
 
           updateObj.stopCounting()
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'periodStatus', updateObj.periodStatus)
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'accumulatedPaidInterest', updateObj.accumulatedPaidInterest.toLocaleString())
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'incrementalPaidPrincipal', updateObj.incrementalPaidPrincipal.toLocaleString())
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'presentValue', this.presentValue.toLocaleString())
+          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'penalty', updateObj.penalty.toLocaleString())
 
         }
         this.periodRecords.filter(record => {
           return record.periodStatus === false && record.redemptionDate > this.realLifeDate
         }).forEach(rec => {
           rec.presentValue = this.presentValue
+          rec.updatePeriodTable('period-table-container', rec.period, 'presentValue', rec.presentValue.toLocaleString())
+
         })
 
         console.log('record after paying: ', record)
@@ -133,11 +168,13 @@ export default class Record {
   updatePresentValue() {
     this.periodRecords.forEach(rec => {
       rec.presentValue = this.presentValue
+      rec.updatePeriodTable('period-table-container', rec.period, 'presentValue', rec.presentValue.toLocaleString())
+
     })
   }
 
-  count() {
-    // this.realLifeDate = new Date(date)
+  count(date) {
+    this.realLifeDate = new Date(date)
     var period = 0
     var interval = setInterval(() => {
       if (!this.isPause) {
@@ -228,8 +265,8 @@ export default class Record {
       default:
     }
 
-    var periodRecord = new PeriodRecord(this.getCreateObj(period, redemptionDate, redemption, principal, 0, interest,
-      0, 0, false, periodStartDate, periodEndDate, this.ruleArray, this.presentValue, redemptionDate, blockPenalty, 0, 0, 0))
+    var periodRecord = new PeriodRecord(period, redemptionDate, redemption, principal, 0, interest,
+      0, 0, false, periodStartDate, periodEndDate, this.ruleArray, this.presentValue, redemptionDate, blockPenalty)
     return periodRecord
   }
 
@@ -332,9 +369,9 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.getCreateObj(this.currentPeriod, redemptionDate,
-          redemption, principal, 0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0)))
+        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
+          0, interest, 0, 0, false, periodStartDate, periodEndDate,
+          this.ruleArray, this.presentValue, realLifeDate, blockPenalty, 0, -parseFloat(paydownObj.value), 0))
         periodObj.isPause = this.isPause
         periodObj.isPaydownPeriod = true
         break
@@ -396,9 +433,9 @@ export default class Record {
 
         var { interest, principal, redemption } =
           this.calculateCustom2(this.interestRate, 0, daysInMonth, this.presentValue)
-        periodObj = Object.assign(periodObj, new PeriodRecord(this.getCreateObj(this.currentPeriod, redemptionDate, redemption, principal,
+        periodObj = Object.assign(periodObj, new PeriodRecord(this.currentPeriod, redemptionDate, redemption, principal,
           0, interest, 0, 0, false, periodStartDate, periodEndDate,
-          this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value))))
+          this.ruleArray, this.presentValue, realLifeDate, 0, 0, 0, parseFloat(paydownObj.value)))
         periodObj.isPause = this.isPause
         periodObj.isLoanMorePeriod = true
 
@@ -433,7 +470,7 @@ export default class Record {
 
   // re-create period records
   reCreatePeriodRecords(obj, period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate, numberOfNewPeriods) {
-    console.log('number of new periods: ', this.numberOfPeriods)
+    console.log('number of new periods: ', numberOfNewPeriods)
     switch (this.simulation) {
       case (1):
         for (var i = period + 1; i < this.numberOfPeriods; i++) {
@@ -577,8 +614,8 @@ export default class Record {
     this.numberOfLoaningMoreTimes += 1
   }
 
-  payDown(obj, numberOfNewPeriods) {
-    var blockPenalty = this.calculateBlock(obj, this.blockArray)
+  payDown(obj, block, numberOfNewPeriods) {
+    var blockPenalty = this.calculateBlock(obj, block)
 
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
       return rec.periodStartDate <= obj.date
@@ -684,55 +721,8 @@ export default class Record {
     return this.numberOfPayingDownTimes
   }
 
-  // recreate period records
-  reassignPeriodRecords() {
-    this.periodRecords = this.periodRecords.map(record => {
-      return new PeriodRecord(record)
-    })
-  }
-
-  getCreateObj(period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
-    remainOrigin, periodStatus, periodStartDate, periodEndDate, ruleArray, presentValue, realLifeDate, blockPenalty = 0, daysBetween,
-    payDown, loanMore, appliedRule = null, penalty = 0, totalPenalty, penaltyRecord = [], paymentRecords = [], totalPayment,
-    paid = 0, remain, isPause, numericalOrder, isLoanMorePeriod, isPaydownPeriod) {
-    var obj = new function () {
-      this.period = period
-      this.redemptionDate = new Date(redemptionDate)
-      this.redemption = redemption
-      this.principal = principal
-      this.incrementalPaidPrincipal = incrementalPaidPrincipal
-      this.interest = interest
-      this.accumulatedPaidInterest = accumulatedPaidInterest
-      this.remainOrigin = remainOrigin
-      this.periodStatus = periodStatus
-      this.periodStartDate = periodStartDate
-      this.periodEndDate = periodEndDate
-      this.ruleArray = ruleArray
-      this.presentValue = presentValue
-      this.realLifeDate = new Date(realLifeDate)
-      this.blockPenalty = blockPenalty
-      this.daysBetween = daysBetween
-      this.payDown = payDown
-      this.loanMore = loanMore
-
-      this.appliedRule = appliedRule
-      this.penalty = penalty
-      this.totalPenalty = totalPenalty || this.penalty + this.blockPenalty
-      this.penaltyRecord = penaltyRecord
-      this.paymentRecords = paymentRecords
-
-      this.totalPayment = totalPayment || this.redemption + this.blockPenalty + this.penalty
-      this.paid = paid
-      this.remain = remain || this.totalPayment - this.paid
-
-
-      this.isPause = isPause || false
-      this.numericalOrder = numericalOrder || this.period + 1
-      this.isLoanMorePeriod = isLoanMorePeriod || false
-      this.isPaydownPeriod = isPaydownPeriod || false
-    }
-
-    return obj
+  getTest(){
+    console.log('test 123123123')
   }
 
 }
@@ -804,6 +794,7 @@ function pmt(rate_per_period, number_of_payments, present_value, future_value, t
 
   return 0;
 }
+
 
 const formatDate = (date) => {
   var d = new Date(date),

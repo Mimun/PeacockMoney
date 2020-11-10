@@ -15,7 +15,7 @@
   </div>
   <div class="form-group">
     <label class="bmd-label-floating">Phi phat</label>
-    <input type="text" class="form-control" id="penaltyRate">
+    <input type="number" class="form-control" id="penaltyRate">
   </div>
   <div class="form-group form-inline is-filled" id="original-debt">
     <label>No goc</label>
@@ -50,7 +50,7 @@
     } else {
       var ruleObj = {}
       document.querySelectorAll('div.penalty-rule-container input,select.penalty-rule').forEach(element => {
-        ruleObj[element.id] = element.value
+        ruleObj[element.id] = element.type === 'number' ? (element.value ? parseFloat(element.value) : element.value) : element.value
       })
       rules.push(ruleObj)
 

@@ -34,8 +34,8 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
               // contract info
               const infoTemplatelone = infoTemplate.content.cloneNode(true)
               infoTemplatelone.querySelector('label').innerHTML = infoLang
-              infoTemplatelone.querySelector('input').value = name === "loan" || name === "min" || name === "max" ? 
-              addSeparator(value) : value
+              infoTemplatelone.querySelector('input').value = name === "loan" || name === "min" || name === "max" ?
+                addSeparator(value) : value
               clone.querySelector('.contract-info-container').querySelector('.section').appendChild(infoTemplatelone)
             }
           }
@@ -116,6 +116,11 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   clone.querySelector('.get-pdf').addEventListener('click', (event) => {
     event.preventDefault()
     window.location.href = 'contracts/' + itemObj._id + '?token=' + window.localStorage.getItem('accessToken')
+  })
+
+  clone.querySelector('.get-check-table').addEventListener('click', (event) => {
+    event.preventDefault()
+    window.location.href = 'contracts/' + itemObj._id + '/checkTable' + '?token=' + window.localStorage.getItem('accessToken')
   })
 
   document.body.querySelector('#' + elementName + '').appendChild(clone)

@@ -100,9 +100,15 @@
     <%- include('./penaltyRules.ejs') %>
   </div>
 
+  <!-- Step 7: Create block rule -->
+  <div class="tab md-tabs block-rules">Block rules:
+    <%- include('./blockRules.ejs') %>
+  </div>
+
   <div class="modal-footer" style="display: flex; flex-direction: column;">
     <!-- Circles which indicates the steps of the form: -->
     <div style="text-align:center;margin-top:40px;">
+      <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
       <span class="step"></span>
@@ -181,6 +187,7 @@
         infos: [],
         _id: ObjectId(),
         penaltyRules: [],
+        blockRules: [],
       }
 
       // TEMPLATE METADATA
@@ -237,6 +244,11 @@
       // PENALTY RULES
       document.querySelectorAll('.penalty-rules #penalty-rule-container .table tbody tr').forEach(element => {
         templateItem.penaltyRules.push(element.C_DATA)
+      })
+
+      // BLOCK RULES
+      document.querySelectorAll('.block-rules #block-rule-container .table tbody tr').forEach(element => {
+        templateItem.blockRules.push(element.C_DATA)
       })
 
       console.log('item is about to save: ', templateItem)

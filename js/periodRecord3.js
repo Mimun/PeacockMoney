@@ -1,10 +1,47 @@
-export default class PeriodRecord {
-  constructor(object) {
-    if (object) {
-      for (var prop in object) {
-        this[prop] = object[prop]
-      }
-    }
+module.exports = class PeriodRecord {
+  // period status: is done or not
+  // period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
+  // periodEndDate, periodStatus, ruleArray, presentValue, realLifeDate
+  constructor(period, redemptionDate, redemption, principal,
+    incrementalPaidPrincipal, interest, accumulatedPaidInterest,
+    remainOrigin, periodStatus, periodStartDate, periodEndDate,
+    ruleArray, presentValue, realLifeDate, blockPenalty = 0, daysBetween = 0, payDown = 0, loanMore = 0) {
+    this.period = period
+    this.redemptionDate = new Date(redemptionDate)
+    this.redemption = redemption
+    this.principal = principal
+    this.incrementalPaidPrincipal = incrementalPaidPrincipal
+    this.interest = interest
+    this.accumulatedPaidInterest = accumulatedPaidInterest
+    this.remainOrigin = remainOrigin
+
+    this.periodStartDate = periodStartDate
+    this.periodEndDate = periodEndDate
+    this.periodStatus = periodStatus
+    this.ruleArray = ruleArray
+    this.presentValue = presentValue
+    this.realLifeDate = new Date(realLifeDate)
+
+    this.daysBetween = daysBetween
+    this.appliedRule = null
+    this.penalty = 0
+    this.blockPenalty = blockPenalty
+    this.totalPenalty = this.penalty + this.blockPenalty
+    this.penaltyRecord = []
+    this.paymentRecords = []
+
+    this.totalPayment = this.redemption + this.blockPenalty + this.penalty
+    this.paid = 0
+    this.remain = this.totalPayment - this.paid
+    this.payDown = payDown
+    this.loanMore = loanMore
+
+    this.isPause = false
+    this.numericalOrder = this.period + 1
+    this.isLoanMorePeriod = false
+    this.isPaydownPeriod = false
+    // this.record = record
+    this.countInterval = () => { }
   }
 
   count(days) {

@@ -12,8 +12,8 @@ const contractSchema = new mongoose.Schema({
   infos: [{ type: Object }],
   items: [{
     infos: [{ type: Object }],
-    evaluationItem: { type: Object},
-    status: [{ type: Object}]
+    evaluationItem: { type: Object },
+    status: [{ type: Object }]
   }],
   templateMetadata: [{
     name: { type: String },
@@ -36,7 +36,10 @@ const contractSchema = new mongoose.Schema({
     dataVie: { type: String },
     dataKor: { type: String, default: 'korean string' }
   },
-  id: {type: String}
+  id: { type: String },
+  loanPackage: { type: Object, default: null },
+  blockRules: [{type: Object}],
+  penaltyRules: [{type: Object}]
 
   // item: {type: mongoose.Types.ObjectId, ref: 'Item', required: false},
   // itemStatus: [{type: mongoose.Types.ObjectId, ref: 'ItemStatus', required: false}],
