@@ -11,6 +11,7 @@ const Store = require('../../../models/store')
 const Employee = require('../../../models/employee')
 const Warehouse = require('../../../models/warehouse')
 const ItemType = require('../../../models/itemType')
+const CronJob = require('cron').CronJob
 
 var Record = require('../../../js/record3')
 var PeriodRecord = require('../../../js/periodRecord3')
@@ -412,16 +413,18 @@ router.put('/contracts/:id', async (req, res) => {
   var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
   var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
   var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
-  var numberOfPayments = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
+  var numberOfPeriods = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
   var ruleArray = contract.penaltyRules
   var blockArray = contract.blockRules
   var realLifeDate = new Date(agreementDate)
   var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
-  var loanPackage = new Record(interestRate, presentValue, agreementDate,
-    numberOfPayments, ruleArray, blockArray, realLifeDate, simulation)
-  loanPackage.createPeriodRecords()
+  var loanPackage = new Record({
+    interestRate, presentValue, agreementDate,
+    numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation
+  })
+  await loanPackage.createPeriodRecords()
   try {
-    await Contract.findOneAndUpdate({ _id: req.params.id },
+    Contract.findOneAndUpdate({ _id: req.params.id },
       { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
       .populate([
         {
@@ -599,6 +602,25 @@ router.get('/testContracts', (req, res) => {
   })
 
 })
+
+var job = new CronJob('*/30 * * * * *', function () {
+  Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
+    if (err) throw err
+    if (result) {
+      result.forEach(contract => {
+        contract.loanPackage = new Record(contract.loanPackage)
+        contract.loanPackage.reassignPeriodRecords()
+        contract.loanPackage.count()
+        Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'loanPackage': contract.loanPackage } }).exec((err, result) => {
+          if (err) throw err
+          console.log('update loan package successfully!')
+        })
+      })
+    }
+  })
+})
+job.start()
+
 
 const getProperty = (array, value) => {
   return array.find(element => {

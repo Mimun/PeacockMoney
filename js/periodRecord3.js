@@ -1,68 +1,59 @@
+const CronJob = require('cron').CronJob
 module.exports = class PeriodRecord {
-  // period status: is done or not
-  // period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
-  // periodEndDate, periodStatus, ruleArray, presentValue, realLifeDate
-  constructor(period, redemptionDate, redemption, principal,
-    incrementalPaidPrincipal, interest, accumulatedPaidInterest,
-    remainOrigin, periodStatus, periodStartDate, periodEndDate,
-    ruleArray, presentValue, realLifeDate, blockPenalty = 0, daysBetween = 0, payDown = 0, loanMore = 0) {
-    this.period = period
-    this.redemptionDate = new Date(redemptionDate)
-    this.redemption = redemption
-    this.principal = principal
-    this.incrementalPaidPrincipal = incrementalPaidPrincipal
-    this.interest = interest
-    this.accumulatedPaidInterest = accumulatedPaidInterest
-    this.remainOrigin = remainOrigin
+  constructor(object) {
+    for (var prop in object) {
+      this[prop] = object[prop]
+    }
+    // this.appliedRule = this.appliedRule ? this.appliedRule : null
+    // this.penalty = this.penalty ? this.penalty : 0
+    // this.blockPenalty = this.blockPenalty ? this.blockPenalty : 0
+    // this.totalPenalty = this.totalPenalty ? this.totalPenalty : this.penalty + this.blockPenalty
+    // this.penaltyRecord = this.penaltyRecord ? this.penaltyRecord : []
+    // this.paymentRecords = this.paymentRecords ? this.paymentRecords : []
+    // this.totalPayment = this.totalPayment ? this.totalPayment : this.redemption + this.blockPenalty + this.penalty
+    // this.paid = this.paid ? this.paid : 0
+    // this.remain = this.remain ? this.remain : this.totalPayment - this.paid
+    // this.payDown = this.payDown ? this.payDown : 0
+    // this.loanMore = this.loanMore ? this.loanMore : 0
+    // this.isPause = this.isPause ? this.isPause : false
+    // this.numericalOrder = this.numericalOrder ? this.numericalOrder : this.period + 1
+    // this.isLoanMorePeriod = this.isLoanMorePeriod ? this.isLoanMorePeriod : false
+    // this.isPaydownPeriod = this.isPaydownPeriod ? this.isPaydownPeriod : false
+    return this
 
-    this.periodStartDate = periodStartDate
-    this.periodEndDate = periodEndDate
-    this.periodStatus = periodStatus
-    this.ruleArray = ruleArray
-    this.presentValue = presentValue
-    this.realLifeDate = new Date(realLifeDate)
-
-    this.daysBetween = daysBetween
-    this.appliedRule = null
-    this.penalty = 0
-    this.blockPenalty = blockPenalty
-    this.totalPenalty = this.penalty + this.blockPenalty
-    this.penaltyRecord = []
-    this.paymentRecords = []
-
-    this.totalPayment = this.redemption + this.blockPenalty + this.penalty
-    this.paid = 0
-    this.remain = this.totalPayment - this.paid
-    this.payDown = payDown
-    this.loanMore = loanMore
-
-    this.isPause = false
-    this.numericalOrder = this.period + 1
-    this.isLoanMorePeriod = false
-    this.isPaydownPeriod = false
-    // this.record = record
-    this.countInterval = () => { }
   }
 
-  count(days) {
-    // 5 seconds = 1 day
-    this.countInterval = setInterval(() => {
-      if (!this.isPause) {
-        // calculate days between real life date and redemption date
-        this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
-        console.log('real life date in record: ', this.realLifeDate)
-        this.calculateDaysBetween()
-        this.updatePeriodTable('period-table-container', this.period, 'daysBetween', this.daysBetween)
-        // check rule
-        this.checkRule()
-        console.log(`days between of period ${this.period}: ${this.daysBetween}\n<--------------->`)
+  // count(days) {
+  //   // 5 seconds = 1 day
+  //   this.countInterval = setInterval(() => {
+  //     if (!this.isPause) {
+  //       // calculate days between real life date and redemption date
+  //       this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
+  //       console.log('real life date in record: ', this.realLifeDate)
+  //       this.calculateDaysBetween()
+  //       this.updatePeriodTable('period-table-container', this.period, 'daysBetween', this.daysBetween)
+  //       // check rule
+  //       this.checkRule()
+  //       console.log(`days between of period ${this.period}: ${this.daysBetween}\n<--------------->`)
 
-        if (this.periodStatus) {
-          clearInterval(this.countInterval)
-        }
-      }
+  //       if (this.periodStatus) {
+  //         clearInterval(this.countInterval)
+  //       }
+  //     }
 
-    }, 2000)
+  //   }, 2000)
+  // }
+
+  count(date) {
+    console.log('count in period record: ', this.realLifeDate)
+    this.calculateDaysBetween()
+    // check rule
+    // this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
+    this.realLifeDate = new Date(date)
+    this.checkRule()
+    if (this.periodStatus) {
+      clearInterval(this.countInterval)
+    }
   }
 
   stopCounting() {
@@ -136,9 +127,6 @@ module.exports = class PeriodRecord {
     this.totalPenalty = this.penalty + this.blockPenalty
     this.totalPayment = this.redemption + this.totalPenalty
     this.remain = this.totalPayment - this.paid
-    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'penalty', this.penaltyRecord[this.penaltyRecord.length - 1].value.toLocaleString())
 
     console.log('applied static rule:', this.record)
   }
@@ -155,9 +143,6 @@ module.exports = class PeriodRecord {
     this.totalPenalty = this.penalty + this.blockPenalty
     this.totalPayment = Math.round(this.redemption + this.totalPenalty)
     this.remain = this.totalPayment - this.paid
-    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'penalty', this.penaltyRecord[this.penaltyRecord.length - 1].value.toLocaleString())
 
     console.log('applied static rule:', this.record)
   }
@@ -174,9 +159,6 @@ module.exports = class PeriodRecord {
       value: this.penalty,
       date: this.realLifeDate,
     })
-    this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'penalty', this.penaltyRecord[this.penaltyRecord.length - 1].value.toLocaleString())
 
     console.log('applied static rule:', this.record)
   }

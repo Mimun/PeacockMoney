@@ -11,6 +11,7 @@ export default class Record {
     this.remainOrigin = presentValue
     this.paymentSlip = []
     this.periodRecords = []
+    this.loanMorePayDownRecords = []
     this.balance = 0
     this.ruleArray = ruleArray
 
@@ -25,6 +26,7 @@ export default class Record {
     // total overflow payment
     this.totalOverflowPayment = 0
     this.totalPrincipalOfOverflowPayments = 0
+    this.isLoanMoreOrPayDown = false
   }
 
   updatePaymentRecord(period, obj) {
@@ -35,10 +37,11 @@ export default class Record {
     this.balance += amount
   }
 
-  paidNotDonePeriod(amount, paidDate, notDonePeriodArray) {
+  paidNotDonePeriod(paymentObj, amount, paidDate, notDonePeriodArray) {
     this.totalPayment += amount
     this.balance += amount
     var i = 0
+    this.paymentSlip.push(paymentObj)
     const recursive = (balance, paidDate, notDonePeriod, record) => {
       if (balance > 0) {
         var updateObj = notDonePeriod
@@ -46,16 +49,27 @@ export default class Record {
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
+        updateObj.paymentRecords.push({
+          id: `MaHopDong1.${formatDate(paymentObj.addedDate, 1)}`,
+          period: updateObj.period,
+          pay: payment,
+          interest: updateObj.interest,
+          principal: updateObj.principal,
+          totalPenalty: updateObj.totalPenalty,
+          totalPayment: updateObj.totalPayment,
+          paid: updateObj.paid,
+          remain: updateObj.remain,
+          date: formatDate(paymentObj.addedDate)
+        })
         balance = balance - payment
 
-        updateObj.paymentRecords.push({
-          paid: payment,
-          date: paidDate
-        })
+        // updateObj.paymentRecords.push({
+        //   paid: payment,
+        //   date: paidDate
+        // })
         record.updatePaymentRecord(updateObj.period, updateObj)
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'paid', updateObj.paid.toLocaleString())
         updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
-        updateObj.updateHistoryPayment('payment-history', paidDate)
 
         if (updateObj.remain <= 0) {
           updateObj.periodStatus = true
@@ -165,12 +179,29 @@ export default class Record {
     })
   }
 
+  payAll() {
+    var amount = 0
+    var notDonePeriodArray = this.periodRecords.filter(rec => {
+      if (rec.periodStatus === false) {
+        amount += rec.remain
+      }
+      return rec.periodStatus === false
+    })
+    var paymentObj = {
+      addedDate: this.realLifeDate,
+      paymentSlip: amount.toString(),
+      paymentMethod: '1'
+    }
+    this.paidNotDonePeriod(paymentObj, amount, this.realLifeDate, notDonePeriodArray)
+  }
+
   count(date) {
     this.realLifeDate = new Date(date)
     var period = 0
     var interval = setInterval(() => {
       if (!this.isPause) {
         this.currentPeriod = period
+        this.resetIsLoanMoreOrPayDown()
         if (this.realLifeDate.getTime() === (this.periodRecords[period].redemptionDate.getTime() - (1000 * 24 * 60 * 60))
           || this.realLifeDate.getTime() === this.periodRecords[period].redemptionDate.getTime()) {
           this.periodRecords[period].count()
@@ -575,6 +606,8 @@ export default class Record {
   }
 
   loanMore(obj, numberOfNewPeriods) {
+    this.loanMorePayDownRecords.push(obj)
+    this.isLoanMoreOrPayDown = true
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
       return rec.periodStartDate <= obj.date
     })
@@ -605,6 +638,8 @@ export default class Record {
   }
 
   payDown(obj, block, numberOfNewPeriods) {
+    this.loanMorePayDownRecords.push(obj)
+    this.isLoanMoreOrPayDown = true
     var blockPenalty = this.calculateBlock(obj, block)
 
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
@@ -687,6 +722,11 @@ export default class Record {
   // reset incremental payment
   resetIncrementalPayment() {
     this.incrementalPayment = 0
+  }
+
+  // reset isLoanMOreOrPayDown to make sure that customer is only able to paydown or loanmore once a day
+  resetIsLoanMoreOrPayDown(){
+    this.isLoanMoreOrPayDown = false
   }
 
 }

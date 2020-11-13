@@ -119,10 +119,12 @@
               <h4>Simulation</h4>
               <!-- button to open modal -->
               <button class="btn btn-primary" id="btn-choose-column">Choose column</button>
+              <button class="btn btn-primary" id="btn-pay-all">Pay all</button>
               <table class="table table-hover table-responsive period-table">
                 <thead>
                   <tr>
-                    <th scope="col" id="numericalOrder">Ky</th>
+                    <th scope="col" id="numericalOrder">STT</th>
+                    <th scope="col" id="id">Ma ky</th>
                     <th scope="col" id="redemptionDate">Ngay dong</th>
                     <th scope="col" id="redemption">So tien dong(principal+interest)</th>
                     <th scope="col" id="principal">Principal</th>
@@ -177,6 +179,18 @@
                 <label>So tien</label>
                 <input type="number" class="form-control" id="paymentSlip">
               </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="1" checked>
+                  Tien mat
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios2" value="2">
+                  Chuyen khoan
+                </label>
+              </div>
               <button class="btn btn-sm btn-primary" id="btn-payment-slip">Add</button>
             </div>
           </div>
@@ -189,11 +203,15 @@
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
+                    <th scope="col" id="id">Ma thu, chi</th>
+                    <th scope="col" id="pay">Pay</th>
+                    <th scope="col" id="principal">Principal</th>
+                    <th scope="col" id="interest">Interest</th>
+                    <th scope="col" id="totalPenalty">Total penalty</th>
                     <th scope="col" id="totalPayment">Total payment</th>
                     <th scope="col" id="paid">Total paid</th>
                     <th scope="col" id="remain">Remain</th>
-                    <th scope="col" id="realLifeDate">Date</th>
-                    <th scope="col" id="periodStatus">Status</th>
+                    <th scope="col" id="date">Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -272,6 +290,19 @@
             <% } %>
             <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay them</button>
           </div>
+
+          <div class="loan-more-pay-down-table-container">
+            <table class="table table-stripped table-hover table-responsive loanMorePayDownTable">
+              <thead>
+                <tr>
+                  <th id="date">Date</th>
+                  <th id="value">Value</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
         </div>
 
       </div>
@@ -490,7 +521,7 @@
     }
 
 
-    const formatDate = (date) => {
+    const formatDate = (date, type) => {
       var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
@@ -501,8 +532,22 @@
       if (day.length < 2)
         day = '0' + day;
 
-      return [day, month, year].join('-');
+      switch (type) {
+        // id
+        case (1):
+          return [day, month, year].join('');
+          break
+        // normal formate date
+        case (2):
+          return [day, month, year].join('-');
+          break
+        default:
+          return [day, month, year].join('-');
+
+      }
+
     }
+
 
     const displayTable = (object, elementName) => {
       var tr = document.createElement('tr')
@@ -618,7 +663,8 @@
   <script>
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
       var paymentSlipObj = {
-        addedDate: realLifeDate
+        addedDate: record.realLifeDate,
+        paymentMethod: document.querySelector('input[type="radio"]:checked').value
       }
       document.querySelector('div.payment').querySelectorAll('input').forEach(input => {
         paymentSlipObj[input.getAttribute('id')] = input.value
@@ -630,7 +676,21 @@
       if (notDonePeriodArray.length !== 0) {
         console.log('not done period array: ', notDonePeriodArray)
 
-        record.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
+        record.paidNotDonePeriod(paymentSlipObj, parseFloat(paymentSlipObj.paymentSlip),
+          paymentSlipObj.addedDate, notDonePeriodArray)
+
+        document.querySelector('table.payment-history-table tbody').innerHTML = ''
+        record.periodRecords.forEach(record => {
+          record.paymentRecords.forEach(rec => {
+            var tr = document.createElement('tr')
+            document.querySelectorAll('table.payment-history-table thead th').forEach(element => {
+              var th = document.createElement('th')
+              th.innerHTML = rec[element.id].toLocaleString()
+              tr.appendChild(th)
+            })
+            document.querySelector('table.payment-history-table tbody').appendChild(tr)
+          })
+        })
 
       } else {
         // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
@@ -664,6 +724,10 @@
         document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
         record.periodRecords.forEach(rec => {
           displayTable(rec, 'period-table-container')
+        })
+        document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
+        record.loanMorePayDownRecords.forEach(rec => {
+          displayTable(rec, 'loan-more-pay-down-table-container')
         })
       }
 
@@ -709,6 +773,10 @@
         document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
         record.periodRecords.forEach(rec => {
           displayTable(rec, 'period-table-container')
+        })
+        document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
+        record.loanMorePayDownRecords.forEach(rec => {
+          displayTable(rec, 'loan-more-pay-down-table-container')
         })
       }
     })

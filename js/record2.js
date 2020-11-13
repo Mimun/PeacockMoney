@@ -2,11 +2,31 @@ import PeriodRecord from './periodRecord2.js'
 // const PeriodRecord = require('./periodRecord2.js')
 export default class Record {
   constructor(object) {
-    if (object) {
-      for (var prop in object) {
-        this[prop] = object[prop]
-      }
+    for (var prop in object) {
+      this[prop] = object[prop]
     }
+    this.incrementalPaidPrincipal = this.incrementalPaidPrincipal ? this.incrementalPaidPrincipal : 0
+    this.accumulatedPaidInterest = this.accumulatedPaidInterest ? this.accumulatedPaidInterest : 0
+    this.remainOrigin = this.remainOrigin ? this.remainOrigin : this.presentValue
+    this.paymentSlip = this.paymentSlip ? this.paymentSlip : []
+    this.periodRecords = this.periodRecords ? this.periodRecords : []
+    this.balance = this.balance ? this.balance : 0
+
+    this.isPause = this.isPause ? this.isPause : false
+    this.currentPeriod = this.currentPeriod ? this.currentPeriod : 0
+    this.tempIncrementalPaidPrincipal = this.tempIncrementalPaidPrincipal ? this.tempIncrementalPaidPrincipal : 0
+    this.incrementalPayment = this.incrementalPayment ? this.incrementalPayment : 0
+    this.totalPayment = this.totalPayment ? this.totalPayment : 0
+
+    // total overflow payment
+    this.totalOverflowPayment = this.totalOverflowPayment ? this.totalOverflowPayment : 0
+    this.totalPrincipalOfOverflowPayments = this.totalPrincipalOfOverflowPayments ? this.totalPrincipalOfOverflowPayments : 0
+
+    // estimating
+    this.estimatingInterest = this.estimatingInterest ? this.estimatingInterest : 0
+    this.numberOfLoaningMoreTimes = this.numberOfLoaningMoreTimes ? this.numberOfLoaningMoreTimes : 0
+    this.numberOfPayingDownTimes = this.numberOfPayingDownTimes ? this.numberOfPayingDownTimes : 0
+    return this
   }
 
   updatePaymentRecord(period, obj) {
@@ -804,6 +824,7 @@ function pmt(rate_per_period, number_of_payments, present_value, future_value, t
 
   return 0;
 }
+
 
 const formatDate = (date) => {
   var d = new Date(date),
