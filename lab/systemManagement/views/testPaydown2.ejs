@@ -696,31 +696,36 @@
   <!-- calculate and display pay down -->
   <script>
     document.querySelector('button#btn-pay-down').addEventListener('click', (event) => {
-      var payDownObj = {
-        date: record.realLifeDate,
-        value: parseFloat(document.querySelector('input#payDown').value)
-      }
-      var remainPeriods = record.periodRecords.filter(rec => {
-        return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
-      }).map(rec => {
-        return rec.period
-      })
-
-      if (remainPeriods.length !== 0) {
-        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+      if (record.isLoanMoreOrPayDown) {
+        window.alert("You've already paid down today. Please comeback tomorrow!")
       } else {
-        record.payDown(payDownObj, block)
-        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
-
-        record.periodRecords.forEach(rec => {
-          displayTable(rec, 'period-table-container')
+        var payDownObj = {
+          date: record.realLifeDate,
+          value: parseFloat(document.querySelector('input#payDown').value)
+        }
+        var remainPeriods = record.periodRecords.filter(rec => {
+          return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
+        }).map(rec => {
+          return rec.period
         })
 
-        document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
-        record.loanMorePayDownRecords.forEach(rec => {
-          displayTable(rec, 'loan-more-pay-down-table-container')
-        })
+        if (remainPeriods.length !== 0) {
+          window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+        } else {
+          record.payDown(payDownObj, block)
+          document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+
+          record.periodRecords.forEach(rec => {
+            displayTable(rec, 'period-table-container')
+          })
+
+          document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
+          record.loanMorePayDownRecords.forEach(rec => {
+            displayTable(rec, 'loan-more-pay-down-table-container')
+          })
+        }
       }
+
 
     })
   </script>
@@ -742,31 +747,36 @@
   <!-- loan more -->
   <script>
     document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
-      var payDownObj = {
-        date: record.realLifeDate,
-        value: parseFloat(document.querySelector('input#loanMore').value)
-      }
-      var remainPeriods = record.periodRecords.filter(rec => {
-        return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
-      }).map(rec => {
-        return rec.period
-      })
-
-      if (remainPeriods.length !== 0) {
-        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+      if (record.isLoanMoreOrPayDown) {
+        window.alert("You've already loaned more today. Please comeback tomorrow!")
       } else {
-        record.loanMore(payDownObj)
-        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
-
-        record.periodRecords.forEach(rec => {
-          displayTable(rec, 'period-table-container')
+        var payDownObj = {
+          date: record.realLifeDate,
+          value: parseFloat(document.querySelector('input#loanMore').value)
+        }
+        var remainPeriods = record.periodRecords.filter(rec => {
+          return rec.redemptionDate < record.realLifeDate && rec.periodStatus === false
+        }).map(rec => {
+          return rec.period
         })
 
-        document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
-        record.loanMorePayDownRecords.forEach(rec => {
-          displayTable(rec, 'loan-more-pay-down-table-container')
-        })
+        if (remainPeriods.length !== 0) {
+          window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+        } else {
+          record.loanMore(payDownObj)
+          document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+
+          record.periodRecords.forEach(rec => {
+            displayTable(rec, 'period-table-container')
+          })
+
+          document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
+          record.loanMorePayDownRecords.forEach(rec => {
+            displayTable(rec, 'loan-more-pay-down-table-container')
+          })
+        }
       }
+
     })
   </script>
 
