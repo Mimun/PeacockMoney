@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .form-group {
+      width: fit-content;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Danh sách quỹ tiền</h2>
+      <div class="container" style="margin: 0; max-width: 100%;">
+        <div class="row">
+          <div class="col">
+            <table class="table table-bordered table-hover table-responsive table-striped fund-table">
+              <thead>
+                <tr>
+                  <th id="_id">Mã</th>
+                  <th id="name">Tên quỹ tiền</th>
+                  <th id="cash">Tiền mặt</th>
+                  <th id="iCash">Tiền chuyển khoản</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền</button>
+          </div>
+
+          <div class="col">
+            <table class="table table-bordered table-hover table-responsive table-striped fund-history-table">
+              <thead>
+                <tr>
+                  <th id="value">Số tiền chuyển</th>
+                  <th id="from">From</th>
+                  <th id="to">To</th>
+                  <th id="type">Loại</th>
+                  <th id="date">Mã</th>
+
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Chuyển tiền</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="exampleSelect1" class="bmd-label-floating">From</label>
+                    <select class="form-control" id="from">
+
+                    </select>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="exampleSelect1" class="bmd-label-floating">To</label>
+                    <select class="form-control" id="to">
+
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="value" class="bmd-label-floating">Số tiền chuyển</label>
+                      <input type="number" class="form-control" id="value">
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="type" value="cash"> Tiền mặt
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="type" value="iCash">
+                      Chuyển khoản
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-primary" id="transfer">Chuyển</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fund = JSON.parse('<%- JSON.stringify(fund) %>')
+    const fundList = JSON.parse('<%- JSON.stringify(fundList) %>')
+    console.log('fund: ', fund)
+    console.log('fundLList: ', fundList)
+
+    var tr = document.createElement('tr')
+    tr.C_DATA = fund
+    document.querySelectorAll('table.fund-table thead th').forEach(element => {
+      var th = document.createElement('th')
+      th.innerHTML = fund[element.id]
+      tr.appendChild(th)
+    })
+    document.querySelector('table.fund-table tbody').appendChild(tr)
+
+    // transfer money
+    document.querySelector('button#btn-transfer').addEventListener('click', event => {
+      $('#basicExampleModal').modal('show')
+      if (fundList.length !== 0) {
+        var optionArray = fundList.map(fund => {
+          return `<option value="${fund._id}">${fund.name}</option>`
+        });
+        document.querySelector('#to').innerHTML = optionArray
+        document.querySelector('#from').innerHTML = `<option value="${fund._id}">${fund.name}</option>`
+      }
+
+    })
+
+    // transfer
+    document.querySelector('button#transfer').addEventListener('click', event => {
+      var obj = {
+        date: new Date(Date.now())
+      }
+      console.log('abc: ', document.querySelector(' .modal-body input[type="radio"]:checked'))
+      document.querySelectorAll('.modal-body select, .modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
+        console.log('element: ', element)
+        obj[element.id] = element.value
+      })
+      if (obj.from === obj.to) {
+        window.alert('Store cannot transfer money to itselft!')
+      } else {
+        $.ajax({
+          type: 'PUT',
+          url: `/systemMng/funds/${fund._id}?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          data: JSON.stringify(obj),
+          success: result => {
+            console.log('result: ', result)
+            window.location.reload()
+          }
+        })
+      }
+      console.log('obj: ', obj)
+    })
+
+
+    // transfer history
+    fund.transHistory.forEach(trans => {
+      var tr = document.createElement('tr')
+      document.querySelectorAll('table.fund-history-table thead th').forEach(element => {
+        var th = document.createElement('th')
+        th.innerHTML = trans[element.id]
+        tr.appendChild(th)
+      })
+      document.querySelector('table.fund-history-table tbody').appendChild(tr)
+    })
+  </script>
+
+</body>
+
+</html>

@@ -6,6 +6,7 @@ var Warehouse = require('../../../models/warehouse')
 var Property = require('../../../models/property')
 var Item = require('../../../models/item')
 var ItemType = require('../../../models/itemType')
+var Fund = require('../../../models/fund')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -13,7 +14,8 @@ var fs = require('fs');
 var _ = require('lodash');
 const { find } = require('../../../models/employee');
 var json2csv = require('json2csv').parse
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
+const { parse } = require('path');
 
 
 /* GET home page. */
@@ -226,6 +228,11 @@ router.post('/stores', (req, res, next) => {
   findNestedObj(warehouseBasedOnStore, 'name', 'id').dataVie = 'maKho'
   var warehouse = new Warehouse(warehouseBasedOnStore)
   console.log('warehouse based on store: ', warehouse)
+  var fund = new Fund({
+    store: store._id,
+    name: findNestedObj(store, 'name', 'name').value
+  })
+  console.log('fund: ', fund)
   try {
     async.parallel({
       store: callback => {
@@ -233,6 +240,9 @@ router.post('/stores', (req, res, next) => {
       },
       warehouse: callback => {
         warehouse.save(callback)
+      },
+      fund: callback => {
+        fund.save(callback)
       }
     }, (err, results) => {
       if (err) throw err
@@ -952,6 +962,79 @@ router.get('/testPaydown3', (req, res) => {
 
 router.get('/testPaydown4', (req, res) => {
   res.render('testPaydown4', { simulation: 4 })
+})
+
+// funding management
+router.get('/funds', (req, res) => {
+  Fund.find({}).exec((err, result) => {
+    res.render('funds', { fundList: result })
+  })
+})
+
+// get fund detail
+router.get('/funds/:id', (req, res) => {
+  async.parallel({
+    funds: callback => {
+      Fund.find().exec(callback)
+    },
+    fund: callback => {
+      Fund.findOne({ _id: req.params.id }).exec(callback)
+    }
+  }, (err, results) => {
+    res.render('fund', { fund: results.fund, fundList: results.funds })
+  })
+
+})
+
+// transfer money
+router.put('/funds/:id', (req, res) => {
+  console.log('req body: ', req.body)
+  var obj = req.body
+  async.parallel({
+    fundFrom: callback => {
+      Fund.findOne({ _id: mongoose.Types.ObjectId(req.body.from) }).exec(callback)
+    },
+    fundTo: callback => {
+      Fund.findOne({ _id: mongoose.Types.ObjectId(req.body.to) }).exec(callback)
+
+    }
+  }, (err, results) => {
+    if (err) throw err
+    var fundFrom = results.fundFrom
+    var fundTo = results.fundTo
+    switch (obj.type) {
+      case ('cash'):
+        fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.value)
+        fundFrom.transHistory.push(obj)
+        fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.value)
+        fundTo.transHistory.push(obj)
+        break
+      case ('iCash'):
+        fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.value)
+        fundFrom.transHistory.push(obj)
+        fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.value)
+        fundTo.transHistory.push(obj)
+        break
+      default:
+    }
+    console.log('fund from after transferring: ', fundFrom)
+    console.log('fund to after transferring: ', fundTo)
+
+    async.parallel({
+      fundFrom: callback => {
+        Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+      },
+      fundTo: callback => {
+        Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+      }
+    }, (err, results) => {
+      if (err) throw err
+      res.send('save successfully')
+    })
+
+
+
+  })
 })
 
 

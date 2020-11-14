@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .form-group {
+      width: fit-content;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Danh sách quỹ tiền</h2>
+      <table class="table table-hover table-responsive table-striped fund-table">
+        <thead>
+          <tr>
+            <th id="_id">Mã</th>
+            <th id="name">Tên quỹ tiền</th>
+            <th id="cash">Tiền mặt</th>
+            <th id="iCash">Tiền chuyển khoản</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const fundList = JSON.parse('<%- JSON.stringify(fundList) %>')
+    console.log('fundLList: ', fundList)
+
+    if (fundList.length != 0) {
+      fundList.forEach(fund => {
+        var tr = document.createElement('tr')
+        tr.C_DATA = fund
+        document.querySelectorAll('table.fund-table thead th').forEach(element => {
+          var th = document.createElement('th')
+          th.innerHTML = fund[element.id]
+          tr.appendChild(th)
+        })
+        tr.addEventListener('click', (event) => {
+          console.log('event: ', event.target.closest('tr').C_DATA)
+          window.location.href = `funds/${event.target.closest('tr').C_DATA._id}?token=${window.localStorage.getItem('accessToken')}`
+        })
+        document.querySelector('table.fund-table tbody').appendChild(tr)
+      });
+    }
+
+  </script>
+
+</body>
+
+</html>
