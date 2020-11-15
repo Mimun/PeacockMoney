@@ -13,6 +13,7 @@ import { addSeparator, removeSeperator } from './addSeparatorOnInputChange.js'
 // used when user clicks to "create contract button"
 export const generateContractTemplateHTML = (itemObj, template, elementName, storeList) => {
   var storeSelectOptions = []
+  console.log('item obj: ', itemObj)
   if (storeList.length !== 0) {
     storeList.map(store => {
       var name = findNestedObj(store, 'name', 'name')
@@ -71,7 +72,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
     if (info.name !== "creator" && info.name !== 'store') {
       const clone = document.importNode(template.content, true)
       var input = clone.querySelector('input')
-      if(info.cType === 'date'){
+      if (info.cType === 'date') {
         console.log('info date: ', clone.querySelector('.form-group'))
         $(clone.querySelector('.form-group')).addClass('is-filled')
       }
@@ -100,11 +101,11 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
       if (info.name === "contractCreatedDate") {
         // calculate contract ending date
         input.addEventListener('change', (event) => {
-          var numberOfAcceptanceTerms = findNestedObj(itemObj, 'name', 'numberOfAcceptanceTerms') ?
-            findNestedObj(itemObj, 'name', 'numberOfAcceptanceTerms').value : 0
-          var numberOfDaysPerTerm = findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm') ?
-            findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm').value : 0
-          var contractEndingDate = new Date(new Date(event.target.value).getTime() + numberOfAcceptanceTerms * numberOfDaysPerTerm * 24 * 60 * 60 * 1000)
+          var numberOfAcceptanceTerms = findNestedObj(itemObj.contractMetadata, 'name', 'numberOfAcceptanceTerms') ?
+            findNestedObj(itemObj.contractMetadata, 'name', 'numberOfAcceptanceTerms').value : 0
+          // var numberOfDaysPerTerm = findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm') ?
+          //   findNestedObj(itemObj.contractMetadata, 'name', 'numberOfDaysPerTerm').value : 0
+          var contractEndingDate = new Date(new Date(event.target.value).getTime() + numberOfAcceptanceTerms * 30 * 24 * 60 * 60 * 1000)
           contractInfoDiv.querySelector('input[name="contractEndingDate"]').value = formatDate(contractEndingDate)
         })
       }

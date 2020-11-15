@@ -1,59 +1,23 @@
-const CronJob = require('cron').CronJob
 module.exports = class PeriodRecord {
   constructor(object) {
     for (var prop in object) {
       this[prop] = object[prop]
     }
-    // this.appliedRule = this.appliedRule ? this.appliedRule : null
-    // this.penalty = this.penalty ? this.penalty : 0
-    // this.blockPenalty = this.blockPenalty ? this.blockPenalty : 0
-    // this.totalPenalty = this.totalPenalty ? this.totalPenalty : this.penalty + this.blockPenalty
-    // this.penaltyRecord = this.penaltyRecord ? this.penaltyRecord : []
-    // this.paymentRecords = this.paymentRecords ? this.paymentRecords : []
-    // this.totalPayment = this.totalPayment ? this.totalPayment : this.redemption + this.blockPenalty + this.penalty
-    // this.paid = this.paid ? this.paid : 0
-    // this.remain = this.remain ? this.remain : this.totalPayment - this.paid
-    // this.payDown = this.payDown ? this.payDown : 0
-    // this.loanMore = this.loanMore ? this.loanMore : 0
-    // this.isPause = this.isPause ? this.isPause : false
-    // this.numericalOrder = this.numericalOrder ? this.numericalOrder : this.period + 1
-    // this.isLoanMorePeriod = this.isLoanMorePeriod ? this.isLoanMorePeriod : false
-    // this.isPaydownPeriod = this.isPaydownPeriod ? this.isPaydownPeriod : false
+    this.realLifeDate = new Date(this.realLifeDate)
+    this.redemptionDate = new Date(this.redemptionDate)
+    this.periodStartDate = new Date(this.periodStartDate)
+    this.periodEndDate = new Date(this.periodEndDate)
     return this
 
   }
 
-  // count(days) {
-  //   // 5 seconds = 1 day
-  //   this.countInterval = setInterval(() => {
-  //     if (!this.isPause) {
-  //       // calculate days between real life date and redemption date
-  //       this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
-  //       console.log('real life date in record: ', this.realLifeDate)
-  //       this.calculateDaysBetween()
-  //       this.updatePeriodTable('period-table-container', this.period, 'daysBetween', this.daysBetween)
-  //       // check rule
-  //       this.checkRule()
-  //       console.log(`days between of period ${this.period}: ${this.daysBetween}\n<--------------->`)
-
-  //       if (this.periodStatus) {
-  //         clearInterval(this.countInterval)
-  //       }
-  //     }
-
-  //   }, 2000)
-  // }
-
   count(date) {
-    console.log('count in period record: ', this.realLifeDate)
-    this.calculateDaysBetween()
-    // check rule
-    // this.realLifeDate.setDate(this.realLifeDate.getDate() + 1)
-    this.realLifeDate = new Date(date)
-    this.checkRule()
-    if (this.periodStatus) {
-      clearInterval(this.countInterval)
+    if (this.periodStatus === false) {
+      this.realLifeDate = new Date(date)
+      this.calculateDaysBetween()
+      this.checkRule()
     }
+
   }
 
   stopCounting() {

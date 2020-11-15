@@ -17,15 +17,15 @@
     table th {
       text-align: right;
     }
-
-    body {
-      padding: 8%;
-    }
   </style>
 </head>
 
 <body>
+  <%- include('../Components/navbar.ejs') %>
+
   <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+
     <div id="page-content-wrapper">
       <h1>Bảng tính lãi theo dư nợ cố định</h1>
       <div class="container" style="margin: 0 !important;
@@ -162,21 +162,46 @@
 
         </div>
 
-        <!-- set block -->
+        <!-- payment history -->
         <div class="row block-container">
           <!-- payment history -->
           <div class="col">
             <div class="payment-history">
-              <h4>Payment history</h4>
+              <h4>Lịch sử trả tiền</h4>
               <table class="table table-hover table-responsive payment-history-table">
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
+                    <th scope="col" id="id">Ma thu, chi</th>
+                    <th scope="col" id="pay">Pay</th>
+                    <th scope="col" id="principal">Principal</th>
+                    <th scope="col" id="interest">Interest</th>
+                    <th scope="col" id="totalPenalty">Total penalty</th>
                     <th scope="col" id="totalPayment">Total payment</th>
                     <th scope="col" id="paid">Total paid</th>
                     <th scope="col" id="remain">Remain</th>
-                    <th scope="col" id="realLifeDate">Date</th>
-                    <th scope="col" id="periodStatus">Status</th>
+                    <th scope="col" id="date">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- loan more pay down history -->
+        <div class="row block-container">
+          <!-- payment history -->
+          <div class="col">
+            <div class="loan-more-pay-down-history">
+              <h4>Lịch sử VTTB</h4>
+              <table class="table table-hover table-responsive payment-history-table">
+                <thead>
+                  <tr>
+                    <th scope="col" id="id">Mã thu, chi</th>
+                    <th scope="col" id="date">Ngày thực hiện</th>
+                    <th scope="col" id="value">Số tiền VTTB</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -307,11 +332,6 @@
   </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"></script>
-  <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"></script>
-  <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
-
   <!-- common function -->
   <script>
     const formatDate = (date) => {
@@ -426,6 +446,28 @@
       displayTable(record, 'period-table-container')
     })
 
+    // display payment history
+    const displayPaymentHistory = () => {
+      document.querySelector('div.payment-history table tbody').innerHTML = ''
+      if (loanPackage.periodPaymentSlip.length !== 0) {
+        loanPackage.periodPaymentSlip.forEach(payment => {
+          displayTable(payment, 'payment-history')
+        })
+      }
+
+    }
+    displayPaymentHistory()
+
+    // display loan more pay down history
+    const displayLoanMorePayDownHistory = () => {
+      document.querySelector('div.loan-more-pay-down-history table tbody').innerHTML = ''
+      if (loanPackage.loanMorePayDownRecords.length !== 0) {
+        loanPackage.loanMorePayDownRecords.forEach(payment => {
+          displayTable(payment, 'loan-more-pay-down-history')
+        })
+      }
+    }
+    displayLoanMorePayDownHistory()
     // date counter
     document.querySelector('#real-date-counter span').innerHTML = formatDate(loanPackage.realLifeDate)
 
@@ -443,11 +485,9 @@
       })
       if (notDonePeriodArray.length !== 0) {
         console.log('not done period array: ', notDonePeriodArray)
-        loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
-        document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
-        loanPackage.periodRecords.forEach(rec => {
-          displayTable(rec, 'period-table-container')
-        })
+        loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
+        updateLoanPackage(loanPackage)
+        displayPaymentHistory()
       } else {
         // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
         window.alert('You have paid all the periods.')
@@ -462,7 +502,7 @@
       }
       console.log('paydown obj: ', payDownObj)
       var remainPeriods = loanPackage.periodRecords.filter(rec => {
-        return rec.redemptionDate < loanPackage.realLifeDate && rec.periodStatus === false
+        return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
       }).map(rec => {
         return rec.period
       })
@@ -472,11 +512,13 @@
       } else {
         loanPackage.payDown(payDownObj)
         console.log('loan package after paying down: ', loanPackage)
-        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+        updateLoanPackage(loanPackage)
+        displayLoanMorePayDownHistory()
+        // document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
-        loanPackage.periodRecords.forEach(rec => {
-          displayTable(rec, 'period-table-container')
-        })
+        // loanPackage.periodRecords.forEach(rec => {
+        //   displayTable(rec, 'period-table-container')
+        // })
       }
 
     })
@@ -488,7 +530,7 @@
         value: parseFloat(document.querySelector('input#loanMore').value)
       }
       var remainPeriods = loanPackage.periodRecords.filter(rec => {
-        return rec.redemptionDate < loanPackage.realLifeDate && rec.periodStatus === false
+        return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
       }).map(rec => {
         return rec.period
       })
@@ -497,11 +539,13 @@
         window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
       } else {
         loanPackage.loanMore(payDownObj)
-        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+        updateLoanPackage(loanPackage)
+        displayLoanMorePayDownHistory()
+        // document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
-        loanPackage.periodRecords.forEach(rec => {
-          displayTable(rec, 'period-table-container')
-        })
+        // loanPackage.periodRecords.forEach(rec => {
+        //   displayTable(rec, 'period-table-container')
+        // })
       }
     })
 
@@ -528,6 +572,23 @@
         displayTable(rec, 'period-table-container')
       })
     })
+
+    const updateLoanPackage = (loanPackage) => {
+      $.ajax({
+        type: 'PUT',
+        url: `/contractMng/contracts/${contract._id}/loanPackage?token=${window.localStorage.getItem('accessToken')}`,
+        contentType: 'application/json',
+        data: JSON.stringify(loanPackage),
+        success: result => {
+          console.log('result: ', result)
+          document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
+          loanPackage.periodRecords.forEach(rec => {
+            displayTable(rec, 'period-table-container')
+          })
+        }
+      })
+
+    }
 
   </script>
 

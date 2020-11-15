@@ -40,7 +40,7 @@ export default class PeriodRecord {
     this.numericalOrder = this.period + 1
     this.isLoanMorePeriod = false
     this.isPaydownPeriod = false
-    this.id = `MaHopDong1.${formatDate(this.redemptionDate, 1)}`
+    this.id = `MaHopDong1.${formatDate(this.redemptionDate, 1)}.A`
     // this.record = record
     this.countInterval = () => { }
   }

@@ -410,6 +410,7 @@ router.put('/contracts/:id', async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body)
   var contract = req.body.contract
+  var contractId = contract.id
   var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
   var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
   var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
@@ -420,9 +421,15 @@ router.put('/contracts/:id', async (req, res) => {
   var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
   var loanPackage = new Record({
     interestRate, presentValue, agreementDate,
-    numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation
+    numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation, contractId
   })
   await loanPackage.createPeriodRecords()
+  await loanPackage.pushLoanMorePayDownHistory({
+    id: `${loanPackage.contractId}.${formatDate(loanPackage.agreementDate, 1)}`,
+    date: loanPackage.agreementDate,
+    value: -loanPackage.presentValue,
+
+  })
   try {
     Contract.findOneAndUpdate({ _id: req.params.id },
       { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
@@ -556,7 +563,8 @@ router.get('/contracts/:id/checkTable', (req, res) => {
   })
 })
 
-router.get('/testContracts', (req, res) => {
+// get contract management
+router.get('/contractsManagement', (req, res) => {
   const checkDate = formatDate(new Date())
   console.log('date now: ', checkDate)
   async.parallel({
@@ -582,6 +590,19 @@ router.get('/testContracts', (req, res) => {
     if (err) throw err
     var propertyList = result2.property
     var contractList = result2.contract.map(contract => {
+      var numberOfLatePeriods = 0,
+        numberOfLateDays = 0
+      // number of late periods
+      if (contract.loanPackage) {
+        var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
+          return period.daysBetween > 0 && period.periodStatus === false
+
+        })
+        numberOfLatePeriods = latePeriodsArray.length
+        latePeriodsArray.forEach(period=>{
+          numberOfLateDays += period.daysBetween
+        })
+      }
       return {
         contractId: contract.id,
         customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
@@ -591,25 +612,47 @@ router.get('/testContracts', (req, res) => {
         loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
         itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
         itemName: contract.items[0] ? contract.items[0].infos[0].value : '-',
-        contractStatus: contract.contractStatus,
+        staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
+        interestRate: contract.loanPackage ? contract.loanPackage.interestRate : '-',
         employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
         employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
+        accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
+        incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
+        presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
+        contractStatus: contract.contractStatus,
+        totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
+        estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
+        numberOfLatePeriods,
+        numberOfLateDays,
+        lastPaidDate: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.pop().date : '-',
+        numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
+        numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length : '-',
         // property: getProperty(propertyList, contract.id)
       }
     })
-    res.render('contractListTest', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+    res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
   })
 
 })
 
-var job = new CronJob('*/30 * * * * *', function () {
+// update loan package
+router.put('/contracts/:id/loanPackage', (req, res) => {
+  console.log('id: ', req.params.id)
+  console.log('body: ', req.body)
+  Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { loanPackage: req.body } }, { new: true }).exec((err, result) => {
+    if (err) throw err
+    res.send('Update loanpackage successfully!')
+  })
+})
+
+var job = new CronJob('*/60 * * * * *', function () {
   Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
     if (err) throw err
     if (result) {
       result.forEach(contract => {
         contract.loanPackage = new Record(contract.loanPackage)
-        contract.loanPackage.reassignPeriodRecords()
+        // contract.loanPackage.reassignPeriodRecords()
         contract.loanPackage.count()
         Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'loanPackage': contract.loanPackage } }).exec((err, result) => {
           if (err) throw err
@@ -620,7 +663,6 @@ var job = new CronJob('*/30 * * * * *', function () {
   })
 })
 job.start()
-
 
 const getProperty = (array, value) => {
   return array.find(element => {
