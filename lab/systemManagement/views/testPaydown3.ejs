@@ -295,6 +295,7 @@
             <table class="table table-stripped table-hover table-responsive loanMorePayDownTable">
               <thead>
                 <tr>
+                  <th id="id">Date</th>
                   <th id="date">Date</th>
                   <th id="value">Value</th>
                 </tr>
@@ -580,7 +581,6 @@
     import PeriodRecord from './periodRecord.js'
     import Record from './record.js'
 
-
     document.querySelector('button#createLoanPackage').addEventListener('click', (event) => {
 
       document.querySelectorAll('.loan-package input').forEach(input => {
@@ -596,6 +596,12 @@
         , loanPackage.presentValue, new Date(loanPackage.agreementDate),
         loanPackage.numberOfPayments, ruleArray, new Date(Date.now()), simulation)
       record.createPeriodRecords()
+      record.loanMorePayDownRecords.push({
+        id: `MaHopDong1.${formatDate(record.agreementDate, 1)}`,
+        date: record.agreementDate,
+        value: -record.presentValue,
+
+      })
       console.log('record: ', record)
       document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
@@ -604,6 +610,10 @@
         if (index === record.periodRecords.length - 1) {
           document.querySelector('.period-table-container h4').innerHTML = `Ngay ket thuc hop dong: ${formatDate(rec.redemptionDate)}`
         }
+      })
+      document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
+      record.loanMorePayDownRecords.forEach(rec => {
+        displayTable(rec, 'loan-more-pay-down-table-container')
       })
       // calculateRedemption(obj)
 
@@ -644,7 +654,7 @@
   </script>
 
   <!-- choose date, display time counter -->
-  <script type="module">
+  <script>
     document.querySelector('button#btn-simulation').addEventListener('click', (event) => {
       realLifeDate = new Date(document.querySelector('div.date input#real-date').value)
       console.log('real date input value: ', realLifeDate)
@@ -659,14 +669,15 @@
     })
   </script>
 
-  <!-- calculate and display simualtion table -->
+  <!-- calculate and display payment -->
   <script>
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
+      console.log('radio: ', document.querySelector('input[type="radio"]:checked'))
       var paymentSlipObj = {
         addedDate: record.realLifeDate,
         paymentMethod: document.querySelector('input[type="radio"]:checked').value
       }
-      document.querySelector('div.payment').querySelectorAll('input').forEach(input => {
+      document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
         paymentSlipObj[input.getAttribute('id')] = input.value
       })
 
@@ -678,20 +689,12 @@
 
         record.paidNotDonePeriod(paymentSlipObj, parseFloat(paymentSlipObj.paymentSlip),
           paymentSlipObj.addedDate, notDonePeriodArray)
-
-        document.querySelector('table.payment-history-table tbody').innerHTML = ''
-        record.periodRecords.forEach(record => {
-          record.paymentRecords.forEach(rec => {
-            var tr = document.createElement('tr')
-            document.querySelectorAll('table.payment-history-table thead th').forEach(element => {
-              var th = document.createElement('th')
-              th.innerHTML = rec[element.id].toLocaleString()
-              tr.appendChild(th)
-            })
-            document.querySelector('table.payment-history-table tbody').appendChild(tr)
+        document.querySelector('div.payment-history table tbody').innerHTML = ''
+        if (record.periodPaymentSlip.length !== 0) {
+          record.periodPaymentSlip.forEach(payment => {
+            displayTable(payment, 'payment-history')
           })
-        })
-
+        }
       } else {
         // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
         window.alert('You have paid all the periods.')

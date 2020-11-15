@@ -283,6 +283,7 @@
             <table class="table table-stripped table-hover table-responsive loanMorePayDownTable">
               <thead>
                 <tr>
+                  <th id="id">Date</th>
                   <th id="date">Date</th>
                   <th id="value">Value</th>
                 </tr>
@@ -591,6 +592,12 @@
         , loanPackage.presentValue, new Date(loanPackage.agreementDate),
         loanPackage.numberOfPayments, ruleArray, new Date(Date.now()), simulation)
       record.createPeriodRecords()
+      record.loanMorePayDownRecords.push({
+        id: `MaHopDong1.${formatDate(record.agreementDate, 1)}`,
+        date: record.agreementDate,
+        value: -record.presentValue,
+
+      })
       console.log('record: ', record)
       document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
 
@@ -599,6 +606,10 @@
         if (index === record.periodRecords.length - 1) {
           document.querySelector('.period-table-container h4').innerHTML = `Ngay ket thuc hop dong: ${formatDate(rec.redemptionDate)}`
         }
+      })
+      document.querySelector(`div.loan-more-pay-down-table-container table tbody`).innerHTML = ''
+      record.loanMorePayDownRecords.forEach(rec => {
+        displayTable(rec, 'loan-more-pay-down-table-container')
       })
       // calculateRedemption(obj)
 
@@ -672,20 +683,14 @@
       if (notDonePeriodArray.length !== 0) {
         console.log('not done period array: ', notDonePeriodArray)
 
-        record.paidNotDonePeriod(paymentSlipObj, parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray)
-        document.querySelector('table.payment-history-table tbody').innerHTML = ''
-        record.periodRecords.forEach(record => {
-          record.paymentRecords.forEach(rec => {
-            var tr = document.createElement('tr')
-            document.querySelectorAll('table.payment-history-table thead th').forEach(element => {
-              var th = document.createElement('th')
-              th.innerHTML = rec[element.id].toLocaleString()
-              tr.appendChild(th)
-            })
-            document.querySelector('table.payment-history-table tbody').appendChild(tr)
+        record.paidNotDonePeriod(paymentSlipObj, parseFloat(paymentSlipObj.paymentSlip),
+          paymentSlipObj.addedDate, notDonePeriodArray)
+        document.querySelector('div.payment-history table tbody').innerHTML = ''
+        if (record.periodPaymentSlip.length !== 0) {
+          record.periodPaymentSlip.forEach(payment => {
+            displayTable(payment, 'payment-history')
           })
-        })
-
+        }
       } else {
         // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
         window.alert('You have paid all the periods.')
@@ -724,10 +729,13 @@
             displayTable(rec, 'loan-more-pay-down-table-container')
           })
         }
+
+
       }
 
-
     })
+
+
   </script>
 
   <!-- set block -->
@@ -775,9 +783,12 @@
             displayTable(rec, 'loan-more-pay-down-table-container')
           })
         }
+
       }
 
     })
+
+
   </script>
 
   <!-- choose columns to display -->
@@ -836,21 +847,6 @@
     })
   </script>
 
-  <!-- display loan more pay down table -->
-  <script>
-
-    // if (record.loanMorePayDownRecords.length !== 0) {
-    //   record.loanMorePayDownRecords.forEach(rec => {
-    //     var tr = document.createElement('tr')
-    //     document.querySelectorAll('table.loanMorePayDownTable thead th').forEach(element => {
-    //       var th = document.createElement('th')
-    //       th.innerHTML = rec[element.id]
-    //       tr.appendChild(th)
-    //     })
-    //     document.querySelector('table.loanMorePayDownTable tbody').appendChild(tr)
-    //   })
-    // }
-  </script>
 </body>
 
 </html>

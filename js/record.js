@@ -12,6 +12,7 @@ export default class Record {
     this.paymentSlip = []
     this.periodRecords = []
     this.loanMorePayDownRecords = []
+    this.periodPaymentSlip = []
     this.balance = 0
     this.ruleArray = ruleArray
 
@@ -49,7 +50,7 @@ export default class Record {
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
-        updateObj.paymentRecords.push({
+        this.periodPaymentSlip.push({
           id: `MaHopDong1.${formatDate(paymentObj.addedDate, 1)}`,
           period: updateObj.period,
           pay: payment,
@@ -727,6 +728,9 @@ export default class Record {
   // reset isLoanMOreOrPayDown to make sure that customer is only able to paydown or loanmore once a day
   resetIsLoanMoreOrPayDown(){
     this.isLoanMoreOrPayDown = false
+  }
+  pushLoanMorePayDownHistory(obj) {
+    this.loanMorePayDownRecords.push(obj)
   }
 
 }
