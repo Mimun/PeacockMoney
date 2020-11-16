@@ -643,7 +643,7 @@ router.get('/contractsManagement', (req, res) => {
         estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
         numberOfLatePeriods,
         numberOfLateDays,
-        lastPaidDate: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.pop() ? contract.loanPackage.periodPaymentSlip.pop().date : '-' : '-',
+        lastPaidDate: '-',
         numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
         numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length : '-',
         // property: getProperty(propertyList, contract.id)
