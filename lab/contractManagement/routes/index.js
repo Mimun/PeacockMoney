@@ -356,6 +356,27 @@ router.get('/contracts', (req, res) => {
 
 })
 
+// get late package
+router.get('/contracts/goingToDo', (req, res) => {
+  Contract.find({}).exec(async (err, result) => {
+    if (err) throw err
+    var goingToDoPeriodArray = []
+    if (result) {
+      await result.forEach(contract => {
+        if (contract.loanPackage) {
+          contract.loanPackage.periodRecords.forEach(period => {
+            if (-10 < period.daysBetween && period.daysBetween < 0) {
+              goingToDoPeriodArray.push(period)
+            }
+          })
+        }
+
+      })
+    }
+    res.render('goingToDoPeriod', { goingToDoPeriodArray })
+  })
+})
+
 // create new contract
 router.post('/contracts', (req, res) => {
   var data = req.body
@@ -599,7 +620,7 @@ router.get('/contractsManagement', (req, res) => {
 
         })
         numberOfLatePeriods = latePeriodsArray.length
-        latePeriodsArray.forEach(period=>{
+        latePeriodsArray.forEach(period => {
           numberOfLateDays += period.daysBetween
         })
       }
@@ -646,7 +667,7 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
   })
 })
 
-var job = new CronJob('*/60 * * * * *', function () {
+var job = new CronJob('0 */1 * * *', function () {
   Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
     if (err) throw err
     if (result) {

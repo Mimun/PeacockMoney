@@ -315,14 +315,19 @@
   import { generateCustomInfoTemplate } from '/generateCustomInfoTemplate.js'
   import { addSeparatorOnInputChange } from '/addSeparatorOnInputChange.js'
 
-
-  // calculate percentage per month
-  document.querySelector("#permillePerDay").addEventListener('change', (event) => {
-    var value = event.target.value
-    console.log('value: ', event.target.value)
-    document.querySelector("#percentagePerMonth").value = event.target.value * 30 / 10
-  })
-
   // add separator to number
   addSeparatorOnInputChange()
+  console.log('abcxyz: ', document.querySelector('#millionPerDay'))
+  document.querySelector('#millionPerDay').addEventListener('change', event => {
+    console.log('event value: ', event.target.value)
+    document.querySelector('#percentagePerMonth').value = (parseFloat(event.target.value) * 30) / 1000000
+  })
+
+  document.querySelector('#percentagePerMonth').addEventListener('change', event => {
+    document.querySelector('#millionPerDay').value = (parseFloat(event.target.value) * 1000000) / 30
+
+  })
+</script>
+<script>
+
 </script>

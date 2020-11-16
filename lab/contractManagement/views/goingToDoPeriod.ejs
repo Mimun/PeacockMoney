@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Kỳ thu sắp phải thực hiện</h2>
+      <table class="table table-striped table-hover table-responsive going-to-do-period-table">
+        <thead>
+          <tr>
+            <th id="id">Ma ky</th>
+            <th id="daysBetween">So ngay sap phai thuc hien</th>
+            <th id="interest">Lai</th>
+            <th id="principal">Goc co dinh</th>
+            <th id="totalPenalty">Tong phat</th>
+            <th id="redemption">Tong phai dong</th>
+            <th id="paid">Da tra</th>
+            <th id="remain">Con lai</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const goingToDoPeriod = JSON.parse('<%- JSON.stringify(goingToDoPeriodArray)%>')
+    console.log('going to do period :', goingToDoPeriod)
+
+    if (goingToDoPeriod.length !== 0) {
+      goingToDoPeriod.forEach(period => {
+        var tr = document.createElement('tr')
+        document.querySelectorAll('table.going-to-do-period-table thead th').forEach(element => {
+          var th = document.createElement('th')
+          th.innerHTML = period[element.id]
+          tr.appendChild(th)
+        })
+        document.querySelector('table.going-to-do-period-table tbody').appendChild(tr)
+      })
+    }
+  </script>
+</body>
+
+</html>
