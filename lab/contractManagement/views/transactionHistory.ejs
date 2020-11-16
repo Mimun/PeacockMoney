@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Contract Management</title>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Quản lý thu chi</h2>
+      
+    </div>
+  </div>
+
+
+  <script>
+    const loanPackage = JSON.parse('<%- JSON.stringify(loanPackage) %>')
+    console.log('loan package array: ', loanPackage)
+  </script>
+</body>
+
+</html>

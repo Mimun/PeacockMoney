@@ -643,7 +643,7 @@ router.get('/contractsManagement', (req, res) => {
         estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
         numberOfLatePeriods,
         numberOfLateDays,
-        lastPaidDate: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length !== 0 ? contract.loanPackage.periodPaymentSlip.pop().date : '-' : '-',
+        lastPaidDate: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.pop() ? contract.loanPackage.periodPaymentSlip.pop().date : '-' : '-',
         numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
         numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length : '-',
         // property: getProperty(propertyList, contract.id)
@@ -662,6 +662,23 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
   Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { loanPackage: req.body } }, { new: true }).exec((err, result) => {
     if (err) throw err
     res.send('Update loanpackage successfully!')
+  })
+})
+
+// transaction history
+router.get('/transactionHistory', (req, res) => {
+  Contract.find({}).exec((err, result) => {
+    if (err) throw err
+    var loanPackage = result.map(res => {
+      if (res.loanPackage) {
+        return res.loanPackage.periodPaymentSlip
+      }
+    })
+    loanPackage = loanPackage.flat(Infinity)
+    loanPackage = loanPackage.filter(loan => {
+      return loan !== null
+    })
+    res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity) })
   })
 })
 
