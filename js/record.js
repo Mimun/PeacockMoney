@@ -607,7 +607,7 @@ export default class Record {
   }
 
   loanMore(obj, numberOfNewPeriods) {
-    this.loanMorePayDownRecords.push(obj)
+    this.loanMorePayDownRecords.push({ ...obj, id: `MaHopDong1.${formatDate(obj.date, 1)}` })
     this.isLoanMoreOrPayDown = true
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
       return rec.periodStartDate <= obj.date
@@ -639,7 +639,7 @@ export default class Record {
   }
 
   payDown(obj, block, numberOfNewPeriods) {
-    this.loanMorePayDownRecords.push(obj)
+    this.loanMorePayDownRecords.push({ ...obj, id: `MaHopDong1.${formatDate(obj.date, 1)}`, value: -obj.value })
     this.isLoanMoreOrPayDown = true
     var blockPenalty = this.calculateBlock(obj, block)
 
@@ -726,7 +726,7 @@ export default class Record {
   }
 
   // reset isLoanMOreOrPayDown to make sure that customer is only able to paydown or loanmore once a day
-  resetIsLoanMoreOrPayDown(){
+  resetIsLoanMoreOrPayDown() {
     this.isLoanMoreOrPayDown = false
   }
   pushLoanMorePayDownHistory(obj) {

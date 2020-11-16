@@ -586,8 +586,6 @@ router.get('/contracts/:id/checkTable', (req, res) => {
 
 // get contract management
 router.get('/contractsManagement', (req, res) => {
-  const checkDate = formatDate(new Date())
-  console.log('date now: ', checkDate)
   async.parallel({
     contract: callback => {
       Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
@@ -645,7 +643,7 @@ router.get('/contractsManagement', (req, res) => {
         estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
         numberOfLatePeriods,
         numberOfLateDays,
-        lastPaidDate: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.pop().date : '-',
+        lastPaidDate: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length !== 0 ? contract.loanPackage.periodPaymentSlip.pop().date : '-' : '-',
         numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
         numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length : '-',
         // property: getProperty(propertyList, contract.id)
