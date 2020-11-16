@@ -622,32 +622,34 @@ router.get('/contractsManagement', (req, res) => {
           numberOfLateDays += period.daysBetween
         })
       }
-      return {
-        contractId: contract.id,
-        customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
-        customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-        contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
-        contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
-        loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
-        itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
-        itemName: contract.items[0] ? contract.items[0].infos[0].value : '-',
-        staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
-        interestRate: contract.loanPackage ? contract.loanPackage.interestRate : '-',
-        employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
-        employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
-        accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
-        incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
-        presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
-        contractStatus: contract.contractStatus,
-        totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
-        estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
-        numberOfLatePeriods,
-        numberOfLateDays,
-        lastPaidDate: '-',
-        numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
-        numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip.length : '-',
-        // property: getProperty(propertyList, contract.id)
-      }
+      if (contract.loanPackage)
+        return {
+          contractId: contract.id,
+          customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+          customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+          contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
+          contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
+          loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
+          itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
+          itemName: contract.items[0] ? contract.items[0].infos[0].value : '-',
+          staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
+          interestRate: contract.loanPackage ? contract.loanPackage.interestRate : '-',
+          employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
+          employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
+          accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
+          incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
+          presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
+          contractStatus: contract.contractStatus,
+          totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
+          estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
+          numberOfLatePeriods,
+          numberOfLateDays,
+          lastPaidDate: '-',
+          numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
+          numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
+          // property: getProperty(propertyList, contract.id)
+
+        }
     })
     res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
