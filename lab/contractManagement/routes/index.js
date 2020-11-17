@@ -356,27 +356,6 @@ router.get('/contracts', (req, res) => {
 
 })
 
-// get late package
-router.get('/contracts/goingToDo', (req, res) => {
-  Contract.find({}).exec(async (err, result) => {
-    if (err) throw err
-    var goingToDoPeriodArray = []
-    if (result) {
-      await result.forEach(contract => {
-        if (contract.loanPackage) {
-          contract.loanPackage.periodRecords.forEach(period => {
-            if (-10 < period.daysBetween && period.daysBetween < 0) {
-              goingToDoPeriodArray.push(period)
-            }
-          })
-        }
-
-      })
-    }
-    res.render('goingToDoPeriod', { goingToDoPeriodArray })
-  })
-})
-
 // create new contract
 router.post('/contracts', (req, res) => {
   var data = req.body
@@ -580,7 +559,10 @@ router.get('/contracts/:id', (req, res) => {
 router.get('/contracts/:id/checkTable', (req, res) => {
   console.log('id: ', req.params.id)
   Contract.findOne({ _id: req.params.id }).exec((err, result) => {
-    res.render('checkTable', { contract: result })
+    Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
+      res.render('checkTable', { contract: { ...result._doc, store: result2 } })
+
+    })
   })
 })
 
@@ -681,7 +663,49 @@ router.get('/transactionHistory', (req, res) => {
   })
 })
 
-var job = new CronJob('0 */1 * * *', function () {
+// get going to do period package
+router.get('/goingToDo', (req, res) => {
+  Contract.find({}).exec(async (err, result) => {
+    if (err) throw err
+    var goingToDoPeriodArray = []
+    if (result) {
+      await result.forEach(contract => {
+        if (contract.loanPackage) {
+          contract.loanPackage.periodRecords.forEach(period => {
+            if (-10 < period.daysBetween && period.daysBetween < 0) {
+              goingToDoPeriodArray.push(period)
+            }
+          })
+        }
+
+      })
+    }
+    res.render('goingToDoPeriod', { goingToDoPeriodArray })
+  })
+})
+
+// get late periods
+router.get('/latePeriod', (req, res) => {
+  Contract.find({}).exec(async (err, result) => {
+    if (err) throw err
+    var latePeriodArray = []
+    if (result) {
+      await result.forEach(contract => {
+        if (contract.loanPackage) {
+          contract.loanPackage.periodRecords.forEach(period => {
+            if (period.daysBetween > 0) {
+              latePeriodArray.push(period)
+            }
+          })
+        }
+
+      })
+    }
+    res.render('latePeriod', { latePeriodArray })
+  })
+})
+
+var job = new CronJob('0 */15 * * * *', function () {
   Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
     if (err) throw err
     if (result) {

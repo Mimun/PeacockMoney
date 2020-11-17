@@ -20,14 +20,14 @@
       <h2>Danh sách quỹ tiền</h2>
       <div class="container" style="margin: 0; max-width: 100%;">
         <div class="row">
-          <div class="col">
+          <div class="col-5">
             <table class="table table-bordered table-hover table-responsive table-striped fund-table">
               <thead>
                 <tr>
-                  <th id="_id">Mã</th>
+                  <th id="storeId">Mã cửa hàng</th>
                   <th id="name">Tên quỹ tiền</th>
-                  <th id="cash">Tiền mặt</th>
-                  <th id="iCash">Tiền chuyển khoản</th>
+                  <th id="cash">Quỹ tiền mặt</th>
+                  <th id="iCash">Quỹ tiền chuyển khoản</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -40,17 +40,17 @@
               <thead>
                 <tr>
                   <th id="value">Số tiền chuyển</th>
-                  <th id="from">From</th>
-                  <th id="to">To</th>
+                  <th id="fromStore">Người / Cửa hàng chuyển</th>
+                  <th id="toStore">Người / cửa hàng nhận</th>
                   <th id="type">Loại</th>
-                  <th id="date">Mã</th>
+                  <th id="date">Thời gian chuyển</th>
 
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
           </div>
-          
+
         </div>
       </div>
 
@@ -73,16 +73,13 @@
                 <div class="col">
                   <div class="form-group">
                     <label for="exampleSelect1" class="bmd-label-floating">From</label>
-                    <select class="form-control" id="from">
-
-                    </select>
+                    <select class="form-control" id="from"></select>
                   </div>
                 </div>
                 <div class="col">
                   <div class="form-group">
                     <label for="exampleSelect1" class="bmd-label-floating">To</label>
                     <select class="form-control" id="to">
-
                     </select>
                   </div>
                 </div>
@@ -132,7 +129,7 @@
     tr.C_DATA = fund
     document.querySelectorAll('table.fund-table thead th').forEach(element => {
       var th = document.createElement('th')
-      th.innerHTML = fund[element.id]
+      th.innerHTML = fund[element.id].toLocaleString()
       tr.appendChild(th)
     })
     document.querySelector('table.fund-table tbody').appendChild(tr)
@@ -140,12 +137,19 @@
     // transfer money
     document.querySelector('button#btn-transfer').addEventListener('click', event => {
       $('#basicExampleModal').modal('show')
+      document.querySelector('select#to').innerHTML = ''
+      document.querySelector('select#from').innerHTML = ''
+
       if (fundList.length !== 0) {
         var optionArray = fundList.map(fund => {
-          return `<option value="${fund._id}">${fund.name}</option>`
+          var option = document.createElement('option')
+          option.value = fund.store
+          option.id = `${fund.name}-${fund.storeId}`
+          option.innerHTML = `${fund.name} - ${fund.storeId}`
+          document.querySelector('select#to').appendChild(option)
+
         });
-        document.querySelector('#to').innerHTML = optionArray
-        document.querySelector('#from').innerHTML = `<option value="${fund._id}">${fund.name}</option>`
+        document.querySelector('select#from').innerHTML = `<option value="${fund.store}" id="${fund.name}-${fund.storeId}">${fund.name} - ${fund.storeId}</option>`
       }
 
     })
@@ -153,13 +157,15 @@
     // transfer
     document.querySelector('button#transfer').addEventListener('click', event => {
       var obj = {
-        date: new Date(Date.now())
+        date: new Date(Date.now()),
+        fromStore: document.querySelector('select#from').options[document.querySelector('select#from').selectedIndex].id,
+        toStore: document.querySelector('select#to').options[document.querySelector('select#to').selectedIndex].id,
+
       }
-      console.log('abc: ', document.querySelector(' .modal-body input[type="radio"]:checked'))
       document.querySelectorAll('.modal-body select, .modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
-        console.log('element: ', element)
         obj[element.id] = element.value
       })
+
       if (obj.from === obj.to) {
         window.alert('Store cannot transfer money to itselft!')
       } else {
@@ -183,7 +189,7 @@
       var tr = document.createElement('tr')
       document.querySelectorAll('table.fund-history-table thead th').forEach(element => {
         var th = document.createElement('th')
-        th.innerHTML = trans[element.id]
+        th.innerHTML = trans[element.id].toLocaleString()
         tr.appendChild(th)
       })
       document.querySelector('table.fund-history-table tbody').appendChild(tr)

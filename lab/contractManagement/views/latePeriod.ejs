@@ -14,12 +14,12 @@
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
-      <h2>Kỳ thu sắp phải thực hiện</h2>
+      <h2>Kỳ thu quá hạn</h2>
       <table class="table table-striped table-hover table-responsive going-to-do-period-table">
         <thead>
           <tr>
             <th id="id">Mã kỳ</th>
-            <th id="daysBetween">Số ngày sắp phải thực hiện</th>
+            <th id="daysBetween">Số ngày quá hạn</th>
             <th id="interest">Lãi</th>
             <th id="principal">Gốc hàng tháng</th>
             <th id="totalPenalty">Tổng số tiền phạt</th>
@@ -33,11 +33,11 @@
     </div>
   </div>
   <script>
-    const goingToDoPeriod = JSON.parse('<%- JSON.stringify(goingToDoPeriodArray)%>')
-    console.log('going to do period :', goingToDoPeriod)
+    const latePeriodArray = JSON.parse('<%- JSON.stringify(latePeriodArray)%>')
+    console.log('going to do period :', latePeriodArray)
 
-    if (goingToDoPeriod.length !== 0) {
-      goingToDoPeriod.forEach(period => {
+    if (latePeriodArray.length !== 0) {
+      latePeriodArray.forEach(period => {
         var tr = document.createElement('tr')
         document.querySelectorAll('table.going-to-do-period-table thead th').forEach(element => {
           var th = document.createElement('th')

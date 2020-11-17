@@ -12,11 +12,8 @@ var atob = require('atob')
 var btoa = require('btoa')
 var fs = require('fs');
 var _ = require('lodash');
-const { find } = require('../../../models/employee');
 var json2csv = require('json2csv').parse
 var mongoose = require('mongoose');
-const { parse } = require('path');
-
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -230,6 +227,7 @@ router.post('/stores', (req, res, next) => {
   console.log('warehouse based on store: ', warehouse)
   var fund = new Fund({
     store: store._id,
+    storeId: getNestedValue(findNestedObj(store.metadata, 'name', 'id')),
     name: findNestedObj(store, 'name', 'name').value
   })
   console.log('fund: ', fund)
@@ -992,28 +990,55 @@ router.put('/funds/:id', (req, res) => {
   var obj = req.body
   async.parallel({
     fundFrom: callback => {
-      Fund.findOne({ _id: mongoose.Types.ObjectId(req.body.from) }).exec(callback)
+      // var id = mongoose.Types.ObjectId.isValid(req.body.from) ? mongoose.Types.ObjectId(req.body.from) : null
+      var id = req.body.from
+      console.log('id from: ', id)
+
+      if (id) {
+        Fund.findOne({ store: id }).exec(callback)
+      } else {
+        callback(null, {})
+      }
     },
     fundTo: callback => {
-      Fund.findOne({ _id: mongoose.Types.ObjectId(req.body.to) }).exec(callback)
+      var id = req.body.to
+      console.log('id to: ', id)
+
+      if (id) {
+        Fund.findOne({ store: id }).exec(callback)
+
+      } else {
+        callback(null, {})
+      }
 
     }
   }, (err, results) => {
     if (err) throw err
+    console.log('results: ', results)
     var fundFrom = results.fundFrom
     var fundTo = results.fundTo
     switch (obj.type) {
       case ('cash'):
-        fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.value)
-        fundFrom.transHistory.push(obj)
-        fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.value)
-        fundTo.transHistory.push(obj)
+        if (fundFrom) {
+          fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.value)
+          fundFrom.transHistory.push({ ...obj, value: -obj.value })
+        }
+
+        if (fundTo) {
+          fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.value)
+          fundTo.transHistory.push({ ...obj, value: +obj.value })
+        }
         break
       case ('iCash'):
-        fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.value)
-        fundFrom.transHistory.push(obj)
-        fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.value)
-        fundTo.transHistory.push(obj)
+        if (fundFrom) {
+          fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.value)
+          fundFrom.transHistory.push({ ...obj, value: -obj.value })
+        }
+
+        if (fundTo) {
+          fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.value)
+          fundTo.transHistory.push({ ...obj, value: +obj.value })
+        }
         break
       default:
     }
@@ -1022,17 +1047,25 @@ router.put('/funds/:id', (req, res) => {
 
     async.parallel({
       fundFrom: callback => {
-        Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+        if (fundFrom) {
+          Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+
+        } else {
+          callback(null, {})
+        }
       },
       fundTo: callback => {
-        Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+        if (fundTo) {
+          Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+
+        } else {
+          callback(null, {})
+        }
       }
     }, (err, results) => {
       if (err) throw err
       res.send('save successfully')
     })
-
-
 
   })
 })

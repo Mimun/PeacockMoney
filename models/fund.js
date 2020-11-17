@@ -6,7 +6,8 @@ const fundSchema = new mongoose.Schema({
   cash: { type: Number, default: 0 },
   iCash: { type: Number, default: 0 },
   transHistory: [{ type: Object }],
-  store: {type: String}
+  store: {type: String},
+  storeId: {type: String}
 })
 
 module.exports = mongoose.model('Fund', fundSchema)

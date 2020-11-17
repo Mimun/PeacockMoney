@@ -433,12 +433,18 @@
       })
       document.querySelector(`table.${elementName} tbody`).appendChild(tr)
     }
+
+    const getNestedValue = (obj) => {
+      var value = obj ? (obj.value ? obj.value : '-') : '-'
+      return value
+    }
   </script>
 
 
   <!-- global variable -->
   <script type="module">
     import Record from '/record2.js'
+    import { findNestedObj } from '/findNestedObj.js'
 
     var contract = JSON.parse('<%- JSON.stringify(contract)%>')
     var loanPackage = new Record(contract.loanPackage)
@@ -530,9 +536,19 @@
         addedDate: loanPackage.realLifeDate,
         type: event.target.closest('div').querySelector('input:checked').value
       }
+
       document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
         paymentSlipObj[input.getAttribute('id')] = input.value
       })
+      var transHistoryObj = {
+        date: paymentSlipObj.addedDate,
+        fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+        toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+        from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+        to: contract.store._id,
+        value: paymentSlipObj.paymentSlip,
+        type: paymentSlipObj.type,
+      }
 
       const notDonePeriodArray = loanPackage.periodRecords.filter(period => {
         return period.periodStatus === false
@@ -540,7 +556,9 @@
       if (notDonePeriodArray.length !== 0) {
         console.log('not done period array: ', notDonePeriodArray)
         loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
-        updateLoanPackage(loanPackage)
+        updateFund(transHistoryObj, () => {
+          updateLoanPackage(loanPackage)
+        })
         displayPaymentHistory()
       } else {
         // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
@@ -644,6 +662,18 @@
         }
       })
 
+    }
+
+    const updateFund = (transHistory, callback) => {
+      $.ajax({
+        type: 'PUT',
+        url: `/systemMng/funds/${contract.store._id}?token=${window.localStorage.getItem('accessToken')}`,
+        contentType: 'application/json',
+        data: JSON.stringify(transHistory),
+        success: result => {
+          callback()
+        }
+      })
     }
 
   </script>
