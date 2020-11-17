@@ -12,7 +12,23 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Quản lý thu chi</h2>
-      
+      <table class="table table-responsive table-striped table-hover">
+        <thead>
+          <tr>
+            <th id="id">Mã thu, chi</th>
+            <th id="date">Ngày đóng</th>
+            <th id="pay">Số tiền khách đóng</th>
+            <th id="paid">Tống số tiền khách đã đóng</th>
+            <th id="totalPayment">Tổng số tiền khách phải đóng (tổng phạt + lãi + gốc đóng trong kỳ)</th>
+            <th id="remain">Còn lại</th>
+            <th id="interest">Lãi</th>
+            <th id="principal">Số tiền gốc phải đóng trong kỳ</th>
+            <th id="totalPenalty">Tổng số tiền phạt</th>
+            <th id="period">Kỳ</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 
@@ -20,6 +36,20 @@
   <script>
     const loanPackage = JSON.parse('<%- JSON.stringify(loanPackage) %>')
     console.log('loan package array: ', loanPackage)
+
+    if (loanPackage.length !== 0) {
+      loanPackage.forEach(loan => {
+        if (loan) {
+          var tr = document.createElement('tr')
+          document.querySelectorAll('table thead th').forEach(element => {
+            var th = document.createElement('th')
+            th.innerHTML = loan[element.id]
+            tr.appendChild(th)
+          })
+          document.querySelector('table tbody').appendChild(tr)
+        }
+      });
+    }
   </script>
 </body>
 

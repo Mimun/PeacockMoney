@@ -672,14 +672,11 @@ router.get('/transactionHistory', (req, res) => {
   Contract.find({}).exec((err, result) => {
     if (err) throw err
     var loanPackage = result.map(res => {
-      if (res.loanPackage) {
+      if (res.loanPackage && res.loanPackage.periodPaymentSlip.length !== 0) {
         return res.loanPackage.periodPaymentSlip
       }
     })
     loanPackage = loanPackage.flat(Infinity)
-    loanPackage = loanPackage.filter(loan => {
-      return loan !== null
-    })
     res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity) })
   })
 })

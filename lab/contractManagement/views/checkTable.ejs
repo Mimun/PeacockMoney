@@ -27,7 +27,7 @@
     <%- include('../Components/sideBar.ejs') %>
 
     <div id="page-content-wrapper">
-      <h1>Bảng tính lãi theo dư nợ cố định</h1>
+      <h1>Bảng theo dõi gói vay</h1>
       <div class="container" style="margin: 0 !important;
       padding: 0 !important;
       max-width: 100%;">
@@ -36,16 +36,16 @@
           <!-- penalty rule -->
           <div class="col">
             <div class="penalty-table">
-              <h3>Bang quy dinh cach phat</h3>
+              <h3>Bảng quy định cách phạt</h3>
               <table class="table table-hover table-responsive penalty-table">
                 <thead>
                   <tr>
-                    <th id="from">Tu</th>
-                    <th id="to">Den</th>
-                    <th id="penaltyRate">Phat</th>
-                    <th id="debtFrom">No goc tu</th>
-                    <th id="debtTo">No goc den</th>
-                    <th id="policyType">Kieu phat</th>
+                    <th id="from">Từ</th>
+                    <th id="to">Đến</th>
+                    <th id="penaltyRate">Phạt</th>
+                    <th id="debtFrom">Nợ gốc từ</th>
+                    <th id="debtTo">Nợ gốc đến</th>
+                    <th id="policyType">Kiểu phạt</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -56,13 +56,13 @@
           <!-- block rule -->
           <div class="col">
             <div class="block-table">
-              <h3>Bang quy dinh block</h3>
+              <h3>Bảng quy định block</h3>
               <table class="table table-hover table-responsive block-table">
                 <thead>
                   <tr>
                     <th id="block">Block</th>
-                    <th id="preBlockPenalty">Phat truoc block</th>
-                    <th id="postBlockPenalty">Phat sau block</th>
+                    <th id="preBlockPenalty">Phạt trước block</th>
+                    <th id="postBlockPenalty">Phạt sau block</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -73,7 +73,7 @@
           <!-- loan package -->
           <div class="col">
             <div class="loan-package">
-              <h3>Thong tin goi vay</h3>
+              <h3>Thông tin gói vay</h3>
             </div>
           </div>
 
@@ -86,36 +86,37 @@
             <div class="simulation period-table-container">
               <div class="row">
                 <div class="col">
-                  <h4>Check table</h4>
+                  <h4>Bảng theo dõi chi tiết các kỳ vay, bao gồm tiền đóng theo kỳ, tiền VTTB</h4>
                 </div>
                 <div class="col">
-                  <p id="real-date-counter">Date counter: <span></span></p>
+                  <p id="real-date-counter">Ngày hiện tại: <span></span></p>
                 </div>
                 <div class="col">
-                  <button class="btn btn-primary" id="btn-choose-column">Choose column</button>
+                  <button class="btn btn-primary" id="btn-choose-column">Chọn cột hiển thị</button>
                 </div>
               </div>
               <div class="row">
                 <table class="table table-hover table-responsive period-table">
                   <thead>
                     <tr>
-                      <th scope="col" id="numericalOrder">Ky</th>
-                      <th scope="col" id="redemptionDate">Ngay dong</th>
-                      <th scope="col" id="redemption">So tien dong(principal+interest)</th>
-                      <th scope="col" id="principal">Principal</th>
-                      <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
-                      <th scope="col" id="interest">Lai</th>
-                      <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
-                      <th scope="col" id="presentValue">Goc con lai</th>
-                      <th scope="col" id="payDown">Tra bot</th>
-                      <th scope="col" id="loanMore">Vay them</th>
-                      <th scope="col" id="totalPayment">Tong tien dong(phat+ so tien dong)</th>
-                      <th scope="col" id="paid">Da tra</th>
-                      <th scope="col" id="remain">Con lai</th>
-                      <th scope="col" id="periodStatus">Tinh trang</th>
-                      <th scope="col" id="daysBetween">Days pass</th>
-                      <th scope="col" id="penalty">Penalty</th>
-                      <th scope="col" id="blockPenalty">Block penalty</th>
+                      <th scope="col" id="numericalOrder">STT</th>
+                      <th scope="col" id="id">Mã kỳ</th>
+                      <th scope="col" id="redemptionDate">Ngày đóng</th>
+                      <th scope="col" id="redemption">Số tiền đóng (gốc hàng tháng + lãi)</th>
+                      <th scope="col" id="principal">Gốc hàng tháng</th>
+                      <th scope="col" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
+                      <th scope="col" id="interest">Lãi</th>
+                      <th scope="col" id="accumulatedPaidInterest">Lãi đã trả lũy kế</th>
+                      <th scope="col" id="presentValue">Gốc còn lại</th>
+                      <th scope="col" id="payDown">Trả bớt</th>
+                      <th scope="col" id="loanMore">Vay thêm</th>
+                      <th scope="col" id="totalPayment">Tổng tiền đóng (tổng phạt + số tiền đóng)</th>
+                      <th scope="col" id="paid">Đã trả</th>
+                      <th scope="col" id="remain">Còn lại</th>
+                      <th scope="col" id="periodStatus">Tình trạng kỳ</th>
+                      <th scope="col" id="daysBetween">Số ngày đóng chậm</th>
+                      <th scope="col" id="penalty">Phạt đóng chậm</th>
+                      <th scope="col" id="blockPenalty">Phạt block</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -131,33 +132,73 @@
         <div class="row block-container">
           <!-- payment section -->
           <div class="col">
-            <div class="payment">
-              <h4>Payment</h4>
+            <div class="payment" id="payment">
+              <h4>Đóng tiền kỳ</h4>
               <div class="form-group">
-                <label>So tien</label>
+                <label>Số tiền đóng</label>
                 <input type="number" class="form-control" id="paymentSlip">
               </div>
-              <button class="btn btn-sm btn-primary" id="btn-payment-slip">Add</button>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
+                  Tiền mặt
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios2" value="iCash">
+                  Chuyển khoản
+                </label>
+              </div>
+              <button class="btn btn-sm btn-primary" id="btn-payment-slip">Đóng tiền</button>
             </div>
           </div>
 
           <!-- loan more, pay down -->
           <div class="col">
-            <h4>Tra bot</h4>
-            <div class="form-group">
-              <label>So tien</label>
-              <input type="number" class="form-control" id="payDown">
+            <div class="loan-more" id="loan-more">
+              <h4>Trả bớt</h4>
+              <div class="form-group">
+                <label>Số tiền đóng</label>
+                <input type="number" class="form-control" id="payDown">
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
+                  Tiền mặt
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios2" value="iCash">
+                  Chuyển khoản
+                </label>
+              </div>
+              <button class="btn btn-sm btn-primary" id="btn-pay-down">Trả bớt</button>
             </div>
-            <button class="btn btn-sm btn-primary" id="btn-pay-down">Add</button>
           </div>
 
           <div class="col">
-            <h4>Vay them</h4>
-            <div class="form-group">
-              <label>So tien</label>
-              <input type="number" class="form-control" id="loanMore">
+            <div class="pay-down" id="pay-down">
+              <h4>Vay thêm</h4>
+              <div class="form-group">
+                <label>Số tiền đóng</label>
+                <input type="number" class="form-control" id="loanMore">
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
+                  Tiền mặt
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios2" value="iCash">
+                  Chuyển khoản
+                </label>
+              </div>
+              <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay thêm</button>
             </div>
-            <button class="btn btn-sm btn-primary" id="btn-loan-more">Vay them</button>
           </div>
 
         </div>
@@ -172,15 +213,15 @@
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
-                    <th scope="col" id="id">Ma thu, chi</th>
-                    <th scope="col" id="pay">Pay</th>
-                    <th scope="col" id="principal">Principal</th>
-                    <th scope="col" id="interest">Interest</th>
-                    <th scope="col" id="totalPenalty">Total penalty</th>
-                    <th scope="col" id="totalPayment">Total payment</th>
-                    <th scope="col" id="paid">Total paid</th>
-                    <th scope="col" id="remain">Remain</th>
-                    <th scope="col" id="date">Date</th>
+                    <th scope="col" id="id">Mã thu, chi</th>
+                    <th scope="col" id="pay">Số tiền khách đóng</th>
+                    <th scope="col" id="principal">Số tiền gốc phải đóng trong kỳ</th>
+                    <th scope="col" id="interest">Lãi</th>
+                    <th scope="col" id="totalPenalty">Tổng số tiền phạt</th>
+                    <th scope="col" id="totalPayment">Tổng số tiền đóng (tổng phạt + lãi + gốc đóng trong kỳ)</th>
+                    <th scope="col" id="paid">Tống số tiền khách đã trả</th>
+                    <th scope="col" id="remain">Còn lại</th>
+                    <th scope="col" id="date">Ngày</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,7 +258,7 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Choose columns to display</h5>
+              <h5 class="modal-title">Chọn cột hiển thị</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -227,94 +268,105 @@
                 <div class="col mb-4 ml-4 mr-4">
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="numericalOrder" data-vie="Ky"> Ky
+                      <input type="checkbox" value="all" data-vie="All" id="all"> All
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="redemptionDate" data-vie="Ngay dong"> Ngay dong
+                      <input type="checkbox" value="numericalOrder" data-vie="STT"> STT
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="redemption" data-vie="So tien dong"> So tien dong
+                      <input type="checkbox" value="id" data-vie="Mã kỳ"> Mã kỳ
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="principal" data-vie="Principal"> Principal
+                      <input type="checkbox" value="redemptionDate" data-vie="Ngày đóng"> Ngày đóng
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="incrementalPaidPrincipal" data-vie="Goc da tra cong don"> Goc da tra
-                      cong don
+                      <input type="checkbox" value="redemption" data-vie="Số tiền đóng (gốc hàng tháng + lãi)"> Số tiền
+                      đóng (gốc hàng tháng + lãi)
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="interest" data-vie="lai"> Lai
+                      <input type="checkbox" value="principal" data-vie="Gốc hàng tháng"> Gốc hàng tháng
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="incrementalPaidPrincipal" data-vie="Gốc đã trả cộng dồn"> Gốc đã trả
+                      cộng dồn
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="interest" data-vie="Lãi"> Lãi
                     </label>
                   </div>
                 </div>
                 <div class="col mb-4 ml-4 mr-4">
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="accumulatedPaidInterest" data-vie="Lai da tra luy ke"> Lai da tra
-                      luy ke
+                      <input type="checkbox" value="accumulatedPaidInterest" data-vie="Lãi đã trả lũy kế"> Lãi đã trả
+                      lũy kế
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="presentValue" data-vie="Goc con lai"> Goc con lai
+                      <input type="checkbox" value="presentValue" data-vie="Gốc còn lại"> Gốc còn lại
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="payDown" data-vie="Tra bot"> Tra bot
+                      <input type="checkbox" value="payDown" data-vie="Trả bớt"> Trả bớt
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="loanMore" data-vie="Vay them"> Vay them
+                      <input type="checkbox" value="loanMore" data-vie="Vay thêm"> Vay thêm
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="totalPayment" data-vie="Tong tien dong(Phat+So tien dong)"> Tong
-                      tien dong(phat+so tien dong)
+                      <input type="checkbox" value="totalPayment" data-vie="Tổng tiền đóng (tổng phạt + số tiền đóng)">
+                      Tổng tiền đóng (tổng phạt + số tiền đóng)
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="paid" data-vie="Da tra"> Da tra
+                      <input type="checkbox" value="paid" data-vie="Đã trả"> Đã trả
                     </label>
                   </div>
                 </div>
                 <div class="col mn-4 ml-4 mr-4">
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="remain" data-vie="Con lai"> Con lai
+                      <input type="checkbox" value="remain" data-vie="Còn lại"> Còn lại
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="periodStatus" data-vie="Tinh trang"> Tinh trang
+                      <input type="checkbox" value="periodStatus" data-vie="Tình trạng kỳ"> Tình trạng kỳ
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="daysBetween" data-vie="Day pass"> Day pass
+                      <input type="checkbox" value="daysBetween" data-vie="Số ngày đóng chậm"> Số ngày đóng chậm
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="penalty" data-vie="Penalty"> Penalty
+                      <input type="checkbox" value="penalty" data-vie="Phạt đóng chậm"> Phạt đóng chậm
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="blockPenalty" data-vie="Block penalty"> Block penalty
+                      <input type="checkbox" value="blockPenalty" data-vie="Phạt block"> Phạt block
                     </label>
                   </div>
                 </div>
@@ -473,10 +525,12 @@
 
     // calculate and display payment
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
+      console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
       var paymentSlipObj = {
-        addedDate: loanPackage.realLifeDate
+        addedDate: loanPackage.realLifeDate,
+        type: event.target.closest('div').querySelector('input:checked').value
       }
-      document.querySelector('div.payment').querySelectorAll('input').forEach(input => {
+      document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
         paymentSlipObj[input.getAttribute('id')] = input.value
       })
 
@@ -498,7 +552,8 @@
     document.querySelector('button#btn-pay-down').addEventListener('click', (event) => {
       var payDownObj = {
         date: loanPackage.realLifeDate,
-        value: parseFloat(document.querySelector('input#payDown').value)
+        value: parseFloat(document.querySelector('input#payDown').value),
+        type: event.target.closest('div').querySelector('input:checked').value
       }
       console.log('paydown obj: ', payDownObj)
       var remainPeriods = loanPackage.periodRecords.filter(rec => {
@@ -527,7 +582,8 @@
     document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
       var payDownObj = {
         date: loanPackage.realLifeDate,
-        value: parseFloat(document.querySelector('input#loanMore').value)
+        value: parseFloat(document.querySelector('input#loanMore').value),
+        type: event.target.closest('div').querySelector('input:checked').value,
       }
       var remainPeriods = loanPackage.periodRecords.filter(rec => {
         return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
