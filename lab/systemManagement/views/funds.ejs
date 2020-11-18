@@ -42,7 +42,7 @@
         tr.C_DATA = fund
         document.querySelectorAll('table.fund-table thead th').forEach(element => {
           var th = document.createElement('th')
-          th.innerHTML = fund[element.id]
+          th.innerHTML = fund[element.id].toLocaleString()
           tr.appendChild(th)
         })
         tr.addEventListener('click', (event) => {

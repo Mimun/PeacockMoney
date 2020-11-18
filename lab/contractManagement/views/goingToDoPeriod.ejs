@@ -5,6 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    tr:hover{
+      cursor: pointer;
+    }
+  </style>
 
 </head>
 
@@ -39,10 +44,16 @@
     if (goingToDoPeriod.length !== 0) {
       goingToDoPeriod.forEach(period => {
         var tr = document.createElement('tr')
+        tr.id = period.contractId
         document.querySelectorAll('table.going-to-do-period-table thead th').forEach(element => {
           var th = document.createElement('th')
           th.innerHTML = period[element.id]
           tr.appendChild(th)
+        })
+
+        tr.addEventListener('click', (event) => {
+          console.log('event: ', event.target.closest('tr'))
+          window.location.href = `/contractMng/contracts/${event.target.closest('tr').id}/checkTable?token=${window.localStorage.getItem('accessToken')}`
         })
         document.querySelector('table.going-to-do-period-table tbody').appendChild(tr)
       })

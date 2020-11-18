@@ -3,6 +3,11 @@
 
 <head>
   <title>Contract Management</title>
+  <style>
+    tr:hover {
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -41,10 +46,15 @@
       loanPackage.forEach(loan => {
         if (loan) {
           var tr = document.createElement('tr')
+          tr.id = loan.contractId
           document.querySelectorAll('table thead th').forEach(element => {
             var th = document.createElement('th')
-            th.innerHTML = loan[element.id]
+            th.innerHTML = loan[element.id].toLocaleString()
             tr.appendChild(th)
+          })
+          tr.addEventListener('click', (event) => {
+            console.log('event: ', event.target.closest('tr'))
+            window.location.href = `/contractMng/contracts/${event.target.closest('tr').id}/checkTable?token=${window.localStorage.getItem('accessToken')}`
           })
           document.querySelector('table tbody').appendChild(tr)
         }

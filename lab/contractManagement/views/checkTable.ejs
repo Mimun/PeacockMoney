@@ -156,12 +156,18 @@
 
           <!-- loan more, pay down -->
           <div class="col">
-            <div class="loan-more" id="loan-more">
+            <div class="pay-down" id="pay-down">
               <h4>Trả bớt</h4>
               <div class="form-group">
                 <label>Số tiền đóng</label>
                 <input type="number" class="form-control" id="payDown">
               </div>
+              <% if(simulation === 3){%>
+              <div class="form-group">
+                <label>So ky tao them</label>
+                <input type="number" class="form-control" id="numberOfNewPeriods">
+              </div>
+              <% } %>
               <div class="radio">
                 <label>
                   <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
@@ -179,12 +185,18 @@
           </div>
 
           <div class="col">
-            <div class="pay-down" id="pay-down">
+            <div class="loan-more" id="loan-more">
               <h4>Vay thêm</h4>
               <div class="form-group">
                 <label>Số tiền đóng</label>
                 <input type="number" class="form-control" id="loanMore">
               </div>
+              <% if(simulation === 3){%>
+              <div class="form-group">
+                <label>So ky tao them</label>
+                <input type="number" class="form-control" id="numberOfNewPeriods">
+              </div>
+              <% } %>
               <div class="radio">
                 <label>
                   <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
@@ -447,6 +459,8 @@
     import { findNestedObj } from '/findNestedObj.js'
 
     var contract = JSON.parse('<%- JSON.stringify(contract)%>')
+    var simulation = JSON.parse('<%- JSON.stringify(simulation)%>')
+
     var loanPackage = new Record(contract.loanPackage)
     loanPackage.reassignPeriodRecords()
     var ruleArray = contract.penaltyRules
@@ -460,6 +474,8 @@
     var totalRemainForLoaningMore = 0
 
     console.log('contract: ', contract)
+    console.log('simulation: ', simulation)
+
     console.log('loan package: ', loanPackage instanceof Record)
     console.log('rule array: ', ruleArray)
     console.log('block rule: ', blockRuleArray)
@@ -531,96 +547,165 @@
 
     // calculate and display payment
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
-      console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
-      var paymentSlipObj = {
-        addedDate: loanPackage.realLifeDate,
-        type: event.target.closest('div').querySelector('input:checked').value
-      }
+      if (loanPackage) {
+        console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
+        var paymentSlipObj = {
+          addedDate: loanPackage.realLifeDate,
+          type: event.target.closest('div').querySelector('input:checked').value
+        }
 
-      document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
-        paymentSlipObj[input.getAttribute('id')] = input.value
-      })
-      var transHistoryObj = {
-        date: paymentSlipObj.addedDate,
-        fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-        toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
-        from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
-        to: contract.store._id,
-        value: paymentSlipObj.paymentSlip,
-        type: paymentSlipObj.type,
-      }
-
-      const notDonePeriodArray = loanPackage.periodRecords.filter(period => {
-        return period.periodStatus === false
-      })
-      if (notDonePeriodArray.length !== 0) {
-        console.log('not done period array: ', notDonePeriodArray)
-        loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
-        updateFund(transHistoryObj, () => {
-          updateLoanPackage(loanPackage)
+        document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
+          paymentSlipObj[input.getAttribute('id')] = input.value
         })
-        displayPaymentHistory()
+        var transHistoryObj = {
+          date: paymentSlipObj.addedDate,
+          fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+          toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+          from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+          to: contract.store._id,
+          value: paymentSlipObj.paymentSlip,
+          type: paymentSlipObj.type,
+        }
+
+        const notDonePeriodArray = loanPackage.periodRecords.filter(period => {
+          return period.periodStatus === false
+        })
+        if (notDonePeriodArray.length !== 0) {
+          console.log('not done period array: ', notDonePeriodArray)
+          loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
+          updateFund(transHistoryObj, () => {
+            updateLoanPackage(loanPackage)
+          })
+          displayPaymentHistory()
+        } else {
+          // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
+          window.alert('You have paid all the periods.')
+        }
       } else {
-        // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
-        window.alert('You have paid all the periods.')
+        window.alert('This contract is not approved!')
+
       }
+
     })
 
     // calculate and display pay down
     document.querySelector('button#btn-pay-down').addEventListener('click', (event) => {
-      var payDownObj = {
-        date: loanPackage.realLifeDate,
-        value: parseFloat(document.querySelector('input#payDown').value),
-        type: event.target.closest('div').querySelector('input:checked').value
-      }
-      console.log('paydown obj: ', payDownObj)
-      var remainPeriods = loanPackage.periodRecords.filter(rec => {
-        return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
-      }).map(rec => {
-        return rec.period
-      })
+      if (loanPackage) {
+        if (loanPackage.isLoanMoreOrPayDown === false) {
 
-      if (remainPeriods.length !== 0) {
-        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          var numberOfNewPeriods = simulation === 3 ? document.querySelector('#pay-down input#numberOfNewPeriods').value : null
+          var payDownObj = {
+            date: loanPackage.realLifeDate,
+            value: parseFloat(document.querySelector('input#payDown').value),
+            type: event.target.closest('div').querySelector('input:checked').value
+          }
+          var transHistoryObj = {
+            date: payDownObj.date,
+            fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+            toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+            from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+            to: contract.store._id,
+            value: payDownObj.value,
+            type: payDownObj.type,
+          }
+          console.log('paydown obj: ', payDownObj)
+          var remainPeriods = loanPackage.periodRecords.filter(rec => {
+            return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
+          }).map(rec => {
+            return rec.period
+          })
+
+          if (remainPeriods.length !== 0) {
+            window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          } else {
+            if (simulation === 3) {
+              if (numberOfNewPeriods) {
+                loanPackage.payDown(payDownObj, numberOfNewPeriods)
+
+              } else {
+                window.alert('You need to enter the number of new periods!')
+
+              }
+            } else {
+              loanPackage.payDown(payDownObj)
+            }
+            console.log('loan package after paying down: ', loanPackage)
+            updateFund(transHistoryObj, () => {
+              updateLoanPackage(loanPackage)
+            })
+            console.log('trans his: ', transHistoryObj)
+            displayLoanMorePayDownHistory()
+          }
+        } else {
+          window.alert('You have loaned more or payed down today. Please comeback later!')
+        }
+
       } else {
-        loanPackage.payDown(payDownObj)
-        console.log('loan package after paying down: ', loanPackage)
-        updateLoanPackage(loanPackage)
-        displayLoanMorePayDownHistory()
-        // document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+        window.alert('This contract is not approved!')
 
-        // loanPackage.periodRecords.forEach(rec => {
-        //   displayTable(rec, 'period-table-container')
-        // })
       }
+
 
     })
 
     // calculate and display loan more
     document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
-      var payDownObj = {
-        date: loanPackage.realLifeDate,
-        value: parseFloat(document.querySelector('input#loanMore').value),
-        type: event.target.closest('div').querySelector('input:checked').value,
-      }
-      var remainPeriods = loanPackage.periodRecords.filter(rec => {
-        return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
-      }).map(rec => {
-        return rec.period
-      })
+      if (loanPackage) {
+        if (loanPackage.isLoanMoreOrPayDown === false) {
+          var numberOfNewPeriods = simulation === 3 ? document.querySelector('#loan-more input#numberOfNewPeriods').value : null
+          var payDownObj = {
+            date: loanPackage.realLifeDate,
+            value: parseFloat(document.querySelector('input#loanMore').value),
+            type: event.target.closest('div').querySelector('input:checked').value,
+          }
+          var transHistoryObj = {
+            date: payDownObj.date,
+            fromStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+            toStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+            from: contract.store._id,
+            to: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+            value: payDownObj.value,
+            type: payDownObj.type,
+          }
+          var remainPeriods = loanPackage.periodRecords.filter(rec => {
+            return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
+          }).map(rec => {
+            return rec.period
+          })
 
-      if (remainPeriods.length !== 0) {
-        window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          if (remainPeriods.length !== 0) {
+            window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          } else {
+            if (simulation === 3) {
+              if (numberOfNewPeriods) {
+                loanPackage.loanMore(payDownObj, numberOfNewPeriods)
+
+              } else {
+                window.alert('You need to enter the number of new periods!')
+
+              }
+            } else {
+              loanPackage.loanMore(payDownObj)
+
+            }
+            // updateLoanPackage(loanPackage)
+            document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
+            updateFund(transHistoryObj, () => {
+              updateLoanPackage(loanPackage)
+            })
+            console.log('trans his: ', transHistoryObj)
+            displayLoanMorePayDownHistory()
+          }
+        } else {
+          window.alert('You have loaned more or payed down today. Please comeback later!')
+
+        }
+
       } else {
-        loanPackage.loanMore(payDownObj)
-        updateLoanPackage(loanPackage)
-        displayLoanMorePayDownHistory()
-        // document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+        window.alert('This contract is not approved!')
 
-        // loanPackage.periodRecords.forEach(rec => {
-        //   displayTable(rec, 'period-table-container')
-        // })
       }
+
     })
 
     // choose column to display

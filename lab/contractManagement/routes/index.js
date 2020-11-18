@@ -560,7 +560,7 @@ router.get('/contracts/:id/checkTable', (req, res) => {
   console.log('id: ', req.params.id)
   Contract.findOne({ _id: req.params.id }).exec((err, result) => {
     Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
-      res.render('checkTable', { contract: { ...result._doc, store: result2 } })
+      res.render('checkTable', { contract: { ...result._doc, store: result2 }, simulation: result.loanPackage.simulation })
 
     })
   })
@@ -655,6 +655,9 @@ router.get('/transactionHistory', (req, res) => {
     if (err) throw err
     var loanPackage = result.map(res => {
       if (res.loanPackage && res.loanPackage.periodPaymentSlip.length !== 0) {
+        res.loanPackage.periodPaymentSlip = res.loanPackage.periodPaymentSlip.map(period => {
+          return { ...period, contractId: res._id }
+        })
         return res.loanPackage.periodPaymentSlip
       }
     })
@@ -673,7 +676,7 @@ router.get('/goingToDo', (req, res) => {
         if (contract.loanPackage) {
           contract.loanPackage.periodRecords.forEach(period => {
             if (-10 < period.daysBetween && period.daysBetween < 0) {
-              goingToDoPeriodArray.push(period)
+              goingToDoPeriodArray.push({ ...period, contractId: contract._id })
             }
           })
         }
@@ -694,7 +697,7 @@ router.get('/latePeriod', (req, res) => {
         if (contract.loanPackage) {
           contract.loanPackage.periodRecords.forEach(period => {
             if (period.daysBetween > 0) {
-              latePeriodArray.push(period)
+              latePeriodArray.push({ ...period, contractId: contract._id })
             }
           })
         }
@@ -705,7 +708,7 @@ router.get('/latePeriod', (req, res) => {
   })
 })
 
-var job = new CronJob('0 */15 * * * *', function () {
+var job = new CronJob('0 */30 * * * *', function () {
   Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
     if (err) throw err
     if (result) {
