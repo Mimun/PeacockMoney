@@ -477,7 +477,8 @@
     import Record from '/record2.js'
     import { findNestedObj } from '/findNestedObj.js'
 
-    var contract = JSON.parse('<%- JSON.stringify(contract)%>')
+    // var contract = JSON.parse('')
+    var contract = <%- JSON.stringify(contract) %>;
     var simulation = JSON.parse('<%- JSON.stringify(simulation)%>')
 
     var loanPackage = new Record(contract.loanPackage)
