@@ -13,6 +13,7 @@ export default class Record {
     this.periodRecords = []
     this.loanMorePayDownRecords = []
     this.periodPaymentSlip = []
+    this.receiptRecords = []
     this.balance = 0
     this.ruleArray = ruleArray
 
@@ -38,6 +39,79 @@ export default class Record {
     this.balance += amount
   }
 
+  paidInterest(updateObj, payment, type) {
+    var temp1 = 0, temp2 = 0, temp3 = 0
+    if (updateObj.remainInterest > 0) {
+      var value = payment <= updateObj.remainInterest ? payment : updateObj.remainInterest
+      temp1 = value
+      updateObj.paidInterest += value
+      updateObj.remainInterest = updateObj.interest - updateObj.paidInterest
+      payment = payment - value
+      if (type === 1) {
+        this.receiptRecords.push({
+          root: updateObj.interest,
+          paid: temp1,
+          remain: updateObj.remainInterest,
+          receiptId: 'T-Lãi',
+          receiptReason: `Lãi kỳ ${updateObj.period}`,
+          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
+          date: formatDate(this.realLifeDate)
+        })
+      }
+
+
+    } else if (updateObj.remainInterest <= 0) {
+      temp1 = updateObj.interest
+    }
+
+    if (payment >= 0 && updateObj.remainPrincipal > 0 && updateObj.remainInterest <= 0) {
+      var value = payment <= updateObj.remainPrincipal ? payment : updateObj.remainPrincipal
+      temp2 = value
+      updateObj.paidPrincipal += value
+      updateObj.remainPrincipal = updateObj.principal - updateObj.paidPrincipal
+      payment = payment - value
+      if (type === 1) {
+        this.receiptRecords.push({
+          root: updateObj.principal,
+          paid: temp2,
+          remain: updateObj.remainPrincipal,
+          receiptId: 'T-Gốc',
+          receiptReason: `Gốc`,
+          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
+          date: formatDate(this.realLifeDate)
+        })
+      }
+
+
+    } else if (updateObj.remainPrincipal <= 0) {
+      temp2 = updateObj.principal
+    }
+
+    if (payment >= 0 && updateObj.remainTotalPenalty > 0 && updateObj.remainPrincipal <= 0 && updateObj.remainInterest <= 0) {
+      var value = payment <= updateObj.remainTotalPenalty ? payment : updateObj.remainTotalPenalty
+      temp3 = value
+      updateObj.paidTotalPenalty += value
+      updateObj.remainTotalPenalty = updateObj.totalPenalty - updateObj.paidTotalPenalty
+      payment = payment - value
+      if (type === 1) {
+        this.receiptRecords.push({
+          root: updateObj.totalPenalty,
+          paid: temp3,
+          remain: updateObj.remainTotalPenalty,
+          receiptId: 'T-Phạt',
+          receiptReason: `Phạt`,
+          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
+          remain: formatDate(this.realLifeDate)
+        })
+      }
+
+    } else if (updateObj.remainTotalPenalty <= 0) {
+      temp3 = updateObj.totalPenalty
+    }
+
+    return { temp1, temp2, temp3 }
+  }
+
   paidNotDonePeriod(paymentObj, amount, paidDate, notDonePeriodArray) {
     this.totalPayment += amount
     this.balance += amount
@@ -50,27 +124,35 @@ export default class Record {
         var payment = balance <= updateObj.remain ? balance : updateObj.remain
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
+
+        balance = balance - payment
+
+        var { temp1, temp2, temp3 } = this.paidInterest(updateObj, payment, 1)
         this.periodPaymentSlip.push({
           id: `MaHopDong1.${formatDate(paymentObj.addedDate, 1)}`,
           period: updateObj.period,
           pay: payment,
+
           interest: updateObj.interest,
+          paidInterest: temp1,
+          remainInterest: updateObj.remainInterest,
+
           principal: updateObj.principal,
+          paidPrincipal: temp2,
+          remainPrincipal: updateObj.remainPrincipal,
+
           totalPenalty: updateObj.totalPenalty,
+          paidTotalPenalty: temp3,
+          remainTotalPenalty: updateObj.remainTotalPenalty,
+
           totalPayment: updateObj.totalPayment,
           paid: updateObj.paid,
           remain: updateObj.remain,
           date: formatDate(paymentObj.addedDate)
         })
-        balance = balance - payment
+        console.log('payment after weird function: ', payment)
 
-        // updateObj.paymentRecords.push({
-        //   paid: payment,
-        //   date: paidDate
-        // })
         record.updatePaymentRecord(updateObj.period, updateObj)
-        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'paid', updateObj.paid.toLocaleString())
-        updateObj.updatePeriodTable('period-table-container', updateObj.period, 'remain', updateObj.remain.toLocaleString())
 
         if (updateObj.remain <= 0) {
           updateObj.periodStatus = true
@@ -86,19 +168,13 @@ export default class Record {
           updateObj.incrementalPaidPrincipal = this.incrementalPaidPrincipal
 
           updateObj.stopCounting()
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'periodStatus', updateObj.periodStatus)
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'accumulatedPaidInterest', updateObj.accumulatedPaidInterest.toLocaleString())
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'incrementalPaidPrincipal', updateObj.incrementalPaidPrincipal.toLocaleString())
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'presentValue', this.presentValue.toLocaleString())
-          updateObj.updatePeriodTable('period-table-container', updateObj.period, 'penalty', updateObj.penalty.toLocaleString())
+
 
         }
         this.periodRecords.filter(record => {
           return record.periodStatus === false && record.redemptionDate > this.realLifeDate
         }).forEach(rec => {
           rec.presentValue = this.presentValue
-          rec.updatePeriodTable('period-table-container', rec.period, 'presentValue', rec.presentValue.toLocaleString())
-
         })
 
         console.log('record after paying: ', record)
@@ -140,8 +216,9 @@ export default class Record {
           period.remain = period.totalPayment - period.paid
           period.periodStatus = period.remain === 0 ? true : false
 
-          amount = amount > period.totalPayment ? amount - period.totalPayment : 0
+          this.paidInterest(period, period.paid)
 
+          amount = amount > period.totalPayment ? amount - period.totalPayment : 0
           if (period.remain === 0) {
             this.presentValue -= period.principal
             this.incrementalPaidPrincipal += period.principal
@@ -175,7 +252,6 @@ export default class Record {
   updatePresentValue() {
     this.periodRecords.forEach(rec => {
       rec.presentValue = this.presentValue
-      rec.updatePeriodTable('period-table-container', rec.period, 'presentValue', rec.presentValue.toLocaleString())
 
     })
   }

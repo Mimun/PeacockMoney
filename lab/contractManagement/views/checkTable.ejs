@@ -103,11 +103,20 @@
                       <th scope="col" id="id">Mã kỳ</th>
                       <th scope="col" id="redemptionDate">Ngày đóng</th>
                       <th scope="col" id="redemption">Số tiền đóng (gốc hàng tháng + lãi)</th>
-                      <th scope="col" id="principal">Gốc hàng tháng</th>
-                      <th scope="col" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
-                      <th scope="col" id="interest">Lãi</th>
+                      <th scope="col" id="interest">Lãi phải thu</th>
+                      <th scope="col" id="paidInterest">Lãi đã thu</th>
+                      <th scope="col" id="remainInterest">Lãi còn lại</th>
                       <th scope="col" id="accumulatedPaidInterest">Lãi đã trả lũy kế</th>
-                      <th scope="col" id="presentValue">Gốc còn lại</th>
+
+                      <th scope="col" id="principal">Gốc phải thu</th>
+                      <th scope="col" id="paidPrincipal">Gốc đã thu</th>
+                      <th scope="col" id="remainPrincipal">Gốc còn lại</th>
+                      <th scope="col" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
+
+                      <th scope="col" id="totalPenalty">TỔng phạt phải thu</th>
+                      <th scope="col" id="paidTotalPenalty">Tổng phạt đã thu</th>
+                      <th scope="col" id="remainTotalPenalty">Tổng phạt còn lại</th>
+                      <th scope="col" id="presentValue">Dư nợ còn lại</th>
                       <th scope="col" id="payDown">Trả bớt</th>
                       <th scope="col" id="loanMore">Vay thêm</th>
                       <th scope="col" id="totalPayment">Tổng tiền đóng (tổng phạt + số tiền đóng)</th>
@@ -225,11 +234,20 @@
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
-                    <th scope="col" id="id">Mã thu, chi</th>
+                    <th scope="col" id="id">Mã phiếu</th>
                     <th scope="col" id="pay">Số tiền khách đóng</th>
                     <th scope="col" id="principal">Số tiền gốc phải đóng trong kỳ</th>
-                    <th scope="col" id="interest">Lãi</th>
-                    <th scope="col" id="totalPenalty">Tổng số tiền phạt</th>
+                    <th scope="col" id="interest">Lãi phải thu</th>
+                    <th scope="col" id="paidInterest">Lãi đã thu</th>
+                    <th scope="col" id="remainInterest">Lãi còn lại</th>
+
+                    <th scope="col" id="principal">Gốc phải thu</th>
+                    <th scope="col" id="paidPrincipal">Gốc đã thu</th>
+                    <th scope="col" id="remainPrincipal">Gốc còn lại</th>
+
+                    <th scope="col" id="totalPenalty">TỔng phạt phải thu</th>
+                    <th scope="col" id="paidTotalPenalty">Tổng phạt đã thu</th>
+                    <th scope="col" id="remainTotalPenalty">Tổng phạt còn lại</th>
                     <th scope="col" id="totalPayment">Tổng số tiền đóng (tổng phạt + lãi + gốc đóng trong kỳ)</th>
                     <th scope="col" id="paid">Tống số tiền khách đã trả</th>
                     <th scope="col" id="remain">Còn lại</th>

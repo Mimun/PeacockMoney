@@ -13,6 +13,7 @@ export default class Record {
     this.periodRecords = this.periodRecords ? this.periodRecords : []
     this.periodPaymentSlip = this.periodPaymentSlip ? this.periodPaymentSlip : []
     this.loanMorePayDownRecords = this.loanMorePayDownRecords ? this.loanMorePayDownRecords : []
+    this.receiptRecords = []
     this.balance = this.balance ? this.balance : 0
 
     this.isPause = this.isPause ? this.isPause : false
@@ -42,6 +43,79 @@ export default class Record {
     this.balance += amount
   }
 
+  paidInterest(updateObj, payment, type) {
+    var temp1 = 0, temp2 = 0, temp3 = 0
+    if (updateObj.remainInterest > 0) {
+      var value = payment <= updateObj.remainInterest ? payment : updateObj.remainInterest
+      temp1 = value
+      updateObj.paidInterest += value
+      updateObj.remainInterest = updateObj.interest - updateObj.paidInterest
+      payment = payment - value
+      if (type === 1) {
+        this.receiptRecords.push({
+          root: updateObj.interest,
+          paid: temp1,
+          remain: updateObj.remainInterest,
+          receiptId: 'T-Lãi',
+          receiptReason: `Lãi kỳ ${updateObj.period}`,
+          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
+          date: formatDate(this.realLifeDate)
+        })
+      }
+
+
+    } else if (updateObj.remainInterest <= 0) {
+      temp1 = updateObj.interest
+    }
+
+    if (payment >= 0 && updateObj.remainPrincipal > 0 && updateObj.remainInterest <= 0) {
+      var value = payment <= updateObj.remainPrincipal ? payment : updateObj.remainPrincipal
+      temp2 = value
+      updateObj.paidPrincipal += value
+      updateObj.remainPrincipal = updateObj.principal - updateObj.paidPrincipal
+      payment = payment - value
+      if (type === 1) {
+        this.receiptRecords.push({
+          root: updateObj.principal,
+          paid: temp2,
+          remain: updateObj.remainPrincipal,
+          receiptId: 'T-Gốc',
+          receiptReason: `Gốc`,
+          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
+          date: formatDate(this.realLifeDate)
+        })
+      }
+
+
+    } else if (updateObj.remainPrincipal <= 0) {
+      temp2 = updateObj.principal
+    }
+
+    if (payment >= 0 && updateObj.remainTotalPenalty > 0 && updateObj.remainPrincipal <= 0 && updateObj.remainInterest <= 0) {
+      var value = payment <= updateObj.remainTotalPenalty ? payment : updateObj.remainTotalPenalty
+      temp3 = value
+      updateObj.paidTotalPenalty += value
+      updateObj.remainTotalPenalty = updateObj.totalPenalty - updateObj.paidTotalPenalty
+      payment = payment - value
+      if (type === 1) {
+        this.receiptRecords.push({
+          root: updateObj.totalPenalty,
+          paid: temp3,
+          remain: updateObj.remainTotalPenalty,
+          receiptId: 'T-Phạt',
+          receiptReason: `Phạt`,
+          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
+          remain: formatDate(this.realLifeDate)
+        })
+      }
+
+    } else if (updateObj.remainTotalPenalty <= 0) {
+      temp3 = updateObj.totalPenalty
+    }
+
+    return { temp1, temp2, temp3 }
+  }
+
   paidNotDonePeriod(amount, paidDate, notDonePeriodArray, paymentObj) {
     this.totalPayment += amount
     this.balance += amount
@@ -56,13 +130,24 @@ export default class Record {
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
         balance = balance - payment
+        var { temp1, temp2, temp3 } = this.paidInterest(updateObj, payment, 1)
         this.periodPaymentSlip.push({
           id: `${this.contractId}.${formatDate(paymentObj.addedDate, 1)}`,
           period: updateObj.period,
           pay: payment,
+
           interest: updateObj.interest,
+          paidInterest: temp1,
+          remainInterest: updateObj.remainInterest,
+
           principal: updateObj.principal,
+          paidPrincipal: temp2,
+          remainPrincipal: updateObj.remainPrincipal,
+
           totalPenalty: updateObj.totalPenalty,
+          paidTotalPenalty: temp3,
+          remainTotalPenalty: updateObj.remainTotalPenalty,
+
           totalPayment: updateObj.totalPayment,
           paid: updateObj.paid,
           remain: updateObj.remain,
@@ -134,6 +219,7 @@ export default class Record {
           period.paid = amount > period.totalPayment ? period.totalPayment : amount
           period.remain = period.totalPayment - period.paid
           period.periodStatus = period.remain === 0 ? true : false
+          this.paidInterest(period, period.paid)
 
           amount = amount > period.totalPayment ? amount - period.totalPayment : 0
 
@@ -746,7 +832,8 @@ export default class Record {
 
   getCreateObj(period, redemptionDate, redemption, principal, incrementalPaidPrincipal, interest, accumulatedPaidInterest,
     remainOrigin, periodStatus, periodStartDate, periodEndDate, ruleArray, presentValue, realLifeDate, blockPenalty = 0, daysBetween,
-    payDown, loanMore, id, appliedRule = null, penalty = 0, totalPenalty, penaltyRecord = [], paymentRecords = [], totalPayment,
+    payDown, loanMore, id, paidInterest, remainInterest, paidPrincipal, remainPrincipal, paidTotalPenalty, remainTotalPenalty,
+    appliedRule = null, penalty = 0, totalPenalty, penaltyRecord = [], paymentRecords = [], totalPayment,
     paid = 0, remain, isPause, numericalOrder, isLoanMorePeriod, isPaydownPeriod) {
     var obj = new function () {
       this.period = period
@@ -768,6 +855,11 @@ export default class Record {
       this.payDown = payDown
       this.loanMore = loanMore
       this.id = id
+      this.paidInterest = paidInterest || 0
+      this.remainInterest = remainInterest || this.interest - this.paidInterest
+      this.paidPrincipal = paidPrincipal || 0
+      this.remainPrincipal = remainPrincipal || this.principal - this.paidPrincipal
+
 
       this.appliedRule = appliedRule
       this.penalty = penalty
@@ -775,10 +867,12 @@ export default class Record {
       this.penaltyRecord = penaltyRecord
       this.paymentRecords = paymentRecords
 
+      this.paidTotalPenalty = paidTotalPenalty || 0
+      this.remainTotalPenalty = remainTotalPenalty || this.totalPenalty - this.paidTotalPenalty
+
       this.totalPayment = totalPayment || this.redemption + this.blockPenalty + this.penalty
       this.paid = paid
       this.remain = remain || this.totalPayment - this.paid
-
 
       this.isPause = isPause || false
       this.numericalOrder = numericalOrder || this.period + 1

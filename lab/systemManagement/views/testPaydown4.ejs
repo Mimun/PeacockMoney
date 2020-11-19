@@ -127,10 +127,21 @@
                     <th scope="col" id="id">Ma ky</th>
                     <th scope="col" id="redemptionDate">Ngay dong</th>
                     <th scope="col" id="redemption">So tien dong(principal+interest)</th>
+
                     <th scope="col" id="principal">Principal</th>
+                    <th scope="col" id="paidPrincipal">Paid principal</th>
+                    <th scope="col" id="remainPrincipal">Remain principal</th>
                     <th scope="col" id="incrementalPaidPrincipal">Goc da tra cong don</th>
+
                     <th scope="col" id="interest">Lai</th>
+                    <th scope="col" id="paidInterest">Lai da thu</th>
+                    <th scope="col" id="remainInterest">Lai con lai</th>
                     <th scope="col" id="accumulatedPaidInterest">Lai da tra luy ke</th>
+
+                    <th scope="col" id="totalPenalty">Tong phat</th>
+                    <th scope="col" id="paidTotalPenalty">Tong phat da tra</th>
+                    <th scope="col" id="remainTotalPenalty">Tong phat con lai</th>
+
                     <th scope="col" id="presentValue">Goc con lai</th>
                     <th scope="col" id="payDown">Tra bot</th>
                     <th scope="col" id="loanMore">Vay them</th>
@@ -139,8 +150,8 @@
                     <th scope="col" id="remain">Con lai</th>
                     <th scope="col" id="periodStatus">Tinh trang</th>
                     <th scope="col" id="daysBetween">Days pass</th>
-                    <th scope="col" id="penalty">Penalty</th>
-                    <th scope="col" id="blockPenalty">Block penalty</th>
+                    <!-- <th scope="col" id="penalty">Penalty</th>
+                    <th scope="col" id="blockPenalty">Block penalty</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -203,11 +214,20 @@
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
-                    <th scope="col" id="id">Ma thu, chi</th>
+                    <th scope="col" id="id">Ma phieu</th>
                     <th scope="col" id="pay">Pay</th>
-                    <th scope="col" id="principal">Principal</th>
-                    <th scope="col" id="interest">Interest</th>
-                    <th scope="col" id="totalPenalty">Total penalty</th>
+                    <th scope="col" id="interest">Lãi phải thu</th>
+                    <th scope="col" id="paidInterest">Lãi đã thu</th>
+                    <th scope="col" id="remainInterest">Lãi còn lại</th>
+
+                    <th scope="col" id="principal">Gốc phải thu</th>
+                    <th scope="col" id="paidPrincipal">Gốc đã thu</th>
+                    <th scope="col" id="remainPrincipal">Gốc còn lại</th>
+
+                    <th scope="col" id="totalPenalty">Tổng phạt phải thu</th>
+                    <th scope="col" id="paidTotalPenalty">Tổng phạt đã thu</th>
+                    <th scope="col" id="remainTotalPenalty">Tổng phạt còn lại</th>
+
                     <th scope="col" id="totalPayment">Total payment</th>
                     <th scope="col" id="paid">Total paid</th>
                     <th scope="col" id="remain">Remain</th>
@@ -684,6 +704,12 @@
 
         record.paidNotDonePeriod(paymentSlipObj, parseFloat(paymentSlipObj.paymentSlip),
           paymentSlipObj.addedDate, notDonePeriodArray)
+        document.querySelector(`div.period-table-container table tbody`).innerHTML = ''
+
+        record.periodRecords.forEach(rec => {
+          displayTable(rec, 'period-table-container')
+        })
+
         document.querySelector('div.payment-history table tbody').innerHTML = ''
         if (record.periodPaymentSlip.length !== 0) {
           record.periodPaymentSlip.forEach(payment => {

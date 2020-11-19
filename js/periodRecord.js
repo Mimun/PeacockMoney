@@ -42,6 +42,15 @@ export default class PeriodRecord {
     this.isPaydownPeriod = false
     this.id = `MaHopDong1.${formatDate(this.redemptionDate, 1)}.A`
     // this.record = record
+    this.paidInterest = 0
+    this.remainInterest = this.interest - this.paidInterest
+
+    this.paidPrincipal = 0
+    this.remainPrincipal = this.principal - this.paidPrincipal
+
+    this.paidTotalPenalty = 0
+    this.remainTotalPenalty = this.paidTotalPenalty - this.paidTotalPenalty
+
     this.countInterval = () => { }
   }
 
@@ -135,11 +144,14 @@ export default class PeriodRecord {
     })
     this.penalty = parseFloat(appliedRule.penaltyRate)
     this.totalPenalty = this.penalty + this.blockPenalty
+    this.remainTotalPenalty = this.totalPenalty - this.paidTotalPenalty
     this.totalPayment = this.redemption + this.totalPenalty
     this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'penalty', this.penaltyRecord[this.penaltyRecord.length - 1].value.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'totalPenalty', this.totalPenalty.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'remainTotalPenalty', this.remainTotalPenalty.toLocaleString())
+
 
     console.log('applied static rule:', this.record)
   }
@@ -154,11 +166,14 @@ export default class PeriodRecord {
     })
     this.penalty = Math.round(parseFloat((appliedRule.penaltyRate * this.daysBetween * this.presentValue) / 100))
     this.totalPenalty = this.penalty + this.blockPenalty
+    this.remainTotalPenalty = this.totalPenalty - this.paidTotalPenalty
     this.totalPayment = Math.round(this.redemption + this.totalPenalty)
     this.remain = this.totalPayment - this.paid
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'penalty', this.penaltyRecord[this.penaltyRecord.length - 1].value.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'totalPenalty', this.totalPenalty.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'remainTotalPenalty', this.remainTotalPenalty.toLocaleString())
+
 
     console.log('applied static rule:', this.record)
   }
@@ -167,6 +182,7 @@ export default class PeriodRecord {
   applyDynamic2Rule(appliedRule) {
     this.penalty = Math.round(parseFloat((appliedRule.penaltyRate * (this.redemption - this.paid)) / 100))
     this.totalPenalty = this.penalty + this.blockPenalty
+    this.remainTotalPenalty = this.totalPenalty - this.paidTotalPenalty
     this.totalPayment = Math.round(this.redemption + this.totalPenalty)
     this.remain = this.totalPayment - this.paid
     this.penaltyRecord.push({
@@ -177,7 +193,8 @@ export default class PeriodRecord {
     })
     this.updatePeriodTable('period-table-container', this.period, 'totalPayment', this.totalPayment.toLocaleString())
     this.updatePeriodTable('period-table-container', this.period, 'remain', this.remain.toLocaleString())
-    this.updatePeriodTable('period-table-container', this.period, 'penalty', this.penaltyRecord[this.penaltyRecord.length - 1].value.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'totalPenalty', this.totalPenalty.toLocaleString())
+    this.updatePeriodTable('period-table-container', this.period, 'remainTotalPenalty', this.remainTotalPenalty.toLocaleString())
 
     console.log('applied static rule:', this.record)
   }
