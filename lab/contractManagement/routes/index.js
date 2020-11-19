@@ -666,6 +666,19 @@ router.get('/transactionHistory', (req, res) => {
   })
 })
 
+// receipt page
+router.get('/contracts/:id/receipt', (req, res) => {
+  Contract.findOne({ _id: req.params.id }).exec((err, result) => {
+    if (err) throw err
+    try {
+      res.render('receipt', { contract: result })
+
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
+
 // get going to do period package
 router.get('/goingToDo', (req, res) => {
   Contract.find({}).exec(async (err, result) => {

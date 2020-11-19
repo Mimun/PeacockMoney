@@ -222,6 +222,7 @@
             </div>
           </div>
 
+          <button class="btn btn-sm" id="receipt">In phiếu</button>
         </div>
 
         <!-- payment history -->
@@ -498,6 +499,11 @@
     console.log('rule array: ', ruleArray)
     console.log('block rule: ', blockRuleArray)
 
+    // print receipt
+    document.querySelector('button#receipt').addEventListener('click', (event) => {
+      window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}`
+    })
+
     // penalty table
     if (ruleArray.length !== 0) {
       ruleArray.forEach(rule => {
@@ -564,12 +570,15 @@
     document.querySelector('#real-date-counter span').innerHTML = formatDate(loanPackage.realLifeDate)
 
     // calculate and display payment
+    // NOTE: receiptType: 1: receive, 2: spend
+    //       type: 1: cash, 2: iCash
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
       if (loanPackage) {
         console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
         var paymentSlipObj = {
           addedDate: loanPackage.realLifeDate,
-          type: event.target.closest('div').querySelector('input:checked').value
+          type: event.target.closest('div').querySelector('input:checked').value,
+          receiptType: 1
         }
 
         document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
@@ -583,6 +592,7 @@
           to: contract.store._id,
           value: paymentSlipObj.paymentSlip,
           type: paymentSlipObj.type,
+          receiptType: paymentSlipObj.receiptType,
         }
 
         const notDonePeriodArray = loanPackage.periodRecords.filter(period => {
@@ -615,7 +625,9 @@
           var payDownObj = {
             date: loanPackage.realLifeDate,
             value: parseFloat(document.querySelector('input#payDown').value),
-            type: event.target.closest('div').querySelector('input:checked').value
+            type: event.target.closest('div').querySelector('input:checked').value,
+            receiptType: 1,
+
           }
           var transHistoryObj = {
             date: payDownObj.date,
@@ -625,6 +637,8 @@
             to: contract.store._id,
             value: payDownObj.value,
             type: payDownObj.type,
+            receiptType: payDownObj.receiptType,
+
           }
           console.log('paydown obj: ', payDownObj)
           var remainPeriods = loanPackage.periodRecords.filter(rec => {
@@ -675,6 +689,8 @@
             date: loanPackage.realLifeDate,
             value: parseFloat(document.querySelector('input#loanMore').value),
             type: event.target.closest('div').querySelector('input:checked').value,
+            receiptType: 2,
+
           }
           var transHistoryObj = {
             date: payDownObj.date,
@@ -684,6 +700,8 @@
             to: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
             value: payDownObj.value,
             type: payDownObj.type,
+            receiptType: payDownObj.receiptType,
+
           }
           var remainPeriods = loanPackage.periodRecords.filter(rec => {
             return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
@@ -764,6 +782,10 @@
           })
         }
       })
+      // document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
+      // loanPackage.periodRecords.forEach(rec => {
+      //   displayTable(rec, 'period-table-container')
+      // })
 
     }
 
@@ -777,6 +799,7 @@
           callback()
         }
       })
+      // callback()
     }
 
   </script>

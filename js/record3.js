@@ -43,7 +43,12 @@ module.exports = class Record {
     this.balance += amount
   }
 
-  paidInterest(updateObj, payment, type) {
+  paidInterest(updateObj, payment, paymentObj, type) {
+    var object = {
+      id: `${this.contractId}.${formatDate(this.realLifeDate, 1)}`,
+      date: this.realLifeDate,
+      array: []
+    }
     var temp1 = 0, temp2 = 0, temp3 = 0
     if (updateObj.remainInterest > 0) {
       var value = payment <= updateObj.remainInterest ? payment : updateObj.remainInterest
@@ -52,14 +57,15 @@ module.exports = class Record {
       updateObj.remainInterest = updateObj.interest - updateObj.paidInterest
       payment = payment - value
       if (type === 1) {
-        this.receiptRecords.push({
+        object.array.push({
           root: updateObj.interest,
           paid: temp1,
           remain: updateObj.remainInterest,
           receiptId: 'T-Lãi',
           receiptReason: `Lãi kỳ ${updateObj.period}`,
-          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
-          date: formatDate(this.realLifeDate)
+          date: formatDate(this.realLifeDate),
+          type: paymentObj.type,
+          receiptType: paymentObj.receiptType,
         })
       }
 
@@ -75,14 +81,15 @@ module.exports = class Record {
       updateObj.remainPrincipal = updateObj.principal - updateObj.paidPrincipal
       payment = payment - value
       if (type === 1) {
-        this.receiptRecords.push({
+        object.array.push({
           root: updateObj.principal,
           paid: temp2,
           remain: updateObj.remainPrincipal,
           receiptId: 'T-Gốc',
           receiptReason: `Gốc`,
-          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
-          date: formatDate(this.realLifeDate)
+          date: formatDate(this.realLifeDate),
+          type: paymentObj.type,
+          receiptType: paymentObj.receiptType,
         })
       }
 
@@ -98,21 +105,25 @@ module.exports = class Record {
       updateObj.remainTotalPenalty = updateObj.totalPenalty - updateObj.paidTotalPenalty
       payment = payment - value
       if (type === 1) {
-        this.receiptRecords.push({
+        object.array.push({
           root: updateObj.totalPenalty,
           paid: temp3,
           remain: updateObj.remainTotalPenalty,
           receiptId: 'T-Phạt',
           receiptReason: `Phạt`,
-          id: `MaHopDong1.${formatDate(this.realLifeDate, 1)}`,
-          remain: formatDate(this.realLifeDate)
+          remain: formatDate(this.realLifeDate),
+          type: paymentObj.type,
+          receiptType: paymentObj.receiptType,
         })
       }
 
     } else if (updateObj.remainTotalPenalty <= 0) {
       temp3 = updateObj.totalPenalty
     }
+    if (type === 1) {
+      this.receiptRecords.push(object)
 
+    }
     return { temp1, temp2, temp3 }
   }
 
@@ -130,7 +141,7 @@ module.exports = class Record {
         updateObj.paid = updateObj.paid + payment
         updateObj.remain = updateObj.remain - payment
         balance = balance - payment
-        var { temp1, temp2, temp3 } = this.paidInterest(updateObj, payment, 1)
+        var { temp1, temp2, temp3 } = this.paidInterest(updateObj, payment, paymentObj, 1)
         this.periodPaymentSlip.push({
           id: `${this.contractId}.${formatDate(paymentObj.addedDate, 1)}`,
           period: updateObj.period,
@@ -151,7 +162,10 @@ module.exports = class Record {
           totalPayment: updateObj.totalPayment,
           paid: updateObj.paid,
           remain: updateObj.remain,
-          date: formatDate(paymentObj.addedDate)
+          date: formatDate(paymentObj.addedDate),
+
+          type: paymentObj.type,
+          receiptType: paymentObj.receiptType,
         })
         // updateObj.paymentRecords.push({
         //   paid: payment,
@@ -690,7 +704,22 @@ module.exports = class Record {
     var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
 
     var oldPaydownPeriodEndDate = this.handleFirstHaflLoanMorePeriod(paydownPeriod, obj)
-
+    var object = {
+      id: `${this.contractId}.${formatDate(obj.date, 1)}`,
+      date: obj.date,
+      array: []
+    }
+    object.array.push({
+      root: this.periodRecords[paydownPeriodIndex].interest,
+      paid: this.periodRecords[paydownPeriodIndex].paidInterest,
+      remain: this.periodRecords[paydownPeriodIndex].remainInterest,
+      receiptId: 'T-Lãi',
+      receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
+      date: formatDate(this.realLifeDate),
+      type: obj.type,
+      receiptType: obj.receiptType,
+    })
+    this.receiptRecords.push(object)
 
     // update the length of number of payments
     this.numberOfPeriods += 1
@@ -741,6 +770,23 @@ module.exports = class Record {
 
     this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate, numberOfNewPeriods)
     this.reCalculatePeriodPayment(this.periodRecords)
+
+    var object = {
+      id: `${this.contractId}.${formatDate(obj.date, 1)}`,
+      date: obj.date,
+      array: []
+    }
+    object.array.push({
+      root: this.periodRecords[paydownPeriodIndex].interest,
+      paid: this.periodRecords[paydownPeriodIndex].paidInterest,
+      remain: this.periodRecords[paydownPeriodIndex].remainInterest,
+      receiptId: 'T-Lãi',
+      receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
+      date: formatDate(this.realLifeDate),
+      type: obj.type,
+      receiptType: obj.receiptType,
+    })
+    this.receiptRecords.push(object)
     this.numberOfPayingDownTimes += 1
   }
 
