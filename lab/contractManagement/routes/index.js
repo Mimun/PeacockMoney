@@ -705,8 +705,12 @@ router.get('/transactionHistory', (req, res) => {
         return res.loanPackage.receiptRecords
       }
     })
-    // loanPackage = loanPackage.flat(Infinity)
-    res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity), contract: result })
+    try {
+      res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity), contract: result })
+
+    } catch (error) {
+      console.error(error)
+    }
   })
 })
 
