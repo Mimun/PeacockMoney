@@ -710,11 +710,11 @@ export default class Record {
       array: []
     }
     object.array.push({
-      root: this.periodRecords[paydownPeriodIndex].interest,
-      paid: this.periodRecords[paydownPeriodIndex].paidInterest,
-      remain: this.periodRecords[paydownPeriodIndex].remainInterest,
-      receiptId: 'T-Lãi',
-      receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
+      root: 0,
+      paid: obj.value,
+      remain: 0,
+      receiptId: 'C-Vay thêm',
+      receiptReason: `Cho vay thêm`,
       date: formatDate(this.realLifeDate),
       type: obj.type,
       receiptType: obj.receiptType,

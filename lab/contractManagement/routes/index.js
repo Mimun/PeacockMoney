@@ -430,6 +430,22 @@ router.put('/contracts/:id', async (req, res) => {
     value: -loanPackage.presentValue,
 
   })
+  var object = {
+    id: `${loanPackage.contractId}.${formatDate(loanPackage.realLifeDate, 1)}`,
+    date: loanPackage.realLifeDate,
+    array: []
+  }
+  object.array.push({
+    root: 0,
+    paid: loanPackage.presentValue,
+    remain: 0,
+    receiptId: 'C-Giải ngân mới',
+    receiptReason: `Giải ngân`,
+    date: formatDate(loanPackage.realLifeDate),
+    type: 'cash',
+    receiptType: 2,
+  })
+  loanPackage.receiptRecords.push(object)
   try {
     Contract.findOneAndUpdate({ _id: req.params.id },
       { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
@@ -651,18 +667,46 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
 
 // transaction history
 router.get('/transactionHistory', (req, res) => {
-  Contract.find({}).exec((err, result) => {
+  Contract.find({}).populate([
+    {
+      path: 'store.value',
+      model: 'Store'
+    },
+    {
+      path: 'employee.value',
+      model: 'Employee'
+    }
+  ]).exec((err, result) => {
     if (err) throw err
     var loanPackage = result.map(res => {
-      if (res.loanPackage && res.loanPackage.periodPaymentSlip.length !== 0) {
-        res.loanPackage.periodPaymentSlip = res.loanPackage.periodPaymentSlip.map(period => {
-          return { ...period, contractId: res._id }
+      if (res.loanPackage && res.loanPackage.receiptRecords.length !== 0) {
+        res.loanPackage.receiptRecords = res.loanPackage.receiptRecords.map(receipt => {
+          receipt.array = receipt.array.map(recpt => {
+            try {
+              return {
+                ...recpt,
+                contract_Id: res._id,
+                contractId: res.id,
+                storeId: getNestedValue(findNestedObj(res.store.value.metadata, 'name', 'id')),
+                storeName: getNestedValue(findNestedObj(res.store.value.metadata, 'name', 'name')),
+                customerId: getNestedValue(findNestedObj(res.contractMetadata, 'name', 'customerId')),
+                customerName: getNestedValue(findNestedObj(res.contractMetadata, 'name', 'customer')),
+                employeeId: getNestedValue(findNestedObj(res.employee.value.metadata, 'name', 'id')),
+                employeeName: getNestedValue(findNestedObj(res.employee.value.metadata, 'name', 'name')),
+
+              }
+            } catch (error) {
+              console.error(error)
+            }
+          })
+          return receipt.array
+
         })
-        return res.loanPackage.periodPaymentSlip
+        return res.loanPackage.receiptRecords
       }
     })
-    loanPackage = loanPackage.flat(Infinity)
-    res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity) })
+    // loanPackage = loanPackage.flat(Infinity)
+    res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity), contract: result })
   })
 })
 

@@ -17,19 +17,33 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Quản lý thu chi</h2>
-      <table class="table table-responsive table-striped table-hover">
+      <table class="table table-striped table-hover">
         <thead>
           <tr>
-            <th id="id">Mã thu, chi</th>
+            <th id="storeId">Mã PGD</th>
+            <th id="storeName">Tên PGD</th>
             <th id="date">Ngày đóng</th>
-            <th id="pay">Số tiền khách đóng</th>
+            <th id="id">Số phiếu</th>
+            <th id="contractId">Số hợp đồng</th>
+            <th id="customerId">Mã KH</th>
+            <th id="customerName">Tên KH</th>
+            <th id="receiptReason">Nội dung giao dịch</th>
+            <th id="paid1">Thu</th>
+            <th id="paid2">Chi</th>
+            <th id="type">Loại tiền</th>
+            <th id="receiptId">Mã thu chi</th>
+            <th id="note">Ghi chú</th>
+            <th id="employeeId">Mã NV thẩm định</th>
+            <th id="employeeName">Tên NV thẩm định</th>
+
+            <!-- <th id="pay">Số tiền khách đóng</th>
             <th id="paid">Tống số tiền khách đã đóng</th>
             <th id="totalPayment">Tổng số tiền khách phải đóng (tổng phạt + lãi + gốc đóng trong kỳ)</th>
             <th id="remain">Còn lại</th>
             <th id="interest">Lãi</th>
             <th id="principal">Số tiền gốc phải đóng trong kỳ</th>
             <th id="totalPenalty">Tổng số tiền phạt</th>
-            <th id="period">Kỳ</th>
+            <th id="period">Kỳ</th> -->
           </tr>
         </thead>
         <tbody></tbody>
@@ -41,15 +55,29 @@
   <script>
     const loanPackage = JSON.parse('<%- JSON.stringify(loanPackage) %>')
     console.log('loan package array: ', loanPackage)
+    const contract = JSON.parse('<%- JSON.stringify(contract) %>')
+    console.log('contract: ', contract)
+
 
     if (loanPackage.length !== 0) {
       loanPackage.forEach(loan => {
         if (loan) {
           var tr = document.createElement('tr')
-          tr.id = loan.contractId
+          tr.id = loan.contract_Id
           document.querySelectorAll('table thead th').forEach(element => {
             var th = document.createElement('th')
-            th.innerHTML = loan[element.id].toLocaleString()
+            switch (element.id) {
+              case ('paid1'):
+                th.innerHTML = loan.receiptType === 1 ? (loan.paid ? loan.paid.toLocaleString() : '-') : ('-')
+                break;
+              case ('paid2'):
+                th.innerHTML = loan.receiptType === 2 ? (loan.paid ? loan.paid.toLocaleString() : '-') : ('-')
+                break;
+              default:
+                th.innerHTML = loan[element.id] ? loan[element.id].toLocaleString() : '-'
+                break;
+            }
+
             tr.appendChild(th)
           })
           tr.addEventListener('click', (event) => {
