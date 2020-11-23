@@ -12,6 +12,7 @@ detailStoreTemplate.innerHTML = `
 </div>
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
+  <button class="btn btn-raised btn-primary btn-sm" id="btn-money-report">Báo cáo tiền PGD</button>
   <button class="btn btn-danger btn-sm" id="btn-delete">Delete</button>
 </div>`
 
@@ -189,6 +190,11 @@ modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
       window.location.reload()
     })
 
+})
+
+// money report
+modalFooter.querySelector('#btn-money-report').addEventListener('click', event => {
+  window.location.href = `/systemMng/stores/${event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id}/moneyReport?token=${window.localStorage.getItem('accessToken')}`
 })
 
 // add representative button

@@ -7,6 +7,7 @@ var Property = require('../../../models/property')
 var Item = require('../../../models/item')
 var ItemType = require('../../../models/itemType')
 var Fund = require('../../../models/fund')
+var Contract = require('../../../models/contract')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -1067,6 +1068,70 @@ router.put('/funds/:id', (req, res) => {
       res.send('save successfully')
     })
 
+  })
+})
+
+// money report
+router.get('/moneyReport', (req, res) => {
+  Store.find({}).exec((err, result) => {
+    if (err) throw err
+    res.render('moneyReport', { stores: result })
+
+  })
+})
+
+router.post('/moneyReport/getReport', (req, res) => {
+  console.log('req body: ', req.body)
+  var chosenDate = new Date(req.body.date)
+  var chosenMonth = chosenDate.getMonth()
+  console.log('chosen month: ', chosenMonth, ', chosen date: ', chosenDate)
+  async.parallel({
+    store: callback => {
+      Store.findOne({ _id: req.body.store }).exec(callback)
+    },
+    fund: callback => {
+      Fund.findOne({ store: req.body.store }).exec(callback)
+    },
+    contracts: callback => {
+      Contract.find({ 'store.value': req.body.store }).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    }
+  }, (err, results) => {
+    if (err) throw err
+    try {
+      var dailyMoneyReport = [],
+        monthlyMoneyReport = []
+      if (results.contracts.length !== 0) {
+        results.contracts.forEach(contract => {
+          if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
+            dailyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
+              if (new Date(receipt.date).getDate() === chosenDate.getDate()
+                && new Date(receipt.date).getMonth() === chosenDate.getMonth()
+                && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+                return receipt
+              }
+            })
+
+            monthlyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
+              if (new Date(receipt.date).getMonth() === chosenMonth) {
+                return receipt
+              }
+            })
+          }
+        })
+      }
+      res.send({ store: results.store, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+    } catch (error) {
+      console.error(error)
+    }
   })
 })
 

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .md-form {
+      margin-bottom: 16px;
+    }
+
+    .money-table,
+    .case-table {
+      width: 70% !important;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Báo cáo tiền PGD</h2>
+      <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+
+      <table class="table table-bordered table-striped table-hover money-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th colspan="2">Daily</th>
+            <th colspan="2">Monthly</th>
+          </tr>
+          <tr>
+            <th class="static"></th>
+            <th class="daily" id="T-">Thu</th>
+            <th class="daily" id="C-">Chi</th>
+            <th class="monthly" id="T-">Thu</th>
+            <th class="monthly" id="C-">Chi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="Gốc">
+            <th class="static">Gốc</th>
+          </tr>
+          <tr id="Lãi">
+            <th class="static">Lãi</th>
+          </tr>
+          <tr id="Vay thêm">
+            <th class="static">Giải ngân</th>
+          </tr>
+          <tr id="Chuyển NB">
+            <th class="static">Chuyển NB</th>
+          </tr>
+          <tr id="Phí khác">
+            <th class="static">Phí khác</th>
+          </tr>
+          <tr id="Nhận NB">
+            <th class="static">Nhận NB</th>
+          </tr>
+          <tr id="Phạt">
+            <th class="static">Phạt</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="table table-bordered table-striped table-hover case-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th colspan="2">Daily</th>
+            <th colspan="2">Monthly</th>
+          </tr>
+          <tr>
+            <th class="static"></th>
+            <th class="daily" id="T-">Thu</th>
+            <th class="daily" id="C-">Chi</th>
+            <th class="monthly" id="T-">Thu</th>
+            <th class="monthly" id="C-">Chi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="Gốc">
+            <th class="static">Gốc</th>
+          </tr>
+          <tr id="Lãi">
+            <th class="static">Lãi</th>
+          </tr>
+          <tr id="Vay thêm">
+            <th class="static">Giải ngân</th>
+          </tr>
+          <tr id="Chuyển NB">
+            <th class="static">Chuyển NB</th>
+          </tr>
+          <tr id="Phí khác">
+            <th class="static">Phí khác</th>
+          </tr>
+          <tr id="Nhận NB">
+            <th class="static">Nhận NB</th>
+          </tr>
+          <tr id="Phạt">
+            <th class="static">Phạt</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Chọn ngày và cửa hàng báo cáo</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="md-form">
+                <label for="date-picker">Chọn ngày</label>
+                <input type="date" class="form-control" id="date">
+              </div>
+              <div class="md-form">
+                <label for="store-picker">Chọn cửa hàng</label>
+                <select name="" id="store" class="browser-default custom-select store-picker"></select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="get-report">Hiển thị báo cáo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- common function -->
+  <script>
+    const getNestedValue = (obj) => {
+      var value = obj ? (obj.value !== '' ? obj.value : 'None') : 'None'
+      return value
+    }
+  </script>
+
+  <!-- handle open modal -->
+  <script>
+    document.querySelector('button#choose-date').addEventListener('click', (event) => {
+      $('#myModal').modal('show')
+    })
+  </script>
+
+  <!-- display store selector -->
+  <script type="module">
+    import { findNestedObj } from '/findNestedObj.js'
+
+    var stores = JSON.parse('<%- JSON.stringify(stores)%>')
+    console.log('store: ', stores)
+    if (stores.length !== 0) {
+      stores.forEach(store => {
+        console.log('abc; ', getNestedValue(findNestedObj(store.metadata, 'name', 'name')))
+        var option = document.createElement('option')
+        option.value = store._id
+        option.innerHTML = `${getNestedValue(findNestedObj(store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(store.metadata, 'name', 'id'))}`
+        document.querySelector('select#store').appendChild(option)
+      });
+    }
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"> </script>
+  <!-- handle after picking date -->
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+    import { findNestedObj } from '/findNestedObj.js'
+    const createCustomObj = (array, keys, index) => {
+      var customObj = _(array).flatMap('array').groupBy('receiptId').
+        map((objs, key) => {
+          switch (index) {
+            case (1):
+              var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objs, key))))
+              return { receiptType: key, paid: def.paid }
+              break;
+            case (2):
+              return { receiptType: key, cases: objs.length }
+              break;
+            default:
+              break;
+          }
+        }).value()
+      return customObj
+    }
+
+    const displayTable = (query1, query2, array, index) => {
+      document.querySelectorAll(query1).forEach(element1 => {
+        document.querySelectorAll(query2).forEach(element2 => {
+          var receiptId = `${element1.id}${element2.id}`
+          var obj = findNestedObj(array, 'receiptType', receiptId)
+          var th = document.createElement('th')
+          switch (index) {
+            case (1):
+              th.innerHTML = obj ? obj.paid.toLocaleString() : '-'
+
+              break;
+            case (2):
+              th.innerHTML = obj ? obj.cases.toLocaleString() : '-'
+
+              break;
+
+            default:
+              break;
+          }
+          element2.appendChild(th)
+        })
+      })
+    }
+    // choose date to get report
+    document.querySelector('button#get-report').addEventListener('click', (event) => {
+      const obj = {}
+      document.querySelectorAll('.modal .modal-body input, .modal-body select ').forEach(element => {
+        obj[element.id] = element.value
+      })
+      console.log('obj: ', obj)
+      makeRequest('POST', 'moneyReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
+        var dailyMoneyReport = result.dailyMoneyReport
+        var monthlyMoneyReport = result.monthlyMoneyReport
+        let keys = ['root', 'paid', 'remain']
+        const customDailyMoneyReport = createCustomObj(dailyMoneyReport, keys, 1)
+        const customMonthlyMoneyReport = createCustomObj(monthlyMoneyReport, keys, 1)
+        const customDailyCaseReport = createCustomObj(dailyMoneyReport, keys, 2)
+        const customMonthlyCaseReport = createCustomObj(monthlyMoneyReport, keys, 2)
+        console.log('obj: ', { customDailyMoneyReport, customMonthlyMoneyReport, customDailyCaseReport, customMonthlyCaseReport })
+
+        // remove old th 
+        document.querySelectorAll('table.money-table tbody th:not(.static)').forEach(element => {
+          element.closest('tr').removeChild(element)
+        })
+
+        // render daily and monthly
+        displayTable('table.money-table thead th.daily', 'table.money-table tbody tr', customDailyMoneyReport, 1)
+        displayTable('table.money-table thead th.monthly', 'table.money-table tbody tr', customDailyMoneyReport, 1)
+
+        document.querySelectorAll('table.case-table tbody th:not(.static)').forEach(element => {
+          element.closest('tr').removeChild(element)
+        })
+
+        // render daily and monthly
+        displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
+        displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
+
+
+
+        $('#myModal').modal('hide')
+
+      })
+
+    })
+  </script>
+</body>
+
+</html>

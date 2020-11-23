@@ -160,8 +160,17 @@
           class="list-group-item list-group-item-action list-group-item-secondary">Tạo mới hợp đồng</a>
         <a onclick="getPage('/systemMng/properties')"
           class="list-group-item list-group-item-action list-group-item-secondary">Quản lý tài sản</a>
-        <a onclick="getPage('/systemMng/statistic')"
-          class="list-group-item list-group-item-action list-group-item-secondary">Thống kê/ báo cáo</a>
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
+          data-toggle="collapse" data-target="#statistic-item">Thống kê/ báo cáo
+          <span class="material-icons rotate">chevron_left</span>
+        </a>
+        <div class="collapse" id="statistic-item">
+          <a onclick="getPage('/systemMng/statistic')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Báo cáo kho</a>
+          <a onclick="getPage('/systemMng/moneyReport')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Báo cáo quỹ tiền</a>
+        </div>
+
         <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
           data-toggle="collapse" data-target="#management-item">Quản lý hệ thống
           <span class="material-icons rotate">chevron_left</span>
