@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .md-form {
+      margin-bottom: 16px;
+    }
+
+    .money-table,
+    .case-table,
+    .custom-table {
+      width: 70% !important;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Báo cáo tiền Công ty</h2>
+      <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+
+      <h5>Theo tháng đã chọn</h5>
+      <table class="table table-bordered table-striped monthly-receive-table custom-table" id="monthly-receive-table">
+        <thead>
+          <tr>
+            <th id="storeId">Thu</th>
+            <th id="T-Gốc">Gốc</th>
+            <th id="T-Lãi">Lãi</th>
+            <th id="T-Nhận NB">Nhận NB</th>
+            <th id="T-Khác">Khác</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <table class="table table-bordered table-striped monthly-spend-table custom-table" id="monthly-spend-table">
+        <thead>
+          <tr>
+            <th id="storeId">Thu</th>
+            <th id="C-Giải ngân mới">Giải ngân mới</th>
+            <th id="C-Vay thêm">Vay thêm</th>
+            <th id="C-Chuyển NB">Chuyển NB</th>
+            <th id="C-Khác">Khác</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h5>Theo ngày đã chọn</h5>
+      <table class="table table-bordered table-striped daily-receive-table custom-table" id="daily-receive-table">
+        <thead>
+          <tr>
+            <th id="storeId">Thu</th>
+            <th id="T-Gốc">Gốc</th>
+            <th id="T-Lãi">Lãi</th>
+            <th id="T-Nhận NB">Nhận NB</th>
+            <th id="T-Khác">Khác</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <table class="table table-bordered table-striped daily-spend-table custom-table" id="daily-spend-table">
+        <thead>
+          <tr>
+            <th id="storeId">Thu</th>
+            <th id="C-Giải ngân mới">Giải ngân mới</th>
+            <th id="C-Vay thêm">Vay thêm</th>
+            <th id="C-Chuyển NB">Chuyển NB</th>
+            <th id="C-Khác">Khác</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Chọn ngày và cửa hàng báo cáo</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="md-form">
+                <label for="date-picker">Chọn ngày</label>
+                <input type="date" class="form-control" id="date">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="get-report">Hiển thị báo cáo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- common function -->
+  <script>
+    const getNestedValue = (obj) => {
+      var value = obj ? (obj.value !== '' ? obj.value : '-') : '-'
+      return value
+    }
+
+    const getCustomArray = (array, keys) => {
+      var abc = _(array).groupBy('storeId').map((objs, key) => {
+        return {
+          storeId: key, receipts: _(objs).flatMap('array').groupBy('receiptId').map((objects, key) => {
+            var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
+            return { receiptId: key, value: def.paid }
+          }).value()
+        }
+      }).value()
+      return abc
+    }
+
+
+  </script>
+
+  <!-- handle open modal -->
+  <script>
+    document.querySelector('button#choose-date').addEventListener('click', (event) => {
+      $('#myModal').modal('show')
+    })
+  </script>
+
+  <!-- handle display report button clicked -->
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+    import { findNestedObj } from '/findNestedObj.js'
+    const displayReport = (report, query1, query2) => {
+      var tr = document.createElement('tr')
+      document.querySelectorAll(query1).forEach(element => {
+        var th = document.createElement('th')
+        if (element.id === 'storeId') {
+          th.innerHTML = report.storeId
+        } else {
+          th.innerHTML = getNestedValue(findNestedObj(report, 'receiptId', element.id)).toLocaleString()
+        }
+        tr.appendChild(th)
+      })
+      document.querySelector(query2).appendChild(tr)
+    }
+
+    document.querySelector('button#get-report').addEventListener('click', (event) => {
+      const obj = {}
+      document.querySelectorAll('.modal .modal-body input').forEach(element => {
+        obj[element.id] = element.value
+      })
+      console.log('obj: ', obj)
+      makeRequest('POST', 'companyMoneyReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
+        let keys = ['root', 'paid', 'remain']
+        var dailyMoneyReport = getCustomArray(result.dailyMoneyReport, keys)
+        console.log('daily money report: ', dailyMoneyReport)
+        var monthlyMoneyReport = getCustomArray(result.monthlyMoneyReport, keys)
+        console.log('monthly money report: ', monthlyMoneyReport)
+
+        // display monthly report
+        if (monthlyMoneyReport.length !== 0) {
+          monthlyMoneyReport.forEach(report => {
+            displayReport(report, 'table.monthly-receive-table thead th', 'table.monthly-receive-table tbody')
+            displayReport(report, 'table.monthly-spend-table thead th', 'table.monthly-spend-table tbody')
+
+          })
+        }
+
+        // display daily report
+        if (dailyMoneyReport.length !== 0) {
+          dailyMoneyReport.forEach(report => {
+            displayReport(report, 'table.daily-receive-table thead th', 'table.daily-receive-table tbody')
+            displayReport(report, 'table.daily-spend-table thead th', 'table.daily-spend-table tbody')
+          })
+        }
+        $('#myModal').modal('hide')
+
+      })
+
+    })
+  </script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"> </script>
+
+</body>
+
+</html>

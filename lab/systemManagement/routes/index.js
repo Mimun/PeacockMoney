@@ -15,6 +15,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var json2csv = require('json2csv').parse
 var mongoose = require('mongoose');
+const { find } = require('lodash');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -1071,7 +1072,7 @@ router.put('/funds/:id', (req, res) => {
   })
 })
 
-// money report
+// money report of each store
 router.get('/moneyReport', (req, res) => {
   Store.find({}).exec((err, result) => {
     if (err) throw err
@@ -1135,5 +1136,65 @@ router.post('/moneyReport/getReport', (req, res) => {
   })
 })
 
+// money report of company
+router.get('/companyMoneyReport', (req, res) => {
+  res.render('companyMoneyReport', {})
+})
+
+router.post('/companyMoneyReport/getReport', (req, res) => {
+  console.log('req body: ', req.body)
+  var chosenDate = new Date(req.body.date)
+  var chosenMonth = chosenDate.getMonth()
+  async.parallel({
+    stores: callback => {
+      Store.find({}).exec(callback)
+    },
+    contracts: callback => {
+      Contract.find({}).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    }
+  }, (err, results) => {
+    if (err) throw err
+    try {
+      var dailyMoneyReport = [],
+        monthlyMoneyReport = []
+      if (results.contracts.length !== 0) {
+        results.contracts.forEach(contract => {
+          if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
+            contract.loanPackage.receiptRecords.forEach(receipt => {
+              if (new Date(receipt.date).getDate() === chosenDate.getDate()
+                && new Date(receipt.date).getMonth() === chosenDate.getMonth()
+                && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+                if (receipt !== null) {
+                  dailyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
+                }
+              }
+            })
+
+            contract.loanPackage.receiptRecords.map(receipt => {
+              if (new Date(receipt.date).getMonth() === chosenMonth) {
+                if (receipt !== null) {
+                  monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
+                }
+
+              }
+            })
+          }
+        })
+      }
+      res.send({ store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
 
 module.exports = router;
