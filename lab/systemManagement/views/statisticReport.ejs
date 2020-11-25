@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .md-form {
+      margin-bottom: 16px;
+    }
+
+    .money-table,
+    .case-table,
+    .custom-table {
+      width: 70% !important;
+      margin: auto;
+    }
+
+    .daily {
+      background-color: lightgoldenrodyellow;
+    }
+
+    .monthly {
+      background-color: lightcyan;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Báo cáo</h2>
+      <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+      <h5>Giải ngân</h5>
+      <table class="table table-border table-striped C-Giải-ngân-mới" id="money-report-table">
+        <thead>
+          <tr>
+            <th class="static" id="itemType">Giải ngân</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <table class="table table-border table-striped C-Giải-ngân-mới" id="case-report-table">
+        <thead>
+          <tr>
+            <th class="static" id="itemType">Giải ngân</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Chọn ngày và cửa hàng báo cáo</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="md-form">
+                <label for="date-picker">Chọn ngày</label>
+                <input type="date" class="form-control" id="date">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="get-report">Hiển thị báo cáo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"> </script>
+  <!-- common function -->
+  <script>
+    const getNestedValue = (obj) => {
+      var value = obj ? (obj.value !== '' ? obj.value : '-') : '-'
+      return value
+    }
+
+    const getCustomArray = (array, keys, index) => {
+      var abc = _(array).groupBy('itemType').map((objs, key) => {
+        return {
+          itemType: key, array: _(objs).groupBy('storeId').map((objects, key) => {
+            return {
+              storeId: key, receipts: _(objects).flatMap('array').groupBy('receiptId').map((objects, key) => {
+                switch (index) {
+                  case 1:
+                    var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
+                    return { receiptId: key, value: def.paid }
+
+                    break;
+                  case 2:
+                    var def = objects.length
+                    return { receiptId: key, value: def }
+                    break
+
+                  default:
+                    var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
+                    return { receiptId: key, value: def.paid }
+                    break;
+                }
+              }).value()
+            }
+          }).value()
+        }
+      }).value()
+      return abc
+    }
+
+  </script>
+
+  <!-- handle open modal -->
+  <script>
+    const stores = JSON.parse('<%-JSON.stringify(stores)%>')
+    console.log('stores: ', stores)
+    if (stores.length !== 0) {
+
+      for (var i = 1; i <= 3; i++) {
+        stores.forEach(store => {
+          var th = document.createElement('th')
+          th.innerHTML = store.storeName
+          switch (i) {
+            case 1:
+              th.className = 'daily'
+              break;
+            case 2:
+              th.className = 'monthly'
+              break;
+            case 3:
+              th.className = 'total'
+              break;
+
+            default:
+              break;
+          }
+          th.id = store.storeId
+          var thClone = th.cloneNode(true)
+          var thClone2 = th.cloneNode(true)
+          document.querySelector('table#money-report-table.C-Giải-ngân-mới thead tr').appendChild(thClone);
+          document.querySelector('table#case-report-table.C-Giải-ngân-mới thead tr').appendChild(thClone2)
+
+        })
+
+      }
+    }
+    document.querySelector('button#choose-date').addEventListener('click', (event) => {
+      $('#myModal').modal('show')
+    })
+  </script>
+
+  <!-- handle display report button clicked -->
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+    import { findNestedObj } from '/findNestedObj.js'
+
+    const displayTable = (array, query1, query2, query3, keyToFind) => {
+      array.forEach(report => {
+        var tr = null
+        if (!document.querySelector(`${query3} th.${report.itemType}`)) {
+          tr = document.createElement('tr')
+          var th = document.createElement('th')
+          th.innerHTML = report.itemType
+          tr.appendChild(th)
+
+        } else {
+          tr = document.querySelector(`${query3} th.${report.itemType}`).closest('tr')
+        }
+        document.querySelectorAll(query1).forEach(element => {
+          var th = document.createElement('th')
+          th.className = report.itemType
+          var store = findNestedObj(report.array, 'storeId', element.id)
+          if (store) {
+            th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind))
+          } else {
+            th.innerHTML = '-'
+          }
+          tr.appendChild(th)
+        })
+        if (!document.querySelector(`${query3} th.${report.itemType}`)) {
+          document.querySelector(query2).appendChild(tr)
+
+        }
+
+      })
+    }
+
+    document.querySelector('button#get-report').addEventListener('click', (event) => {
+      const obj = {}
+      document.querySelectorAll('.modal .modal-body input').forEach(element => {
+        obj[element.id] = element.value
+      })
+      console.log('obj: ', obj)
+      makeRequest('POST', 'statisticReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
+        let keys = ['root', 'paid', 'remain']
+        var dailyMoneyReport = getCustomArray(result.dailyMoneyReport, keys)
+        console.log('daily money report: ', dailyMoneyReport)
+        var monthlyMoneyReport = getCustomArray(result.monthlyMoneyReport, keys)
+        console.log('monthly money report: ', monthlyMoneyReport)
+        var dailyCaseReport = getCustomArray(result.dailyMoneyReport, keys, 2)
+        console.log('daily case report: ', dailyCaseReport)
+        var monthlyCaseReport = getCustomArray(result.monthlyMoneyReport, keys, 2)
+        console.log('monthly case report: ', monthlyCaseReport)
+
+        // // create table header based on number of store id
+        // document.querySelectorAll('table#money-report-table thead th:not(.static)').forEach(element => {
+        //   element.closest('tr').removeChild(element)
+        // })
+        // displayTable(dailyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.daily, th.static',
+        //   'table#money-report-table.C-Giải-ngân-mới tbody','table#money-report-table.C-Giải-ngân-mới', 'C-Giải ngân mới')
+        // displayTable(monthlyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.monthly',
+        //   'table#money-report-table.C-Giải-ngân-mới tbody','table#money-report-table.C-Giải-ngân-mới', 'C-Giải ngân mới')
+
+        displayTable(dailyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.daily, th.static',
+          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới thead', 'C-Giải ngân mới')
+        displayTable(monthlyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.monthly',
+          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới thead', 'C-Giải ngân mới')
+
+        $('#myModal').modal('hide')
+
+      })
+
+    })
+
+  </script>
+
+
+
+</body>
+
+</html>

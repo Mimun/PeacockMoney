@@ -16,6 +16,7 @@ var _ = require('lodash');
 var json2csv = require('json2csv').parse
 var mongoose = require('mongoose');
 const { find } = require('lodash');
+const store = require('../../../models/store');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -1191,6 +1192,72 @@ router.post('/companyMoneyReport/getReport', (req, res) => {
         })
       }
       res.send({ store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
+
+// statistic report
+router.get('/statisticReport', (req, res) => {
+  Store.find({}).exec((err, result) => {
+    if (err) throw err
+    var stores = result.map(res => {
+      return {
+        storeId: getNestedValue(findNestedObj(res.metadata, 'name', 'id')),
+        storeName: getNestedValue(findNestedObj(res.metadata, 'name', 'name'))
+      }
+    })
+    res.render('statisticReport', { stores: stores })
+
+  })
+})
+
+router.post('/statisticReport/getReport', (req, res) => {
+  console.log('req body: ', req.body)
+  var chosenDate = new Date(req.body.date)
+  var chosenMonth = chosenDate.getMonth()
+  Contract.find({}).populate([
+    {
+      path: 'store.value',
+      model: 'Store'
+    },
+    {
+      path: 'employee.value',
+      model: 'Employee'
+    }
+  ]).exec((err, result) => {
+    if (err) throw err
+    try {
+      var dailyMoneyReport = [],
+        monthlyMoneyReport = []
+      if (result.length !== 0) {
+        result.forEach(contract => {
+          var itemType = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType'))
+          console.log('item type: ', itemType)
+          if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
+            contract.loanPackage.receiptRecords.forEach(receipt => {
+              if (new Date(receipt.date).getDate() === chosenDate.getDate()
+                && new Date(receipt.date).getMonth() === chosenDate.getMonth()
+                && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+                if (receipt !== null) {
+                  dailyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0], itemType: itemType })
+                }
+              }
+            })
+
+            contract.loanPackage.receiptRecords.map(receipt => {
+              if (new Date(receipt.date).getMonth() === chosenMonth) {
+                if (receipt !== null) {
+                  monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0], itemType: itemType })
+                }
+
+              }
+            })
+          }
+        })
+      }
+      res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport })
     } catch (error) {
       console.error(error)
     }
