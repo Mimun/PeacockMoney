@@ -11,8 +11,7 @@
     }
 
     .money-table,
-    .case-table,
-    .custom-table {
+    .case-table {
       width: 70% !important;
       margin: auto;
     }
@@ -24,6 +23,37 @@
     .monthly {
       background-color: lightcyan;
     }
+
+    .box {
+      width: 24px;
+      height: 24px;
+      border: 0.5px solid lightgrey;
+      margin-bottom: 16px;
+    }
+
+    .table-container,
+    .note-container {
+      padding: 16px 64px;
+      margin: 16px 0;
+      border: 1px solid lightgrey;
+      overflow-x: scroll;
+      max-width: 100vw;
+    }
+
+    .note-container {
+      overflow-x: unset !important;
+      max-width: 400px;
+    }
+
+
+
+    .ui-resizable {
+      position: static !important;
+    }
+
+    .table-container th {
+      min-width: 160px;
+    }
   </style>
 </head>
 
@@ -34,23 +64,91 @@
     <div id="page-content-wrapper">
       <h2>Báo cáo</h2>
       <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
-      <h5>Giải ngân</h5>
-      <table class="table table-border table-striped C-Giải-ngân-mới" id="money-report-table">
-        <thead>
-          <tr>
-            <th class="static" id="itemType">Giải ngân</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <table class="table table-border table-striped C-Giải-ngân-mới" id="case-report-table">
-        <thead>
-          <tr>
-            <th class="static" id="itemType">Giải ngân</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+
+      <div class="note-container">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="box daily"></div><span>Daily</span>
+            </div>
+            <div class="col">
+              <div class="box monthly"></div><span>Monthly</span>
+
+            </div>
+            <div class="col">
+              <div class="box total"></div><span>Total</span>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <h5>Giải ngân</h5>
+        <h6>Số tiền giải ngân</h6>
+        <table class="table table-bordered table-striped C-Giải-ngân-mới" id="money-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Giải ngân</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <h6>Số vụ giải ngân</h6>
+        <table class="table table-bordered table-striped C-Giải-ngân-mới" id="case-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Giải ngân</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="table-container">
+        <h5>Gốc</h5>
+        <h6>Gốc thu lại</h6>
+        <table class="table table-bordered table-striped T-Gốc" id="money-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Theo dõi trả gốc</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <h6>Số vụ trả gốc</h6>
+        <table class="table table-bordered table-striped T-Gốc" id="case-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Theo dõi trả gốc</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="table-container">
+        <h5>Lãi</h5>
+        <h6>Tiền lãi đã nộp</h6>
+        <table class="table table-bordered table-striped T-Lãi" id="money-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Theo dõi trả lãi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <h6>Số vụ trả lãi</h6>
+        <table class="table table-bordered table-striped T-Lãi" id="case-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Theo dõi trả lãi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -146,9 +244,17 @@
           th.id = store.storeId
           var thClone = th.cloneNode(true)
           var thClone2 = th.cloneNode(true)
+          var thClone3 = th.cloneNode(true)
+          var thClone4 = th.cloneNode(true)
+          var thClone5 = th.cloneNode(true)
+          var thClone6 = th.cloneNode(true)
+
           document.querySelector('table#money-report-table.C-Giải-ngân-mới thead tr').appendChild(thClone);
           document.querySelector('table#case-report-table.C-Giải-ngân-mới thead tr').appendChild(thClone2)
-
+          document.querySelector('table#money-report-table.T-Gốc thead tr').appendChild(thClone3)
+          document.querySelector('table#case-report-table.T-Gốc thead tr').appendChild(thClone4)
+          document.querySelector('table#money-report-table.T-Lãi thead tr').appendChild(thClone5)
+          document.querySelector('table#case-report-table.T-Lãi thead tr').appendChild(thClone6)
         })
 
       }
@@ -166,10 +272,12 @@
     const displayTable = (array, query1, query2, query3, keyToFind) => {
       array.forEach(report => {
         var tr = null
+        console.log('defghi: ', document.querySelector(`${query3} th.${report.itemType}`))
         if (!document.querySelector(`${query3} th.${report.itemType}`)) {
           tr = document.createElement('tr')
           var th = document.createElement('th')
           th.innerHTML = report.itemType
+          th.className = report.itemType
           tr.appendChild(th)
 
         } else {
@@ -180,7 +288,7 @@
           th.className = report.itemType
           var store = findNestedObj(report.array, 'storeId', element.id)
           if (store) {
-            th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind))
+            th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind)).toLocaleString()
           } else {
             th.innerHTML = '-'
           }
@@ -211,19 +319,39 @@
         var monthlyCaseReport = getCustomArray(result.monthlyMoneyReport, keys, 2)
         console.log('monthly case report: ', monthlyCaseReport)
 
-        // // create table header based on number of store id
+        // create table header based on number of store id
         // document.querySelectorAll('table#money-report-table thead th:not(.static)').forEach(element => {
         //   element.closest('tr').removeChild(element)
         // })
-        // displayTable(dailyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.daily, th.static',
-        //   'table#money-report-table.C-Giải-ngân-mới tbody','table#money-report-table.C-Giải-ngân-mới', 'C-Giải ngân mới')
-        // displayTable(monthlyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.monthly',
-        //   'table#money-report-table.C-Giải-ngân-mới tbody','table#money-report-table.C-Giải-ngân-mới', 'C-Giải ngân mới')
+        displayTable(dailyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.daily',
+          'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+        displayTable(monthlyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.monthly',
+          'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
 
-        displayTable(dailyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.daily, th.static',
-          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới thead', 'C-Giải ngân mới')
+        displayTable(dailyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.daily',
+          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
         displayTable(monthlyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.monthly',
-          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới thead', 'C-Giải ngân mới')
+          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+
+        displayTable(dailyMoneyReport, 'table#money-report-table.T-Gốc thead th.daily',
+          'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
+        displayTable(monthlyMoneyReport, 'table#money-report-table.T-Gốc thead th.monthly',
+          'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
+
+        displayTable(dailyCaseReport, 'table#case-report-table.T-Gốc thead th.daily',
+          'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
+        displayTable(monthlyCaseReport, 'table#case-report-table.T-Gốc thead th.monthly',
+          'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
+
+        displayTable(dailyMoneyReport, 'table#money-report-table.T-Lãi thead th.daily',
+          'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
+        displayTable(monthlyMoneyReport, 'table#money-report-table.T-Lãi thead th.monthly',
+          'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
+
+        displayTable(dailyCaseReport, 'table#case-report-table.T-Lãi thead th.daily',
+          'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
+        displayTable(monthlyCaseReport, 'table#case-report-table.T-Lãi thead th.monthly',
+          'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
 
         $('#myModal').modal('hide')
 
