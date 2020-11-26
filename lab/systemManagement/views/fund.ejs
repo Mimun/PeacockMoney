@@ -13,6 +13,24 @@
 </head>
 
 <body>
+  <template id="transfer-template">
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="exampleSelect1" class="bmd-label-floating">From</label>
+          <select class="form-control" id="from"></select>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="exampleSelect1" class="bmd-label-floating">To</label>
+          <select class="form-control" id="to">
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </template>
   <%- include('../Components/navbar.ejs') %>
   <div class="d-flex" id="wrapper">
     <%- include('../Components/sideBar.ejs') %>
@@ -32,7 +50,9 @@
               </thead>
               <tbody></tbody>
             </table>
-            <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền</button>
+            <button class="btn btn-sm btn-default" id="btn-in">Chuyển tiền vào</button>
+            <button class="btn btn-sm btn-default" id="btn-out">Chuyển tiền ra</button>
+            <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền NB</button>
           </div>
 
           <div class="col">
@@ -67,24 +87,9 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body" data-type="1">
             <div class="container">
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="exampleSelect1" class="bmd-label-floating">From</label>
-                    <select class="form-control" id="from"></select>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <label for="exampleSelect1" class="bmd-label-floating">To</label>
-                    <select class="form-control" id="to">
-                    </select>
-                  </div>
-                </div>
-
-              </div>
+              <div class="custom-row"></div>
               <div class="row">
                 <div class="col">
                   <div class="col">
@@ -133,10 +138,32 @@
       tr.appendChild(th)
     })
     document.querySelector('table.fund-table tbody').appendChild(tr)
+    // transfer in
+    document.querySelector('button#btn-in').addEventListener('click', event => {
+      $('#basicExampleModal').modal('show')
+      document.querySelector('.modal-body').setAttribute('data-type', '1')
+      document.querySelector('.modal-body .custom-row').innerHTML = ''
+
+    })
+
+    // transfer in
+    document.querySelector('button#btn-out').addEventListener('click', event => {
+      $('#basicExampleModal').modal('show')
+      document.querySelector('.modal-body').setAttribute('data-type', '2')
+      document.querySelector('.modal-body .custom-row').innerHTML = ''
+
+    })
 
     // transfer money
     document.querySelector('button#btn-transfer').addEventListener('click', event => {
       $('#basicExampleModal').modal('show')
+      document.querySelector('.modal-body').setAttribute('data-type', '3')
+      document.querySelector('.modal-body .custom-row').innerHTML = ''
+
+      const transferTemplate = document.querySelector('template#transfer-template').content.cloneNode(true)
+      document.querySelector('.modal-body .custom-row').prepend(transferTemplate)
+      $(transferTemplate).bootstrapMaterialDesign();
+
       document.querySelector('select#to').innerHTML = ''
       document.querySelector('select#from').innerHTML = ''
 
@@ -144,45 +171,70 @@
         var optionArray = fundList.map(fund => {
           var option = document.createElement('option')
           option.value = fund.store
-          option.id = `${fund.name}-${fund.storeId}`
+          option.id = `${fund.storeId}`
           option.innerHTML = `${fund.name} - ${fund.storeId}`
           document.querySelector('select#to').appendChild(option)
 
         });
-        document.querySelector('select#from').innerHTML = `<option value="${fund.store}" id="${fund.name}-${fund.storeId}">${fund.name} - ${fund.storeId}</option>`
+        document.querySelector('select#from').innerHTML = `<option value="${fund.store}" id="${fund.storeId}">${fund.name} - ${fund.storeId}</option>`
       }
-
     })
 
     // transfer
     document.querySelector('button#transfer').addEventListener('click', event => {
+      console.log('modal type: ', document.querySelector('.modal-body').getAttribute('data-type'))
+      var type = document.querySelector('.modal-body').getAttribute('data-type')
       var obj = {
-        date: new Date(Date.now()),
-        fromStore: document.querySelector('select#from').options[document.querySelector('select#from').selectedIndex].id,
-        toStore: document.querySelector('select#to').options[document.querySelector('select#to').selectedIndex].id,
-
+        date: new Date(Date.now())
       }
-      document.querySelectorAll('.modal-body select, .modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
-        obj[element.id] = element.value
-      })
+      switch (type) {
+        case ('1'):
+          obj.fromStore = ''
+          obj.toStore = fund.storeId
+          obj.from = ''
+          obj.to = fund.store
+          document.querySelectorAll('.modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
+            obj[element.id] = element.value
+          })
+          break;
+        case ('2'):
+          obj.fromStore = fund.storeId
+          obj.toStore = ''
+          obj.from = fund.store
+          obj.to = ''
+          document.querySelectorAll('.modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
+            obj[element.id] = element.value
+          })
+          break;
+        case ('3'):
+          obj.fromStore = document.querySelector('select#from').options[document.querySelector('select#from').selectedIndex].id
+          obj.toStore = document.querySelector('select#to').options[document.querySelector('select#to').selectedIndex].id
+          document.querySelectorAll('.modal-body select, .modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
+            obj[element.id] = element.value
+          })
+          break;
+
+        default:
+          break;
+      }
+
+      // var obj = {
+      //   date: new Date(Date.now()),
+      //   fromStore: document.querySelector('select#from').options[document.querySelector('select#from').selectedIndex].id,
+      //   toStore: document.querySelector('select#to').options[document.querySelector('select#to').selectedIndex].id,
+
+      // }
+      // document.querySelectorAll('.modal-body select, .modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
+      //   obj[element.id] = element.value
+      // })
 
       if (obj.from === obj.to) {
         window.alert('Store cannot transfer money to itselft!')
       } else {
-        $.ajax({
-          type: 'PUT',
-          url: `/systemMng/funds/${fund._id}?token=${window.localStorage.getItem('accessToken')}`,
-          contentType: 'application/json',
-          data: JSON.stringify(obj),
-          success: result => {
-            console.log('result: ', result)
-            window.location.reload()
-          }
-        })
+        updateFund(obj)
       }
       console.log('obj: ', obj)
     })
-
 
     // transfer history
     fund.transHistory.forEach(trans => {
@@ -194,6 +246,20 @@
       })
       document.querySelector('table.fund-history-table tbody').appendChild(tr)
     })
+
+    const updateFund = (obj) => {
+      $.ajax({
+        type: 'PUT',
+        url: `/systemMng/funds/${fund._id}?token=${window.localStorage.getItem('accessToken')}`,
+        contentType: 'application/json',
+        data: JSON.stringify(obj),
+        success: result => {
+          console.log('result: ', result)
+          window.location.reload()
+        }
+      })
+    }
+
   </script>
 
 </body>

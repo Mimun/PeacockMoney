@@ -1020,56 +1020,59 @@ router.put('/funds/:id', (req, res) => {
     console.log('results: ', results)
     var fundFrom = results.fundFrom
     var fundTo = results.fundTo
-    switch (obj.type) {
-      case ('cash'):
-        if (fundFrom) {
-          fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.value)
-          fundFrom.transHistory.push({ ...obj, value: -obj.value })
-        }
+    try {
+      switch (obj.type) {
+        case ('cash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.value)
+            fundFrom.transHistory.push({ ...obj, value: -obj.value })
+          }
 
-        if (fundTo) {
-          fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.value)
-          fundTo.transHistory.push({ ...obj, value: +obj.value })
-        }
-        break
-      case ('iCash'):
-        if (fundFrom) {
-          fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.value)
-          fundFrom.transHistory.push({ ...obj, value: -obj.value })
-        }
+          if (fundTo && !_.isEmpty(fundTo)) {
+            fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.value)
+            fundTo.transHistory.push({ ...obj, value: +obj.value })
+          }
+          break
+        case ('iCash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.value)
+            fundFrom.transHistory.push({ ...obj, value: -obj.value })
+          }
 
-        if (fundTo) {
-          fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.value)
-          fundTo.transHistory.push({ ...obj, value: +obj.value })
-        }
-        break
-      default:
-    }
-    console.log('fund from after transferring: ', fundFrom)
-    console.log('fund to after transferring: ', fundTo)
-
-    async.parallel({
-      fundFrom: callback => {
-        if (fundFrom) {
-          Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
-
-        } else {
-          callback(null, {})
-        }
-      },
-      fundTo: callback => {
-        if (fundTo) {
-          Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
-
-        } else {
-          callback(null, {})
-        }
+          if (fundTo && !_.isEmpty(fundTo)) {
+            fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.value)
+            fundTo.transHistory.push({ ...obj, value: +obj.value })
+          }
+          break
+        default:
       }
-    }, (err, results) => {
-      if (err) throw err
-      res.send('save successfully')
-    })
+      console.log('fund from after transferring: ', fundFrom)
+      console.log('fund to after transferring: ', fundTo)
 
+      async.parallel({
+        fundFrom: callback => {
+          if (fundFrom) {
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        },
+        fundTo: callback => {
+          if (fundTo) {
+            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        }
+      }, (err, results) => {
+        if (err) throw err
+        res.send('save successfully')
+      })
+    } catch (error) {
+      console.error(error)
+    }
   })
 })
 
