@@ -501,10 +501,20 @@ router.put('/contracts/:id', async (req, res) => {
             try {
               async.parallel({
                 warehouseResult: callback => {
-                  Warehouse.findOne({ store: contractResult.store.value }).exec(callback)
+                  try {
+                    Warehouse.findOne({ store: contractResult.store.value }).exec(callback)
+
+                  } catch (error) {
+
+                  }
                 },
                 storeResult: callback => {
-                  Store.findOne({ _id: contractResult.store.value }).exec(callback)
+                  try {
+                    Store.findOne({ _id: contractResult.store.value }).exec(callback)
+
+                  } catch (error) {
+
+                  }
                 }
               }, async (err, results) => {
                 if (err) throw err
@@ -607,10 +617,14 @@ router.get('/contracts/:id/checkTable', (req, res) => {
   console.log('id: ', req.params.id)
   try {
     Contract.findOne({ _id: req.params.id }).exec((err, result) => {
-      Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
-        res.render('checkTable', { contract: { ...result._doc, store: result2 }, simulation: result.loanPackage.simulation })
+      try {
+        Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
+          res.render('checkTable', { contract: { ...result._doc, store: result2 }, simulation: result.loanPackage ? result.loanPackage.simulation : 0 })
+        })
+      } catch (error) {
+        console.error(error)
+      }
 
-      })
     })
   } catch (error) {
     console.error(error)
