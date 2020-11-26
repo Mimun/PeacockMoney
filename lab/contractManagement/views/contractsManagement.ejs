@@ -85,12 +85,14 @@
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="contractCreatedDate" data-vie="Ngày bắt đầu cho vay"> Ngày bắt đầu cho vay
+                      <input type="checkbox" value="contractCreatedDate" data-vie="Ngày bắt đầu cho vay"> Ngày bắt đầu
+                      cho vay
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="contractEndingDate" data-vie="Ngày kết thúc hợp đồng"> Ngày kết thúc hợp đồng
+                      <input type="checkbox" value="contractEndingDate" data-vie="Ngày kết thúc hợp đồng"> Ngày kết thúc
+                      hợp đồng
                     </label>
                   </div>
                   <div class="checkbox">
@@ -113,7 +115,8 @@
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="staticRedemptionDate" data-vie="Ngày đóng lãi cố định"> Ngày đóng lãi cố định
+                      <input type="checkbox" value="staticRedemptionDate" data-vie="Ngày đóng lãi cố định"> Ngày đóng
+                      lãi cố định
                     </label>
                   </div>
                   <div class="checkbox">
@@ -123,22 +126,26 @@
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="employeeId" data-vie="Mã nhân viên thẩm định"> Mã nhân viên thẩm định
+                      <input type="checkbox" value="employeeId" data-vie="Mã nhân viên thẩm định"> Mã nhân viên thẩm
+                      định
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="employeeName" data-vie="Tên nhân viên thẩm định"> Tên nhân viên thẩm định
+                      <input type="checkbox" value="employeeName" data-vie="Tên nhân viên thẩm định"> Tên nhân viên thẩm
+                      định
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="accumulatedPaidInterest" data-vie="Lãi đã trả lũy kế">Lãi đã trả lũy kế
+                      <input type="checkbox" value="accumulatedPaidInterest" data-vie="Lãi đã trả lũy kế">Lãi đã trả lũy
+                      kế
                     </label>
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="incrementalPaidPrincipal" data-vie="Gốc đã trả cộng dồn"> Gốc đã trả cộng dồn
+                      <input type="checkbox" value="incrementalPaidPrincipal" data-vie="Gốc đã trả cộng dồn"> Gốc đã trả
+                      cộng dồn
                     </label>
                   </div>
                   <div class="checkbox">
@@ -180,7 +187,8 @@
                   </div>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="numberOfPayingDownTimes" data-vie="Số lần trả bớt gốc"> Số lần trả bớt gốc
+                      <input type="checkbox" value="numberOfPayingDownTimes" data-vie="Số lần trả bớt gốc"> Số lần trả
+                      bớt gốc
                     </label>
                   </div>
                   <div class="checkbox">
@@ -254,19 +262,21 @@
     const displayTable = (array, query) => {
       array.forEach(contract => {
         // fill info to table
-        var tr = document.createElement('tr')
-        tr.id = contract.contractId
-        document.querySelectorAll(`table thead th`).forEach(element => {
-          var th = document.createElement('th')
-          if (contract[element.id]) {
-            th.innerHTML = contract[element.id]
+        if (contract) {
+          var tr = document.createElement('tr')
+          tr.id = contract.contractId
+          document.querySelectorAll(`table thead th`).forEach(element => {
+            var th = document.createElement('th')
+            if (contract[element.id]) {
+              th.innerHTML = contract[element.id].toLocaleString()
 
-          } else {
-            th.innerHTML = '-'
-          }
-          tr.appendChild(th)
-        })
-        document.querySelector(query).appendChild(tr)
+            } else {
+              th.innerHTML = '-'
+            }
+            tr.appendChild(th)
+          })
+          document.querySelector(query).appendChild(tr)
+        }
       });
     }
     displayTable(contractList, 'table tbody')

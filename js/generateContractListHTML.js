@@ -65,7 +65,7 @@ export const generateContractListHTML = (itemObj, template, elementName, payload
         })
 
       } else if (textContent === "complete") {
-        makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({ contractStatus: 'completed' }), async (result) => {
+        makeRequest('PUT', 'contracts/' + itemObj._id, 'application/json', JSON.stringify({ contractStatus: 'completed', contract: itemObj }), async (result) => {
           event.target.closest('.object-div').C_DATA = result.result
           console.log('event: ', event.target.closest('.object-div').C_DATA)
           event.target.closest('.object-div').setAttribute('data-status', 'completed')

@@ -334,7 +334,35 @@ router.get('/contracts', (req, res) => {
   console.log('date now: ', checkDate)
   async.parallel({
     contract: callback => {
-      Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
+      Contract.find({ $or: [{ contractStatus: 'approved' }, { contractStatus: 'completed' }] }, {}, { sort: { '_id': -1 } }).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    },
+    contractNow: callback => {
+      Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
+    }
+  }, (err, result2) => {
+    if (err) throw err
+    res.render('contractList', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+
+  })
+
+})
+
+// waiting contract list
+router.get('/waitingContracts', (req, res) => {
+  const checkDate = formatDate(new Date())
+  console.log('date now: ', checkDate)
+  async.parallel({
+    contract: callback => {
+      Contract.find({ contractStatus: 'waiting' }, {}, { sort: { '_id': -1 } }).populate([
         {
           path: 'store.value',
           model: 'Store'
@@ -409,146 +437,149 @@ const createPropertyId = (contractId, itemTypeId, index = 0) => {
 router.put('/contracts/:id', async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body)
-  var contract = req.body.contract
-  var contractId = contract.id
-  var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
-  var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
-  var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
-  var numberOfPeriods = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
-  var ruleArray = contract.penaltyRules
-  var blockArray = contract.blockRules
-  var realLifeDate = new Date(agreementDate)
-  var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
-  var loanPackage = new Record({
-    interestRate, presentValue, agreementDate,
-    numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation, contractId
-  })
-  await loanPackage.createPeriodRecords()
-  await loanPackage.pushLoanMorePayDownHistory({
-    id: `${loanPackage.contractId}.${formatDate(loanPackage.agreementDate, 1)}`,
-    date: loanPackage.agreementDate,
-    value: -loanPackage.presentValue,
-
-  })
-  var object = {
-    id: `${loanPackage.contractId}.${formatDate(loanPackage.realLifeDate, 1)}`,
-    date: loanPackage.realLifeDate,
-    array: []
-  }
-  object.array.push({
-    root: 0,
-    paid: loanPackage.presentValue,
-    remain: 0,
-    receiptId: 'C-Giải ngân mới',
-    receiptReason: `Giải ngân`,
-    date: formatDate(loanPackage.realLifeDate),
-    type: 'cash',
-    receiptType: 2,
-  })
-  loanPackage.receiptRecords.push(object)
   try {
-    Contract.findOneAndUpdate({ _id: req.params.id },
-      { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
-      .populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ])
-      .exec(async (err, contractResult) => {
-        if (err) throw err
-        var contractId = contractResult.id
-        var itemTypeId = findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId') ?
-          findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId').value : "None"
-        console.log('contarct id: ', contractId)
-        console.log('itemtype id: ', itemTypeId)
+    var contract = req.body.contract
+    var contractId = contract.id
+    var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
+    var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
+    var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
+    var numberOfPeriods = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
+    var ruleArray = contract.penaltyRules
+    var blockArray = contract.blockRules
+    var realLifeDate = new Date(agreementDate)
+    var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
+    var loanPackage = new Record({
+      interestRate, presentValue, agreementDate,
+      numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation, contractId
+    })
+    await loanPackage.createPeriodRecords()
+    await loanPackage.pushLoanMorePayDownHistory({
+      id: `${loanPackage.contractId}.${formatDate(loanPackage.agreementDate, 1)}`,
+      date: loanPackage.agreementDate,
+      value: -loanPackage.presentValue,
 
-        // add property only when the contract is approved
-        if (contractResult.contractStatus === 'approved') {
-          try {
-            async.parallel({
-              warehouseResult: callback => {
-                Warehouse.findOne({ store: contractResult.store.value }).exec(callback)
-              },
-              storeResult: callback => {
-                Store.findOne({ _id: contractResult.store.value }).exec(callback)
-              }
-            }, async (err, results) => {
-              if (err) throw err
-              if (contractResult.items.length !== 0) {
-                await contractResult.items.forEach(async (item, index) => {
-                  var warehouseResult = results.warehouseResult
-                  var storeResult = results.storeResult
-                  if (warehouseResult) {
-                    // property metadata
-                    var propertyMetadata = item.evaluationItem ? item.evaluationItem.metadata : [null]
-
-                    // property infos
-                    var propertyInfos = item.infos
-
-                    // property evaluation
-                    var propertyEvaluation = item.evaluationItem ? item.evaluationItem : null
-
-                    // property status
-                    var propertyStatus = item.status
-
-                    // property contract
-                    var propertyContract = contractResult
-
-                    // property origin warehouse
-                    var propertyOriginWarehouse = results.warehouseResult
-
-                    // property current warehouse
-                    var propertyCurrentWarehouse = results.warehouseResult
-
-                    // property last warehouse
-                    var propertyLastWarehouse = null
-
-                    // property movement
-                    var propertyMovement = [{
-                      storeId: findNestedObj(storeResult.metadata, 'name', 'id') ? findNestedObj(storeResult.metadata, 'name', 'id').value : '',
-                      warehouseFrom: 'Hop dong',
-                      warehouseTo: findNestedObj(results.warehouseResult, 'name', 'name') ? findNestedObj(results.warehouseResult, 'name', 'name').value : 'None',
-                      importDate: new Date(Date.now()),
-                      importNote: 'Nhap cam co',
-                      exportDate: null,
-                      exportNote: ''
-                    }]
-
-                    // property is in 
-                    var propertyIsIn = true
-
-                    // property id
-                    var propertyId = await createPropertyId(contractId, itemTypeId, index)
-
-                    console.log('property id 1: ', propertyId)
-                    var newItem = await createProperty(propertyMetadata, propertyInfos, propertyEvaluation, propertyStatus,
-                      propertyContract, propertyOriginWarehouse, propertyCurrentWarehouse, propertyLastWarehouse, propertyMovement,
-                      propertyIsIn, propertyId)
-                    var property = new Property({ ...newItem })
-                    console.log('new item: ', property)
-
-                    property.save((err, result) => {
-                      if (err) throw err
-                    })
-                  }
-                })
-                res.send({ message: 'Saved property successfully!', result: contractResult })
-              }
-            })
-          } catch (err) {
-            console.error(err)
+    })
+    var object = {
+      id: `${loanPackage.contractId}.${formatDate(loanPackage.realLifeDate, 1)}`,
+      date: loanPackage.realLifeDate,
+      array: []
+    }
+    object.array.push({
+      root: 0,
+      paid: loanPackage.presentValue,
+      remain: 0,
+      receiptId: 'C-Giải ngân mới',
+      receiptReason: `Giải ngân`,
+      date: formatDate(loanPackage.realLifeDate),
+      type: 'cash',
+      receiptType: 2,
+    })
+    loanPackage.receiptRecords.push(object)
+    try {
+      Contract.findOneAndUpdate({ _id: req.params.id },
+        { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
+        .populate([
+          {
+            path: 'store.value',
+            model: 'Store'
+          },
+          {
+            path: 'employee.value',
+            model: 'Employee'
           }
-        }
-      })
-  } catch (err) {
-    console.error(err)
-  }
+        ])
+        .exec(async (err, contractResult) => {
+          if (err) throw err
+          var contractId = contractResult.id
+          var itemTypeId = findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId') ?
+            findNestedObj(contractResult.templateMetadata, 'name', 'itemTypeId').value : "None"
+          console.log('contarct id: ', contractId)
+          console.log('itemtype id: ', itemTypeId)
 
+          // add property only when the contract is approved
+          if (contractResult.contractStatus === 'approved') {
+            try {
+              async.parallel({
+                warehouseResult: callback => {
+                  Warehouse.findOne({ store: contractResult.store.value }).exec(callback)
+                },
+                storeResult: callback => {
+                  Store.findOne({ _id: contractResult.store.value }).exec(callback)
+                }
+              }, async (err, results) => {
+                if (err) throw err
+                if (contractResult.items.length !== 0) {
+                  await contractResult.items.forEach(async (item, index) => {
+                    var warehouseResult = results.warehouseResult
+                    var storeResult = results.storeResult
+                    if (warehouseResult) {
+                      // property metadata
+                      var propertyMetadata = item.evaluationItem ? item.evaluationItem.metadata : [null]
+
+                      // property infos
+                      var propertyInfos = item.infos
+
+                      // property evaluation
+                      var propertyEvaluation = item.evaluationItem ? item.evaluationItem : null
+
+                      // property status
+                      var propertyStatus = item.status
+
+                      // property contract
+                      var propertyContract = contractResult
+
+                      // property origin warehouse
+                      var propertyOriginWarehouse = results.warehouseResult
+
+                      // property current warehouse
+                      var propertyCurrentWarehouse = results.warehouseResult
+
+                      // property last warehouse
+                      var propertyLastWarehouse = null
+
+                      // property movement
+                      var propertyMovement = [{
+                        storeId: findNestedObj(storeResult.metadata, 'name', 'id') ? findNestedObj(storeResult.metadata, 'name', 'id').value : '',
+                        warehouseFrom: 'Hop dong',
+                        warehouseTo: findNestedObj(results.warehouseResult, 'name', 'name') ? findNestedObj(results.warehouseResult, 'name', 'name').value : 'None',
+                        importDate: new Date(Date.now()),
+                        importNote: 'Nhap cam co',
+                        exportDate: null,
+                        exportNote: ''
+                      }]
+
+                      // property is in 
+                      var propertyIsIn = true
+
+                      // property id
+                      var propertyId = await createPropertyId(contractId, itemTypeId, index)
+
+                      console.log('property id 1: ', propertyId)
+                      var newItem = await createProperty(propertyMetadata, propertyInfos, propertyEvaluation, propertyStatus,
+                        propertyContract, propertyOriginWarehouse, propertyCurrentWarehouse, propertyLastWarehouse, propertyMovement,
+                        propertyIsIn, propertyId)
+                      var property = new Property({ ...newItem })
+                      console.log('new item: ', property)
+
+                      property.save((err, result) => {
+                        if (err) throw err
+                      })
+                    }
+                  })
+                  res.send({ message: 'Saved property successfully!', result: contractResult })
+                }
+              })
+            } catch (err) {
+              console.error(err)
+            }
+          }
+        })
+    } catch (err) {
+      console.error(err)
+    }
+  } catch (error) {
+    console.error(error)
+  }
 })
 
 // get contract detail
@@ -574,95 +605,107 @@ router.get('/contracts/:id', (req, res) => {
 // get contract checktable
 router.get('/contracts/:id/checkTable', (req, res) => {
   console.log('id: ', req.params.id)
-  Contract.findOne({ _id: req.params.id }).exec((err, result) => {
-    Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
-      res.render('checkTable', { contract: { ...result._doc, store: result2 }, simulation: result.loanPackage.simulation })
+  try {
+    Contract.findOne({ _id: req.params.id }).exec((err, result) => {
+      Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
+        res.render('checkTable', { contract: { ...result._doc, store: result2 }, simulation: result.loanPackage.simulation })
 
+      })
     })
-  })
+  } catch (error) {
+    console.error(error)
+  }
 })
 
 // get contract management
 router.get('/contractsManagement', (req, res) => {
-  async.parallel({
-    contract: callback => {
-      Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
-    },
-    contractNow: callback => {
-      Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
-    },
-    property: callback => {
-      Property.find({}).exec(callback)
-    }
-  }, (err, result2) => {
-    if (err) throw err
-    var propertyList = result2.property
-    var contractList = result2.contract.map(contract => {
-      var numberOfLatePeriods = 0,
-        numberOfLateDays = 0
-      // number of late periods
-      if (contract.loanPackage) {
-        var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
-          return period.daysBetween > 0 && period.periodStatus === false
-
-        })
-        numberOfLatePeriods = latePeriodsArray.length
-        latePeriodsArray.forEach(period => {
-          numberOfLateDays += period.daysBetween
-        })
+  try {
+    async.parallel({
+      contract: callback => {
+        Contract.find({}, {}, { sort: { '_id': -1 } }).populate([
+          {
+            path: 'store.value',
+            model: 'Store'
+          },
+          {
+            path: 'employee.value',
+            model: 'Employee'
+          }
+        ]).exec(callback)
+      },
+      contractNow: callback => {
+        Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
+      },
+      property: callback => {
+        Property.find({}).exec(callback)
       }
-      if (contract.loanPackage)
-        return {
-          contractId: contract.id,
-          customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
-          customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-          contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
-          contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
-          loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
-          itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
-          itemName: contract.items[0] ? contract.items[0].infos[0].value : '-',
-          staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
-          interestRate: contract.loanPackage ? contract.loanPackage.interestRate : '-',
-          employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
-          employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
-          accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
-          incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
-          presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
-          contractStatus: contract.contractStatus,
-          totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
-          estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
-          numberOfLatePeriods,
-          numberOfLateDays,
-          lastPaidDate: '-',
-          numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
-          numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
-          // property: getProperty(propertyList, contract.id)
+    }, (err, result2) => {
+      if (err) throw err
+      var propertyList = result2.property
+      var contractList = result2.contract.map(contract => {
+        var numberOfLatePeriods = 0,
+          numberOfLateDays = 0
+        // number of late periods
+        if (contract.loanPackage) {
+          var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
+            return period.daysBetween > 0 && period.periodStatus === false
 
+          })
+          numberOfLatePeriods = latePeriodsArray.length
+          latePeriodsArray.forEach(period => {
+            numberOfLateDays += period.daysBetween
+          })
         }
+        if (contract.loanPackage)
+          return {
+            contractId: contract.id,
+            customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+            customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+            contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
+            contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
+            loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
+            itemType: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'itemType')),
+            itemName: contract.items[0] ? contract.items[0].infos[0].value : '-',
+            staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
+            interestRate: contract.loanPackage ? contract.loanPackage.interestRate : '-',
+            employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
+            employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
+            accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
+            incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
+            presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
+            contractStatus: contract.contractStatus,
+            totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
+            estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
+            numberOfLatePeriods,
+            numberOfLateDays,
+            lastPaidDate: '-',
+            numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
+            numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
+            // property: getProperty(propertyList, contract.id)
+
+          }
+      })
+      res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+
     })
-    res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
-
-  })
-
+  } catch (error) {
+    console.error(error)
+  }
 })
 
 // update loan package
 router.put('/contracts/:id/loanPackage', (req, res) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
-  Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { loanPackage: req.body } }, { new: true }).exec((err, result) => {
-    if (err) throw err
-    res.send('Update loanpackage successfully!')
-  })
+  try {
+    Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { loanPackage: req.body } }, { new: true }).exec((err, result) => {
+      if (err) throw err
+      res.send('Update loanpackage successfully!')
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
 })
 
 // transaction history
@@ -716,74 +759,92 @@ router.get('/transactionHistory', (req, res) => {
 
 // receipt page
 router.get('/contracts/:id/receipt', (req, res) => {
-  Contract.findOne({ _id: req.params.id }).exec((err, result) => {
-    if (err) throw err
-    try {
-      res.render('receipt', { contract: result })
+  try {
+    Contract.findOne({ _id: req.params.id }).exec((err, result) => {
+      if (err) throw err
+      try {
+        res.render('receipt', { contract: result })
 
-    } catch (error) {
-      console.error(error)
-    }
-  })
+      } catch (error) {
+        console.error(error)
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
 })
 
 // get going to do period package
 router.get('/goingToDo', (req, res) => {
-  Contract.find({}).exec(async (err, result) => {
-    if (err) throw err
-    var goingToDoPeriodArray = []
-    if (result) {
-      await result.forEach(contract => {
-        if (contract.loanPackage) {
-          contract.loanPackage.periodRecords.forEach(period => {
-            if (-10 < period.daysBetween && period.daysBetween < 0) {
-              goingToDoPeriodArray.push({ ...period, contractId: contract._id })
-            }
-          })
-        }
+  try {
+    Contract.find({}).exec(async (err, result) => {
+      if (err) throw err
+      var goingToDoPeriodArray = []
+      if (result) {
+        await result.forEach(contract => {
+          if (contract.loanPackage) {
+            contract.loanPackage.periodRecords.forEach(period => {
+              if (-10 < period.daysBetween && period.daysBetween < 0) {
+                goingToDoPeriodArray.push({ ...period, contractId: contract._id })
+              }
+            })
+          }
 
-      })
-    }
-    res.render('goingToDoPeriod', { goingToDoPeriodArray })
-  })
+        })
+      }
+      res.render('goingToDoPeriod', { goingToDoPeriodArray })
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
 })
 
 // get late periods
 router.get('/latePeriod', (req, res) => {
-  Contract.find({}).exec(async (err, result) => {
-    if (err) throw err
-    var latePeriodArray = []
-    if (result) {
-      await result.forEach(contract => {
-        if (contract.loanPackage) {
-          contract.loanPackage.periodRecords.forEach(period => {
-            if (period.daysBetween > 0) {
-              latePeriodArray.push({ ...period, contractId: contract._id })
-            }
-          })
-        }
+  try {
+    Contract.find({}).exec(async (err, result) => {
+      if (err) throw err
+      var latePeriodArray = []
+      if (result) {
+        await result.forEach(contract => {
+          if (contract.loanPackage) {
+            contract.loanPackage.periodRecords.forEach(period => {
+              if (period.daysBetween > 0) {
+                latePeriodArray.push({ ...period, contractId: contract._id })
+              }
+            })
+          }
 
-      })
-    }
-    res.render('latePeriod', { latePeriodArray })
-  })
+        })
+      }
+      res.render('latePeriod', { latePeriodArray })
+    })
+  } catch (error) {
+    console.error(error)
+  }
 })
 
-var job = new CronJob('0 */1 * * *', function () {
-  Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
-    if (err) throw err
-    if (result) {
-      result.forEach(contract => {
-        contract.loanPackage = new Record(contract.loanPackage)
-        // contract.loanPackage.reassignPeriodRecords()
-        contract.loanPackage.count()
-        Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'loanPackage': contract.loanPackage } }).exec((err, result) => {
-          if (err) throw err
-          console.log('update loan package successfully!')
+var job = new CronJob('0 * */1 * *', function () {
+  try {
+    Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
+      if (err) throw err
+      if (result) {
+        result.forEach(contract => {
+          contract.loanPackage = new Record(contract.loanPackage)
+          // contract.loanPackage.reassignPeriodRecords()
+          contract.loanPackage.count()
+          Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'loanPackage': contract.loanPackage } }).exec((err, result) => {
+            if (err) throw err
+            console.log('update loan package successfully!')
+          })
         })
-      })
-    }
-  })
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
 })
 job.start()
 

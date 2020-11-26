@@ -530,7 +530,7 @@
       makeRequest('POST', '/contractMng/contracts', 'application/json', JSON.stringify(data), () => {
         window.localStorage.removeItem('evaluatingItem')
         window.localStorage.removeItem('itemStatus')
-        window.location.href = '/contractMng/contracts?token=' + window.localStorage.getItem('accessToken')
+        window.location.href = '/contractMng/waitingContracts?token=' + window.localStorage.getItem('accessToken')
       })
 
     })
