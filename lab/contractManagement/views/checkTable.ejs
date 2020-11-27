@@ -222,7 +222,7 @@
             </div>
           </div>
 
-          <button class="btn btn-sm" id="receipt">In phiếu</button>
+          <!-- <button class="btn btn-sm" id="receipt">In phiếu</button> -->
         </div>
 
         <!-- payment history -->
@@ -253,6 +253,7 @@
                     <th scope="col" id="paid">Tống số tiền khách đã trả</th>
                     <th scope="col" id="remain">Còn lại</th>
                     <th scope="col" id="date">Ngày</th>
+                    <th scope="col" id="option">Option</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -433,6 +434,7 @@
 
     const displayTable = (object, elementName) => {
       var tr = document.createElement('tr')
+      tr.C_DATA = object
       document.querySelectorAll(`div.${elementName} table thead th`).forEach((element, index) => {
         var th = document.createElement('th')
         if (object[element.id] !== undefined) {
@@ -500,11 +502,6 @@
     console.log('rule array: ', ruleArray)
     console.log('block rule: ', blockRuleArray)
 
-    // print receipt
-    document.querySelector('button#receipt').addEventListener('click', (event) => {
-      window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}`
-    })
-
     // penalty table
     if (ruleArray.length !== 0) {
       ruleArray.forEach(rule => {
@@ -551,6 +548,30 @@
       if (loanPackage.periodPaymentSlip.length !== 0) {
         loanPackage.periodPaymentSlip.forEach(payment => {
           displayTable(payment, 'payment-history')
+          var button = document.createElement('button')
+          button.className = 'btn btn-sm'
+          button.innerHTML = 'Print'
+          button.addEventListener('click', event => {
+            console.log('event: ', event.target.closest('tr').C_DATA)
+            window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}&date=${event.target.closest('tr').C_DATA ? event.target.closest('tr').C_DATA.date : ''}`
+            // $.ajax({
+            //   type: 'POST',
+            //   url: `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}`,
+            //   contentType: 'application/json',
+            //   data: JSON.stringify({
+            //     date: event.target.closest('tr').C_DATA ? new Date(event.target.closest('tr').C_DATA.date) : ''
+            //   }),
+            //   success: result => {
+            //     window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}`
+
+            //   }
+            // })
+          })
+          document.querySelectorAll('div.payment-history tbody tr').forEach(element => {
+            var td = document.createElement('td')
+            td.appendChild(button)
+            element.querySelector('th#option').appendChild(td)
+          })
         })
       }
 

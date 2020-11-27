@@ -25,8 +25,8 @@ exports.isAuthenticated = function (req, res, next) {
 
     }
 
-  } else if(req.url.split('?token=')[1]) {
-    var jwtToken = req.url.split('?token=')[1];
+  } else if(req.query.token) {
+    var jwtToken = req.query.token;
     if (jwtToken) {
       jwt.verify(jwtToken, accessTokenSecret, function (err, payload) {
         if (err) {

@@ -773,11 +773,12 @@ router.get('/transactionHistory', (req, res) => {
 
 // receipt page
 router.get('/contracts/:id/receipt', (req, res) => {
+  console.log('req query: ', req.query)
   try {
     Contract.findOne({ _id: req.params.id }).exec((err, result) => {
       if (err) throw err
       try {
-        res.render('receipt', { contract: result })
+        res.render('receipt', { contract: result, date: req.query.date })
 
       } catch (error) {
         console.error(error)
