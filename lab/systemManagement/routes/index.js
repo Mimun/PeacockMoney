@@ -1252,6 +1252,16 @@ router.post('/statisticReport/getReport', (req, res) => {
                     presentValue: contract.loanPackage.presentValue
                   })
                 }
+              } else {
+                if (receipt !== null) {
+                  dailyMoneyReport.push({
+                    ...receipt, storeId: receipt.id.split('.')[0],
+                    itemType: itemType, itemTypeId: itemTypeId,
+                    contractId: contract.id,
+                    presentValue: contract.loanPackage.presentValue,
+                    array: []
+                  })
+                }
               }
             })
 
