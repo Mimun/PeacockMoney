@@ -70,25 +70,32 @@
     <label class="bmd-label-floating" data-error="Empty">Thời hạn vay tối thiểu</label>
     <input type="number" class="form-control validate" name="minLoanTerm" data-vie="Thời hạn vay tối thiểu">
   </div>
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label class="bmd-label-floating" data-error="Empty">Tỉ lệ lai(%)</label>
     <input id="interestRate" type="number" class="form-control validate" name="interestRate"
       data-vie="Tỉ lệ lai(%)">
-  </div>
+  </div> -->
   <div class="container" style="padding: 0;">
     <div class="row">
       <div class="col">
         <div class="form-group">
           <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần triệu/ngày</label>
-          <input id="millionPerDay" type="number" class="form-control validate" name="interrestRatePerMillionPerDay"
+          <input id="millionPerDay" type="number" class="form-control validate" name="millionPerDay"
             data-vie="Tỉ lệ phần triệu/ngày">
         </div>
       </div>
       <div class="col">
         <div class="form-group">
           <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần trăm theo tháng(%)</label>
-          <input id="percentagePerMonth" type="number" class="form-control validate"
-            name="interrestRatePercentagePerDay" data-vie="Tỉ lệ phần trăm theo tháng">
+          <input id="interestRatePerMonth" type="number" class="form-control validate"
+            name="interestRatePerMonth" data-vie="Tỉ lệ phần trăm theo tháng">
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label class="bmd-label-floating" data-error="Empty">Tỉ lệ phần trăm theo ngày(%)</label>
+          <input id="interestRate" type="number" class="form-control validate"
+            name="interestRate" data-vie="Tỉ lệ phần trăm theo ngày">
         </div>
       </div>
     </div>

@@ -320,11 +320,14 @@
   console.log('abcxyz: ', document.querySelector('#millionPerDay'))
   document.querySelector('#millionPerDay').addEventListener('change', event => {
     console.log('event value: ', event.target.value)
-    document.querySelector('#percentagePerMonth').value = (parseFloat(event.target.value) * 30) / 1000000
+    var interestRatePerMonth = (parseFloat(event.target.value) * 30) / 1000000
+    document.querySelector('#interestRatePerMonth').value = (interestRatePerMonth).toFixed(5)
+    document.querySelector('#interestRate').value = (interestRatePerMonth / 30).toFixed(5)
   })
 
-  document.querySelector('#percentagePerMonth').addEventListener('change', event => {
-    document.querySelector('#millionPerDay').value = (parseFloat(event.target.value) * 1000000) / 30
+  document.querySelector('#interestRatePerMonth').addEventListener('change', event => {
+    document.querySelector('#millionPerDay').value = ((parseFloat(event.target.value) * 1000000) / 30).toFixed(5)
+    document.querySelector('#interestRate').value = (parseFloat(event.target.value) / 30).toFixed(5)
 
   })
 </script>
