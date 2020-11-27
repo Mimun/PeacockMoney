@@ -840,7 +840,7 @@ router.get('/latePeriod', (req, res) => {
   }
 })
 
-var job = new CronJob('0 * */1 * *', function () {
+var job = new CronJob('0 0 * * *', function () {
   try {
     Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
       if (err) throw err

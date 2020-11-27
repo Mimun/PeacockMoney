@@ -129,6 +129,7 @@
   .phone-number .email .id {
     font-size: smaller;
   }
+  
 </style>
 
 <!-- Sidebar -->
@@ -143,7 +144,8 @@
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="reminding-item">
-          <a onclick="getPage('/contractMng/waitingContracts')" class="list-group-item list-group-item-action list-group-item-dark">Hợp đồng chờ</a>
+          <a onclick="getPage('/contractMng/waitingContracts')"
+            class="list-group-item list-group-item-action list-group-item-dark">Hợp đồng chờ</a>
           <a onclick="getPage('/contractMng/latePeriod')"
             class="list-group-item list-group-item-action list-group-item-dark">Khoản thu quá hạn</a>
           <a onclick="getPage('/contractMng/goingToDo')"
@@ -280,7 +282,8 @@
       handles: "e",
       minHeight: thHeight,
       maxHeight: thHeight,
-      minWidth: '80px',
+      minWidth: 40,
+      maxWidth: 100,
       resize: function (event, ui) {
         var sizerID = "#" + $(event.target).attr("id") + "-sizer";
         $(sizerID).width(ui.size.width);

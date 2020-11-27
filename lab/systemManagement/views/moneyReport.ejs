@@ -48,7 +48,7 @@
           <tr id="Lãi">
             <th class="static">Lãi</th>
           </tr>
-          <tr id="Vay thêm">
+          <tr id="Giải ngân mới">
             <th class="static">Giải ngân</th>
           </tr>
           <tr id="Chuyển NB">
@@ -88,7 +88,7 @@
           <tr id="Lãi">
             <th class="static">Lãi</th>
           </tr>
-          <tr id="Vay thêm">
+          <tr id="Giải ngân mới">
             <th class="static">Giải ngân</th>
           </tr>
           <tr id="Chuyển NB">
@@ -239,7 +239,7 @@
 
         // render daily and monthly
         displayTable('table.money-table thead th.daily', 'table.money-table tbody tr', customDailyMoneyReport, 1)
-        displayTable('table.money-table thead th.monthly', 'table.money-table tbody tr', customDailyMoneyReport, 1)
+        displayTable('table.money-table thead th.monthly', 'table.money-table tbody tr', customMonthlyMoneyReport, 1)
 
         document.querySelectorAll('table.case-table tbody th:not(.static)').forEach(element => {
           element.closest('tr').removeChild(element)

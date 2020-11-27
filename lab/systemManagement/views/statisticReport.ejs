@@ -150,6 +150,19 @@
         </table>
       </div>
 
+      <div class="table-container">
+        <h5>Gốc còn nợ</h5>
+        <h6>Tiền gốc còn nợ</h6>
+        <table class="table table-bordered table-striped presentValue" id="money-report-table">
+          <thead>
+            <tr>
+              <th class="static" id="itemType">Theo dõi gốc còn nợ</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -188,9 +201,17 @@
     const getCustomArray = (array, keys, index) => {
       var abc = _(array).groupBy('itemType').map((objs, key) => {
         return {
-          itemType: key, array: _(objs).groupBy('storeId').map((objects, key) => {
+          itemType: key,
+          presentValue: _.sum(_(objs).groupBy('contractId').map((objs2, key) => {
+            return objs2.map(obj => {
+              return obj.presentValue
+            }).pop()
+          }).value()),
+          array: _(objs).groupBy('storeId').map((objects, key) => {
+            // console.log('objects abcdef: ', objects)
             return {
-              storeId: key, receipts: _(objects).flatMap('array').groupBy('receiptId').map((objects, key) => {
+              storeId: key,
+              receipts: _(objects).flatMap('array').groupBy('receiptId').map((objects, key) => {
                 switch (index) {
                   case 1:
                     var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
@@ -248,6 +269,8 @@
           var thClone4 = th.cloneNode(true)
           var thClone5 = th.cloneNode(true)
           var thClone6 = th.cloneNode(true)
+          var thClone7 = th.cloneNode(true)
+          var thClone8 = th.cloneNode(true)
 
           document.querySelector('table#money-report-table.C-Giải-ngân-mới thead tr').appendChild(thClone);
           document.querySelector('table#case-report-table.C-Giải-ngân-mới thead tr').appendChild(thClone2)
@@ -255,6 +278,7 @@
           document.querySelector('table#case-report-table.T-Gốc thead tr').appendChild(thClone4)
           document.querySelector('table#money-report-table.T-Lãi thead tr').appendChild(thClone5)
           document.querySelector('table#case-report-table.T-Lãi thead tr').appendChild(thClone6)
+          document.querySelector('table#money-report-table.presentValue thead tr').appendChild(thClone7)
         })
 
       }
@@ -269,10 +293,9 @@
     import { makeRequest } from '/makeRequest.js'
     import { findNestedObj } from '/findNestedObj.js'
 
-    const displayTable = (array, query1, query2, query3, keyToFind) => {
+    const displayTable = (array, query1, query2, query3, keyToFind, index) => {
       array.forEach(report => {
         var tr = null
-        console.log('defghi: ', document.querySelector(`${query3} th.${report.itemType}`))
         if (!document.querySelector(`${query3} th.${report.itemType}`)) {
           tr = document.createElement('tr')
           var th = document.createElement('th')
@@ -288,7 +311,19 @@
           th.className = report.itemType
           var store = findNestedObj(report.array, 'storeId', element.id)
           if (store) {
-            th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind)).toLocaleString()
+            switch (index) {
+              case (1):
+                th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind)).toLocaleString()
+
+                break;
+              case (2):
+                th.innerHTML = report.presentValue.toLocaleString()
+                break
+
+              default:
+                th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind)).toLocaleString()
+                break;
+            }
           } else {
             th.innerHTML = '-'
           }
@@ -301,6 +336,8 @@
 
       })
     }
+
+
 
     document.querySelector('button#get-report').addEventListener('click', (event) => {
       const obj = {}
@@ -352,6 +389,11 @@
           'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
         displayTable(monthlyCaseReport, 'table#case-report-table.T-Lãi thead th.monthly',
           'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
+
+        displayTable(dailyMoneyReport, 'table#money-report-table.presentValue thead th.daily',
+          'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
+        displayTable(monthlyMoneyReport, 'table#money-report-table.presentValue thead th.monthly',
+          'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
 
         $('#myModal').modal('hide')
 

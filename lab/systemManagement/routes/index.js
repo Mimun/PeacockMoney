@@ -1237,6 +1237,7 @@ router.post('/statisticReport/getReport', (req, res) => {
       if (result.length !== 0) {
         result.forEach(contract => {
           var itemType = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType'))
+          var itemTypeId = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemTypeId'))
           console.log('item type: ', itemType)
           if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
             contract.loanPackage.receiptRecords.forEach(receipt => {
@@ -1244,7 +1245,12 @@ router.post('/statisticReport/getReport', (req, res) => {
                 && new Date(receipt.date).getMonth() === chosenDate.getMonth()
                 && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
                 if (receipt !== null) {
-                  dailyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0], itemType: itemType })
+                  dailyMoneyReport.push({
+                    ...receipt, storeId: receipt.id.split('.')[0],
+                    itemType: itemType, itemTypeId: itemTypeId,
+                    contractId: contract.id,
+                    presentValue: contract.loanPackage.presentValue
+                  })
                 }
               }
             })
@@ -1252,7 +1258,12 @@ router.post('/statisticReport/getReport', (req, res) => {
             contract.loanPackage.receiptRecords.map(receipt => {
               if (new Date(receipt.date).getMonth() === chosenMonth) {
                 if (receipt !== null) {
-                  monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0], itemType: itemType })
+                  monthlyMoneyReport.push({
+                    ...receipt, storeId: receipt.id.split('.')[0],
+                    itemType: itemType, itemTypeId: itemTypeId,
+                    contractId: contract.id,
+                    presentValue: contract.loanPackage.presentValue
+                  })
                 }
 
               }
