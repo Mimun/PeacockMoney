@@ -61,10 +61,10 @@
               <div class="box monthly"></div><span>Monthly</span>
 
             </div>
-            <!-- <div class="col">
+            <div class="col">
               <div class="box total"></div><span>Total</span>
 
-            </div> -->
+            </div>
 
           </div>
         </div>
@@ -233,7 +233,9 @@
                     return { receiptId: key, value: def.paid }
                     break;
                 }
-              }).value()
+              }).value(),
+
+
             }
           }).value()
         }
@@ -249,7 +251,7 @@
     console.log('stores: ', stores)
     if (stores.length !== 0) {
 
-      for (var i = 1; i <= 2; i++) {
+      for (var i = 1; i <= 3; i++) {
         stores.forEach(store => {
           var th = document.createElement('th')
           th.innerHTML = store.storeName
@@ -304,6 +306,7 @@
         var tr = null
         if (!document.querySelector(`${query3} th.${report.itemType}`)) {
           tr = document.createElement('tr')
+          tr.id = report.itemType
           var th = document.createElement('th')
           th.innerHTML = report.itemType
           th.className = report.itemType
@@ -315,6 +318,7 @@
         document.querySelectorAll(query1).forEach(element => {
           var th = document.createElement('th')
           th.className = report.itemType
+          th.id = query1.split('.')[query1.split('.').length - 1]
           var store = findNestedObj(report.array, 'storeId', element.id)
           if (store) {
             switch (index) {
@@ -325,6 +329,7 @@
               case (2):
                 th.innerHTML = report.presentValue.toLocaleString()
                 break
+              case (3):
 
               default:
                 th.innerHTML = getNestedValue(findNestedObj(store.receipts, 'receiptId', keyToFind)).toLocaleString()
@@ -347,8 +352,7 @@
       document.querySelectorAll('table').forEach(table => {
         table.querySelectorAll('tbody tr').forEach(tr => {
           var sum = 0
-          tr.querySelectorAll('th').forEach(th => {
-            console.log('value of th: ', th.textContent)
+          tr.querySelectorAll('th#total').forEach(th => {
             sum += parseFloat(th.textContent) ? parseFloat(th.textContent.split(',').join('')) : 0
           })
           var th = document.createElement('th')
@@ -371,10 +375,15 @@
         console.log('daily money report: ', dailyMoneyReport)
         var monthlyMoneyReport = getCustomArray(result.monthlyMoneyReport, keys)
         console.log('monthly money report: ', monthlyMoneyReport)
+        var totalMoneyReport = getCustomArray(result.totalMoneyReport, keys, 1)
+        console.log('total money report: ', totalMoneyReport)
+
         var dailyCaseReport = getCustomArray(result.dailyMoneyReport, keys, 2)
         console.log('daily case report: ', dailyCaseReport)
         var monthlyCaseReport = getCustomArray(result.monthlyMoneyReport, keys, 2)
         console.log('monthly case report: ', monthlyCaseReport)
+        var totalCaseReport = getCustomArray(result.totalMoneyReport, keys, 2)
+        console.log('total case report: ', totalCaseReport)
 
         document.querySelectorAll('table tbody').forEach(tbody => {
           tbody.innerHTML = ''
@@ -388,35 +397,49 @@
           'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
         displayTable(monthlyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.monthly',
           'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+        displayTable(totalMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.total',
+          'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
 
         displayTable(dailyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.daily',
           'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
         displayTable(monthlyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.monthly',
+          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+        displayTable(totalCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.total',
           'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
 
         displayTable(dailyMoneyReport, 'table#money-report-table.T-Gốc thead th.daily',
           'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
         displayTable(monthlyMoneyReport, 'table#money-report-table.T-Gốc thead th.monthly',
           'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
+        displayTable(totalMoneyReport, 'table#money-report-table.T-Gốc thead th.total',
+          'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
 
         displayTable(dailyCaseReport, 'table#case-report-table.T-Gốc thead th.daily',
           'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
         displayTable(monthlyCaseReport, 'table#case-report-table.T-Gốc thead th.monthly',
+          'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
+        displayTable(totalCaseReport, 'table#case-report-table.T-Gốc thead th.total',
           'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
 
         displayTable(dailyMoneyReport, 'table#money-report-table.T-Lãi thead th.daily',
           'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
         displayTable(monthlyMoneyReport, 'table#money-report-table.T-Lãi thead th.monthly',
           'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
+        displayTable(totalMoneyReport, 'table#money-report-table.T-Lãi thead th.total',
+          'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
 
         displayTable(dailyCaseReport, 'table#case-report-table.T-Lãi thead th.daily',
           'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
         displayTable(monthlyCaseReport, 'table#case-report-table.T-Lãi thead th.monthly',
           'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
+        displayTable(totalCaseReport, 'table#case-report-table.T-Lãi thead th.total',
+          'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
 
         displayTable(dailyMoneyReport, 'table#money-report-table.presentValue thead th.daily',
           'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
         displayTable(monthlyMoneyReport, 'table#money-report-table.presentValue thead th.monthly',
+          'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
+        displayTable(totalMoneyReport, 'table#money-report-table.presentValue thead th.total',
           'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
 
         // calculate sum of rows

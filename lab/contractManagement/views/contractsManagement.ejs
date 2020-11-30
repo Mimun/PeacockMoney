@@ -255,7 +255,12 @@
       $('#choose-column-modal').modal('hide')
       document.querySelector('table.period-table tbody').innerHTML = ''
       displayTable(contractList, 'table tbody')
-
+      $(function () {
+        $('table th').resizable({
+          handles: 'e',
+          minWidth: 18
+        });
+      });
 
     })
 

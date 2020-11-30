@@ -96,7 +96,7 @@
                 </div>
               </div>
               <div class="row">
-                <table class="table table-hover  period-table">
+                <table class="table table-bordered table-striped table-hover period-table">
                   <thead>
                     <tr>
                       <th scope="col" id="numericalOrder">STT</th>
@@ -231,7 +231,7 @@
           <div class="col">
             <div class="payment-history">
               <h4>Lịch sử trả tiền</h4>
-              <table class="table table-hover  payment-history-table">
+              <table class="table table-bordered table-striped table-hover payment-history-table">
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
@@ -771,12 +771,18 @@
       $('#choose-column-modal').modal('show')
 
     })
+
+    document.querySelector('input#all').addEventListener('click', (event) => {
+      console.log('select: ', event.target.checked)
+      document.querySelectorAll('.modal-body input').forEach(element => {
+        element.checked = event.target.checked
+      })
+    })
+
     document.querySelector('button#save').addEventListener('click', (event) => {
-      console.log('event: ', event)
       document.querySelector('table.period-table thead tr').innerHTML = ''
       // console.log('all checked element: ', document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked'))
-      document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked').forEach(element => {
-        console.log('checked element: ', element.value)
+      document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked:not(#all)').forEach(element => {
         var th = document.createElement('th')
         th.id = element.value
         th.innerHTML = element.getAttribute('data-vie')
@@ -788,6 +794,14 @@
       loanPackage.periodRecords.forEach((rec, index) => {
         displayTable(rec, 'period-table-container')
       })
+
+      $(function () {
+        $('table th').resizable({
+          handles: 'e',
+          minWidth: 18
+        });
+      });
+
     })
 
     const updateLoanPackage = (loanPackage) => {

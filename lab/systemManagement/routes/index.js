@@ -1233,7 +1233,8 @@ router.post('/statisticReport/getReport', (req, res) => {
     if (err) throw err
     try {
       var dailyMoneyReport = [],
-        monthlyMoneyReport = []
+        monthlyMoneyReport = [],
+        totalMoneyReport = []
       if (result.length !== 0) {
         result.forEach(contract => {
           var itemType = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType'))
@@ -1278,10 +1279,21 @@ router.post('/statisticReport/getReport', (req, res) => {
 
               }
             })
+
+            contract.loanPackage.receiptRecords.forEach(receipt => {
+              if (receipt !== null) {
+                totalMoneyReport.push({
+                  ...receipt, storeId: receipt.id.split('.')[0],
+                  itemType: itemType, itemTypeId: itemTypeId,
+                  contractId: contract.id,
+                  presentValue: contract.loanPackage.presentValue
+                })
+              }
+            })
           }
         })
       }
-      res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport })
+      res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport, totalMoneyReport })
     } catch (error) {
       console.error(error)
     }
