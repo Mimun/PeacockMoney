@@ -67,6 +67,11 @@
           </thead>
           <tbody></tbody>
         </table>
+        <table class="tableBreak1">
+          <thead>
+            <tr></tr>
+          </thead>
+        </table>
       </div>
 
       <div class="table-container">
@@ -232,7 +237,7 @@
     })
 
     document.querySelector('button#export').addEventListener('click', event => {
-      exportHTMLTableToExcel(['daily-table-1', 'daily-table-2', 'monthly-table-1', 'monthly-table-2'], `Báo_cáo_tiền_Công_ty_${new Date(Date.now()).toLocaleDateString()}`)
+      exportHTMLTableToExcel(['daily-table-1', 'daily-table-2', 'tableBreak1', 'monthly-table-1', 'monthly-table-2'], `Báo_cáo_tiền_Công_ty_${new Date(Date.now()).toLocaleDateString()}`)
     })
 
   </script>
