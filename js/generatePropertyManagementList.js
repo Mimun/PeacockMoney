@@ -5,7 +5,7 @@ const tableTemplate = `
     }
   </style>
   <h2>This is table</h2>
-  <div class="table-container table-responsive">
+  <div class="table-container ">
     <div id="toolbar">
 
     </div>

@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="table-container">
-        <table class="table table-bordered table-striped table-hover money-table">
+        <table class="table table-bordered table-striped table-hover money-table" id="money-table">
           <thead>
             <tr>
               <th></th>
@@ -81,7 +81,7 @@
         </table>
       </div>
       <div class="table-container">
-        <table class="table table-bordered table-striped table-hover case-table">
+        <table class="table table-bordered table-striped table-hover case-table" id="case-table">
           <thead>
             <tr>
               <th></th>
@@ -291,7 +291,7 @@
     })
 
     document.querySelector('button#export').addEventListener('click', event => {
-      exportHTMLTableToExcel(['money-table', 'case-table'], `Báo_cáo_tiền_PGD${new Date(Date.now()).toLocaleDateString()}`)
+      exportHTMLTableToExcel(['money-table', 'case-table'], `Báo_cáo_tiền_PGD_${new Date(Date.now()).toLocaleDateString()}`)
     })
 
   </script>

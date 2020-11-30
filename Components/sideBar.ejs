@@ -2,20 +2,17 @@
   /* resizable table */
   table.table {
     width: 100%;
-    overflow: hidden;
   }
 
+  table,
   td,
   th {
-    /* overflow: hidden;
-    white-space: nowrap; */
-    -moz-text-overflow: ellipsis;
-    -ms-text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
+    table-layout: fixed;
+    overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
-    /* word-wrap: break-word; */
-    word-break: break-word;
   }
+
 
   /* end of resizable table */
   /* Begin: sidebar css */
@@ -300,26 +297,12 @@
   })
 
   // resizable table
-  // $(function () {
-  //   $(document.querySelector('.table')).resizableColumns({
-  //     // store: window.store
-  //   });
-  // });
   $(function () {
-    var thHeight = $("table th:first").height();
-    $("table th").resizable({
-      handles: "e",
-      minHeight: thHeight,
-      maxHeight: thHeight,
-      minWidth: 40,
-      maxWidth: 100,
-      resize: function (event, ui) {
-        var sizerID = "#" + $(event.target).attr("id") + "-sizer";
-        $(sizerID).width(ui.size.width);
-      }
+    $('table th').resizable({
+      handles: 'e',
+      minWidth: 18
     });
   });
-
 
   // css for all list-group-item not having icon 
   document.querySelector('.sidebar-container').querySelectorAll(".list-group-item").forEach(element => {
