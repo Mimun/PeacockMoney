@@ -9,12 +9,6 @@
     .md-form {
       margin-bottom: 16px;
     }
-
-    .money-table,
-    .case-table {
-      width: 70% !important;
-      margin: auto;
-    }
   </style>
 </head>
 
@@ -25,86 +19,108 @@
     <div id="page-content-wrapper">
       <h2>Báo cáo tiền PGD</h2>
       <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+      <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
 
-      <table class="table table-bordered table-striped table-hover money-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th colspan="2">Daily</th>
-            <th colspan="2">Monthly</th>
-          </tr>
-          <tr>
-            <th class="static"></th>
-            <th class="daily" id="T-">Thu</th>
-            <th class="daily" id="C-">Chi</th>
-            <th class="monthly" id="T-">Thu</th>
-            <th class="monthly" id="C-">Chi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr id="Gốc">
-            <th class="static">Gốc</th>
-          </tr>
-          <tr id="Lãi">
-            <th class="static">Lãi</th>
-          </tr>
-          <tr id="Giải ngân mới">
-            <th class="static">Giải ngân</th>
-          </tr>
-          <tr id="Chuyển NB">
-            <th class="static">Chuyển NB</th>
-          </tr>
-          <tr id="Phí khác">
-            <th class="static">Phí khác</th>
-          </tr>
-          <tr id="Nhận NB">
-            <th class="static">Nhận NB</th>
-          </tr>
-          <tr id="Phạt">
-            <th class="static">Phạt</th>
-          </tr>
-        </tbody>
-      </table>
+      <div class="note-container">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="box daily"></div><span>Daily</span>
+            </div>
+            <div class="col">
+              <div class="box monthly"></div><span>Monthly</span>
 
-      <table class="table table-bordered table-striped table-hover case-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th colspan="2">Daily</th>
-            <th colspan="2">Monthly</th>
-          </tr>
-          <tr>
-            <th class="static"></th>
-            <th class="daily" id="T-">Thu</th>
-            <th class="daily" id="C-">Chi</th>
-            <th class="monthly" id="T-">Thu</th>
-            <th class="monthly" id="C-">Chi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr id="Gốc">
-            <th class="static">Gốc</th>
-          </tr>
-          <tr id="Lãi">
-            <th class="static">Lãi</th>
-          </tr>
-          <tr id="Giải ngân mới">
-            <th class="static">Giải ngân</th>
-          </tr>
-          <tr id="Chuyển NB">
-            <th class="static">Chuyển NB</th>
-          </tr>
-          <tr id="Phí khác">
-            <th class="static">Phí khác</th>
-          </tr>
-          <tr id="Nhận NB">
-            <th class="static">Nhận NB</th>
-          </tr>
-          <tr id="Phạt">
-            <th class="static">Phạt</th>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+            <!-- <div class="col">
+              <div class="box total"></div><span>Total</span>
+
+            </div> -->
+
+          </div>
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="table table-bordered table-striped table-hover money-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th colspan="2">Daily</th>
+              <th colspan="2">Monthly</th>
+            </tr>
+            <tr>
+              <th class="static">Số tiền giải ngân</th>
+              <th class="daily" id="T-">Thu</th>
+              <th class="daily" id="C-">Chi</th>
+              <th class="monthly" id="T-">Thu</th>
+              <th class="monthly" id="C-">Chi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="Gốc">
+              <th class="static">Gốc</th>
+            </tr>
+            <tr id="Lãi">
+              <th class="static">Lãi</th>
+            </tr>
+            <tr id="Giải ngân mới">
+              <th class="static">Giải ngân</th>
+            </tr>
+            <tr id="Chuyển NB">
+              <th class="static">Chuyển NB</th>
+            </tr>
+            <tr id="Phí khác">
+              <th class="static">Phí khác</th>
+            </tr>
+            <tr id="Nhận NB">
+              <th class="static">Nhận NB</th>
+            </tr>
+            <tr id="Phạt">
+              <th class="static">Phạt</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-container">
+        <table class="table table-bordered table-striped table-hover case-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th colspan="2">Daily</th>
+              <th colspan="2">Monthly</th>
+            </tr>
+            <tr>
+              <th class="static">Số vụ vay</th>
+              <th class="daily" id="T-">Thu</th>
+              <th class="daily" id="C-">Chi</th>
+              <th class="monthly" id="T-">Thu</th>
+              <th class="monthly" id="C-">Chi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="Gốc">
+              <th class="static">Gốc</th>
+            </tr>
+            <tr id="Lãi">
+              <th class="static">Lãi</th>
+            </tr>
+            <tr id="Giải ngân mới">
+              <th class="static">Giải ngân</th>
+            </tr>
+            <tr id="Chuyển NB">
+              <th class="static">Chuyển NB</th>
+            </tr>
+            <tr id="Phí khác">
+              <th class="static">Phí khác</th>
+            </tr>
+            <tr id="Nhận NB">
+              <th class="static">Nhận NB</th>
+            </tr>
+            <tr id="Phạt">
+              <th class="static">Phạt</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -174,6 +190,8 @@
   <script type="module">
     import { makeRequest } from '/makeRequest.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
+
     const createCustomObj = (array, keys, index) => {
       var customObj = _(array).flatMap('array').groupBy('receiptId').
         map((objs, key) => {
@@ -215,6 +233,23 @@
         })
       })
     }
+
+    const calculateSum = () => {
+      document.querySelectorAll('table').forEach(table => {
+        table.querySelectorAll('tbody tr').forEach(tr => {
+          var sum = 0
+          tr.querySelectorAll('th').forEach(th => {
+            console.log('value of th: ', th.textContent)
+            sum += parseFloat(th.textContent) ? parseFloat(th.textContent.split(',').join('')) : 0
+          })
+          var th = document.createElement('th')
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+        })
+      })
+
+    }
+
     // choose date to get report
     document.querySelector('button#get-report').addEventListener('click', (event) => {
       const obj = {}
@@ -249,10 +284,16 @@
         displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
         displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
 
+        calculateSum()
         $('#myModal').modal('hide')
 
       })
     })
+
+    document.querySelector('button#export').addEventListener('click', event => {
+      exportHTMLTableToExcel(['money-table', 'case-table'], `Báo_cáo_tiền_PGD${new Date(Date.now()).toLocaleDateString()}`)
+    })
+
   </script>
 </body>
 

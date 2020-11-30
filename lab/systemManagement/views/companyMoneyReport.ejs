@@ -10,40 +10,8 @@
       margin-bottom: 16px;
     }
 
-    .money-table,
-    .case-table,
-    .custom-table {
-      width: 70% !important;
-      margin: auto;
-    }
-
-    .daily {
-      background-color: lightgoldenrodyellow;
-    }
-
-    .monthly {
-      background-color: lightcyan;
-    }
-
-    .table-container,
-    .note-container {
-      padding: 16px 64px;
-      margin: 16px 0;
-      border: 1px solid lightgrey;
-      overflow-x: scroll;
-      max-width: 100vw;
-    }
-
-    .note-container {
-      overflow-x: unset !important;
-      max-width: 300px;
-    }
-
-    .box {
-      width: 24px;
-      height: 24px;
-      border: 0.5px solid lightgrey;
-      margin-bottom: 16px;
+    .table-container {
+      overflow: unset !important;
     }
   </style>
 </head>
@@ -55,6 +23,8 @@
     <div id="page-content-wrapper">
       <h2>Báo cáo tiền Công ty</h2>
       <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+      <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+
       <div class="note-container">
         <div class="container">
           <div class="row">
@@ -68,57 +38,67 @@
           </div>
         </div>
       </div>
-      <h5>Theo tháng đã chọn</h5>
-      <table class="table table-bordered table-striped monthly-receive-table custom-table" id="monthly-receive-table">
-        <thead>
-          <tr>
-            <th class="monthly" id="storeId">Thu</th>
-            <th class="monthly" id="T-Gốc">Gốc</th>
-            <th class="monthly" id="T-Lãi">Lãi</th>
-            <th class="monthly" id="T-Nhận NB">Nhận NB</th>
-            <th class="monthly" id="T-Khác">Khác</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <table class="table table-bordered table-striped monthly-spend-table custom-table" id="monthly-spend-table">
-        <thead>
-          <tr>
-            <th class="monthly" id="storeId">Chi</th>
-            <th class="monthly" id="C-Giải ngân mới">Giải ngân mới</th>
-            <th class="monthly" id="C-Vay thêm">Vay thêm</th>
-            <th class="monthly" id="C-Chuyển NB">Chuyển NB</th>
-            <th class="monthly" id="C-Khác">Khác</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
 
-      <h5>Theo ngày đã chọn</h5>
-      <table class="table table-bordered table-striped daily-receive-table custom-table" id="daily-receive-table">
-        <thead>
-          <tr>
-            <th class="daily" id="storeId">Thu</th>
-            <th class="daily" id="T-Gốc">Gốc</th>
-            <th class="daily" id="T-Lãi">Lãi</th>
-            <th class="daily" id="T-Nhận NB">Nhận NB</th>
-            <th class="daily" id="T-Khác">Khác</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <table class="table table-bordered table-striped daily-spend-table custom-table" id="daily-spend-table">
-        <thead>
-          <tr>
-            <th class="daily" id="storeId">Chi</th>
-            <th class="daily" id="C-Giải ngân mới">Giải ngân mới</th>
-            <th class="daily" id="C-Vay thêm">Vay thêm</th>
-            <th class="daily" id="C-Chuyển NB">Chuyển NB</th>
-            <th class="daily" id="C-Khác">Khác</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-container">
+        <h5>Theo tháng đã chọn</h5>
+        <table class="table table-bordered table-striped monthly-receive-table custom-table monthly-table-1"
+          id="monthly-receive-table">
+          <thead>
+            <tr>
+              <th class="monthly" id="storeId">Thu(tháng)</th>
+              <th class="monthly" id="T-Gốc">Gốc</th>
+              <th class="monthly" id="T-Lãi">Lãi</th>
+              <th class="monthly" id="T-Nhận NB">Nhận NB</th>
+              <th class="monthly" id="T-Khác">Khác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <table class="table table-bordered table-striped monthly-spend-table custom-table monthly-table-2"
+          id="monthly-spend-table">
+          <thead>
+            <tr>
+              <th class="monthly" id="storeId">Chi(tháng)</th>
+              <th class="monthly" id="C-Giải ngân mới">Giải ngân mới</th>
+              <th class="monthly" id="C-Vay thêm">Vay thêm</th>
+              <th class="monthly" id="C-Chuyển NB">Chuyển NB</th>
+              <th class="monthly" id="C-Khác">Khác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="table-container">
+        <h5>Theo ngày đã chọn</h5>
+        <table class="table table-bordered table-striped daily-receive-table custom-table daily-table-1"
+          id="daily-receive-table">
+          <thead>
+            <tr>
+              <th class="daily" id="storeId">Thu(ngày)</th>
+              <th class="daily" id="T-Gốc">Gốc</th>
+              <th class="daily" id="T-Lãi">Lãi</th>
+              <th class="daily" id="T-Nhận NB">Nhận NB</th>
+              <th class="daily" id="T-Khác">Khác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <table class="table table-bordered table-striped daily-spend-table custom-table daily-table-2"
+          id="daily-spend-table">
+          <thead>
+            <tr>
+              <th class="daily" id="storeId">Chi(ngày)</th>
+              <th class="daily" id="C-Giải ngân mới">Giải ngân mới</th>
+              <th class="daily" id="C-Vay thêm">Vay thêm</th>
+              <th class="daily" id="C-Chuyển NB">Chuyển NB</th>
+              <th class="daily" id="C-Khác">Khác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+      </div>
 
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -180,6 +160,8 @@
   <script type="module">
     import { makeRequest } from '/makeRequest.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
+
     const displayReport = (report, query1, query2) => {
       var tr = document.createElement('tr')
       document.querySelectorAll(query1).forEach(element => {
@@ -192,6 +174,22 @@
         tr.appendChild(th)
       })
       document.querySelector(query2).appendChild(tr)
+    }
+
+    const calculateSum = () => {
+      document.querySelectorAll('table').forEach(table => {
+        table.querySelectorAll('tbody tr').forEach(tr => {
+          var sum = 0
+          tr.querySelectorAll('th').forEach(th => {
+            console.log('value of th: ', th.textContent)
+            sum += parseFloat(th.textContent) ? parseFloat(th.textContent.split(',').join('')) : 0
+          })
+          var th = document.createElement('th')
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+        })
+      })
+
     }
 
     document.querySelector('button#get-report').addEventListener('click', (event) => {
@@ -225,10 +223,16 @@
             displayReport(report, 'table.daily-spend-table thead th', 'table.daily-spend-table tbody')
           })
         }
+
+        calculateSum()
         $('#myModal').modal('hide')
 
       })
 
+    })
+
+    document.querySelector('button#export').addEventListener('click', event => {
+      exportHTMLTableToExcel(['daily-table-1', 'daily-table-2', 'monthly-table-1', 'monthly-table-2'], `Báo_cáo_tiền_Công_ty_${new Date(Date.now()).toLocaleDateString()}`)
     })
 
   </script>
