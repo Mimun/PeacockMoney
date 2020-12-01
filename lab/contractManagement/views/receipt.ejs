@@ -156,13 +156,13 @@
     }
 
     const contract = JSON.parse('<%- JSON.stringify(contract) %>')
-    console.log('contract detail: ', contract)
+    console.log('contract detail: ', contract.loanPackage.receiptRecords)
     const date = JSON.parse('<%-JSON.stringify(date) %>')
     console.log('contract date: ', date)
     if (contract && contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
       const customArray = contract.loanPackage.receiptRecords.filter(rep => {
         console.log(`${formatDate(new Date(rep.date))}, ${formatDate(date)}`)
-        return formatDate(new Date(rep.date)) === date
+        return formatDate(new Date(rep.date)) === formatDate(date)
       })
       console.log('custom array: ', customArray)
       customArray.forEach(receipt => {
