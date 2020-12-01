@@ -22,8 +22,14 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Báo cáo tiền Công ty</h2>
-      <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
-      <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+      <div class="d-flex align-items-end justify-content-between" style="width: 500px;">
+        <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+        <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+        <div class="form-group">
+          <label for="display-date" class="bmd-label-floating">Ngày đã chọn</label>
+          <input type="text" class="form-control" id="display-date">
+        </div>
+      </div>
 
       <div class="note-container">
         <div class="container">
@@ -167,15 +173,27 @@
     import { findNestedObj } from '/findNestedObj.js'
     import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
 
+    var dailyMoneyReport = JSON.parse('<%- JSON.stringify(dailyMoneyReport)%>')
+    console.log('daily money report: ', dailyMoneyReport)
+    var monthlyMoneyReport = JSON.parse('<%- JSON.stringify(monthlyMoneyReport)%>')
+    console.log('monthly money report: ', monthlyMoneyReport)
+
+    document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
+
     const displayReport = (report, query1, query2) => {
       var tr = document.createElement('tr')
       document.querySelectorAll(query1).forEach(element => {
         var th = document.createElement('th')
-        if (element.id === 'storeId') {
-          th.innerHTML = report.storeId
+        if (report) {
+          if (element.id === 'storeId') {
+            th.innerHTML = report.storeId ? report.storeId : '-'
+          } else {
+            th.innerHTML = getNestedValue(findNestedObj(report, 'receiptId', element.id)).toLocaleString()
+          }
         } else {
-          th.innerHTML = getNestedValue(findNestedObj(report, 'receiptId', element.id)).toLocaleString()
+          th.innerHTML = '-'
         }
+
         tr.appendChild(th)
       })
       document.querySelector(query2).appendChild(tr)
@@ -186,7 +204,6 @@
         table.querySelectorAll('tbody tr').forEach(tr => {
           var sum = 0
           tr.querySelectorAll('th').forEach(th => {
-            console.log('value of th: ', th.textContent)
             sum += parseFloat(th.textContent) ? parseFloat(th.textContent.split(',').join('')) : 0
           })
           var th = document.createElement('th')
@@ -197,6 +214,32 @@
 
     }
 
+    const handleReportArray = (dailyMoneyReport, monthlyMoneyReport) => {
+      let keys = ['root', 'paid', 'remain']
+      var dailyMoneyReport = getCustomArray(dailyMoneyReport, keys)
+      console.log('daily money report: ', dailyMoneyReport)
+      var monthlyMoneyReport = getCustomArray(monthlyMoneyReport, keys)
+      console.log('monthly money report: ', monthlyMoneyReport)
+      document.querySelector('table.monthly-receive-table tbody').innerHTML = ''
+      document.querySelector('table.monthly-spend-table tbody').innerHTML = ''
+      document.querySelector('table.daily-receive-table tbody').innerHTML = ''
+      document.querySelector('table.daily-spend-table tbody').innerHTML = ''
+      // display monthly report
+      monthlyMoneyReport.forEach(report => {
+        displayReport(report, 'table.monthly-receive-table thead th', 'table.monthly-receive-table tbody')
+        displayReport(report, 'table.monthly-spend-table thead th', 'table.monthly-spend-table tbody')
+      })
+
+      // display daily report
+      dailyMoneyReport.forEach(report => {
+        displayReport(report, 'table.daily-receive-table thead th', 'table.daily-receive-table tbody')
+        displayReport(report, 'table.daily-spend-table thead th', 'table.daily-spend-table tbody')
+      })
+
+      calculateSum()
+    }
+    // handleReportArray(dailyMoneyReport, monthlyMoneyReport)
+
     document.querySelector('button#get-report').addEventListener('click', (event) => {
       const obj = {}
       document.querySelectorAll('.modal .modal-body input').forEach(element => {
@@ -205,31 +248,11 @@
       console.log('obj: ', obj)
       makeRequest('POST', 'companyMoneyReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
         let keys = ['root', 'paid', 'remain']
-        var dailyMoneyReport = getCustomArray(result.dailyMoneyReport, keys)
-        console.log('daily money report: ', dailyMoneyReport)
-        var monthlyMoneyReport = getCustomArray(result.monthlyMoneyReport, keys)
-        console.log('monthly money report: ', monthlyMoneyReport)
-        document.querySelector('table.monthly-receive-table tbody').innerHTML = ''
-        document.querySelector('table.monthly-spend-table tbody').innerHTML = ''
-        document.querySelector('table.daily-receive-table tbody').innerHTML = ''
-        document.querySelector('table.daily-spend-table tbody').innerHTML = ''
-        // display monthly report
-        if (monthlyMoneyReport.length !== 0) {
-          monthlyMoneyReport.forEach(report => {
-            displayReport(report, 'table.monthly-receive-table thead th', 'table.monthly-receive-table tbody')
-            displayReport(report, 'table.monthly-spend-table thead th', 'table.monthly-spend-table tbody')
-          })
-        }
+        var dailyMoneyReport = result.dailyMoneyReport
+        var monthlyMoneyReport = result.monthlyMoneyReport
+        handleReportArray(dailyMoneyReport, monthlyMoneyReport)
+        document.querySelector('input#display-date').value = new Date(document.querySelector('input#date').value).toLocaleDateString()
 
-        // display daily report
-        if (dailyMoneyReport.length !== 0) {
-          dailyMoneyReport.forEach(report => {
-            displayReport(report, 'table.daily-receive-table thead th', 'table.daily-receive-table tbody')
-            displayReport(report, 'table.daily-spend-table thead th', 'table.daily-spend-table tbody')
-          })
-        }
-
-        calculateSum()
         $('#myModal').modal('hide')
 
       })

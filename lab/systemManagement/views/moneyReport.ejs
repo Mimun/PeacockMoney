@@ -18,8 +18,14 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Báo cáo tiền PGD</h2>
-      <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
-      <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+      <div class="d-flex align-items-end justify-content-between" style="width: 500px;">
+        <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+        <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+        <div class="form-group">
+          <label for="display-date" class="bmd-label-floating">Ngày đã chọn</label>
+          <input type="text" class="form-control" id="display-date">
+        </div>
+      </div>
 
       <div class="note-container">
         <div class="container">
@@ -192,6 +198,13 @@
     import { findNestedObj } from '/findNestedObj.js'
     import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
 
+    var dailyMoneyReport = JSON.parse('<%- JSON.stringify(dailyMoneyReport)%>')
+    console.log('daily money report: ', dailyMoneyReport)
+    var monthlyMoneyReport = JSON.parse('<%- JSON.stringify(monthlyMoneyReport)%>')
+    console.log('monthly money report: ', monthlyMoneyReport)
+
+    document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
+
     const createCustomObj = (array, keys, index) => {
       var customObj = _(array).flatMap('array').groupBy('receiptId').
         map((objs, key) => {
@@ -250,6 +263,36 @@
 
     }
 
+    const handleReportArray = (dailyMoneyReport, monthlyMoneyReport) => {
+      let keys = ['root', 'paid', 'remain']
+      const customDailyMoneyReport = createCustomObj(dailyMoneyReport, keys, 1)
+      const customMonthlyMoneyReport = createCustomObj(monthlyMoneyReport, keys, 1)
+      const customDailyCaseReport = createCustomObj(dailyMoneyReport, keys, 2)
+      const customMonthlyCaseReport = createCustomObj(monthlyMoneyReport, keys, 2)
+      console.log('obj: ', { customDailyMoneyReport, customMonthlyMoneyReport, customDailyCaseReport, customMonthlyCaseReport })
+
+      // remove old th 
+      document.querySelectorAll('table.money-table tbody th:not(.static)').forEach(element => {
+        element.closest('tr').removeChild(element)
+      })
+
+      // render daily and monthly
+      displayTable('table.money-table thead th.daily', 'table.money-table tbody tr', customDailyMoneyReport, 1)
+      displayTable('table.money-table thead th.monthly', 'table.money-table tbody tr', customMonthlyMoneyReport, 1)
+
+      document.querySelectorAll('table.case-table tbody th:not(.static)').forEach(element => {
+        element.closest('tr').removeChild(element)
+      })
+
+      // render daily and monthly
+      displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
+      displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
+
+      calculateSum()
+    }
+
+    // handleReportArray(dailyMoneyReport, monthlyMoneyReport)
+
     // choose date to get report
     document.querySelector('button#get-report').addEventListener('click', (event) => {
       const obj = {}
@@ -260,31 +303,9 @@
       makeRequest('POST', 'moneyReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
         var dailyMoneyReport = result.dailyMoneyReport
         var monthlyMoneyReport = result.monthlyMoneyReport
-        let keys = ['root', 'paid', 'remain']
-        const customDailyMoneyReport = createCustomObj(dailyMoneyReport, keys, 1)
-        const customMonthlyMoneyReport = createCustomObj(monthlyMoneyReport, keys, 1)
-        const customDailyCaseReport = createCustomObj(dailyMoneyReport, keys, 2)
-        const customMonthlyCaseReport = createCustomObj(monthlyMoneyReport, keys, 2)
-        console.log('obj: ', { customDailyMoneyReport, customMonthlyMoneyReport, customDailyCaseReport, customMonthlyCaseReport })
+        handleReportArray(dailyMoneyReport, monthlyMoneyReport)
+        document.querySelector('input#display-date').value = new Date(document.querySelector('input#date').value).toLocaleDateString()
 
-        // remove old th 
-        document.querySelectorAll('table.money-table tbody th:not(.static)').forEach(element => {
-          element.closest('tr').removeChild(element)
-        })
-
-        // render daily and monthly
-        displayTable('table.money-table thead th.daily', 'table.money-table tbody tr', customDailyMoneyReport, 1)
-        displayTable('table.money-table thead th.monthly', 'table.money-table tbody tr', customMonthlyMoneyReport, 1)
-
-        document.querySelectorAll('table.case-table tbody th:not(.static)').forEach(element => {
-          element.closest('tr').removeChild(element)
-        })
-
-        // render daily and monthly
-        displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
-        displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
-
-        calculateSum()
         $('#myModal').modal('hide')
 
       })

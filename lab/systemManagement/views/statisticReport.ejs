@@ -48,8 +48,14 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Thống kê báo cáo</h2>
-      <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
-      <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+      <div class="d-flex align-items-end justify-content-between" style="width: 500px;">
+        <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+        <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+        <div class="form-group">
+          <label for="display-date" class="bmd-label-floating">Ngày đã chọn</label>
+          <input type="text" class="form-control" id="display-date">
+        </div>
+      </div>
 
       <div class="note-container">
         <div class="container">
@@ -300,6 +306,14 @@
     import { makeRequest } from '/makeRequest.js'
     import { findNestedObj } from '/findNestedObj.js'
     import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
+    var dailyMoneyReport = JSON.parse('<%- JSON.stringify(dailyMoneyReport)%>')
+    console.log('daily money report: ', dailyMoneyReport)
+    var monthlyMoneyReport = JSON.parse('<%- JSON.stringify(monthlyMoneyReport)%>')
+    console.log('monthly money report: ', monthlyMoneyReport)
+    var totalMoneyReport = JSON.parse('<%- JSON.stringify(totalMoneyReport)%>')
+    console.log('total money report: ', totalMoneyReport)
+
+    document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
 
     const displayTable = (array, query1, query2, query3, keyToFind, index) => {
       array.forEach(report => {
@@ -363,6 +377,84 @@
 
     }
 
+    const handleReportArray = (dailyMoneyReport, monthlyMoneyReport, totalMoneyReport) => {
+      let keys = ['root', 'paid', 'remain']
+      var dailyMoneyReport = getCustomArray(dailyMoneyReport, keys)
+      console.log('daily money report: ', dailyMoneyReport)
+      var monthlyMoneyReport = getCustomArray(monthlyMoneyReport, keys)
+      console.log('monthly money report: ', monthlyMoneyReport)
+      var totalMoneyReport = getCustomArray(totalMoneyReport, keys, 1)
+      console.log('total money report: ', totalMoneyReport)
+
+      var dailyCaseReport = getCustomArray(dailyMoneyReport, keys, 2)
+      console.log('daily case report: ', dailyCaseReport)
+      var monthlyCaseReport = getCustomArray(monthlyMoneyReport, keys, 2)
+      console.log('monthly case report: ', monthlyCaseReport)
+      var totalCaseReport = getCustomArray(totalMoneyReport, keys, 2)
+      console.log('total case report: ', totalCaseReport)
+
+      document.querySelectorAll('table tbody').forEach(tbody => {
+        tbody.innerHTML = ''
+      })
+
+      // create table header based on number of store id
+      // document.querySelectorAll('table#money-report-table thead th:not(.static)').forEach(element => {
+      //   element.closest('tr').removeChild(element)
+      // })
+      displayTable(dailyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.daily',
+        'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+      displayTable(monthlyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.monthly',
+        'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+      displayTable(totalMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.total',
+        'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+
+      displayTable(dailyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.daily',
+        'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+      displayTable(monthlyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.monthly',
+        'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+      displayTable(totalCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.total',
+        'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
+
+      displayTable(dailyMoneyReport, 'table#money-report-table.T-Gốc thead th.daily',
+        'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
+      displayTable(monthlyMoneyReport, 'table#money-report-table.T-Gốc thead th.monthly',
+        'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
+      displayTable(totalMoneyReport, 'table#money-report-table.T-Gốc thead th.total',
+        'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
+
+      displayTable(dailyCaseReport, 'table#case-report-table.T-Gốc thead th.daily',
+        'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
+      displayTable(monthlyCaseReport, 'table#case-report-table.T-Gốc thead th.monthly',
+        'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
+      displayTable(totalCaseReport, 'table#case-report-table.T-Gốc thead th.total',
+        'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
+
+      displayTable(dailyMoneyReport, 'table#money-report-table.T-Lãi thead th.daily',
+        'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
+      displayTable(monthlyMoneyReport, 'table#money-report-table.T-Lãi thead th.monthly',
+        'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
+      displayTable(totalMoneyReport, 'table#money-report-table.T-Lãi thead th.total',
+        'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
+
+      displayTable(dailyCaseReport, 'table#case-report-table.T-Lãi thead th.daily',
+        'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
+      displayTable(monthlyCaseReport, 'table#case-report-table.T-Lãi thead th.monthly',
+        'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
+      displayTable(totalCaseReport, 'table#case-report-table.T-Lãi thead th.total',
+        'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
+
+      displayTable(dailyMoneyReport, 'table#money-report-table.presentValue thead th.daily',
+        'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
+      displayTable(monthlyMoneyReport, 'table#money-report-table.presentValue thead th.monthly',
+        'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
+      displayTable(totalMoneyReport, 'table#money-report-table.presentValue thead th.total',
+        'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
+
+      // calculate sum of rows
+      calculateSum()
+    }
+    // handleReportArray(dailyMoneyReport, monthlyMoneyReport, totalMoneyReport)
+    
     document.querySelector('button#get-report').addEventListener('click', (event) => {
       const obj = {}
       document.querySelectorAll('.modal .modal-body input').forEach(element => {
@@ -370,80 +462,11 @@
       })
       console.log('obj: ', obj)
       makeRequest('POST', 'statisticReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
-        let keys = ['root', 'paid', 'remain']
-        var dailyMoneyReport = getCustomArray(result.dailyMoneyReport, keys)
-        console.log('daily money report: ', dailyMoneyReport)
-        var monthlyMoneyReport = getCustomArray(result.monthlyMoneyReport, keys)
-        console.log('monthly money report: ', monthlyMoneyReport)
-        var totalMoneyReport = getCustomArray(result.totalMoneyReport, keys, 1)
-        console.log('total money report: ', totalMoneyReport)
-
-        var dailyCaseReport = getCustomArray(result.dailyMoneyReport, keys, 2)
-        console.log('daily case report: ', dailyCaseReport)
-        var monthlyCaseReport = getCustomArray(result.monthlyMoneyReport, keys, 2)
-        console.log('monthly case report: ', monthlyCaseReport)
-        var totalCaseReport = getCustomArray(result.totalMoneyReport, keys, 2)
-        console.log('total case report: ', totalCaseReport)
-
-        document.querySelectorAll('table tbody').forEach(tbody => {
-          tbody.innerHTML = ''
-        })
-
-        // create table header based on number of store id
-        // document.querySelectorAll('table#money-report-table thead th:not(.static)').forEach(element => {
-        //   element.closest('tr').removeChild(element)
-        // })
-        displayTable(dailyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.daily',
-          'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
-        displayTable(monthlyMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.monthly',
-          'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
-        displayTable(totalMoneyReport, 'table#money-report-table.C-Giải-ngân-mới thead th.total',
-          'table#money-report-table.C-Giải-ngân-mới tbody', 'table#money-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
-
-        displayTable(dailyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.daily',
-          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
-        displayTable(monthlyCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.monthly',
-          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
-        displayTable(totalCaseReport, 'table#case-report-table.C-Giải-ngân-mới thead th.total',
-          'table#case-report-table.C-Giải-ngân-mới tbody', 'table#case-report-table.C-Giải-ngân-mới tbody', 'C-Giải ngân mới')
-
-        displayTable(dailyMoneyReport, 'table#money-report-table.T-Gốc thead th.daily',
-          'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
-        displayTable(monthlyMoneyReport, 'table#money-report-table.T-Gốc thead th.monthly',
-          'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
-        displayTable(totalMoneyReport, 'table#money-report-table.T-Gốc thead th.total',
-          'table#money-report-table.T-Gốc tbody', 'table#money-report-table.T-Gốc tbody', 'T-Gốc')
-
-        displayTable(dailyCaseReport, 'table#case-report-table.T-Gốc thead th.daily',
-          'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
-        displayTable(monthlyCaseReport, 'table#case-report-table.T-Gốc thead th.monthly',
-          'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
-        displayTable(totalCaseReport, 'table#case-report-table.T-Gốc thead th.total',
-          'table#case-report-table.T-Gốc tbody', 'table#case-report-table.T-Gốc tbody', 'T-Gốc')
-
-        displayTable(dailyMoneyReport, 'table#money-report-table.T-Lãi thead th.daily',
-          'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
-        displayTable(monthlyMoneyReport, 'table#money-report-table.T-Lãi thead th.monthly',
-          'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
-        displayTable(totalMoneyReport, 'table#money-report-table.T-Lãi thead th.total',
-          'table#money-report-table.T-Lãi tbody', 'table#money-report-table.T-Lãi tbody', 'T-Lãi')
-
-        displayTable(dailyCaseReport, 'table#case-report-table.T-Lãi thead th.daily',
-          'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
-        displayTable(monthlyCaseReport, 'table#case-report-table.T-Lãi thead th.monthly',
-          'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
-        displayTable(totalCaseReport, 'table#case-report-table.T-Lãi thead th.total',
-          'table#case-report-table.T-Lãi tbody', 'table#case-report-table.T-Lãi tbody', 'T-Lãi')
-
-        displayTable(dailyMoneyReport, 'table#money-report-table.presentValue thead th.daily',
-          'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
-        displayTable(monthlyMoneyReport, 'table#money-report-table.presentValue thead th.monthly',
-          'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
-        displayTable(totalMoneyReport, 'table#money-report-table.presentValue thead th.total',
-          'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
-
-        // calculate sum of rows
-        calculateSum()
+        var dailyMoneyReport = result.dailyMoneyReport
+        var monthlyMoneyReport = result.monthlyMoneyReport
+        var totalMoneyReport = result.totalMoneyReport
+        handleReportArray(dailyMoneyReport, monthlyMoneyReport, totalMoneyReport)
+        document.querySelector('input#display-date').value = new Date(document.querySelector('input#date').value).toLocaleDateString()
 
         $('#myModal').modal('hide')
 

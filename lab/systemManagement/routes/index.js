@@ -1076,13 +1076,63 @@ router.put('/funds/:id', (req, res) => {
   })
 })
 
+const handleReceiptArray = (chosenDate, chosenMonth, contracts, callback) => {
+  try {
+    var dailyMoneyReport = [],
+      monthlyMoneyReport = []
+    if (contracts.length !== 0) {
+      contracts.forEach(contract => {
+        if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
+          dailyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
+            if (new Date(receipt.date).getDate() === chosenDate.getDate()
+              && new Date(receipt.date).getMonth() === chosenDate.getMonth()
+              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+              return receipt
+            }
+          })
+
+          monthlyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
+            if (new Date(receipt.date).getMonth() === chosenMonth) {
+              return receipt
+            }
+          })
+        }
+      })
+    }
+    callback(dailyMoneyReport, monthlyMoneyReport)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // money report of each store
 router.get('/moneyReport', (req, res) => {
-  Store.find({}).exec((err, result) => {
+  var chosenDate = new Date(Date.now())
+  var chosenMonth = chosenDate.getMonth()
+  async.parallel({
+    stores: callback => {
+      Store.find({}).exec(callback)
+    },
+    contracts: callback => {
+      Contract.find({ 'store.value': req.body.store }).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    }
+  }, (err, results) => {
     if (err) throw err
-    res.render('moneyReport', { stores: result })
+    handleReceiptArray(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
+      res.render('moneyReport', { stores: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+    })
 
   })
+
 })
 
 router.post('/moneyReport/getReport', (req, res) => {
@@ -1111,38 +1161,72 @@ router.post('/moneyReport/getReport', (req, res) => {
     }
   }, (err, results) => {
     if (err) throw err
-    try {
-      var dailyMoneyReport = [],
-        monthlyMoneyReport = []
-      if (results.contracts.length !== 0) {
-        results.contracts.forEach(contract => {
-          if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-            dailyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
-              if (new Date(receipt.date).getDate() === chosenDate.getDate()
-                && new Date(receipt.date).getMonth() === chosenDate.getMonth()
-                && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
-                return receipt
-              }
-            })
-
-            monthlyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
-              if (new Date(receipt.date).getMonth() === chosenMonth) {
-                return receipt
-              }
-            })
-          }
-        })
-      }
+    handleReceiptArray(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
       res.send({ store: results.store, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
-    } catch (error) {
-      console.error(error)
-    }
+    })
   })
 })
 
 // money report of company
+const handleReceiptArray2 = (chosenDate, chosenMonth, contracts, callback) => {
+  try {
+    var dailyMoneyReport = [],
+      monthlyMoneyReport = []
+    if (contracts.length !== 0) {
+      contracts.forEach(contract => {
+        if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
+          contract.loanPackage.receiptRecords.forEach(receipt => {
+            if (new Date(receipt.date).getDate() === chosenDate.getDate()
+              && new Date(receipt.date).getMonth() === chosenDate.getMonth()
+              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+              if (receipt !== null) {
+                dailyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
+              }
+            }
+          })
+
+          contract.loanPackage.receiptRecords.map(receipt => {
+            if (new Date(receipt.date).getMonth() === chosenMonth) {
+              if (receipt !== null) {
+                monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
+              }
+
+            }
+          })
+        }
+      })
+    }
+    callback(dailyMoneyReport, monthlyMoneyReport)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 router.get('/companyMoneyReport', (req, res) => {
-  res.render('companyMoneyReport', {})
+  var chosenDate = new Date(Date.now())
+  var chosenMonth = chosenDate.getMonth()
+  async.parallel({
+    stores: callback => {
+      Store.find({}).exec(callback)
+    },
+    contracts: callback => {
+      Contract.find({}).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    }
+  }, (err, results) => {
+    if (err) throw err
+    handleReceiptArray2(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
+      res.render('companyMoneyReport', { store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+    })
+  })
 })
 
 router.post('/companyMoneyReport/getReport', (req, res) => {
@@ -1167,53 +1251,106 @@ router.post('/companyMoneyReport/getReport', (req, res) => {
     }
   }, (err, results) => {
     if (err) throw err
-    try {
-      var dailyMoneyReport = [],
-        monthlyMoneyReport = []
-      if (results.contracts.length !== 0) {
-        results.contracts.forEach(contract => {
-          if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-            contract.loanPackage.receiptRecords.forEach(receipt => {
-              if (new Date(receipt.date).getDate() === chosenDate.getDate()
-                && new Date(receipt.date).getMonth() === chosenDate.getMonth()
-                && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
-                if (receipt !== null) {
-                  dailyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
-                }
-              }
-            })
-
-            contract.loanPackage.receiptRecords.map(receipt => {
-              if (new Date(receipt.date).getMonth() === chosenMonth) {
-                if (receipt !== null) {
-                  monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
-                }
-
-              }
-            })
-          }
-        })
-      }
+    handleReceiptArray2(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
       res.send({ store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
-    } catch (error) {
-      console.error(error)
-    }
+    })
   })
 })
 
 // statistic report
+const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
+  try {
+    var dailyMoneyReport = [],
+      monthlyMoneyReport = [],
+      totalMoneyReport = []
+    if (contracts.length !== 0) {
+      contracts.forEach(contract => {
+        var itemType = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType'))
+        var itemTypeId = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemTypeId'))
+        console.log('item type: ', itemType)
+        if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
+          contract.loanPackage.receiptRecords.forEach(receipt => {
+            if (new Date(receipt.date).getDate() === chosenDate.getDate()
+              && new Date(receipt.date).getMonth() === chosenDate.getMonth()
+              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+              if (receipt !== null) {
+                dailyMoneyReport.push({
+                  ...receipt, storeId: receipt.id.split('.')[0],
+                  itemType: itemType, itemTypeId: itemTypeId,
+                  contractId: contract.id,
+                  presentValue: contract.loanPackage.presentValue
+                })
+              }
+            }
+          })
+
+          contract.loanPackage.receiptRecords.map(receipt => {
+            if (new Date(receipt.date).getMonth() === chosenMonth) {
+              if (receipt !== null) {
+                monthlyMoneyReport.push({
+                  ...receipt, storeId: receipt.id.split('.')[0],
+                  itemType: itemType, itemTypeId: itemTypeId,
+                  contractId: contract.id,
+                  presentValue: contract.loanPackage.presentValue
+                })
+              }
+
+            }
+          })
+
+          contract.loanPackage.receiptRecords.forEach(receipt => {
+            if (receipt !== null) {
+              totalMoneyReport.push({
+                ...receipt, storeId: receipt.id.split('.')[0],
+                itemType: itemType, itemTypeId: itemTypeId,
+                contractId: contract.id,
+                presentValue: contract.loanPackage.presentValue
+              })
+            }
+          })
+        }
+      })
+    }
+    callback(dailyMoneyReport, monthlyMoneyReport, totalMoneyReport)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 router.get('/statisticReport', (req, res) => {
-  Store.find({}).exec((err, result) => {
+  var chosenDate = new Date(Date.now())
+  var chosenMonth = chosenDate.getMonth()
+  async.parallel({
+    stores: callback => {
+      Store.find({}).exec(callback)
+    },
+    contracts: callback => {
+      Contract.find({}).populate([
+        {
+          path: 'store.value',
+          model: 'Store'
+        },
+        {
+          path: 'employee.value',
+          model: 'Employee'
+        }
+      ]).exec(callback)
+    }
+  }, (err, results) => {
     if (err) throw err
-    var stores = result.map(res => {
+    var stores = results.stores.map(res => {
       return {
         storeId: getNestedValue(findNestedObj(res.metadata, 'name', 'id')),
         storeName: getNestedValue(findNestedObj(res.metadata, 'name', 'name'))
       }
     })
-    res.render('statisticReport', { stores: stores })
+    handleReceiptArray3(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport, totalMoneyReport) => {
+      res.render('statisticReport', { stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport, totalMoneyReport })
+
+    })
 
   })
+
 })
 
 router.post('/statisticReport/getReport', (req, res) => {
@@ -1231,72 +1368,10 @@ router.post('/statisticReport/getReport', (req, res) => {
     }
   ]).exec((err, result) => {
     if (err) throw err
-    try {
-      var dailyMoneyReport = [],
-        monthlyMoneyReport = [],
-        totalMoneyReport = []
-      if (result.length !== 0) {
-        result.forEach(contract => {
-          var itemType = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType'))
-          var itemTypeId = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemTypeId'))
-          console.log('item type: ', itemType)
-          if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-            contract.loanPackage.receiptRecords.forEach(receipt => {
-              if (new Date(receipt.date).getDate() === chosenDate.getDate()
-                && new Date(receipt.date).getMonth() === chosenDate.getMonth()
-                && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
-                if (receipt !== null) {
-                  dailyMoneyReport.push({
-                    ...receipt, storeId: receipt.id.split('.')[0],
-                    itemType: itemType, itemTypeId: itemTypeId,
-                    contractId: contract.id,
-                    presentValue: contract.loanPackage.presentValue
-                  })
-                }
-              } else {
-                if (receipt !== null) {
-                  dailyMoneyReport.push({
-                    ...receipt, storeId: receipt.id.split('.')[0],
-                    itemType: itemType, itemTypeId: itemTypeId,
-                    contractId: contract.id,
-                    presentValue: contract.loanPackage.presentValue,
-                    array: []
-                  })
-                }
-              }
-            })
-
-            contract.loanPackage.receiptRecords.map(receipt => {
-              if (new Date(receipt.date).getMonth() === chosenMonth) {
-                if (receipt !== null) {
-                  monthlyMoneyReport.push({
-                    ...receipt, storeId: receipt.id.split('.')[0],
-                    itemType: itemType, itemTypeId: itemTypeId,
-                    contractId: contract.id,
-                    presentValue: contract.loanPackage.presentValue
-                  })
-                }
-
-              }
-            })
-
-            contract.loanPackage.receiptRecords.forEach(receipt => {
-              if (receipt !== null) {
-                totalMoneyReport.push({
-                  ...receipt, storeId: receipt.id.split('.')[0],
-                  itemType: itemType, itemTypeId: itemTypeId,
-                  contractId: contract.id,
-                  presentValue: contract.loanPackage.presentValue
-                })
-              }
-            })
-          }
-        })
-      }
+    handleReceiptArray3(chosenDate, chosenMonth, result, (dailyMoneyReport, monthlyMoneyReport, totalMoneyReport) => {
       res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport, totalMoneyReport })
-    } catch (error) {
-      console.error(error)
-    }
+
+    })
   })
 })
 
