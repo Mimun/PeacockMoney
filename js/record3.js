@@ -63,7 +63,7 @@ module.exports = class Record {
           remain: updateObj.remainInterest,
           receiptId: 'T-Lãi',
           receiptReason: `Lãi kỳ ${updateObj.period}`,
-          date: formatDate(this.realLifeDate),
+          date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
         })
@@ -87,7 +87,7 @@ module.exports = class Record {
           remain: updateObj.remainPrincipal,
           receiptId: 'T-Gốc',
           receiptReason: `Gốc`,
-          date: formatDate(this.realLifeDate),
+          date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
         })
@@ -111,7 +111,7 @@ module.exports = class Record {
           remain: updateObj.remainTotalPenalty,
           receiptId: 'T-Phạt',
           receiptReason: `Phạt`,
-          remain: formatDate(this.realLifeDate),
+          // remain: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
         })
@@ -162,7 +162,7 @@ module.exports = class Record {
           totalPayment: updateObj.totalPayment,
           paid: updateObj.paid,
           remain: updateObj.remain,
-          date: formatDate(paymentObj.addedDate),
+          date: paymentObj.addedDate,
 
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
@@ -710,12 +710,12 @@ module.exports = class Record {
       array: []
     }
     object.array.push({
-      root: this.periodRecords[paydownPeriodIndex].interest,
-      paid: this.periodRecords[paydownPeriodIndex].paidInterest,
-      remain: this.periodRecords[paydownPeriodIndex].remainInterest,
-      receiptId: 'T-Lãi',
-      receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
-      date: formatDate(this.realLifeDate),
+      root: 0,
+      paid: obj.value,
+      remain: 0,
+      receiptId: 'C-Vay thêm',
+      receiptReason: `Cho vay thêm`,
+      date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
     })
@@ -755,7 +755,7 @@ module.exports = class Record {
     var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
 
     var oldPaydownPeriodEndDate = this.handleFirstHaflPaydownPeriod(paydownPeriod, obj, blockPenalty)
-
+    
     // update the length of number of payments
     this.numberOfPeriods += 1
 
@@ -782,7 +782,7 @@ module.exports = class Record {
       remain: this.periodRecords[paydownPeriodIndex].remainInterest,
       receiptId: 'T-Lãi',
       receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
-      date: formatDate(this.realLifeDate),
+      date:this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
     })

@@ -4,6 +4,10 @@
     width: 100%;
   }
 
+  table th{
+    min-width: fit-content;
+  }
+/* 
   table,
   td,
   th {
@@ -11,7 +15,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-  }
+  } */
 
 
   /* end of resizable table */
@@ -223,6 +227,8 @@
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý thẩm định giá</a>
           <a onclick="getPage('/systemMng/itemType')"
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý loại tài sản</a>
+            <a onclick="getPage('/systemMng/receiptId')"
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý mã phiếu thu/chi</a>
           <a onclick="getPage('/systemMng/funds')"
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý quỹ tiền</a>
           <a onclick="getPage('/contractMng/transactionHistory')"

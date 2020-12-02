@@ -49,6 +49,32 @@
     console.log('loan package array: ', loanPackage)
     const contract = JSON.parse('<%- JSON.stringify(contract) %>')
     console.log('contract: ', contract)
+    const formatDate = (date, type) => {
+      var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2)
+        month = '0' + month;
+      if (day.length < 2)
+        day = '0' + day;
+
+      switch (type) {
+        // id
+        case (1):
+          return [day, month, year].join('');
+          break
+        // normal formate date
+        case (2):
+          return [day, month, year].join('-');
+          break
+        default:
+          return [day, month, year].join('-');
+
+      }
+
+    }
 
 
     if (loanPackage.length !== 0) {
@@ -58,6 +84,7 @@
           tr.id = loan.contract_Id
           document.querySelectorAll('table thead th').forEach(element => {
             var th = document.createElement('th')
+            console.log('element id: ', element.id === 'date')
             switch (element.id) {
               case ('paid1'):
                 th.innerHTML = loan.receiptType === 1 ? (loan.paid ? loan.paid.toLocaleString() : '-') : ('-')
@@ -65,8 +92,11 @@
               case ('paid2'):
                 th.innerHTML = loan.receiptType === 2 ? (loan.paid ? loan.paid.toLocaleString() : '-') : ('-')
                 break;
+              case ('date'):
+                th.innerHTML = loan[element.id] ? formatDate(loan[element.id], 2) : '-'
+                break
               default:
-                th.innerHTML = loan[element.id] ? loan[element.id].toLocaleString() : '-'
+                th.innerHTML = loan[element.id] ? loan[element.id] : '-'
                 break;
             }
 

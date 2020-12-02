@@ -37,7 +37,7 @@
           <div class="col">
             <div class="penalty-table">
               <h3>Bảng quy định cách phạt</h3>
-              <table class="table table-hover  penalty-table">
+              <table class="table table-responsive table-hover  penalty-table">
                 <thead>
                   <tr>
                     <th id="from">Từ</th>
@@ -57,7 +57,7 @@
           <div class="col">
             <div class="block-table">
               <h3>Bảng quy định block</h3>
-              <table class="table table-hover  block-table">
+              <table class="table table-responsive table-hover  block-table">
                 <thead>
                   <tr>
                     <th id="block">Block</th>
@@ -96,7 +96,7 @@
                 </div>
               </div>
               <div class="row">
-                <table class="table table-bordered table-striped table-hover period-table">
+                <table class="table table-responsive table-bordered table-striped table-hover period-table">
                   <thead>
                     <tr>
                       <th scope="col" id="numericalOrder">STT</th>
@@ -163,7 +163,7 @@
             </div>
           </div>
 
-          <!-- loan more, pay down -->
+          <!-- paydown-->
           <div class="col">
             <div class="pay-down" id="pay-down">
               <h4>Trả bớt</h4>
@@ -193,6 +193,7 @@
             </div>
           </div>
 
+          <!-- loanmore -->
           <div class="col">
             <div class="loan-more" id="loan-more">
               <h4>Vay thêm</h4>
@@ -222,6 +223,35 @@
             </div>
           </div>
 
+          <!-- another fee -->
+          <div class="col">
+            <div class="another-fee" id="another-fee">
+              <h4>Phí khác</h4>
+              <div class="form-group">
+                <label for="receiptId" class="bmd-label-floating">Mã phiếu thu/chi</label>
+                <select class="form-control" id="receiptId">
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Số tiền</label>
+                <input type="number" class="form-control" id="loanMore">
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
+                  Tiền mặt
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios2" value="iCash">
+                  Chuyển khoản
+                </label>
+              </div>
+              <button class="btn btn-sm btn-primary" id="btn-another-fee">Vay thêm</button>
+            </div>
+          </div>
+
           <!-- <button class="btn btn-sm" id="receipt">In phiếu</button> -->
         </div>
 
@@ -231,7 +261,7 @@
           <div class="col">
             <div class="payment-history">
               <h4>Lịch sử trả tiền</h4>
-              <table class="table table-bordered table-striped table-hover payment-history-table">
+              <table class="table table-responsive table-bordered table-striped table-hover payment-history-table">
                 <thead>
                   <tr>
                     <th scope="col" id="period">No</th>
@@ -269,7 +299,7 @@
           <div class="col">
             <div class="loan-more-pay-down-history">
               <h4>Lịch sử VTTB</h4>
-              <table class="table table-hover  payment-history-table">
+              <table class="table table-responsive table-hover  payment-history-table">
                 <thead>
                   <tr>
                     <th scope="col" id="id">Mã thu, chi</th>
@@ -420,7 +450,7 @@
 
   <!-- common function -->
   <script>
-    const formatDate = (date) => {
+    const formatDate = (date, type) => {
       var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
@@ -431,7 +461,20 @@
       if (day.length < 2)
         day = '0' + day;
 
-      return [day, month, year].join('-');
+      switch (type) {
+        // id
+        case (1):
+          return [day, month, year].join('');
+          break
+        // normal formate date
+        case (2):
+          return [day, month, year].join('-');
+          break
+        default:
+          return [day, month, year].join('-');
+
+      }
+
     }
 
     const displayTable = (object, elementName) => {
@@ -442,6 +485,7 @@
         if (object[element.id] !== undefined) {
           switch (element.id) {
             case ('redemptionDate'):
+            case('date'):
               th.innerHTML = formatDate(object[element.id])
               break
             default:
@@ -484,6 +528,7 @@
     // var contract = JSON.parse('')
     var contract = <%- JSON.stringify(contract) %>;
     var simulation = JSON.parse('<%- JSON.stringify(simulation)%>')
+    var receiptIds = JSON.parse('<%-JSON.stringify(receiptIds)%>')
 
     var loanPackage = new Record(contract.loanPackage)
     loanPackage.reassignPeriodRecords()
@@ -498,11 +543,16 @@
     var totalRemainForLoaningMore = 0
 
     console.log('contract: ', contract)
-    console.log('simulation: ', simulation)
 
-    console.log('loan package: ', loanPackage instanceof Record)
-    console.log('rule array: ', ruleArray)
-    console.log('block rule: ', blockRuleArray)
+    // display receipt id option for select
+    var selectReceiptId = document.querySelector('select#receiptId')
+    receiptIds.forEach(receiptId => {
+      var option = document.createElement('option')
+      option.value = receiptId.name
+      option.setAttribute('data-type', receiptId.type)
+      option.innerHTML = receiptId.name
+      selectReceiptId.appendChild(option)
+    })
 
     // penalty table
     if (ruleArray.length !== 0) {
@@ -760,6 +810,59 @@
 
       }
 
+    })
+
+    // another fee
+    document.querySelector('button#btn-another-fee').addEventListener('click', (event) => {
+      if (loanPackage) {
+        console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
+        var obj = {
+          id: `${loanPackage.contractId}.${formatDate(loanPackage.realLifeDate)}`,
+          date: loanPackage.realLifeDate,
+          array: []
+        }
+        var payDownObj = {
+          date: loanPackage.realLifeDate,
+          type: event.target.closest('div').querySelector('input:checked').value,
+          receiptType: parseInt(event.target.closest('div').querySelector('select').options[event.target.closest('div').querySelector('select').selectedIndex].getAttribute('data-type')),
+          receiptId: event.target.closest('div').querySelector('select').value,
+          receiptReason: 'Phí khác',
+          remain: 0,
+          root: 0,
+          paid: parseFloat(document.querySelector('div.another-fee').querySelector('input:not([type="radio"])').value)
+        }
+        obj.array.push(payDownObj)
+        var transHistoryObj = {
+          date: payDownObj.date,
+          fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+          toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+          from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+          to: contract.store._id,
+          value: payDownObj.paid,
+          type: payDownObj.type,
+          receiptType: payDownObj.receiptType,
+
+        }
+        var transHistoryObj2 = {
+          date: payDownObj.date,
+          fromStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+          toStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+          from: contract.store._id,
+          to: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+          value: payDownObj.paid,
+          type: payDownObj.type,
+          receiptType: payDownObj.receiptType,
+
+        }
+        loanPackage.receiptRecords.push(obj)
+        updateFund(payDownObj.receiptType === 1 ? transHistoryObj : transHistoryObj2, () => {
+          updateLoanPackage(loanPackage)
+        })
+        displayPaymentHistory()
+      } else {
+        window.alert('This contract is not approved!')
+
+      }
     })
 
     // choose column to display

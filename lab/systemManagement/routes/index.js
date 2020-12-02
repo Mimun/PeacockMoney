@@ -8,6 +8,7 @@ var Item = require('../../../models/item')
 var ItemType = require('../../../models/itemType')
 var Fund = require('../../../models/fund')
 var Contract = require('../../../models/contract')
+var ReceiptId = require('../../../models/receiptId')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -1372,6 +1373,23 @@ router.post('/statisticReport/getReport', (req, res) => {
       res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport, totalMoneyReport })
 
     })
+  })
+})
+
+// get receipt id
+router.get('/receiptId', (req, res) => {
+  ReceiptId.find({}).exec((err, result) => {
+    if (err) throw err
+    res.render('receiptId', { receiptIdList: result })
+
+  })
+})
+
+router.post('/receiptId', (req, res)=>{
+  console.log('req body: ', req.body)
+  new ReceiptId(req.body).save((err, result)=>{
+    if(err) throw err
+    res.send({message: 'Save to db successfully!'})
   })
 })
 

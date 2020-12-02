@@ -11,6 +11,7 @@ const Store = require('../../../models/store')
 const Employee = require('../../../models/employee')
 const Warehouse = require('../../../models/warehouse')
 const ItemType = require('../../../models/itemType')
+const ReceiptId = require('../../../models/receiptId')
 const CronJob = require('cron').CronJob
 
 var Record = require('../../../js/record3')
@@ -470,7 +471,7 @@ router.put('/contracts/:id', async (req, res) => {
       remain: 0,
       receiptId: 'C-Giải ngân mới',
       receiptReason: `Giải ngân`,
-      date: formatDate(loanPackage.realLifeDate),
+      date: loanPackage.realLifeDate,
       type: 'cash',
       receiptType: 2,
     })
@@ -618,9 +619,21 @@ router.get('/contracts/:id/checkTable', (req, res) => {
   try {
     Contract.findOne({ _id: req.params.id }).exec((err, result) => {
       try {
-        Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec((err, result2) => {
-          res.render('checkTable', { contract: { ...result._doc, store: result2 }, simulation: result.loanPackage ? result.loanPackage.simulation : 0 })
+        async.parallel({
+          store: callback=>{
+            Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec(callback)
+          },
+          receiptIds: callback=>{
+            ReceiptId.find({}).exec(callback)
+          }
+        }, (err, results) => {
+          res.render('checkTable', { contract: { ...result._doc, store: results.store },
+           simulation: result.loanPackage ? result.loanPackage.simulation : 0,
+           receiptIds: results.receiptIds
+          
+          })
         })
+        
       } catch (error) {
         console.error(error)
       }

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Danh sách mã phiếu thu/chi</h2>
+      <!-- itemType table -->
+      <div id="itemType-list-container" class="list-container">
+        <table class="table table-hover table-bordered  table-stripped ">
+          <thead>
+            <tr>
+              <th id="name">Mã phiếu thu/chi</th>
+              <th id="type">Loại</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- modal -->
+      <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Tạo mã phiếu thu/chi</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="type" value="1" checked>
+                  Thu
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="type" value="2">
+                  Chi
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="bmd-label-floating">Mã phiếu thu/chi</label>
+                <input type="text" class="form-control" id="name">
+              </div>
+              <!-- <div class="form-group">
+                <label class="bmd-label-floating">Loại tài sản</label>
+                <input type="text" class="form-control" name="name">
+              </div> -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="submit">Tạo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- create new itemTYpe button -->
+      <button class="btn btn-sm btn-primary" id="btn-create-item-type">Tạo mã phiếu thu/chi</button>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+
+    var receiptIdList = JSON.parse('<%- JSON.stringify(receiptIdList) %>');
+    console.log('receipt id: ', receiptIdList)
+
+    // generate item type list
+    if (receiptIdList.length !== 0) {
+      receiptIdList.forEach(receipt => {
+        var tr = document.createElement('tr')
+        document.querySelectorAll('table thead th').forEach(element => {
+          var th = document.createElement('th')
+          th.innerHTML = receipt[element.id] ? receipt[element.id] : '-'
+          tr.appendChild(th)
+        })
+        document.querySelector('table tbody').appendChild(tr)
+      })
+    }
+
+    // btn create item type
+    document.querySelector('#btn-create-item-type').addEventListener('click', (event) => {
+      $(".modal").modal('show')
+    })
+
+    // submit button
+    document.querySelector('#submit').addEventListener('click', (event) => {
+      var postObj = {
+        type: document.querySelector('.modal-body').querySelector('input:checked').value
+      }
+      document.querySelector('.modal-body').querySelectorAll('input:not([type="radio"])').forEach(input => {
+        postObj[input.id] = input.value
+      })
+      console.log('postObj: ', postObj)
+      makeRequest('POST', 'receiptId', 'application/json', JSON.stringify(postObj), () => {
+        window.location.reload()
+      })
+    })
+
+  </script>
+</body>
+
+</html>
