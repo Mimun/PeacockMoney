@@ -12,6 +12,7 @@ const Employee = require('../../../models/employee')
 const Warehouse = require('../../../models/warehouse')
 const ItemType = require('../../../models/itemType')
 const ReceiptId = require('../../../models/receiptId')
+const Fund = require('../../../models/fund')
 const CronJob = require('cron').CronJob
 
 var Record = require('../../../js/record3')
@@ -335,16 +336,7 @@ router.get('/contracts', (req, res) => {
   console.log('date now: ', checkDate)
   async.parallel({
     contract: callback => {
-      Contract.find({ $or: [{ contractStatus: 'approved' }, { contractStatus: 'completed' }] }, {}, { sort: { '_id': -1 } }).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({ $or: [{ contractStatus: 'approved' }, { contractStatus: 'completed' }] }, {}, { sort: { '_id': -1 } }).exec(callback)
     },
     contractNow: callback => {
       Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
@@ -363,16 +355,7 @@ router.get('/waitingContracts', (req, res) => {
   console.log('date now: ', checkDate)
   async.parallel({
     contract: callback => {
-      Contract.find({ contractStatus: 'waiting' }, {}, { sort: { '_id': -1 } }).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({ contractStatus: 'waiting' }, {}, { sort: { '_id': -1 } }).exec(callback)
     },
     contractNow: callback => {
       Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
@@ -388,15 +371,32 @@ router.get('/waitingContracts', (req, res) => {
 // create new contract
 router.post('/contracts', (req, res) => {
   var data = req.body
-  const contract = new Contract(data)
-  console.log('contract items; ', contract)
+  var storeId = getNestedValue(findNestedObj(data.store, 'name', 'store'))
+  var employeeId = getNestedValue(findNestedObj(data.employee, 'name', 'employee'))
   try {
-    contract.save((err, result) => {
+    async.parallel({
+      store: callback => {
+        Store.findOne({ _id: storeId }).exec(callback)
+      },
+      employee: callback => {
+        Employee.findOne({ _id: employeeId }).exec(callback)
+      }
+    }, (err, results) => {
       if (err) throw err
-      res.send('Saved contract successfully!')
+      data.store.value = results.store
+      data.employee.value = results.employee
+      const contract = new Contract(data)
+      try {
+        contract.save((err, result) => {
+          if (err) throw err
+          res.send('Saved contract successfully!')
+        })
+      } catch (error) {
+        console.error(error)
+      }
     })
   } catch (error) {
-    console.error(error)
+
   }
 
 })
@@ -441,6 +441,12 @@ router.put('/contracts/:id', async (req, res) => {
   try {
     var contract = req.body.contract
     var contractId = contract.id
+    var storeId = getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id'))
+    var storeName = getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'name'))
+    var customerId = getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))
+    var customerName = getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer'))
+    var employeeId = getNestedValue(findNestedObj(contract.employee.value.metadata, 'name', 'id'))
+    var employeeName = getNestedValue(findNestedObj(contract.employee.value.metadata, 'name', 'name'))
     var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
     var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
     var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
@@ -451,7 +457,8 @@ router.put('/contracts/:id', async (req, res) => {
     var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
     var loanPackage = new Record({
       interestRate, presentValue, agreementDate,
-      numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation, contractId
+      numberOfPeriods, ruleArray, blockArray, realLifeDate, simulation, contractId, storeId, storeName,
+      customerId, customerName, employeeId, employeeName
     })
     await loanPackage.createPeriodRecords()
     await loanPackage.pushLoanMorePayDownHistory({
@@ -474,21 +481,19 @@ router.put('/contracts/:id', async (req, res) => {
       date: loanPackage.realLifeDate,
       type: 'cash',
       receiptType: 2,
+      from: loanPackage.storeId,
+      to: loanPackage.customerId,
+      storeId: loanPackage.storeId,
+      storeName: loanPackage.storeName,
+      customerId: loanPackage.customerId,
+      customerName: loanPackage.customerName,
+      employeeId: loanPackage.employeeId,
+      employeeName: loanPackage.employeeName,
     })
     loanPackage.receiptRecords.push(object)
     try {
       Contract.findOneAndUpdate({ _id: req.params.id },
         { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
-        .populate([
-          {
-            path: 'store.value',
-            model: 'Store'
-          },
-          {
-            path: 'employee.value',
-            model: 'Employee'
-          }
-        ])
         .exec(async (err, contractResult) => {
           if (err) throw err
           var contractId = contractResult.id
@@ -572,9 +577,9 @@ router.put('/contracts/:id', async (req, res) => {
                       var property = new Property({ ...newItem })
                       console.log('new item: ', property)
 
-                      property.save((err, result) => {
-                        if (err) throw err
-                      })
+                      // property.save((err, result) => {
+                      //   if (err) throw err
+                      // })
                     }
                   })
                   res.send({ message: 'Saved property successfully!', result: contractResult })
@@ -596,17 +601,7 @@ router.put('/contracts/:id', async (req, res) => {
 // get contract detail
 router.get('/contracts/:id', (req, res) => {
   console.log('id received', req.params.id)
-  Contract.findById(req.params.id).populate([
-
-    {
-      path: 'store.value',
-      model: 'Store'
-    }, {
-      path: 'employee.value',
-      model: 'Employee'
-    },
-
-  ]).exec((err, contractResult) => {
+  Contract.findById(req.params.id).exec((err, contractResult) => {
     if (err) throw err
     res.render('contractContent', { contractDetail: contractResult })
   })
@@ -618,22 +613,24 @@ router.get('/contracts/:id/checkTable', (req, res) => {
   console.log('id: ', req.params.id)
   try {
     Contract.findOne({ _id: req.params.id }).exec((err, result) => {
+      console.log('id: ', findNestedObj(result.store.value.metadata, 'name', 'id'))
       try {
         async.parallel({
-          store: callback=>{
-            Store.findOne({ _id: mongoose.Types.ObjectId(result.store.value) }).exec(callback)
+          store: callback => {
+            Store.findOne({ _id: mongoose.Types.ObjectId(result.store._id) }).exec(callback)
           },
-          receiptIds: callback=>{
+          receiptIds: callback => {
             ReceiptId.find({}).exec(callback)
           }
         }, (err, results) => {
-          res.render('checkTable', { contract: { ...result._doc, store: results.store },
-           simulation: result.loanPackage ? result.loanPackage.simulation : 0,
-           receiptIds: results.receiptIds
-          
+          res.render('checkTable', {
+            contract: result,
+            simulation: result.loanPackage ? result.loanPackage.simulation : 0,
+            receiptIds: results.receiptIds
+
           })
         })
-        
+
       } catch (error) {
         console.error(error)
       }
@@ -737,18 +734,16 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
 
 // transaction history
 router.get('/transactionHistory', (req, res) => {
-  Contract.find({}).populate([
-    {
-      path: 'store.value',
-      model: 'Store'
+  async.parallel({
+    contracts: callback => {
+      Contract.find({}).exec(callback)
     },
-    {
-      path: 'employee.value',
-      model: 'Employee'
+    funds: callback => {
+      Fund.find({}).exec(callback)
     }
-  ]).exec((err, result) => {
+  }, (err, results) => {
     if (err) throw err
-    var loanPackage = result.map(res => {
+    var loanPackage = results.contracts.map(res => {
       if (res.loanPackage && res.loanPackage.receiptRecords.length !== 0) {
         res.loanPackage.receiptRecords = res.loanPackage.receiptRecords.map(receipt => {
           receipt.array = receipt.array.map(recpt => {
@@ -776,12 +771,17 @@ router.get('/transactionHistory', (req, res) => {
       }
     })
     try {
-      res.render('transactionHistory', { loanPackage: loanPackage.flat(Infinity), contract: result })
+      res.render('transactionHistory', {
+        loanPackage: loanPackage.flat(Infinity),
+        contract: results.contracts,
+        fund: results.funds
+      })
 
     } catch (error) {
       console.error(error)
     }
   })
+
 })
 
 // receipt page
@@ -852,6 +852,95 @@ router.get('/latePeriod', (req, res) => {
   } catch (error) {
     console.error(error)
   }
+})
+
+// update fund
+router.put('/funds', (req, res)=>{
+  var obj = req.body
+  console.log('req.body', req.body)
+  async.parallel({
+    fundFrom: callback => {
+      // var id = mongoose.Types.ObjectId.isValid(req.body.from) ? mongoose.Types.ObjectId(req.body.from) : null
+      var id = obj.from
+      console.log('id from: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+      } else {
+        callback(null, {})
+      }
+    },
+    fundTo: callback => {
+      var id = obj.to
+      console.log('id to: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+
+      } else {
+        callback(null, {})
+      }
+
+    }
+  }, (err, results) => {
+    if (err) throw err
+    console.log('results: ', results)
+    var fundFrom = results.fundFrom
+    var fundTo = results.fundTo
+    try {
+      switch (obj.type) {
+        case ('cash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.paid)
+            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+
+          if (fundTo && !_.isEmpty(fundTo)) {
+            fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.paid)
+            fundTo.receiptRecords.push({ ...obj, value: +obj.paid,receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+          break
+        case ('iCash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.paid)
+            fundFrom.receiptRecords.push({ ...obj, value: -obj.paid,receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+
+          if (fundTo && !_.isEmpty(fundTo)) {
+            fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.paid)
+            fundTo.receiptRecords.push({ ...obj, value: +obj.paid,receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+          break
+        default:
+      }
+      console.log('fund from after transferring: ', fundFrom)
+      console.log('fund to after transferring: ', fundTo)
+
+      async.parallel({
+        fundFrom: callback => {
+          if (fundFrom) {
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        },
+        fundTo: callback => {
+          if (fundTo) {
+            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        }
+      }, (err, results) => {
+        if (err) throw err
+        res.send('save successfully')
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  })
 })
 
 var job = new CronJob('0 0 * * *', function () {

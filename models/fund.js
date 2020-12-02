@@ -5,7 +5,8 @@ const fundSchema = new mongoose.Schema({
   name: { type: String },
   cash: { type: Number, default: 0 },
   iCash: { type: Number, default: 0 },
-  transHistory: [{ type: Object }],
+  // transHistory: [{ type: Object }],
+  receiptRecords: [{type: Object}],
   store: {type: String},
   storeId: {type: String}
 })

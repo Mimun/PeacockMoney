@@ -24,22 +24,22 @@ const contractSchema = new mongoose.Schema({
   }],
   store: {
     name: { type: String },
-    value: { type: mongoose.Types.ObjectId, ref: 'Store' },
+    value: { type: Object },
     cType: { type: String, default: 'text' },
     dataVie: { type: String },
     dataKor: { type: String, default: 'korean string' }
   },
   employee: {
     name: { type: String },
-    value: { type: mongoose.Types.ObjectId, ref: 'Employee' },
+    value: { type: Object },
     cType: { type: String, default: 'text' },
     dataVie: { type: String },
     dataKor: { type: String, default: 'korean string' }
   },
   id: { type: String },
   loanPackage: { type: Object, default: null },
-  blockRules: [{type: Object}],
-  penaltyRules: [{type: Object}]
+  blockRules: [{ type: Object }],
+  penaltyRules: [{ type: Object }]
 
   // item: {type: mongoose.Types.ObjectId, ref: 'Item', required: false},
   // itemStatus: [{type: mongoose.Types.ObjectId, ref: 'ItemStatus', required: false}],

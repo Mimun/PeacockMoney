@@ -66,6 +66,14 @@ export default class Record {
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
+          from: loanPackage.customerId,
+          to: loanPackage.storeId,
+          storeId: this.storeId,
+          storeName: this.storeName,
+          customerId: this.customerId,
+          customerName: this.customerName,
+          employeeId: this.employeeId,
+          employeeName: this.employeeName,
         })
       }
 
@@ -90,6 +98,14 @@ export default class Record {
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
+          from: loanPackage.customerId,
+          to: loanPackage.storeId,
+          storeId: this.storeId,
+          storeName: this.storeName,
+          customerId: this.customerId,
+          customerName: this.customerName,
+          employeeId: this.employeeId,
+          employeeName: this.employeeName,
         })
       }
 
@@ -114,6 +130,14 @@ export default class Record {
           // remain: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
+          from: loanPackage.customerId,
+          to: loanPackage.storeId,
+          storeId: this.storeId,
+          storeName: this.storeName,
+          customerId: this.customerId,
+          customerName: this.customerName,
+          employeeId: this.employeeId,
+          employeeName: this.employeeName,
         })
       }
 
@@ -718,6 +742,14 @@ export default class Record {
       date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
+      from: loanPackage.storeId,
+      to: loanPackage.customerId,
+      storeId: this.storeId,
+      storeName: this.storeName,
+      customerId: this.customerId,
+      customerName: this.customerName,
+      employeeId: this.employeeId,
+      employeeName: this.employeeName,
     })
     this.receiptRecords.push(object)
 
@@ -755,7 +787,7 @@ export default class Record {
     var paydownPeriodIndex = upperHalfPeriodRecords.indexOf(paydownPeriod)
 
     var oldPaydownPeriodEndDate = this.handleFirstHaflPaydownPeriod(paydownPeriod, obj, blockPenalty)
-    
+
     // update the length of number of payments
     this.numberOfPeriods += 1
 
@@ -782,9 +814,17 @@ export default class Record {
       remain: this.periodRecords[paydownPeriodIndex].remainInterest,
       receiptId: 'T-Lãi',
       receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
-      date:this.realLifeDate,
+      date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
+      from: loanPackage.customerId,
+      to: loanPackage.storeId,
+      storeId: this.storeId,
+      storeName: this.storeName,
+      customerId: this.customerId,
+      customerName: this.customerName,
+      employeeId: this.employeeId,
+      employeeName: this.employeeName,
     })
     this.receiptRecords.push(object)
     this.numberOfPayingDownTimes += 1

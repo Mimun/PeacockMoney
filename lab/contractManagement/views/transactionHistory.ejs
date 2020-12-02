@@ -18,28 +18,111 @@
     <div id="page-content-wrapper">
       <h2>Bảng kê thu/chi</h2>
       <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
-      <table class="table table-striped table-hover table1">
-        <thead>
-          <tr>
-            <th id="storeId">Mã PGD</th>
-            <th id="storeName">Tên PGD</th>
-            <th id="date">Ngày đóng</th>
-            <th id="id">Số phiếu</th>
-            <th id="contractId">Số hợp đồng</th>
-            <th id="customerId">Mã KH</th>
-            <th id="customerName">Tên KH</th>
-            <th id="receiptReason">Nội dung giao dịch</th>
-            <th id="paid1">Thu</th>
-            <th id="paid2">Chi</th>
-            <th id="type">Loại tiền</th>
-            <th id="receiptId">Mã thu chi</th>
-            <th id="note">Ghi chú</th>
-            <th id="employeeId">Mã NV thẩm định</th>
-            <th id="employeeName">Tên NV thẩm định</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-container">
+        <h5>Quỹ tiền</h5>
+        <!-- <button class="btn btn-sm btn-default" id="btn-in">Chuyển tiền vào</button>
+        <button class="btn btn-sm btn-default" id="btn-out">Chuyển tiền ra</button> -->
+        <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền NB</button>
+        <table class="table table-responsive table-hover table-bordered table-striped table1">
+          <thead>
+            <tr>
+              <th id="storeId">Mã cửa hàng</th>
+              <th id="name">Tên quỹ tiền</th>
+              <th id="cash">Quỹ tiền mặt</th>
+              <th id="iCash">Quỹ tiền chuyển khoản</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="table-container">
+        <h5>Lịch sử giao dịch</h5>
+        <table class="table table-responsive table-bordered table-striped table-hover table2">
+          <thead>
+            <tr>
+              <th id="storeId">Mã PGD</th>
+              <th id="storeName">Tên PGD</th>
+              <th id="date">Ngày đóng</th>
+              <th id="id">Số phiếu</th>
+              <th id="contractId">Số hợp đồng</th>
+              <th id="customerId">Mã KH</th>
+              <th id="customerName">Tên KH</th>
+              <th id="receiptReason">Nội dung giao dịch</th>
+              <th id="paid1">Thu</th>
+              <th id="paid2">Chi</th>
+              <th id="type">Loại tiền</th>
+              <th id="receiptId">Mã thu chi</th>
+              <th id="note">Ghi chú</th>
+              <th id="employeeId">Mã NV thẩm định</th>
+              <th id="employeeName">Tên NV thẩm định</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Chuyển tiền</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" data-type="1">
+              <div class="container">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="from" class="bmd-label-floating">From</label>
+                      <select id="from">
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="to" class="bmd-label-floating">Tot</label>
+                      <select id="to">
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="value" class="bmd-label-floating">Số tiền chuyển</label>
+                      <input type="number" class="form-control" id="value">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="radio">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="type" value="cash"> Tiền mặt
+                      </label>
+                    </div>
+                    <div class="radio">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="type" value="iCash">
+                        Chuyển khoản
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+              <button type="button" class="btn btn-primary" id="transfer">Chuyển</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -49,6 +132,21 @@
     console.log('loan package array: ', loanPackage)
     const contract = JSON.parse('<%- JSON.stringify(contract) %>')
     console.log('contract: ', contract)
+    const fund = JSON.parse('<%- JSON.stringify(fund)%>')
+    console.log('fund: ', fund)
+
+    var optionArray = fund.map(fund => {
+      var option = document.createElement('option')
+      option.value = fund.storeId
+      option.id = `${fund.name}`
+      option.innerHTML = `${fund.name} - ${fund.storeId}`
+
+      document.querySelector('.modal-body select#from').appendChild(option.cloneNode(true))
+      document.querySelector('.modal-body select#to').appendChild(option)
+
+    });
+    // document.querySelector('select#from').innerHTML = `<option value="${fund.store}" id="${fund.storeId}">${fund.name} - ${fund.storeId}</option>`
+
     const formatDate = (date, type) => {
       var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -76,15 +174,13 @@
 
     }
 
-
-    if (loanPackage.length !== 0) {
-      loanPackage.forEach(loan => {
+    const displayTable = (array, query) => {
+      array.forEach(loan => {
         if (loan) {
           var tr = document.createElement('tr')
           tr.id = loan.contract_Id
-          document.querySelectorAll('table thead th').forEach(element => {
+          document.querySelectorAll(`${query} thead th`).forEach(element => {
             var th = document.createElement('th')
-            console.log('element id: ', element.id === 'date')
             switch (element.id) {
               case ('paid1'):
                 th.innerHTML = loan.receiptType === 1 ? (loan.paid ? loan.paid.toLocaleString() : '-') : ('-')
@@ -96,26 +192,89 @@
                 th.innerHTML = loan[element.id] ? formatDate(loan[element.id], 2) : '-'
                 break
               default:
-                th.innerHTML = loan[element.id] ? loan[element.id] : '-'
+                th.innerHTML = loan[element.id] !== null && loan[element.id] !== undefined ? loan[element.id] : '-'
                 break;
             }
 
             tr.appendChild(th)
           })
-          tr.addEventListener('click', (event) => {
-            console.log('event: ', event.target.closest('tr'))
-            window.location.href = `/contractMng/contracts/${event.target.closest('tr').id}/checkTable?token=${window.localStorage.getItem('accessToken')}`
-          })
-          document.querySelector('table tbody').appendChild(tr)
+          document.querySelector(`${query} tbody`).appendChild(tr)
         }
       });
+
     }
+
+    // display fund table
+    displayTable(fund, 'table.table1')
+
+    // display transhistory table
+    displayTable(loanPackage, 'table.table2')
+
+    // transfer money
+    document.querySelector('button#btn-transfer').addEventListener('click', event => {
+      $('#basicExampleModal').modal('show')
+
+    })
+
+    // transfer
+    document.querySelector('button#transfer').addEventListener('click', event => {
+      var type = document.querySelector('.modal-body').getAttribute('data-type')
+      var obj = {
+        date: new Date(Date.now())
+      }
+
+      document.querySelectorAll('.modal-body select, .modal-body input:not([type="radio"]), .modal-body input[type="radio"]:checked').forEach(element => {
+        obj[element.id] = element.value
+      })
+
+      var receiptRecord = {
+        root: 0,
+        paid: parseFloat(obj.value),
+        remain: 0,
+        receiptId: '',
+        receiptReason: '',
+        date: new Date(Date.now()),
+        type: obj.type,
+        receiptType: 2,
+        from: obj.from,
+        to: obj.to,
+        storeId: obj.from,
+        storeName: document.querySelector('.modal-body select#from').options[document.querySelector('.modal-body select#from').selectedIndex].id,
+        customerId: obj.to,
+        customerName: document.querySelector('.modal-body select#to').options[document.querySelector('.modal-body select#to').selectedIndex].id,
+        employeeId: '-',
+        employeeName: '-',
+      }
+
+      if (obj.from === obj.to) {
+        window.alert('Store cannot transfer money to itselft!')
+      } else {
+        updateFund(receiptRecord)
+      }
+      console.log('obj: ', obj)
+      console.log('trans obj: ', receiptRecordForFrom)
+    })
+
+    const updateFund = (receiptRecord) => {
+      $.ajax({
+        type: 'PUT',
+        url: `/contractMng/funds?token=${window.localStorage.getItem('accessToken')}`,
+        contentType: 'application/json',
+        data: JSON.stringify(receiptRecord),
+        success: result => {
+          console.log('result: ', result)
+          window.location.reload()
+        }
+      })
+    }
+
+
   </script>
 
   <script type="module">
     import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
     document.querySelector('button#export').addEventListener('click', event => {
-      exportHTMLTableToExcel(['table1'],
+      exportHTMLTableToExcel(['table2'],
         `Bảng_kê_thu_chi_${new Date(Date.now()).toLocaleDateString()}`)
     })
 
