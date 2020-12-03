@@ -248,7 +248,7 @@
                   Chuyển khoản
                 </label>
               </div>
-              <button class="btn btn-sm btn-primary" id="btn-another-fee">Vay thêm</button>
+              <button class="btn btn-sm btn-primary" id="btn-another-fee">Thực hiện</button>
             </div>
           </div>
 
@@ -485,7 +485,7 @@
         if (object[element.id] !== undefined) {
           switch (element.id) {
             case ('redemptionDate'):
-            case('date'):
+            case ('date'):
               th.innerHTML = formatDate(object[element.id])
               break
             default:
@@ -818,41 +818,30 @@
           date: loanPackage.realLifeDate,
           array: []
         }
+        var receiptType = parseInt(event.target.closest('div').querySelector('select').options[event.target.closest('div').querySelector('select').selectedIndex].getAttribute('data-type'))
         var payDownObj = {
-          date: loanPackage.realLifeDate,
-          type: event.target.closest('div').querySelector('input:checked').value,
-          receiptType: parseInt(event.target.closest('div').querySelector('select').options[event.target.closest('div').querySelector('select').selectedIndex].getAttribute('data-type')),
+          root: 0,
+          paid: parseFloat(document.querySelector('div.another-fee').querySelector('input:not([type="radio"])').value),
+          remain: 0,
           receiptId: event.target.closest('div').querySelector('select').value,
           receiptReason: 'Phí khác',
-          remain: 0,
-          root: 0,
-          paid: parseFloat(document.querySelector('div.another-fee').querySelector('input:not([type="radio"])').value)
+          date: loanPackage.realLifeDate,
+          type: event.target.closest('div').querySelector('input:checked').value,
+          receiptType,
+          from: receiptType === 1 ? loanPackage.customerId : loanPackage.storeId,
+          to: receiptType === 1 ? loanPackage.storeId : loanPackage.customerId,
+          storeId: loanPackage.storeId,
+          storeName: loanPackage.storeName,
+          customerId: loanPackage.customerId,
+          customerName: loanPackage.customerName,
+          employeeId: loanPackage.employeeId,
+          employeeName: loanPackage.employeeName,
+          contractId: loanPackage.contractId
         }
         obj.array.push(payDownObj)
-        var transHistoryObj = {
-          date: payDownObj.date,
-          fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-          toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
-          from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
-          to: contract.store._id,
-          value: payDownObj.paid,
-          type: payDownObj.type,
-          receiptType: payDownObj.receiptType,
 
-        }
-        var transHistoryObj2 = {
-          date: payDownObj.date,
-          fromStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
-          toStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-          from: contract.store._id,
-          to: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
-          value: payDownObj.paid,
-          type: payDownObj.type,
-          receiptType: payDownObj.receiptType,
-
-        }
         loanPackage.receiptRecords.push(obj)
-        updateFund(payDownObj.receiptType === 1 ? transHistoryObj : transHistoryObj2, () => {
+        updateFund(payDownObj, () => {
           updateLoanPackage(loanPackage)
         })
         // updateLoanPackage(loanPackage)
