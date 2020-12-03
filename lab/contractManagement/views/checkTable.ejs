@@ -669,9 +669,8 @@
         if (notDonePeriodArray.length !== 0) {
           console.log('not done period array: ', notDonePeriodArray)
           loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
-          updateFund(transHistoryObj, () => {
-            updateLoanPackage(loanPackage)
-          })
+          updateLoanPackage(loanPackage)
+
           displayPaymentHistory()
         } else {
           // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
@@ -730,9 +729,8 @@
               loanPackage.payDown(payDownObj)
             }
             console.log('loan package after paying down: ', loanPackage)
-            updateFund(transHistoryObj, () => {
-              updateLoanPackage(loanPackage)
-            })
+            updateLoanPackage(loanPackage)
+
             console.log('trans his: ', transHistoryObj)
             displayLoanMorePayDownHistory()
           }
@@ -794,9 +792,8 @@
             }
             // updateLoanPackage(loanPackage)
             document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
-            updateFund(transHistoryObj, () => {
-              updateLoanPackage(loanPackage)
-            })
+            updateLoanPackage(loanPackage)
+
             console.log('trans his: ', transHistoryObj)
             displayLoanMorePayDownHistory()
           }
@@ -858,6 +855,8 @@
         updateFund(payDownObj.receiptType === 1 ? transHistoryObj : transHistoryObj2, () => {
           updateLoanPackage(loanPackage)
         })
+        // updateLoanPackage(loanPackage)
+
         displayPaymentHistory()
       } else {
         window.alert('This contract is not approved!')
@@ -926,8 +925,8 @@
 
     const updateFund = (transHistory, callback) => {
       $.ajax({
-        type: 'PUT',
-        url: `/systemMng/funds/${contract.store._id}?token=${window.localStorage.getItem('accessToken')}`,
+        type: 'POST',
+        url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
         contentType: 'application/json',
         data: JSON.stringify(transHistory),
         success: result => {

@@ -13,11 +13,15 @@ const Warehouse = require('../../../models/warehouse')
 const ItemType = require('../../../models/itemType')
 const ReceiptId = require('../../../models/receiptId')
 const Fund = require('../../../models/fund')
+const fetch = require('fetch')
 const CronJob = require('cron').CronJob
+require('dotenv').config()
 
 var Record = require('../../../js/record3')
 var PeriodRecord = require('../../../js/periodRecord3')
 // import Record from '../../../js/record2.js'
+
+var contractMngURL = (process.env.CONTRACTMNG || 'http://localhost:3000')
 
 var fs = require('fs');
 var async = require('async');
@@ -438,6 +442,9 @@ const createPropertyId = (contractId, itemTypeId, index = 0) => {
 router.put('/contracts/:id', async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body)
+  var token = req.headers['x-access-token'].split(' ')[1].trim()
+  console.log('req token: ', token)
+
   try {
     var contract = req.body.contract
     var contractId = contract.id
@@ -472,7 +479,7 @@ router.put('/contracts/:id', async (req, res) => {
       date: loanPackage.realLifeDate,
       array: []
     }
-    object.array.push({
+    var object2 = {
       root: 0,
       paid: loanPackage.presentValue,
       remain: 0,
@@ -489,8 +496,18 @@ router.put('/contracts/:id', async (req, res) => {
       customerName: loanPackage.customerName,
       employeeId: loanPackage.employeeId,
       employeeName: loanPackage.employeeName,
-    })
+      contractId: loanPackage.contractId,
+    }
+    object.array.push(object2)
     loanPackage.receiptRecords.push(object)
+    fetch.fetchUrl(`${contractMngURL}/contractMng/funds2?token=${token}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      payload: JSON.stringify(object2)
+    }, (err, meta, result) => {
+      if (result)
+        console.log('result: ', result.toString())
+    })
     try {
       Contract.findOneAndUpdate({ _id: req.params.id },
         { $set: { "contractStatus": req.body.contractStatus, 'loanPackage': loanPackage } }, { new: true })
@@ -575,7 +592,6 @@ router.put('/contracts/:id', async (req, res) => {
                         propertyContract, propertyOriginWarehouse, propertyCurrentWarehouse, propertyLastWarehouse, propertyMovement,
                         propertyIsIn, propertyId)
                       var property = new Property({ ...newItem })
-                      console.log('new item: ', property)
 
                       // property.save((err, result) => {
                       //   if (err) throw err
@@ -855,7 +871,7 @@ router.get('/latePeriod', (req, res) => {
 })
 
 // update fund
-router.put('/funds', (req, res)=>{
+router.post('/funds', (req, res) => {
   var obj = req.body
   console.log('req.body', req.body)
   async.parallel({
@@ -892,23 +908,112 @@ router.put('/funds', (req, res)=>{
         case ('cash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
             fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.paid)
-            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid, receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.paid)
-            fundTo.receiptRecords.push({ ...obj, value: +obj.paid,receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid, receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
           }
           break
         case ('iCash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
             fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.paid)
-            fundFrom.receiptRecords.push({ ...obj, value: -obj.paid,receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid, receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.paid)
-            fundTo.receiptRecords.push({ ...obj, value: +obj.paid,receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid, receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+          break
+        default:
+      }
+      console.log('fund from after transferring: ', fundFrom)
+      console.log('fund to after transferring: ', fundTo)
+
+      async.parallel({
+        fundFrom: callback => {
+          if (fundFrom) {
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        },
+        fundTo: callback => {
+          if (fundTo) {
+            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        }
+      }, (err, results) => {
+        if (err) throw err
+        res.send('save successfully')
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
+
+// update fund when approving a contract
+router.post('/funds2', (req, res) => {
+  var obj = req.body
+  console.log('req.body', req.body)
+  async.parallel({
+    fundFrom: callback => {
+      // var id = mongoose.Types.ObjectId.isValid(req.body.from) ? mongoose.Types.ObjectId(req.body.from) : null
+      var id = obj.from
+      console.log('id from: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+      } else {
+        callback(null, {})
+      }
+    },
+    fundTo: callback => {
+      var id = obj.to
+      console.log('id to: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+
+      } else {
+        callback(null, {})
+      }
+
+    }
+  }, (err, results) => {
+    if (err) throw err
+    console.log('results: ', results)
+    var fundFrom = results.fundFrom
+    var fundTo = results.fundTo
+    try {
+      switch (obj.type) {
+        case ('cash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.paid)
+            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
+          }
+
+          if (fundTo && !_.isEmpty(fundTo)) {
+            fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.paid)
+            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
+          }
+          break
+        case ('iCash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.paid)
+            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
+          }
+
+          if (fundTo && !_.isEmpty(fundTo)) {
+            fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.paid)
+            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
           }
           break
         default:

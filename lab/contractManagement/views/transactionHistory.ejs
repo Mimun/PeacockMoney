@@ -145,7 +145,16 @@
       document.querySelector('.modal-body select#to').appendChild(option)
 
     });
-    // document.querySelector('select#from').innerHTML = `<option value="${fund.store}" id="${fund.storeId}">${fund.name} - ${fund.storeId}</option>`
+
+    // custom array
+    var array = []
+    fund.forEach(fund => {
+      console.log('receipt: ', fund.receiptRecords)
+
+      array = array.concat(fund.receiptRecords)
+
+    })
+    console.log('array: ', array)
 
     const formatDate = (date, type) => {
       var d = new Date(date),
@@ -208,7 +217,7 @@
     displayTable(fund, 'table.table1')
 
     // display transhistory table
-    displayTable(loanPackage, 'table.table2')
+    displayTable(array, 'table.table2')
 
     // transfer money
     document.querySelector('button#btn-transfer').addEventListener('click', event => {
@@ -235,7 +244,7 @@
         receiptReason: '',
         date: new Date(Date.now()),
         type: obj.type,
-        receiptType: 2,
+        // receiptType: 2,
         from: obj.from,
         to: obj.to,
         storeId: obj.from,
@@ -257,7 +266,7 @@
 
     const updateFund = (receiptRecord) => {
       $.ajax({
-        type: 'PUT',
+        type: 'POST',
         url: `/contractMng/funds?token=${window.localStorage.getItem('accessToken')}`,
         contentType: 'application/json',
         data: JSON.stringify(receiptRecord),

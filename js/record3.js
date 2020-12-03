@@ -66,14 +66,16 @@ module.exports = class Record {
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
-          from: loanPackage.customerId,
-          to: loanPackage.storeId,
+          from: this.customerId,
+          to: this.storeId,
           storeId: this.storeId,
           storeName: this.storeName,
           customerId: this.customerId,
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
+          contractId: this.contractId
+
         })
       }
 
@@ -98,14 +100,15 @@ module.exports = class Record {
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
-          from: loanPackage.customerId,
-          to: loanPackage.storeId,
+          from: this.customerId,
+          to: this.storeId,
           storeId: this.storeId,
           storeName: this.storeName,
           customerId: this.customerId,
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
+          contractId: this.contractId
         })
       }
 
@@ -130,14 +133,15 @@ module.exports = class Record {
           // remain: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
-          from: loanPackage.customerId,
-          to: loanPackage.storeId,
+          from: this.customerId,
+          to: this.storeId,
           storeId: this.storeId,
           storeName: this.storeName,
           customerId: this.customerId,
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
+          contractId: this.contractId
         })
       }
 
@@ -742,14 +746,15 @@ module.exports = class Record {
       date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
-      from: loanPackage.storeId,
-      to: loanPackage.customerId,
+      from: this.storeId,
+      to: this.customerId,
       storeId: this.storeId,
       storeName: this.storeName,
       customerId: this.customerId,
       customerName: this.customerName,
       employeeId: this.employeeId,
       employeeName: this.employeeName,
+      contractId: this.contractId
     })
     this.receiptRecords.push(object)
 
@@ -817,14 +822,15 @@ module.exports = class Record {
       date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
-      from: loanPackage.customerId,
-      to: loanPackage.storeId,
+      from: this.customerId,
+      to: this.storeId,
       storeId: this.storeId,
       storeName: this.storeName,
       customerId: this.customerId,
       customerName: this.customerName,
       employeeId: this.employeeId,
       employeeName: this.employeeName,
+      contractId: this.contractId
     })
     this.receiptRecords.push(object)
     this.numberOfPayingDownTimes += 1

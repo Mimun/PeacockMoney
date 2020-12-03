@@ -57,7 +57,7 @@ export default class Record {
       updateObj.remainInterest = updateObj.interest - updateObj.paidInterest
       payment = payment - value
       if (type === 1) {
-        object.array.push({
+        var object2 = {
           root: updateObj.interest,
           paid: temp1,
           remain: updateObj.remainInterest,
@@ -66,14 +66,25 @@ export default class Record {
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
-          from: loanPackage.customerId,
-          to: loanPackage.storeId,
+          from: this.customerId,
+          to: this.storeId,
           storeId: this.storeId,
           storeName: this.storeName,
           customerId: this.customerId,
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
+          contractId: this.contractId
+
+        }
+        object.array.push(object2)
+        $.ajax({
+          type: 'POST',
+          url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          data: JSON.stringify(object2),
+          success: result => {
+          }
         })
       }
 
@@ -89,7 +100,7 @@ export default class Record {
       updateObj.remainPrincipal = updateObj.principal - updateObj.paidPrincipal
       payment = payment - value
       if (type === 1) {
-        object.array.push({
+        var object2 = {
           root: updateObj.principal,
           paid: temp2,
           remain: updateObj.remainPrincipal,
@@ -98,14 +109,24 @@ export default class Record {
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
-          from: loanPackage.customerId,
-          to: loanPackage.storeId,
+          from: this.customerId,
+          to: this.storeId,
           storeId: this.storeId,
           storeName: this.storeName,
           customerId: this.customerId,
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
+          contractId: this.contractId
+        }
+        object.array.push(object2)
+        $.ajax({
+          type: 'POST',
+          url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          data: JSON.stringify(object2),
+          success: result => {
+          }
         })
       }
 
@@ -121,7 +142,7 @@ export default class Record {
       updateObj.remainTotalPenalty = updateObj.totalPenalty - updateObj.paidTotalPenalty
       payment = payment - value
       if (type === 1) {
-        object.array.push({
+        var object2 = {
           root: updateObj.totalPenalty,
           paid: temp3,
           remain: updateObj.remainTotalPenalty,
@@ -130,14 +151,24 @@ export default class Record {
           // remain: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
-          from: loanPackage.customerId,
-          to: loanPackage.storeId,
+          from: this.customerId,
+          to: this.storeId,
           storeId: this.storeId,
           storeName: this.storeName,
           customerId: this.customerId,
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
+          contractId: this.contractId
+        }
+        object.array.push(object2)
+        $.ajax({
+          type: 'POST',
+          url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          data: JSON.stringify(object2),
+          success: result => {
+          }
         })
       }
 
@@ -733,7 +764,7 @@ export default class Record {
       date: obj.date,
       array: []
     }
-    object.array.push({
+    var object2 = {
       root: 0,
       paid: obj.value,
       remain: 0,
@@ -742,16 +773,27 @@ export default class Record {
       date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
-      from: loanPackage.storeId,
-      to: loanPackage.customerId,
+      from: this.storeId,
+      to: this.customerId,
       storeId: this.storeId,
       storeName: this.storeName,
       customerId: this.customerId,
       customerName: this.customerName,
       employeeId: this.employeeId,
       employeeName: this.employeeName,
+      contractId: this.contractId
+    }
+    object.array.push(object2)
+    $.ajax({
+      type: 'POST',
+      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+      contentType: 'application/json',
+      data: JSON.stringify(object2),
+      success: result => {
+      }
     })
     this.receiptRecords.push(object)
+
 
     // update the length of number of payments
     this.numberOfPeriods += 1
@@ -808,7 +850,7 @@ export default class Record {
       date: obj.date,
       array: []
     }
-    object.array.push({
+    var object2 = {
       root: this.periodRecords[paydownPeriodIndex].interest,
       paid: this.periodRecords[paydownPeriodIndex].paidInterest,
       remain: this.periodRecords[paydownPeriodIndex].remainInterest,
@@ -817,14 +859,24 @@ export default class Record {
       date: this.realLifeDate,
       type: obj.type,
       receiptType: obj.receiptType,
-      from: loanPackage.customerId,
-      to: loanPackage.storeId,
+      from: this.customerId,
+      to: this.storeId,
       storeId: this.storeId,
       storeName: this.storeName,
       customerId: this.customerId,
       customerName: this.customerName,
       employeeId: this.employeeId,
       employeeName: this.employeeName,
+      contractId: this.contractId
+    }
+    object.array.push(object2)
+    $.ajax({
+      type: 'POST',
+      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+      contentType: 'application/json',
+      data: JSON.stringify(object2),
+      success: result => {
+      }
     })
     this.receiptRecords.push(object)
     this.numberOfPayingDownTimes += 1
