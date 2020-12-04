@@ -54,11 +54,11 @@
               <th colspan="2">Monthly</th>
             </tr>
             <tr>
-              <th class="static">Số tiền giải ngân</th>
-              <th class="daily" id="T-">Thu</th>
-              <th class="daily" id="C-">Chi</th>
-              <th class="monthly" id="T-">Thu</th>
-              <th class="monthly" id="C-">Chi</th>
+              <th class="calculate static">Số tiền giải ngân</th>
+              <th class="calculate daily" id="T-">Thu</th>
+              <th class="calculate daily" id="C-">Chi</th>
+              <th class="calculate monthly" id="T-">Thu</th>
+              <th class="calculate monthly" id="C-">Chi</th>
             </tr>
           </thead>
           <tbody>
@@ -83,6 +83,9 @@
             <tr id="Phạt">
               <th class="static">Phạt</th>
             </tr>
+            <!-- <tr id="Total">
+              <th class="static">Total</th>
+            </tr> -->
           </tbody>
         </table>
       </div>
@@ -95,11 +98,11 @@
               <th colspan="2">Monthly</th>
             </tr>
             <tr>
-              <th class="static">Số vụ vay</th>
-              <th class="daily" id="T-">Thu</th>
-              <th class="daily" id="C-">Chi</th>
-              <th class="monthly" id="T-">Thu</th>
-              <th class="monthly" id="C-">Chi</th>
+              <th class="calculate static">Số vụ vay</th>
+              <th class="calculate daily" id="T-">Thu</th>
+              <th class="calculate daily" id="C-">Chi</th>
+              <th class="calculate monthly" id="T-">Thu</th>
+              <th class="calculate monthly" id="C-">Chi</th>
             </tr>
           </thead>
           <tbody>
@@ -223,13 +226,14 @@
       return customObj
     }
 
-    const displayTable = (query1, query2, array, index) => {
+    const displayTable = (query1, query2, array, keyIndex) => {
       document.querySelectorAll(query1).forEach(element1 => {
         document.querySelectorAll(query2).forEach(element2 => {
           var receiptId = `${element1.id}${element2.id}`
           var obj = findNestedObj(array, 'receiptType', receiptId)
           var th = document.createElement('th')
-          switch (index) {
+
+          switch (keyIndex) {
             case (1):
               th.innerHTML = obj ? obj.paid.toLocaleString() : '-'
 
@@ -247,7 +251,7 @@
       })
     }
 
-    const calculateSum = () => {
+    const calculateRowSum = () => {
       document.querySelectorAll('table').forEach(table => {
         table.querySelectorAll('tbody tr').forEach(tr => {
           var sum = 0
@@ -260,6 +264,33 @@
           tr.appendChild(th)
         })
       })
+
+    }
+
+    const calculateColumnSum = (query) => {
+      var tr = document.createElement('tr')
+      document.querySelectorAll(`${query} thead th.calculate`).forEach((element, index) => {
+        console.log('index: ', index, ', element: ', element)
+        var th = document.createElement('th')
+        if (index === 0) {
+          th.innerHTML = 'Total'
+
+        } else {
+          var sum = 0
+          document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+            sum += parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+              parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0
+
+          })
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+          console.log('sum of column ', index, ': ', sum)
+          console.log('<------------------------->')
+        }
+        tr.appendChild(th)
+
+      })
+      document.querySelector(`${query} tbody`).appendChild(tr)
 
     }
 
@@ -288,7 +319,9 @@
       displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
       displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
 
-      // calculateSum()
+      calculateColumnSum('table.money-table')
+      calculateColumnSum('table.case-table')
+
     }
 
     // handleReportArray(dailyMoneyReport, monthlyMoneyReport)
