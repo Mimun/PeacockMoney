@@ -737,14 +737,14 @@ router.get('/contracts/:id/checkTable', (req, res) => {
   }
 })
 
-
-
 // update loan package
 router.put('/contracts/:id/loanPackage', (req, res) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
+  var updateQuery = { $set: { loanPackage: req.body } }
+  req.body.presentValue === 0 ? updateQuery.$set.contractStatus = 'completed' : null
   try {
-    Contract.findOneAndUpdate({ _id: req.params.id }, { $set: { loanPackage: req.body } }, { new: true }).exec((err, result) => {
+    Contract.findOneAndUpdate({ _id: req.params.id }, updateQuery, { new: true }).exec((err, result) => {
       if (err) throw err
       res.send('Update loanpackage successfully!')
     })

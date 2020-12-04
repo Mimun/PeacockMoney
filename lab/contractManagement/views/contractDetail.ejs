@@ -34,6 +34,7 @@
         <h5>Thao tác</h5>
         <button class="btn btn-sm btn-default" id="btn-update"></button>
         <button class="btn btn-sm btn-primary" id="btn-check-table">Check table</button>
+        <button class="btn btn-sm btn-primary" id="btn-contract-paper">Hợp đồng giấy</button>
         <button class="btn btn-sm btn-danger" id="btn-delete">Delete</button>
       </div>
       <div class="table-container">
@@ -129,6 +130,12 @@
           window.location.reload()
         })
     })
+
+    // contract paper button
+    document.querySelector('button#btn-contract-paper').addEventListener('click', (event) => {
+      window.location.href = `/contractMng/contracts/${contract._id}/print?token=${window.localStorage.getItem('accessToken')}`
+    })
+
   </script>
 
 </body>

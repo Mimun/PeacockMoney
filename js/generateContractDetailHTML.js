@@ -115,7 +115,7 @@ export const generateContractDetailHTML = (itemObj, template, elementName) => {
   // handle event click to pdf button
   clone.querySelector('.get-pdf').addEventListener('click', (event) => {
     event.preventDefault()
-    window.location.href = 'contracts/' + itemObj._id + '?token=' + window.localStorage.getItem('accessToken')
+    window.location.href = 'contracts/' + itemObj._id + '/print?token=' + window.localStorage.getItem('accessToken')
   })
 
   clone.querySelector('.get-check-table').addEventListener('click', (event) => {
