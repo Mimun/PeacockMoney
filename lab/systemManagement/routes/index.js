@@ -1078,13 +1078,17 @@ router.put('/funds/:id', (req, res) => {
 })
 
 const handleReceiptArray = (chosenDate, chosenMonth, contracts, callback) => {
+  console.log('chosen month: ', chosenMonth, ', chosen date: ', chosenDate)
+
   try {
     var dailyMoneyReport = [],
       monthlyMoneyReport = []
     if (contracts.length !== 0) {
+
       contracts.forEach(contract => {
         if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
           dailyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
+
             if (new Date(receipt.date).getDate() === chosenDate.getDate()
               && new Date(receipt.date).getMonth() === chosenDate.getMonth()
               && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
@@ -1115,16 +1119,7 @@ router.get('/moneyReport', (req, res) => {
       Store.find({}).exec(callback)
     },
     contracts: callback => {
-      Contract.find({ 'store.value': req.body.store }).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({ 'store.value._id': req.body.store }).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
@@ -1140,7 +1135,6 @@ router.post('/moneyReport/getReport', (req, res) => {
   console.log('req body: ', req.body)
   var chosenDate = new Date(req.body.date)
   var chosenMonth = chosenDate.getMonth()
-  console.log('chosen month: ', chosenMonth, ', chosen date: ', chosenDate)
   async.parallel({
     store: callback => {
       Store.findOne({ _id: req.body.store }).exec(callback)
@@ -1149,16 +1143,7 @@ router.post('/moneyReport/getReport', (req, res) => {
       Fund.findOne({ store: req.body.store }).exec(callback)
     },
     contracts: callback => {
-      Contract.find({ 'store.value': req.body.store }).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({ 'store.value._id': mongoose.Types.ObjectId(req.body.store) }).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
@@ -1211,16 +1196,7 @@ router.get('/companyMoneyReport', (req, res) => {
       Store.find({}).exec(callback)
     },
     contracts: callback => {
-      Contract.find({}).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
@@ -1239,16 +1215,7 @@ router.post('/companyMoneyReport/getReport', (req, res) => {
       Store.find({}).exec(callback)
     },
     contracts: callback => {
-      Contract.find({}).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
@@ -1326,16 +1293,7 @@ router.get('/statisticReport', (req, res) => {
       Store.find({}).exec(callback)
     },
     contracts: callback => {
-      Contract.find({}).populate([
-        {
-          path: 'store.value',
-          model: 'Store'
-        },
-        {
-          path: 'employee.value',
-          model: 'Employee'
-        }
-      ]).exec(callback)
+      Contract.find({}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
@@ -1358,16 +1316,7 @@ router.post('/statisticReport/getReport', (req, res) => {
   console.log('req body: ', req.body)
   var chosenDate = new Date(req.body.date)
   var chosenMonth = chosenDate.getMonth()
-  Contract.find({}).populate([
-    {
-      path: 'store.value',
-      model: 'Store'
-    },
-    {
-      path: 'employee.value',
-      model: 'Employee'
-    }
-  ]).exec((err, result) => {
+  Contract.find({}).exec((err, result) => {
     if (err) throw err
     handleReceiptArray3(chosenDate, chosenMonth, result, (dailyMoneyReport, monthlyMoneyReport, totalMoneyReport) => {
       res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport, totalMoneyReport })
