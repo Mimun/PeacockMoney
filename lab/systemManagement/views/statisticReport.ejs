@@ -362,7 +362,7 @@
       })
     }
 
-    const calculateSum = () => {
+    const calculateRowSum = () => {
       document.querySelectorAll('table').forEach(table => {
         table.querySelectorAll('tbody tr').forEach(tr => {
           var sum = 0
@@ -376,6 +376,34 @@
       })
 
     }
+
+    const calculateColumnSum = (query) => {
+      var tr = document.createElement('tr')
+      document.querySelectorAll(`${query} thead th`).forEach((element, index) => {
+        console.log('index: ', index, ', element: ', element)
+        var th = document.createElement('th')
+        if (index === 0) {
+          th.innerHTML = 'Total'
+
+        } else {
+          var sum = 0
+          document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+            sum += parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+              parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0
+
+          })
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+          console.log('sum of column ', index, ': ', sum)
+          console.log('<------------------------->')
+        }
+        tr.appendChild(th)
+
+      })
+      document.querySelector(`${query} tbody`).appendChild(tr)
+
+    }
+
 
     const handleReportArray = (dailyMoneyReport, monthlyMoneyReport, totalMoneyReport) => {
       let keys = ['root', 'paid', 'remain']
@@ -451,10 +479,20 @@
         'table#money-report-table.presentValue tbody', 'table#money-report-table.presentValue tbody', 'presentValue', 2)
 
       // calculate sum of rows
-      calculateSum()
+      calculateRowSum()
+      calculateColumnSum('table.table1')
+      calculateColumnSum('table.table2')
+      calculateColumnSum('table.table3')
+      calculateColumnSum('table.table4')
+      calculateColumnSum('table.table5')
+      calculateColumnSum('table.table6')
+      calculateColumnSum('table.table7')
+
+
+
     }
     // handleReportArray(dailyMoneyReport, monthlyMoneyReport, totalMoneyReport)
-    
+
     document.querySelector('button#get-report').addEventListener('click', (event) => {
       const obj = {}
       document.querySelectorAll('.modal .modal-body input').forEach(element => {
