@@ -51,11 +51,11 @@
           id="monthly-receive-table">
           <thead>
             <tr>
-              <th class="monthly" id="storeId">Thu(tháng)</th>
-              <th class="monthly" id="T-Gốc">Gốc</th>
-              <th class="monthly" id="T-Lãi">Lãi</th>
-              <th class="monthly" id="T-Nhận NB">Nhận NB</th>
-              <th class="monthly" id="T-Khác">Khác</th>
+              <th class="calculate monthly" id="storeId">Thu(tháng)</th>
+              <th class="calculate monthly" id="T-Gốc">Gốc</th>
+              <th class="calculate monthly" id="T-Lãi">Lãi</th>
+              <th class="calculate monthly" id="T-Nhận NB">Nhận NB</th>
+              <th class="calculate monthly" id="T-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -64,11 +64,11 @@
           id="monthly-spend-table">
           <thead>
             <tr>
-              <th class="monthly" id="storeId">Chi(tháng)</th>
-              <th class="monthly" id="C-Giải ngân mới">Giải ngân mới</th>
-              <th class="monthly" id="C-Vay thêm">Vay thêm</th>
-              <th class="monthly" id="C-Chuyển NB">Chuyển NB</th>
-              <th class="monthly" id="C-Khác">Khác</th>
+              <th class="calculate monthly" id="storeId">Chi(tháng)</th>
+              <th class="calculate monthly" id="C-Giải ngân mới">Giải ngân mới</th>
+              <th class="calculate monthly" id="C-Vay thêm">Vay thêm</th>
+              <th class="calculate monthly" id="C-Chuyển NB">Chuyển NB</th>
+              <th class="calculate monthly" id="C-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -86,11 +86,11 @@
           id="daily-receive-table">
           <thead>
             <tr>
-              <th class="daily" id="storeId">Thu(ngày)</th>
-              <th class="daily" id="T-Gốc">Gốc</th>
-              <th class="daily" id="T-Lãi">Lãi</th>
-              <th class="daily" id="T-Nhận NB">Nhận NB</th>
-              <th class="daily" id="T-Khác">Khác</th>
+              <th class="calculate daily" id="storeId">Thu(ngày)</th>
+              <th class="calculate daily" id="T-Gốc">Gốc</th>
+              <th class="calculate daily" id="T-Lãi">Lãi</th>
+              <th class="calculate daily" id="T-Nhận NB">Nhận NB</th>
+              <th class="calculate daily" id="T-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -99,11 +99,11 @@
           id="daily-spend-table">
           <thead>
             <tr>
-              <th class="daily" id="storeId">Chi(ngày)</th>
-              <th class="daily" id="C-Giải ngân mới">Giải ngân mới</th>
-              <th class="daily" id="C-Vay thêm">Vay thêm</th>
-              <th class="daily" id="C-Chuyển NB">Chuyển NB</th>
-              <th class="daily" id="C-Khác">Khác</th>
+              <th class="calculate daily" id="storeId">Chi(ngày)</th>
+              <th class="calculate daily" id="C-Giải ngân mới">Giải ngân mới</th>
+              <th class="calculate daily" id="C-Vay thêm">Vay thêm</th>
+              <th class="calculate daily" id="C-Chuyển NB">Chuyển NB</th>
+              <th class="calculate daily" id="C-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -199,7 +199,7 @@
       document.querySelector(query2).appendChild(tr)
     }
 
-    const calculateSum = () => {
+    const calculateRowSum = () => {
       document.querySelectorAll('table').forEach(table => {
         table.querySelectorAll('tbody tr').forEach(tr => {
           var sum = 0
@@ -211,6 +211,33 @@
           tr.appendChild(th)
         })
       })
+
+    }
+
+    const calculateColumnSum = (query) => {
+      var tr = document.createElement('tr')
+      document.querySelectorAll(`${query} thead th.calculate`).forEach((element, index) => {
+        console.log('index: ', index, ', element: ', element)
+        var th = document.createElement('th')
+        if (index === 0) {
+          th.innerHTML = 'Total'
+
+        } else {
+          var sum = 0
+          document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+            sum += parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+              parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0
+
+          })
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+          console.log('sum of column ', index, ': ', sum)
+          console.log('<------------------------->')
+        }
+        tr.appendChild(th)
+
+      })
+      document.querySelector(`${query} tbody`).appendChild(tr)
 
     }
 
@@ -237,6 +264,13 @@
       })
 
       // calculateSum()
+      calculateColumnSum('table.monthly-receive-table')
+      calculateColumnSum('table.monthly-spend-table')
+
+      calculateColumnSum('table.daily-receive-table')
+      calculateColumnSum('table.daily-spend-table')
+
+
     }
     // handleReportArray(dailyMoneyReport, monthlyMoneyReport)
 
