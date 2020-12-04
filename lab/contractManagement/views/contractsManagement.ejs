@@ -16,7 +16,7 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Quản lý hợp đồng</h2>
-      <table class="table table-hover table-bordered table-striped period-table">
+      <table class="table table-hover table-responsive table-bordered table-striped period-table">
         <thead>
           <tr>
             <th scope="col" id="contractId">Số hợp đồng</th>
@@ -225,10 +225,6 @@
     const roleAbility = JSON.parse('<%- JSON.stringify(roleAbility) %>');
     const payload = JSON.parse('<%- JSON.stringify(payload) %>');
     console.log('contract list: ', contractList)
-    // console.log('role ability: ', roleAbility)
-    // console.log('payload: ', payload)
-
-
 
     // handle modal open
     document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
@@ -269,7 +265,10 @@
         // fill info to table
         if (contract) {
           var tr = document.createElement('tr')
-          tr.id = contract.contractId
+          tr.id = contract.contract_Id
+          tr.addEventListener('click', event => {
+            window.location.href = `/contractMng/contracts/${tr.id}?token=${window.localStorage.getItem('accessToken')}`
+          })
           document.querySelectorAll(`table thead th`).forEach(element => {
             var th = document.createElement('th')
             if (contract[element.id]) {
@@ -285,8 +284,6 @@
       });
     }
     displayTable(contractList, 'table tbody')
-
-
 
   </script>
 </body>

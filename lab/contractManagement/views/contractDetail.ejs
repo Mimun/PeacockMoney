@@ -6,146 +6,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    .content-container {
-      border: 1px solid lightgrey;
-      padding: 5%;
-      /* width: 50vw; */
-    }
-
-    .part {
-      margin-bottom: 3%;
-    }
-
-    .contract-image {
-      width: 128px;
-      height: auto;
-      max-height: 128px;
-      position: relative;
-      float: right;
-    }
-
-    .contract-image img {
-      width: 100%;
-      height: auto;
-    }
-
-    .contract-detail-body {
-      padding: 0 5%;
-    }
-
-    .contract-detail-body .section {
-      margin: 2% 0;
-      padding: 0 5%;
-    }
-
-    .section-title {
-      font-weight: bold;
-    }
-
-    .section-title.signature-container {
-      font-weight: normal;
-      font-style: italic;
-      margin: 5%;
-    }
-
-    .signature {
-      min-height: 192px;
-    }
-
-    .signature h5 {
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .invisible-div {
-      visibility: hidden;
-      width: 0;
-      height: 0;
+    input:disabled {
+      background-color: white !important;
     }
   </style>
 </head>
 
 <body>
-  <template id="info-template">
-    <style>
-      label {
-        font-weight: bold;
-      }
-    </style>
-    <div class="form-group row">
-      <!-- Material input -->
-      <label class="col-sm col-form-label"></label>
-      <div class="col-sm">
-        <div class="md-form mt-0 form-sm">
-          <input type="text" class="form-control" value="" disabled>
-        </div>
-      </div>
-    </div>
-
-  </template>
-
-  <template id="contract-template">
-
-    <div class="content-container">
-      <div class="btn-options d-flex mb-4">
-        <a href="" class="btn btn-primary btn-sm get-pdf" style="margin: auto;">Tạo hợp đồng giấy</a>
-        <button class="btn btn-secondary btn-sm get-check-table" style="margin: auto;">Check table</button>
-      </div>
-      <div class="contract-detail-container">
-        <div class="contract-detail-header part">
-          <div class="container">
-            <div class="row">
-              <div class="col-2"></div>
-              <div class="col" style="display: flex;">
-                <div class="contract-title" style="margin: auto; ">
-                  <p class="h3" style="font-weight: bold; text-decoration: underline;">Thông tin hợp đồng</p>
-                </div>
-              </div>
-              <div class="col-2">
-                <div class="contract-image">
-                  <img src="" alt="" id="contract-image">
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-        <div class="contract-detail-body part">
-          <div class="a-side-info-container section-container">
-            <h4 class="section-title">I. Thông tin bên A</h4>
-            <div class="section"></div>
-          </div>
-          <div class="b-side-info-container section-container">
-            <h4 class="section-title">II. Thông tin bên B</h4>
-            <div class="section"></div>
-
-          </div>
-          <div class="contract-info-container section-container">
-            <h4 class="section-title">III. Thông tin hợp đồng</h4>
-            <div class="section"></div>
-
-          </div>
-          <div class="item-info-container section-container">
-            <h4 class="section-title">IV. Thông tin tài sản thế chấp</h4>
-            <div class="section " style="border: 1px solid lightgrey;">
-              <div class="item-info d-flex flex-wrap">
-              </div>
-              <div class="item-status d-flex flex-wrap">
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="contract-detail-footer part">
-        </div>
-      </div>
-
-
+  <%- include('../Components/navbar.ejs') %>
+  <template id="info">
+    <div class="form-group mr-3 flex-grow-1">
+      <label for="" class="bmd-label-floating"></label>
+      <input type="" class="form-control" id="" disabled>
     </div>
   </template>
+  <template id="item-info">
+    <div class="table-container">
+      <h6></h6>
+      <div class="item-info-container d-flex flex-wrap justify-content-start"></div>
+    </div>
+  </template>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Chi tiết hợp đồng</h2>
+      <div class="table-container">
+        <h5>Thao tác</h5>
+        <button class="btn btn-sm btn-default" id="btn-update"></button>
+        <button class="btn btn-sm btn-primary" id="btn-check-table">Check table</button>
+        <button class="btn btn-sm btn-danger" id="btn-delete">Delete</button>
+      </div>
+      <div class="table-container">
+        <h5>I. Thông tin khách hàng</h5>
+        <div class="customer d-flex flex-wrap justify-content-start" id="customer"></div>
+      </div>
+      <div class="table-container">
+        <h5>II. Thông tin hợp đồng</h5>
+        <div class="contract d-flex flex-wrap justify-content-start" id="contract"></div>
+      </div>
+      <div class="table-container">
+        <h5>III. Thông tin tài sản hợp đồng</h5>
+        <div class="item d-flex flex-wrap justify-content-start" id="item"></div>
+      </div>
 
-  <div id="contract-info"></div>
+    </div>
+  </div>
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+    var contract = JSON.parse('<%- JSON.stringify(contract)%>')
+    console.log('contract: ', contract)
+
+    if (contract) {
+      // display customer and contract info
+      contract.contractMetadata.forEach(info => {
+        var infoDiv = document.querySelector('template#info').content.cloneNode('true')
+        infoDiv.querySelector('label').innerHTML = info.dataVie
+        infoDiv.querySelector('input').value = info.value
+        if (info.name.includes('customer')) {
+          document.querySelector('.table-container div#customer').appendChild(infoDiv)
+        } else {
+          document.querySelector('.table-container div#contract').appendChild(infoDiv)
+
+        }
+      })
+
+      // display items info
+      contract.items.forEach(item => {
+        var itemDiv = document.querySelector('template#item-info').content.cloneNode('true')
+
+        item.infos.forEach((inf, index) => {
+          if (index === 0) {
+            itemDiv.querySelector('h6').innerHTML = inf.value
+          } else {
+            var infoDiv = document.querySelector('template#info').content.cloneNode('true')
+            infoDiv.querySelector('label').innerHTML = inf.name
+            infoDiv.querySelector('input').value = inf.value
+
+            itemDiv.querySelector('div.item-info-container').appendChild(infoDiv)
+          }
+        })
+        document.querySelector('.table-container div#item').appendChild(itemDiv)
+      })
+
+    }
+
+    // check table button
+    document.querySelector('button#btn-check-table').addEventListener('click', (event) => {
+      window.location.href = `/contractMng/contracts/${contract._id}/checkTable?token=${window.localStorage.getItem('accessToken')}`
+    })
+
+    // delete button
+    document.querySelector('button#btn-delete').addEventListener('click', (event) => {
+      makeRequest('DELETE', `/contractMng/contracts/${contract._id}`, 'application/json', {}, () => {
+        window.location.href = `/contractMng/contracts?token=${window.localStorage.getItem('accessToken')}`
+      })
+    })
+
+    // update button
+    var updateBtn = document.querySelector('button#btn-update')
+    switch (contract.contractStatus) {
+      case 'waiting':
+        updateBtn.innerHTML = 'Approve'
+
+        break;
+      case 'approved':
+        updateBtn.innerHTML = 'Complete'
+
+        break;
+      case 'completed':
+        updateBtn.closest('div.table-container').removeChild(updateBtn)
+
+        break;
+
+      default:
+        updateBtn.innerHTML = 'Approve'
+        break;
+    }
+
+    updateBtn.addEventListener('click', event => {
+      makeRequest('PUT', `/contractMng/contracts/${contract._id}?token=${window.localStorage.getItem('accessToken')}`,
+        'application/json', JSON.stringify({ contractStatus: 'completed' }), () => {
+          window.location.reload()
+        })
+    })
+  </script>
 
 </body>
 
