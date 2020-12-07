@@ -597,12 +597,12 @@
         window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}&date=${event.target.closest('tr').C_DATA ? event.target.closest('tr').C_DATA.date : ''}`
       })
       document.querySelectorAll(`div.${query} tbody tr`).forEach(element => {
-        if(!element.querySelector('td')){
+        if (!element.querySelector('td')) {
           var td = document.createElement('td')
           td.appendChild(button)
           element.querySelector('th#option').appendChild(td)
         }
-        
+
       })
     }
 
@@ -858,9 +858,14 @@
     })
 
     // expand loan package
-    document.querySelector('button#btn-expand').addEventListener('click', event=>{
-      loanPackage.expandLoanPackage()
-      updateLoanPackage(loanPackage)
+    document.querySelector('button#btn-expand').addEventListener('click', event => {
+      if (loanPackage.simulation === 1 || loanPackage.simulation === 4) {
+        loanPackage.expandLoanPackage()
+        updateLoanPackage(loanPackage)
+      } else {
+        window.alert('Bạn không thể gia hạn hợp đồng vì kiểu vay không hợp lệ!')
+      }
+
 
     })
 
