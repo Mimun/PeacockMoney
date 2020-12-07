@@ -925,6 +925,32 @@ export default class Record {
     this.totalPrincipalOfOverflowPayments = 0
   }
 
+  expandLoanPackage() {
+    var lastPeriod = this.periodRecords[this.periodRecords.length - 1]
+    var lastPeriodIndex = this.periodRecords.findIndex(x => JSON.stringify(x) === JSON.stringify(lastPeriod))
+    var newExpandPeriod = {
+      ...lastPeriod,
+      period: lastPeriod.period + 1,
+      periodStartDate: new Date(lastPeriod.periodStartDate).addMonths(1),
+      periodEndDate: new Date(lastPeriod.periodEndDate).addMonths(1),
+      redemptionDate: new Date(lastPeriod.redemptionDate).addMonths(1),
+      daysBetween: 0,
+      numericalOrder: lastPeriod.numericalOrder + 1,
+      penaltyRecord: [],
+      paymentRecords: [],
+      totalPenalty: 0,
+      paidTotalPenalty: 0,
+      totalPayment: lastPeriod.principal + lastPeriod.interest
+    }
+    this.periodRecords.push(newExpandPeriod)
+    lastPeriod.principal = 0
+    lastPeriod.paidPrincipal = 0
+    lastPeriod.remainPrincipal = 0
+    lastPeriod.redemption = lastPeriod.principal + lastPeriod.interest
+    lastPeriod.totalPayment = lastPeriod.principal + lastPeriod.interest + lastPeriod.totalPenalty
+    lastPeriod.remain = lastPeriod.totalPayment - lastPeriod.paid
+  }
+
   // reset temp incremental principal
   resetIncrementalPrincipal() {
     this.tempIncrementalPaidPrincipal = 0

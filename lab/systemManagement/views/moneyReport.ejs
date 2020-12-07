@@ -130,6 +130,32 @@
           </tbody>
         </table>
       </div>
+      <div class="table-container">
+        <table class="table table-bordered table-striped table-hover total-table" id="total-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th colspan="2">Daily</th>
+              <th colspan="2">Monthly</th>
+            </tr>
+            <tr>
+              <th class="calculate static">Số vụ vay</th>
+              <th class="calculate daily" id="T-">Thu</th>
+              <th class="calculate daily" id="C-">Chi</th>
+              <th class="calculate monthly" id="T-">Thu</th>
+              <th class="calculate monthly" id="C-">Chi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="1">
+              <th class="static">Cash</th>
+            </tr>
+            <tr id="2">
+              <th class="static">Bank</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -208,16 +234,16 @@
 
     document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
 
-    const createCustomObj = (array, keys, index) => {
-      var customObj = _(array).flatMap('array').groupBy('receiptId').
+    const createCustomObj = (array, keys, index, groupBy = 'receiptId') => {
+      var customObj = _(array).flatMap('array').groupBy(groupBy).
         map((objs, key) => {
           switch (index) {
             case (1):
               var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objs, key))))
-              return { receiptType: key, paid: def.paid }
+              return { receiptType: groupBy === 'receiptId' ? key : (key === '1' ? `T-${key}` : `C-${key}`), paid: def.paid }
               break;
             case (2):
-              return { receiptType: key, cases: objs.length }
+              return { receiptType: groupBy === 'receiptId' ? key : (key === '1' ? `T-${key}` : `C-${key}`), cases: objs.length }
               break;
             default:
               break;
@@ -268,9 +294,9 @@
     }
 
     const calculateColumnSum = (query) => {
+      document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
       var tr = document.createElement('tr')
       document.querySelectorAll(`${query} thead th.calculate`).forEach((element, index) => {
-        console.log('index: ', index, ', element: ', element)
         var th = document.createElement('th')
         if (index === 0) {
           th.innerHTML = 'Total'
@@ -284,8 +310,6 @@
           })
           th.innerHTML = sum.toLocaleString()
           tr.appendChild(th)
-          console.log('sum of column ', index, ': ', sum)
-          console.log('<------------------------->')
         }
         tr.appendChild(th)
 
@@ -300,7 +324,14 @@
       const customMonthlyMoneyReport = createCustomObj(monthlyMoneyReport, keys, 1)
       const customDailyCaseReport = createCustomObj(dailyMoneyReport, keys, 2)
       const customMonthlyCaseReport = createCustomObj(monthlyMoneyReport, keys, 2)
-      console.log('obj: ', { customDailyMoneyReport, customMonthlyMoneyReport, customDailyCaseReport, customMonthlyCaseReport })
+      const customTotalDailyMoneyReport = createCustomObj(dailyMoneyReport, keys, 1, 'receiptType')
+      const customTotalMonthlyMoneyReport = createCustomObj(monthlyMoneyReport, keys, 1, 'receiptType')
+
+      console.log('obj: ', {
+        customDailyMoneyReport, customMonthlyMoneyReport,
+        customDailyCaseReport, customMonthlyCaseReport,
+        customTotalDailyMoneyReport, customTotalMonthlyMoneyReport
+      })
 
       // remove old th 
       document.querySelectorAll('table.money-table tbody th:not(.static)').forEach(element => {
@@ -319,8 +350,12 @@
       displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
       displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
 
+      displayTable('table.total-table thead th.daily', 'table.total-table tbody tr', customTotalDailyMoneyReport, 1)
+      displayTable('table.total-table thead th.monthly', 'table.total-table tbody tr', customTotalMonthlyMoneyReport, 1)
+
       calculateColumnSum('table.money-table')
       calculateColumnSum('table.case-table')
+      calculateColumnSum('table.total-table')
 
     }
 

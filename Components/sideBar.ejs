@@ -4,10 +4,15 @@
     width: 100%;
   }
 
-  table th{
+  table th {
     min-width: fit-content;
   }
-/* 
+
+  .list-group-item :first-child {
+    margin-right: 0 !important;
+  }
+
+  /* 
   table,
   td,
   th {
@@ -175,12 +180,14 @@
         </a>
         <div class="collapse" id="reminding-item">
           <a onclick="getPage('/contractMng/waitingContracts')"
-            class="list-group-item list-group-item-action list-group-item-dark">Hợp đồng chờ</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Hợp đồng chờ <span
+              class="badge badge-warning ml-2">0</span></a>
           <a onclick="getPage('/contractMng/latePeriod')"
-            class="list-group-item list-group-item-action list-group-item-dark">Khoản thu quá hạn</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Khoản thu quá hạn<span
+              class="badge badge-warning ml-2">0</span></a>
           <a onclick="getPage('/contractMng/goingToDo')"
-            class="list-group-item list-group-item-action list-group-item-dark">Khoản thu sắp phải thực
-            hiện</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Khoản thu sắp thực
+            hiện<span class="badge badge-warning ml-2">0</span></a>
         </div>
         <!-- <a onclick="getPage('/contractMng/contracts')"
           class="list-group-item list-group-item-action list-group-item-secondary">Danh sách hợp đồng</a> -->
@@ -198,13 +205,13 @@
         </a>
         <div class="collapse" id="statistic-item">
           <a onclick="getPage('/systemMng/statistic')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Báo cáo kho</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Báo cáo kho</a>
           <a onclick="getPage('/systemMng/moneyReport')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Báo cáo quỹ tiền phòng GD</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Báo cáo quỹ tiền phòng GD</a>
           <a onclick="getPage('/systemMng/companyMoneyReport')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Báo cáo quỹ tiền Công ty</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Báo cáo quỹ tiền Công ty</a>
           <a onclick="getPage('/systemMng/statisticReport')"
-            class="list-group-item list-group-item-action list-group-item-secondary">Thống kê báo cáo</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Thống kê báo cáo</a>
         </div>
 
         <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
@@ -227,7 +234,7 @@
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý thẩm định giá</a>
           <a onclick="getPage('/systemMng/itemType')"
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý loại tài sản</a>
-            <a onclick="getPage('/systemMng/receiptId')"
+          <a onclick="getPage('/systemMng/receiptId')"
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý mã phiếu thu/chi</a>
           <a onclick="getPage('/systemMng/funds')"
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý quỹ tiền</a>

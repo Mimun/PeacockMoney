@@ -137,7 +137,7 @@
 
         </div>
 
-        <!-- date for simulation -->
+        <!-- package options -->
         <div class="row block-container">
           <!-- payment section -->
           <div class="col">
@@ -252,6 +252,11 @@
             </div>
           </div>
 
+          <!-- expand package -->
+          <div class="col-1">
+            <button class="btn btn-sm btn-primary" id="btn-expand">Gia hạn hợp đồng</button>
+          </div>
+
           <!-- <button class="btn btn-sm" id="receipt">In phiếu</button> -->
         </div>
 
@@ -264,24 +269,12 @@
               <table class="table table-responsive table-bordered table-striped table-hover payment-history-table">
                 <thead>
                   <tr>
-                    <th id="period">No</th>
-                    <th id="id">Mã phiếu</th>
-                    <th id="pay">Số tiền khách đóng</th>
-                    <th id="principal">Số tiền gốc phải đóng trong kỳ</th>
-                    <th id="interest">Lãi phải thu</th>
-                    <th id="paidInterest">Lãi đã thu</th>
-                    <th id="remainInterest">Lãi còn lại</th>
-
-                    <th id="principal">Gốc phải thu</th>
-                    <th id="paidPrincipal">Gốc đã thu</th>
-                    <th id="remainPrincipal">Gốc còn lại</th>
-
-                    <th id="totalPenalty">Tổng phạt phải thu</th>
-                    <th id="paidTotalPenalty">Tổng phạt đã thu</th>
-                    <th id="remainTotalPenalty">Tổng phạt còn lại</th>
-                    <th id="totalPayment">Tổng số tiền đóng (tổng phạt + lãi + gốc đóng trong kỳ)</th>
-                    <th id="paid">Tống số tiền khách đã trả</th>
+                    <th id="receiptId">Mã phiếu</th>
+                    <th id="paid">Thực thu/chi</th>
+                    <th id="root">Phải thu/chi</th>
                     <th id="remain">Còn lại</th>
+                    <th id="receiptReason">Lý do</th>
+                    <th id="type">Loại GD</th>
                     <th id="date">Ngày</th>
                     <th id="option">Option</th>
                   </tr>
@@ -604,21 +597,30 @@
         window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}&date=${event.target.closest('tr').C_DATA ? event.target.closest('tr').C_DATA.date : ''}`
       })
       document.querySelectorAll(`div.${query} tbody tr`).forEach(element => {
-        var td = document.createElement('td')
-        td.appendChild(button)
-        element.querySelector('th#option').appendChild(td)
+        if(!element.querySelector('td')){
+          var td = document.createElement('td')
+          td.appendChild(button)
+          element.querySelector('th#option').appendChild(td)
+        }
+        
       })
     }
 
     // display payment history
     const displayPaymentHistory = () => {
       document.querySelector('div.payment-history table tbody').innerHTML = ''
-      if (loanPackage.periodPaymentSlip.length !== 0) {
-        loanPackage.periodPaymentSlip.forEach(payment => {
-          displayTable(payment, 'payment-history')
-          addPrintButton('payment-history')
+      var customArray = []
+      loanPackage.receiptRecords.forEach(record => {
+        record.array.forEach(rec => {
+          customArray.push(rec)
         })
-      }
+      })
+      console.log('custom array: ', customArray)
+      customArray.forEach(element => {
+        displayTable(element, 'payment-history')
+        addPrintButton('payment-history')
+      })
+
 
     }
     displayPaymentHistory()
@@ -733,6 +735,7 @@
 
             console.log('trans his: ', transHistoryObj)
             displayLoanMorePayDownHistory()
+            displayPaymentHistory()
           }
         } else {
           window.alert('You have loaned more or payed down today. Please comeback later!')
@@ -796,6 +799,7 @@
 
             console.log('trans his: ', transHistoryObj)
             displayLoanMorePayDownHistory()
+            displayPaymentHistory()
           }
         } else {
           window.alert('You have loaned more or payed down today. Please comeback later!')
@@ -851,6 +855,13 @@
         window.alert('This contract is not approved!')
 
       }
+    })
+
+    // expand loan package
+    document.querySelector('button#btn-expand').addEventListener('click', event=>{
+      loanPackage.expandLoanPackage()
+      updateLoanPackage(loanPackage)
+
     })
 
     // choose column to display

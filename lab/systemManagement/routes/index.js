@@ -1087,17 +1087,20 @@ const handleReceiptArray = (chosenDate, chosenMonth, contracts, callback) => {
 
       contracts.forEach(contract => {
         if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-          dailyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
+          contract.loanPackage.receiptRecords.map(receipt => {
 
-            if (new Date(receipt.date).getDate() === chosenDate.getDate()
-              && new Date(receipt.date).getMonth() === chosenDate.getMonth()
-              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
-              return receipt
+            if (new Date(receipt.date).getDate() === new Date(chosenDate).getDate()
+              && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+              dailyMoneyReport.push(receipt)
             }
           })
 
-          monthlyMoneyReport = contract.loanPackage.receiptRecords.filter(receipt => {
-            if (new Date(receipt.date).getMonth() === chosenMonth) {
+          contract.loanPackage.receiptRecords.map(receipt => {
+            console.log('month: ', new Date(receipt.date).getMonth())
+            if (new Date(receipt.date).getMonth() === chosenMonth
+              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+              monthlyMoneyReport.push(receipt)
               return receipt
             }
           })
@@ -1334,11 +1337,11 @@ router.get('/receiptId', (req, res) => {
   })
 })
 
-router.post('/receiptId', (req, res)=>{
+router.post('/receiptId', (req, res) => {
   console.log('req body: ', req.body)
-  new ReceiptId(req.body).save((err, result)=>{
-    if(err) throw err
-    res.send({message: 'Save to db successfully!'})
+  new ReceiptId(req.body).save((err, result) => {
+    if (err) throw err
+    res.send({ message: 'Save to db successfully!' })
   })
 })
 
