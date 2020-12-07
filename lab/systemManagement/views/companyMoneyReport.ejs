@@ -215,6 +215,7 @@
     }
 
     const calculateColumnSum = (query) => {
+      // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
       var tr = document.createElement('tr')
       document.querySelectorAll(`${query} thead th.calculate`).forEach((element, index) => {
         console.log('index: ', index, ', element: ', element)

@@ -1077,34 +1077,26 @@ router.put('/funds/:id', (req, res) => {
   })
 })
 
-const handleReceiptArray = (chosenDate, chosenMonth, contracts, callback) => {
+const handleReceiptArray = (chosenDate, chosenMonth, fund, callback) => {
   console.log('chosen month: ', chosenMonth, ', chosen date: ', chosenDate)
 
   try {
     var dailyMoneyReport = [],
       monthlyMoneyReport = []
-    if (contracts.length !== 0) {
+    if (fund && fund.receiptRecords.length !== 0) {
 
-      contracts.forEach(contract => {
-        if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-          contract.loanPackage.receiptRecords.map(receipt => {
-
-            if (new Date(receipt.date).getDate() === new Date(chosenDate).getDate()
-              && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
-              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
-              dailyMoneyReport.push(receipt)
-            }
-          })
-
-          contract.loanPackage.receiptRecords.map(receipt => {
-            console.log('month: ', new Date(receipt.date).getMonth())
-            if (new Date(receipt.date).getMonth() === chosenMonth
-              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
-              monthlyMoneyReport.push(receipt)
-              return receipt
-            }
-          })
+      fund.receiptRecords.forEach(receipt => {
+        if (new Date(receipt.date).getDate() === new Date(chosenDate).getDate()
+          && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+          && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+          dailyMoneyReport.push(receipt)
         }
+        if (new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+          && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+          monthlyMoneyReport.push(receipt)
+          return receipt
+        }
+
       })
     }
     callback(dailyMoneyReport, monthlyMoneyReport)
@@ -1123,10 +1115,14 @@ router.get('/moneyReport', (req, res) => {
     },
     contracts: callback => {
       Contract.find({ 'store.value._id': req.body.store }).exec(callback)
+    },
+    fund: callback => {
+      Fund.findOne({ store: req.body.store }).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
-    handleReceiptArray(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
+    console.log('fund: ', results.fund)
+    handleReceiptArray(chosenDate, chosenMonth, results.fund, (dailyMoneyReport, monthlyMoneyReport) => {
       res.render('moneyReport', { stores: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
     })
 
@@ -1142,15 +1138,15 @@ router.post('/moneyReport/getReport', (req, res) => {
     store: callback => {
       Store.findOne({ _id: req.body.store }).exec(callback)
     },
+    contracts: callback => {
+      Contract.find({ 'store.value._id': req.body.store }).exec(callback)
+    },
     fund: callback => {
       Fund.findOne({ store: req.body.store }).exec(callback)
-    },
-    contracts: callback => {
-      Contract.find({ 'store.value._id': mongoose.Types.ObjectId(req.body.store) }).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
-    handleReceiptArray(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
+    handleReceiptArray(chosenDate, chosenMonth, results.fund, (dailyMoneyReport, monthlyMoneyReport) => {
       res.send({ store: results.store, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
     })
   })
@@ -1175,7 +1171,8 @@ const handleReceiptArray2 = (chosenDate, chosenMonth, contracts, callback) => {
           })
 
           contract.loanPackage.receiptRecords.map(receipt => {
-            if (new Date(receipt.date).getMonth() === chosenMonth) {
+            if (new Date(receipt.date).getMonth() === chosenDate.getMonth()
+              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
               if (receipt !== null) {
                 monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
               }
@@ -1256,7 +1253,8 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
           })
 
           contract.loanPackage.receiptRecords.map(receipt => {
-            if (new Date(receipt.date).getMonth() === chosenMonth) {
+            if (new Date(receipt.date).getMonth() === chosenDate.getMonth()
+              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
               if (receipt !== null) {
                 monthlyMoneyReport.push({
                   ...receipt, storeId: receipt.id.split('.')[0],
@@ -1270,13 +1268,15 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
           })
 
           contract.loanPackage.receiptRecords.forEach(receipt => {
-            if (receipt !== null) {
-              totalMoneyReport.push({
-                ...receipt, storeId: receipt.id.split('.')[0],
-                itemType: itemType, itemTypeId: itemTypeId,
-                contractId: contract.id,
-                presentValue: contract.loanPackage.presentValue
-              })
+            if (new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+              if (receipt !== null) {
+                totalMoneyReport.push({
+                  ...receipt, storeId: receipt.id.split('.')[0],
+                  itemType: itemType, itemTypeId: itemTypeId,
+                  contractId: contract.id,
+                  presentValue: contract.loanPackage.presentValue
+                })
+              }
             }
           })
         }

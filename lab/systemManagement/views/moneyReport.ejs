@@ -235,7 +235,7 @@
     document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
 
     const createCustomObj = (array, keys, index, groupBy = 'receiptId') => {
-      var customObj = _(array).flatMap('array').groupBy(groupBy).
+      var customObj = _(array).groupBy(groupBy).
         map((objs, key) => {
           switch (index) {
             case (1):
@@ -333,22 +333,27 @@
         customTotalDailyMoneyReport, customTotalMonthlyMoneyReport
       })
 
-      // remove old th 
+      // render money
       document.querySelectorAll('table.money-table tbody th:not(.static)').forEach(element => {
         element.closest('tr').removeChild(element)
       })
 
-      // render daily and monthly
       displayTable('table.money-table thead th.daily', 'table.money-table tbody tr', customDailyMoneyReport, 1)
       displayTable('table.money-table thead th.monthly', 'table.money-table tbody tr', customMonthlyMoneyReport, 1)
 
+
+      // render case
       document.querySelectorAll('table.case-table tbody th:not(.static)').forEach(element => {
         element.closest('tr').removeChild(element)
       })
 
-      // render daily and monthly
       displayTable('table.case-table thead th.daily', 'table.case-table tbody tr', customDailyCaseReport, 2)
       displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
+
+      // render total
+      document.querySelectorAll('table.total-table tbody th:not(.static)').forEach(element => {
+        element.closest('tr').removeChild(element)
+      })
 
       displayTable('table.total-table thead th.daily', 'table.total-table tbody tr', customTotalDailyMoneyReport, 1)
       displayTable('table.total-table thead th.monthly', 'table.total-table tbody tr', customTotalMonthlyMoneyReport, 1)
