@@ -255,6 +255,7 @@
           <!-- expand package -->
           <div class="col-1">
             <button class="btn btn-sm btn-primary" id="btn-expand">Gia hạn hợp đồng</button>
+            <button class="btn btn-sm btn-primary" id="btn-undo">Undo</button>
           </div>
 
           <!-- <button class="btn btn-sm" id="receipt">In phiếu</button> -->
@@ -643,6 +644,7 @@
     // NOTE: receiptType: 1: receive, 2: spend
     //       type: 1: cash, 2: iCash
     document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
+      window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
       if (loanPackage) {
         console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
         var paymentSlipObj = {
@@ -687,6 +689,8 @@
 
     // calculate and display pay down
     document.querySelector('button#btn-pay-down').addEventListener('click', (event) => {
+      window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
+
       if (loanPackage) {
         if (loanPackage.isLoanMoreOrPayDown === false) {
 
@@ -751,6 +755,8 @@
 
     // calculate and display loan more
     document.querySelector('button#btn-loan-more').addEventListener('click', (event) => {
+      window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
+
       if (loanPackage) {
         if (loanPackage.isLoanMoreOrPayDown === false) {
           var numberOfNewPeriods = simulation === 3 ? document.querySelector('#loan-more input#numberOfNewPeriods').value : null
@@ -815,6 +821,8 @@
 
     // another fee
     document.querySelector('button#btn-another-fee').addEventListener('click', (event) => {
+      window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
+
       if (loanPackage) {
         console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
         var obj = {
@@ -859,6 +867,8 @@
 
     // expand loan package
     document.querySelector('button#btn-expand').addEventListener('click', event => {
+      window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
+
       if (loanPackage.simulation === 1 || loanPackage.simulation === 4) {
         loanPackage.expandLoanPackage()
         updateLoanPackage(loanPackage)
@@ -867,6 +877,21 @@
       }
 
 
+    })
+
+    // undo button
+    document.querySelector('button#btn-undo').addEventListener('click', (event) => {
+      console.log('prev loanPackage: ', JSON.parse(window.localStorage.getItem('prevLoanPackage')))
+      var prevLoanPackage = JSON.parse(window.localStorage.getItem('prevLoanPackage'))
+      loanPackage = prevLoanPackage
+      if(prevLoanPackage){
+        updateLoanPackage(prevLoanPackage)
+        window.localStorage.removeItem('prevLoanPackage')
+        displayPaymentHistory()
+        displayLoanMorePayDownHistory()
+      } else {
+        window.alert('Bạn không thể thực hiện thao tác này!')
+      }
     })
 
     // choose column to display
