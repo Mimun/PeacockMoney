@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
+
   </style>
 </head>
 
@@ -16,7 +17,13 @@
     <%- include('../Components/sideBar.ejs') %>
     <div id="page-content-wrapper">
       <h2>Quản lý hợp đồng</h2>
-      <table class="table table-hover table-responsive table-bordered table-striped period-table">
+      <div class="form-group">
+        <label for="import" class="bmd-label-floating">Import file HĐ</label>
+        <input type="file" accept=".csv" class="form-control-file" id="import">
+      </div>
+      <!-- <button class="btn btn-primary" id="btn-choose-column">Choose column</button> -->
+
+      <table class="table table-hover table-responsive table-bordered table-striped contract-table">
         <thead>
           <tr>
             <th scope="col" id="contractId">Số hợp đồng</th>
@@ -24,16 +31,16 @@
             <th scope="col" id="customer">Tên khách hàng</th>
             <th scope="col" id="contractCreatedDate">Ngày bắt đầu cho vay</th>
             <th scope="col" id="contractEndingDate">Ngày kết thúc hợp đồng</th>
-            <th scope="col" id="loan">Số tiền vay</th>
+            <th scope="col" id="loan" data-cal="calculate">Số tiền vay</th>
             <th scope="col" id="itemType">Loại tài sản</th>
             <th scope="col" id="itemName">Tên tài sản</th>
             <th scope="col" id="staticRedemptionDate">Ngày đóng lãi cố định</th>
             <th scope="col" id="interestRate">Lãi suất</th>
             <th scope="col" id="employeeId">Mã nhân viên thẩm định</th>
             <th scope="col" id="employeeName">Tên nhân viên thẩm định</th>
-            <th scope="col" id="accumulatedPaidInterest">Lãi đã trả lũy kế</th>
-            <th scope="col" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
-            <th scope="col" id="presentValue">Dư nợ hiện tại</th>
+            <th scope="col" id="accumulatedPaidInterest" data-cal="calculate">Lãi đã trả lũy kế</th>
+            <th scope="col" id="incrementalPaidPrincipal" data-cal="calculate">Gốc đã trả cộng dồn</th>
+            <th scope="col" id="presentValue" data-cal="calculate">Dư nợ hiện tại</th>
             <th scope="col" id="contractStatus">Tình trạng hợp đồng</th>
             <th scope="col" id="totalLoanDays">Tổng số ngày vay</th>
             <th scope="col" id="estimatingInterest">Lãi dự tính</th>
@@ -48,7 +55,6 @@
         <tbody>
         </tbody>
       </table>
-      <button class="btn btn-primary" id="btn-choose-column">Choose column</button>
 
       <!-- modal -->
       <div class="modal" tabindex="-1" role="dialog" id="choose-column-modal">
@@ -209,11 +215,13 @@
     </div>
   </div>
 
-
+  <script src="https://d3js.org/d3.v6.min.js"></script>
   <script type="module">
     import { generateContractListHTML } from '/generateContractListHTML.js'
     import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { contract } from '/contractTemplate.js'
+    import { makeRequest } from '/makeRequest.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
@@ -226,11 +234,76 @@
     const payload = JSON.parse('<%- JSON.stringify(payload) %>');
     console.log('contract list: ', contractList)
 
-    // handle modal open
-    document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
-      $('#choose-column-modal').modal('show')
+    // hanlde inporting contract csv file
+    document.querySelector('#import').addEventListener('change', event => {
+      const file = event.target.files[0]
+      console.log('file: ', file)
+      var fileReader = new FileReader()
+      fileReader.onload = (e) => {
+        var csv = e.target.result
+        console.log('result: ', e.target.result)
+        var parsed = d3.csvParse(csv, d3.autoType)
+        handleContracts(parsed)
+        // console.log('parsed: ', parsed)
+
+      }
+      fileReader.readAsText(file, 'ISO-8859-1')
 
     })
+
+    const calculateColumnSum = (query) => {
+      // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
+      var tr = document.createElement('tr')
+      document.querySelectorAll(`${query} thead th`).forEach((element, index) => {
+        var th = document.createElement('th')
+        if (index === 0) {
+          th.innerHTML = 'Total'
+
+        } else {
+          var sum = 0
+          document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+            console.log('is containe: ', tr.querySelectorAll('th')[index].getAttribute('data-cal'))
+            sum += element.getAttribute('data-cal') ? (parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+              parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0) : 0
+
+          })
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+
+        }
+        tr.appendChild(th)
+
+      })
+      document.querySelector(`${query} tbody`).prepend(tr)
+
+    }
+
+    const handleContracts = async (array) => {
+      var contractCsv = []
+      array.forEach(item => {
+        var contractTemplate = contract()
+        for (var prop in item) {
+          if (prop === 'id') {
+            contractTemplate.id = item[prop]
+          } else {
+            findNestedObj(contractTemplate, 'name', prop).value = item[prop]
+
+          }
+        }
+        contractCsv.push(contractTemplate)
+
+      })
+      console.log('contract csv: ', contractCsv)
+      makeRequest('POST', 'contractArray', 'application/json', JSON.stringify(contractCsv), () => {
+        window.location.reload()
+      })
+    }
+
+    // handle modal open
+    // document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
+    //   $('#choose-column-modal').modal('show')
+
+    // })
 
     document.querySelector('input#all').addEventListener('click', (event) => {
       console.log('select: ', event.target.checked)
@@ -251,6 +324,7 @@
       $('#choose-column-modal').modal('hide')
       document.querySelector('table.period-table tbody').innerHTML = ''
       displayTable(contractList, 'table tbody')
+      calculateColumnSum('table.contract-table')
       $(function () {
         $('table th').resizable({
           handles: 'e',
@@ -284,6 +358,7 @@
       });
     }
     displayTable(contractList, 'table tbody')
+    calculateColumnSum('table.contract-table')
 
   </script>
 </body>
