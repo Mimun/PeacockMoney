@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .md-form {
+      margin-bottom: 16px;
+    }
+
+    .money-table,
+    .case-table {
+      width: 70% !important;
+      margin: auto;
+    }
+
+    .table-container,
+    .note-container {
+      padding: 16px 64px;
+      margin: 16px 0;
+      border: 1px solid lightgrey;
+      overflow-x: scroll;
+      max-width: 100vw;
+    }
+
+    .note-container {
+      overflow-x: unset !important;
+      max-width: 400px;
+    }
+
+
+
+    .ui-resizable {
+      position: static !important;
+    }
+
+    .table-container th {
+      min-width: 160px;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <h2>Thống kê báo cáo</h2>
+      <div class="d-flex align-items-end justify-content-between" style="width: 500px;">
+        <button class="btn btn-sm btn-primary" id="choose-date">Chọn ngày báo cáo</button>
+        <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+        <div class="form-group">
+          <label for="display-date" class="bmd-label-floating">Ngày đã chọn</label>
+          <input type="text" class="form-control" id="display-date">
+        </div>
+
+
+      </div>
+      <div>
+        <table class="table table-responsive table-bordered table-striped table-hover period-table">
+          <thead>
+            <tr>
+              <th scope="col" id="key">Mã hợp đồng</th>
+              <th scope="col" id="redemption">Số tiền đóng (gốc hàng tháng + lãi)</th>
+              <th scope="col" id="interest">Lãi phải thu</th>
+              <th scope="col" id="paidInterest">Lãi đã thu</th>
+              <th scope="col" id="remainInterest">Lãi còn lại</th>
+              <th scope="col" id="accumulatedPaidInterest">Lãi đã trả lũy kế</th>
+
+              <th scope="col" id="principal">Gốc phải thu</th>
+              <th scope="col" id="paidPrincipal">Gốc đã thu</th>
+              <th scope="col" id="remainPrincipal">Gốc còn lại</th>
+              <th scope="col" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
+
+              <th scope="col" id="totalPenalty">TỔng phạt phải thu</th>
+              <th scope="col" id="paidTotalPenalty">Tổng phạt đã thu</th>
+              <th scope="col" id="remainTotalPenalty">Tổng phạt còn lại</th>
+              <th scope="col" id="payDown">Trả bớt</th>
+              <th scope="col" id="loanMore">Vay thêm</th>
+              <th scope="col" id="totalPayment">Tổng tiền đóng (tổng phạt + số tiền đóng)</th>
+              <th scope="col" id="paid">Đã trả</th>
+              <th scope="col" id="remain">Còn lại</th>
+              <th scope="col" id="periodStatus">Tình trạng kỳ</th>
+              <th scope="col" id="daysBetween">Số ngày đóng chậm</th>
+              <th scope="col" id="penalty">Phạt đóng chậm</th>
+              <th scope="col" id="blockPenalty">Phạt block</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Chọn ngày</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="md-form">
+                <label for="date-picker">Chọn ngày</label>
+                <input type="date" class="form-control" id="date">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="get-report">Hiển thị báo cáo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- common function -->
+  <script>
+    const getNestedValue = (obj) => {
+      var value = obj ? (obj.value !== '' ? obj.value : '-') : '-'
+      return value
+    }
+
+
+  </script>
+
+  <!-- handle open modal -->
+  <script>
+    document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
+
+    document.querySelector('button#choose-date').addEventListener('click', (event) => {
+      $('#myModal').modal('show')
+    })
+  </script>
+
+  <!-- handle display report button clicked -->
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
+    import { findNestedObj } from '/findNestedObj.js'
+    import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
+
+    const handleReportArray = (array) => {
+      var newArray = []
+      array.map(element => {
+        if (element && element.periodRecords) {
+          element.periodRecords.map(elem => {
+            newArray.push({ ...elem, contractId: element.contractId })
+          })
+        }
+      })
+
+      newArray = _(newArray).groupBy('contractId').map((objs, key) => {
+        return {
+          key, objs: _.mergeWith({}, ...objs, _.add)
+        }
+      }).value()
+      newArray = newArray.map(element => {
+        return { ...element.objs, key: element.key }
+      })
+      return newArray
+
+    }
+
+    const displayTable = (array, query) => {
+      array.forEach(obj => {
+        var tr = document.createElement('tr')
+        document.querySelectorAll(`${query} thead th`).forEach(element => {
+          var th = document.createElement('th')
+          th.innerHTML = obj[element.id].toLocaleString()
+          tr.appendChild(th)
+        })
+        document.querySelector(`${query} tbody`).appendChild(tr)
+
+      })
+    }
+
+    const calculateColumnSum = (query) => {
+      // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
+      var tr = document.createElement('tr')
+      document.querySelectorAll(`${query} thead th`).forEach((element, index) => {
+        var th = document.createElement('th')
+        if (index === 0) {
+          th.innerHTML = 'Total'
+
+        } else {
+          var sum = 0
+          document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+            sum += tr.querySelectorAll('th')[index] ? (parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+              parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0) : 0
+
+          })
+          th.innerHTML = sum.toLocaleString()
+          tr.appendChild(th)
+
+        }
+        tr.appendChild(th)
+
+      })
+      document.querySelector(`${query} tbody`).appendChild(tr)
+
+    }
+
+    document.querySelector('button#get-report').addEventListener('click', (event) => {
+      document.querySelector('input#display-date').value = new Date(document.querySelector('input#date').value).toLocaleDateString()
+
+      const obj = {}
+      document.querySelectorAll('.modal .modal-body input').forEach(element => {
+        obj[element.id] = element.value
+      })
+      console.log('obj: ', obj)
+      makeRequest('POST', 'checkTableSummaryReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
+        var customArray = handleReportArray(result.loanPackages)
+        console.log('new array; ', customArray)
+
+        displayTable(customArray, 'table.period-table')
+        calculateColumnSum('table.period-table')
+        $('#myModal').modal('hide')
+      })
+
+    })
+
+    document.querySelector('button#export').addEventListener('click', event => {
+      exportHTMLTableToExcel(['table1', 'table2', 'tableBreak1', 'table3',
+        'table4', 'tableBreak2', 'table5', 'table6', 'tableBreak3', 'table7', 'tableBreak4',],
+        `Thống_kê_báo_cáo_${new Date(Date.now()).toLocaleDateString()}`)
+    })
+
+  </script>
+
+
+
+</body>
+
+</html>

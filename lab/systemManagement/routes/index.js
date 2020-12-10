@@ -1091,8 +1091,9 @@ const handleReceiptArray = (chosenDate, chosenMonth, fund, callback) => {
           && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
           dailyMoneyReport.push(receipt)
         }
-        if (new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
-          && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+        if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
+        && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+        && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
           monthlyMoneyReport.push(receipt)
           return receipt
         }
@@ -1171,8 +1172,9 @@ const handleReceiptArray2 = (chosenDate, chosenMonth, contracts, callback) => {
           })
 
           contract.loanPackage.receiptRecords.map(receipt => {
-            if (new Date(receipt.date).getMonth() === chosenDate.getMonth()
-              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+            if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
+            && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+            && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
               if (receipt !== null) {
                 monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
               }
@@ -1253,8 +1255,9 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
           })
 
           contract.loanPackage.receiptRecords.map(receipt => {
-            if (new Date(receipt.date).getMonth() === chosenDate.getMonth()
-              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+            if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
+            && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+            && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
               if (receipt !== null) {
                 monthlyMoneyReport.push({
                   ...receipt, storeId: receipt.id.split('.')[0],
@@ -1268,7 +1271,9 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
           })
 
           contract.loanPackage.receiptRecords.forEach(receipt => {
-            if (new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
+            if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
+            && new Date(receipt.date).getMonth() <= new Date(chosenDate).getMonth()
+            && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
               if (receipt !== null) {
                 totalMoneyReport.push({
                   ...receipt, storeId: receipt.id.split('.')[0],
@@ -1325,6 +1330,22 @@ router.post('/statisticReport/getReport', (req, res) => {
       res.send({ contracts: result, dailyMoneyReport, monthlyMoneyReport, totalMoneyReport })
 
     })
+  })
+})
+
+// check table summary report
+router.get('/checkTableSummaryReport', (req, res)=>{
+  res.render('checkTableSummaryReport', {})
+})
+
+router.post('/checkTableSummaryReport/getReport', (req, res)=>{
+  var chosenDate = new Date(req.body.date)
+  Contract.find({}).exec((err, result)=>{
+    if(err) throw err
+    var loanPackages = result.map(contrat=>{
+      return contrat.loanPackage
+    })
+    res.send({loanPackages})
   })
 })
 
