@@ -335,23 +335,6 @@ router.delete('/deleteContractTemplate/:id', (req, res) => {
 
 // CONTRACT
 // contract list
-// router.get('/contracts', (req, res) => {
-//   const checkDate = formatDate(new Date())
-//   console.log('date now: ', checkDate)
-//   async.parallel({
-//     contract: callback => {
-//       Contract.find({ $or: [{ contractStatus: 'approved' }, { contractStatus: 'completed' }] }, {}, { sort: { '_id': -1 } }).exec(callback)
-//     },
-//     contractNow: callback => {
-//       Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
-//     }
-//   }, (err, result2) => {
-//     if (err) throw err
-//     res.render('contractList', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
-
-//   })
-
-// })
 
 // get contract management
 router.get('/contracts', (req, res) => {
@@ -918,8 +901,51 @@ router.get('/latePeriod', (req, res) => {
   }
 })
 
-// update fund
-router.post('/funds', (req, res) => {
+// update fund (pending)
+router.post('/funds/pending', (req, res) => {
+  var obj = req.body
+  console.log('req.body', req.body)
+  async.parallel({
+    fundFrom: callback => {
+      // var id = mongoose.Types.ObjectId.isValid(req.body.from) ? mongoose.Types.ObjectId(req.body.from) : null
+      var id = obj.from
+      console.log('id from: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+      } else {
+        callback(null, {})
+      }
+    },
+  }, (err, results) => {
+    if (err) throw err
+    console.log('results: ', results)
+    var fundFrom = results.fundFrom
+    try {
+      if (fundFrom && !_.isEmpty(fundFrom)) {
+        fundFrom.pendingReceiptRecords.push({ ...obj, paid: -obj.paid, receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+      }
+      async.parallel({
+        fundFrom: callback => {
+          if (fundFrom) {
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        }
+      }, (err, results) => {
+        if (err) throw err
+        res.send('save successfully')
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
+
+// update fund (approved)
+router.post('/funds/approve', (req, res) => {
   var obj = req.body
   console.log('req.body', req.body)
   async.parallel({
@@ -952,27 +978,54 @@ router.post('/funds', (req, res) => {
     var fundFrom = results.fundFrom
     var fundTo = results.fundTo
     try {
+      var receivingObj = {
+        ...obj,
+        from: obj.to,
+        to: obj.from,
+        storeId: obj.customerId,
+        storeName: obj.customerName,
+        customerId: obj.storeId,
+        customerName: obj.storeName,
+      }
       switch (obj.type) {
         case ('cash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
-            fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.paid)
-            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid, receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundFrom.cash = parseFloat(fundFrom.cash) - Math.abs(parseFloat(obj.paid))
+            fundFrom.receiptRecords.push({ ...obj, paid: -Math.abs(obj.paid), receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundFrom.pendingReceiptRecords = fundFrom.pendingReceiptRecords.filter(elem => {
+              if (!_.isEqual(elem, obj)) {
+                console.log('is not equal')
+                return elem
+              } else {
+                console.log('is equal')
+              }
+              return
+            })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
-            fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.paid)
-            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid, receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundTo.cash = parseFloat(fundTo.cash) + Math.abs(parseFloat(obj.paid))
+            fundTo.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
           }
           break
         case ('iCash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
-            fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.paid)
-            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid, receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundFrom.iCash = parseFloat(fundFrom.iCash) - Math.abs(parseFloat(obj.paid))
+            fundFrom.receiptRecords.push({ ...obj, paid: -Math.abs(obj.paid), receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundFrom.pendingReceiptRecords = fundFrom.pendingReceiptRecords.filter(elem => {
+              if (!_.isEqual(elem, obj)) {
+                console.log('is not equal')
+                return elem
+              } else {
+                console.log('is equal')
+              }
+              return
+            })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
-            fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.paid)
-            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid, receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundTo.iCash = parseFloat(fundTo.iCash) + Math.abs(parseFloat(obj.paid))
+            fundTo.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
           }
           break
         default:
@@ -992,6 +1045,56 @@ router.post('/funds', (req, res) => {
         fundTo: callback => {
           if (fundTo) {
             Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+
+          } else {
+            callback(null, {})
+          }
+        }
+      }, (err, results) => {
+        if (err) throw err
+        res.send('save successfully')
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
+
+// update fund (deny)
+router.post('/funds/deny', (req, res) => {
+  var obj = req.body
+  console.log('req.body', req.body)
+  async.parallel({
+    fundFrom: callback => {
+      // var id = mongoose.Types.ObjectId.isValid(req.body.from) ? mongoose.Types.ObjectId(req.body.from) : null
+      var id = obj.from
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+      } else {
+        callback(null, {})
+      }
+    },
+  }, (err, results) => {
+    if (err) throw err
+    var fundFrom = results.fundFrom
+    try {
+      var newPendingReceiptRecords = []
+      if (fundFrom && !_.isEmpty(fundFrom)) {
+        newPendingReceiptRecords = fundFrom.pendingReceiptRecords.filter(elem => {
+          if (!_.isEqual(elem, obj)) {
+            console.log('is not equal')
+            return elem
+          } else {
+            console.log('is equal')
+          }
+          return
+        })
+      }
+
+      async.parallel({
+        fundFrom: callback => {
+          if (fundFrom) {
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: { 'pendingReceiptRecords': newPendingReceiptRecords } }).exec(callback)
 
           } else {
             callback(null, {})

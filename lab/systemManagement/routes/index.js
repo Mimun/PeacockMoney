@@ -69,7 +69,7 @@ router.get('/employees', (req, res, next) => {
 
 // create new employee
 router.post('/employees', (req, res, next) => {
-  console.log('req.body: ', req.body)
+  // console.log('req.body: ', req.body)
   var avatar = findNestedObj(req.body, 'name', 'avatar').value
   let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
   let base64data = avatar.replace(/^data:image\/[a-z]+;base64,/, "")
@@ -79,7 +79,6 @@ router.post('/employees', (req, res, next) => {
       if (err) console.error(err)
       findNestedObj(req.body, 'name', 'avatar').value = `/images/${name}.${base64Ext}`
       var employee = new Employee(req.body)
-      console.log('employee: ', employee)
       try {
         employee.save((err, result) => {
           if (err) throw err
@@ -97,7 +96,7 @@ router.post('/employees', (req, res, next) => {
 
 // upload multiple employees
 router.post('/multEmployee', async (req, res) => {
-  console.log('req.body: ', req.body)
+  // console.log('req.body: ', req.body)
   await req.body.dbObjects.forEach(object => {
     var employee = new Employee(object)
     employee.save((err, result) => {
@@ -214,7 +213,7 @@ const createMetadata = (name = "", value = null, cType = "text", dataVie = "viet
 
 // create new store
 router.post('/stores', (req, res, next) => {
-  console.log('req.body: ', req.body)
+  // console.log('req.body: ', req.body)
   var store = new Store(req.body)
 
   // create warehouse
@@ -228,7 +227,6 @@ router.post('/stores', (req, res, next) => {
   findNestedObj(warehouseBasedOnStore.metadata, 'name', 'name').dataVie = 'tenKho'
   findNestedObj(warehouseBasedOnStore, 'name', 'id').dataVie = 'maKho'
   var warehouse = new Warehouse(warehouseBasedOnStore)
-  console.log('warehouse based on store: ', warehouse)
   var fund = new Fund({
     store: store._id,
     storeId: getNestedValue(findNestedObj(store.metadata, 'name', 'id')),
@@ -376,7 +374,6 @@ router.get('/warehouses', (req, res, next) => {
 
 // create new warehouse
 router.post('/warehouses', (req, res, next) => {
-  console.log('req.body: ', req.body)
   var warehouse = new Warehouse(req.body)
   warehouse.save((err, result) => {
     if (err) throw err

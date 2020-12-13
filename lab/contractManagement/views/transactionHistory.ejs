@@ -22,18 +22,46 @@
         <h5>Quỹ tiền</h5>
         <!-- <button class="btn btn-sm btn-default" id="btn-in">Chuyển tiền vào</button>
         <button class="btn btn-sm btn-default" id="btn-out">Chuyển tiền ra</button> -->
-        <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền NB</button>
-        <table class="table table-responsive table-hover table-bordered table-striped table1">
-          <thead>
-            <tr>
-              <th id="storeId">Mã cửa hàng</th>
-              <th id="name">Tên quỹ tiền</th>
-              <th id="cash">Quỹ tiền mặt</th>
-              <th id="iCash">Quỹ tiền chuyển khoản</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <div class="container" style="margin: 0; padding: 0; max-width: 100%;">
+          <div class="row">
+            <div class="col-5">
+              <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền NB</button>
+              <table class="table table-responsive table-hover table-bordered table-striped table1">
+                <thead>
+                  <tr>
+                    <th id="storeId">Mã cửa hàng</th>
+                    <th id="name">Tên quỹ tiền</th>
+                    <th id="cash">Quỹ tiền mặt</th>
+                    <th id="iCash">Quỹ tiền chuyển khoản</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="col">
+              <button class="btn btn-sm disabled" style="visibility: hidden;">abc</button>
+              <table class="table table-responsive table-hover table-bordered table-striped table3">
+                <thead>
+                  <tr>
+                    <th id="options">Thao tác</th>
+                    <th id="storeId">Mã PGD</th>
+                    <th id="date">Ngày thực hiện</th>
+                    <th id="id">Số phiếu</th>
+                    <th id="customerId">Mã KH</th>
+                    <th id="receiptReason">Nội dung giao dịch</th>
+                    <th id="paid">Số tiền giao dịch</th>
+                    <th id="type">Loại tiền</th>
+                    <th id="receiptId">Mã thu chi</th>
+                    <th id="employeeId">Mã NV thẩm định</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
       </div>
 
       <div class="table-container">
@@ -127,11 +155,12 @@
   </div>
 
 
-  <script>
+  <script type="module">
+    import { makeRequest } from '/makeRequest.js'
     const loanPackage = JSON.parse('<%- JSON.stringify(loanPackage) %>')
     console.log('loan package array: ', loanPackage)
-    const contract = JSON.parse('<%- JSON.stringify(contract) %>')
-    console.log('contract: ', contract)
+    // const contract = JSON.parse('<%- JSON.stringify(contract) %>')
+    // console.log('contract: ', contract)
     const fund = JSON.parse('<%- JSON.stringify(fund)%>')
     console.log('fund: ', fund)
 
@@ -148,13 +177,12 @@
 
     // custom array
     var array = []
+    var arrayPending = []
     fund.forEach(fund => {
-      console.log('receipt: ', fund.receiptRecords)
-
       array = array.concat(fund.receiptRecords)
-
+      arrayPending = arrayPending.concat(fund.pendingReceiptRecords)
     })
-    console.log('array: ', array)
+    console.log('array: ', arrayPending)
 
     const formatDate = (date, type) => {
       var d = new Date(date),
@@ -188,8 +216,10 @@
         if (loan) {
           var tr = document.createElement('tr')
           tr.id = loan.contract_Id
+          tr.C_DATA = loan
           document.querySelectorAll(`${query} thead th`).forEach(element => {
             var th = document.createElement('th')
+            var td = null
             switch (element.id) {
               case ('paid1'):
                 th.innerHTML = loan.receiptType === 1 ? (loan.paid ? loan.paid.toLocaleString() : '-') : ('-')
@@ -200,12 +230,35 @@
               case ('date'):
                 th.innerHTML = loan[element.id] ? formatDate(loan[element.id], 2) : '-'
                 break
+              case ('options'):
+                td = document.createElement('td')
+
+                var acceptButton = document.createElement('button')
+                acceptButton.className = 'btn btn-sm btn-default'
+                acceptButton.id = 'accept'
+                acceptButton.innerHTML = 'Chấp nhận'
+                acceptButton.addEventListener('click', (event) => {
+                  acceptTransaction(event.target.closest('tr').C_DATA)
+                })
+                td.appendChild(acceptButton)
+
+                var denyButton = document.createElement('button')
+                denyButton.className = 'btn btn-sm btn-danger'
+                denyButton.id = 'deny'
+                denyButton.innerHTML = 'Từ chối'
+                denyButton.addEventListener('click', event => {
+                  denyTransaction(event.target.closest('tr').C_DATA)
+                })
+                td.appendChild(denyButton)
+
+                break
               default:
                 th.innerHTML = loan[element.id] !== null && loan[element.id] !== undefined ? loan[element.id] : '-'
                 break;
             }
 
-            tr.appendChild(th)
+            element.id !== 'options' ? tr.appendChild(th) : tr.appendChild(td)
+
           })
           document.querySelector(`${query} tbody`).appendChild(tr)
         }
@@ -213,11 +266,33 @@
 
     }
 
+    const acceptTransaction = (obj) => {
+      if (obj) {
+        makeRequest('POST', '/contractMng/funds/approve', 'application/json', JSON.stringify(obj), () => {
+
+        })
+      }
+
+    }
+
+    const denyTransaction = (obj) => {
+      // console.log('obj denied: ', obj)
+      if (obj) {
+        makeRequest('POST', '/contractMng/funds/deny', 'application/json', JSON.stringify(obj), () => {
+
+        })
+
+      }
+    }
+
     // display fund table
     displayTable(fund, 'table.table1')
 
     // display transhistory table
     displayTable(array, 'table.table2')
+
+    // display pending receipt table
+    displayTable(arrayPending, 'table.table3')
 
     // transfer money
     document.querySelector('button#btn-transfer').addEventListener('click', event => {
@@ -267,7 +342,7 @@
     const updateFund = (receiptRecord) => {
       $.ajax({
         type: 'POST',
-        url: `/contractMng/funds?token=${window.localStorage.getItem('accessToken')}`,
+        url: `/contractMng/funds/pending?token=${window.localStorage.getItem('accessToken')}`,
         contentType: 'application/json',
         data: JSON.stringify(receiptRecord),
         success: result => {
