@@ -44,20 +44,20 @@ const modalBody = detailEmployeeTemplate.querySelector('.modal-body')
 
 
 var param = {}
-export const generateEmployeeManagementList = async (mainList, selectList, elementName, routerName, user, roleAbility) => {
-  await Object.assign(param, { routerName, user, roleAbility })
+export const generateEmployeeManagementList = async (mainList, selectList, selectList2, elementName, routerName, user) => {
+  await Object.assign(param, { routerName, user })
   mainList.forEach(itemObj => {
     var avatar = findNestedObj(itemObj, 'name', 'avatar') ? findNestedObj(itemObj, 'name', 'avatar').value : 'None'
     var id = findNestedObj(itemObj, 'name', 'id') ? findNestedObj(itemObj, 'name', 'id').value : 'None'
     var name = findNestedObj(itemObj, 'name', 'name') ? findNestedObj(itemObj, 'name', 'name').value : 'None'
     var dateOfBirth = findNestedObj(itemObj, 'name', 'dateOfBirth') ? findNestedObj(itemObj, 'name', 'dateOfBirth').value : 'None'
     var joiningDate = findNestedObj(itemObj, 'name', 'joiningDate') ? findNestedObj(itemObj, 'name', 'joiningDate').value : 'None'
-    var jobTitle = findNestedObj(itemObj, 'name', 'jobTitle') ? findNestedObj(itemObj, 'name', 'jobTitle').value : 'None'
+    var role = findNestedObj(itemObj, 'name', 'role') ? findNestedObj(itemObj, 'name', 'role').value : 'None'
     var workingPlace = findNestedObj(itemObj, 'name', 'store') ? (findNestedObj(selectList, 'id', `${findNestedObj(itemObj, 'name', 'store').value}`) ? findNestedObj(selectList, 'id', `${findNestedObj(itemObj, 'name', 'store').value}`).name : 'None') : 'None'
     console.log('working place: ', workingPlace)
     var phoneNumber = findNestedObj(itemObj, 'name', 'phoneNumber') ? findNestedObj(itemObj, 'name', 'phoneNumber').value : 'None'
 
-    var tr = displayInfoToTable(transformToSimpleObject(avatar, id, name, dateOfBirth, joiningDate, jobTitle, workingPlace, phoneNumber), elementName)
+    var tr = displayInfoToTable(transformToSimpleObject(avatar, id, name, dateOfBirth, joiningDate, role, workingPlace, phoneNumber), elementName)
     tr.C_DATA = itemObj
 
     tr.addEventListener('click', (event) => {
@@ -106,6 +106,13 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
             storeSelectOptions.push(option)
           })
         }
+        var roleSelectOptions = []
+        if(selectList2 !==0){
+          selectList2.map(select=>{
+            var option = `<option name="role" data-vie="Chức vụ" data-kor="koreanString" value="${select.name}">${select.name}</option>`
+            roleSelectOptions.push(option)
+          })
+        }
         if (findNestedObj(itemObj, 'name', 'store')) {
           modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
 
@@ -125,11 +132,11 @@ export const generateEmployeeManagementList = async (mainList, selectList, eleme
           modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
 
         }
-        modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {
-          if (!roleAbility.create.includes(option.getAttribute('value'))) {
-            option.style.display = 'none'
-          }
-        })
+        // modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {
+        //   if (!roleAbility.create.includes(option.getAttribute('value'))) {
+        //     option.style.display = 'none'
+        //   }
+        // })
         modalContent.appendChild(detailEmployeeTemplate)
 
       })
@@ -147,17 +154,17 @@ console.log('param: ', param)
 // edit button
 
 detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-edit').addEventListener('click', event => {
-  var { routerName, user, roleAbility } = param
-  editBtnFunction(event, routerName, user, roleAbility)
+  var { routerName, user } = param
+  editBtnFunction(event, routerName, user)
 })
 
 // delete button
 detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event => {
-  var { routerName, user, roleAbility } = param
+  var { routerName, user } = param
   deleteBtnFunction(event, routerName, user)
 })
 
-const editBtnFunction = (event, routerName, user, roleAbility) => {
+const editBtnFunction = (event, routerName, user) => {
   switch (event.target.textContent) {
     case "Edit":
       console.log('edit')
@@ -316,10 +323,10 @@ export const createSelect = (selectTemplate, selecteValue, selectId, selectVie, 
 }
 
 // create simple object
-const transformToSimpleObject = (avatar = "None", id = "None", name = "None", dateOfBirth = "None", joiningDate = "None", jobTitle = "None", workingPlace = "None", phoneNumber = "None") => {
+const transformToSimpleObject = (avatar = "None", id = "None", name = "None", dateOfBirth = "None", joiningDate = "None", role = "None", workingPlace = "None", phoneNumber = "None") => {
 
   return {
-    avatar, id, name, dateOfBirth, joiningDate, jobTitle, workingPlace, phoneNumber
+    avatar, id, name, dateOfBirth, joiningDate, role, workingPlace, phoneNumber
   }
 }
 

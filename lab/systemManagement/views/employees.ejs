@@ -63,8 +63,7 @@
         </div>
         <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Họ tên</label>
-          <input type="text" class="form-control validate active" name="name" data-vie="Họ tên"
-            data-kor="koreanString">
+          <input type="text" class="form-control validate active" name="name" data-vie="Họ tên" data-kor="koreanString">
         </div>
 
         <div class="form-group">
@@ -85,11 +84,11 @@
             data-kor="koreanString">
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Chức vụ</label>
           <input type="text" class="form-control validate active" name="jobTitle" data-vie="Chức vụ"
             data-kor="koreanString">
-        </div>
+        </div> -->
 
         <div class="form-group">
           <label data-error="wrong" data-success="right" class="bmd-label-floating">Địa chỉ</label>
@@ -143,7 +142,7 @@
     </template>
 
     <div id="page-content-wrapper">
-      <h2>List of employees</h2>
+      <h2>Danh sách nhân viên</h2>
       <!-- input file -->
       <div class="file-input-container">
         <div class="form-group">
@@ -162,8 +161,7 @@
       </div>
 
       <div id="employee-table-container" class="table-container ">
-        <table class="table table-hover table-bordered  table-striped"
-          data-resizable-columns-id="demo-table-v2">
+        <table class="table table-hover table-bordered  table-striped" data-resizable-columns-id="demo-table-v2">
           <thead>
             <tr>
               <th data-resizable-column-id="avatar">Ảnh đại diện</th>
@@ -201,16 +199,18 @@
     import { employeeMetadataSample } from '/employeeConfig.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;
     const storeList = <%- JSON.stringify(storeList) %>;
-    const roleAbility = <%- JSON.stringify(roleAbility) %>;
+    const jobTitles = <%-JSON.stringify(jobTitles) %>;
     const user = JSON.parse(window.localStorage.getItem('user'))
 
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
+    console.log('job title list: ', jobTitles)
+
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 
     if (employeeList.length !== 0) {
-      generateEmployeeManagementList(employeeList, storeList, 'employee-table-container', 'employees', user, roleAbility)
+      generateEmployeeManagementList(employeeList, storeList, jobTitles, 'employee-table-container', 'employees', user)
     }
 
     var selectContainer = document.createElement('div')
@@ -224,13 +224,19 @@
     // store select options
     var storeSelectOptions = []
     storeSelectOptions.push('<option value="">Không có cửa hàng</option>')
+    var jobTitleSelectOptions = []
     if (storeList !== 0) {
       storeList.map(select => {
         var option = `<option name="store" data-vie="Cửa Hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
         storeSelectOptions.push(option)
       })
     }
-
+    if (jobTitles !== 0) {
+      jobTitles.map(select => {
+        var option = `<option name="role" data-vie="Chức vụ" data-kor="koreanString" value="${select.name}">${select.name}</option>`
+        jobTitleSelectOptions.push(option)
+      })
+    }
     // role select options
     var roleSelectOptions = `
       <option name="role" value="member" data-vie="chucVu" data-kor="koreanString" selected>Member</option>
@@ -242,62 +248,58 @@
 
     // create new employee button
     document.querySelector('#create-new-employee').addEventListener('click', (event) => {
-      if (user.role === "root" || user.role === "superAdmin" || user.role === "admin") {
-        $("#modalContactForm").on('show.bs.modal', () => {
-          const createEmployee = document.querySelector('#create-employee-template').content.cloneNode(true)
+      $("#modalContactForm").on('show.bs.modal', () => {
+        const createEmployee = document.querySelector('#create-employee-template').content.cloneNode(true)
 
-          createEmployee.querySelector("#btn-create-employee").addEventListener('click', (event) => {
-            var employeeObj = {
-              metadata: [],
-              infos: [],
-            }
+        createEmployee.querySelector("#btn-create-employee").addEventListener('click', (event) => {
+          var employeeObj = {
+            metadata: [],
+            infos: [],
+          }
+          employeeObj.metadata.push({
+            cType: 'image',
+            dataKor: 'koreanString',
+            name: 'avatar',
+            value: event.target.closest('.modal-content').querySelector('.modal-body').querySelector('cropper-wc').getImageData(),
+            dataVie: 'anhDaiDien'
+          })
+          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
             employeeObj.metadata.push({
-              cType: 'image',
-              dataKor: 'koreanString',
-              name: 'avatar',
-              value: event.target.closest('.modal-content').querySelector('.modal-body').querySelector('cropper-wc').getImageData(),
-              dataVie: 'anhDaiDien'
+              cType: input.type,
+              dataKor: input.getAttribute('data-kor'),
+              name: input.getAttribute('name'),
+              value: input.value,
+              dataVie: input.getAttribute('data-vie')
             })
-            event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
-              employeeObj.metadata.push({
-                cType: input.type,
-                dataKor: input.getAttribute('data-kor'),
-                name: input.getAttribute('name'),
-                value: input.value,
-                dataVie: input.getAttribute('data-vie')
-              })
 
-            })
-            event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('select').forEach(select => {
-              employeeObj.metadata.push({
-                name: select.getAttribute('name'),
-                value: select.value,
-                cType: 'select',
-                dataVie: select.getAttribute('data-vie'),
-                dataKor: select.getAttribute('data-kor')
-              })
-            })
-            console.log('input: ', employeeObj)
-            makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), () => {
-              window.location.reload()
+          })
+          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('select').forEach(select => {
+            employeeObj.metadata.push({
+              name: select.getAttribute('name'),
+              value: select.value,
+              cType: 'select',
+              dataVie: select.getAttribute('data-vie'),
+              dataKor: select.getAttribute('data-kor')
             })
           })
-          modalContent.innerHTML = ''
-          modalContent.appendChild(createEmployee)
-          modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', false, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
-          modalContent.querySelector('.modal-body').appendChild(createSelect(select, roleAbility.create[0], 'role', 'phanQuyen', 'koreanString', false, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
-          modalContent.querySelector('.modal-body').querySelector('#role').querySelectorAll('option').forEach(option => {
-            if (!roleAbility.create.includes(option.getAttribute('value'))) {
-              option.style.display = 'none'
-            }
+          console.log('input: ', employeeObj)
+          makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), () => {
+            window.location.reload()
           })
         })
+        modalContent.innerHTML = ''
+        modalContent.appendChild(createEmployee)
+        modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', false, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
+        modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', false, jobTitleSelectOptions, selectLabel, 'Phân quyền', selectContainer))
+        // modalContent.querySelector('.modal-body').querySelector('#role').querySelectorAll('option').forEach(option => {
+        //   if (!roleAbility.create.includes(option.getAttribute('value'))) {
+        //     option.style.display = 'none'
+        //   }
+        // })
+      })
 
 
-        $("#modalContactForm").modal('show')
-      } else {
-        window.alert('You neet to be admin account to do that!')
-      }
+      $("#modalContactForm").modal('show')
 
     })
 
@@ -315,10 +317,10 @@
           document.querySelector('#employee-table-container').querySelector('tbody').removeChild(document.querySelector('#employee-table-container').querySelector('tbody').lastChild)
         }
         if (result.employeeList.length !== 0) {
-          generateEmployeeManagementList(result.employeeList, storeList, 'employee-table-container', 'employees', user, roleAbility)
+          generateEmployeeManagementList(result.employeeList, storeList, 'employee-table-container', 'employees', user)
 
         } else {
-          generateEmployeeManagementList(employeeList, storeList, 'employee-table-container', 'employees', user, roleAbility)
+          generateEmployeeManagementList(employeeList, storeList, 'employee-table-container', 'employees', user)
 
         }
       })
@@ -343,13 +345,13 @@
         console.log('db object: ', dbObjects)
 
         // 4. Display input object
-        if(dbObjects.length !==0){
-          generateEmployeeManagementList(dbObjects, storeList, 'employee-table-container', 'employees', user, roleAbility)
+        if (dbObjects.length !== 0) {
+          generateEmployeeManagementList(dbObjects, storeList, 'employee-table-container', 'employees', user)
           document.querySelector('#upload-employees').style.display = 'inline-block'
-          document.querySelector('#upload-employees').addEventListener('click', (event)=>{
+          document.querySelector('#upload-employees').addEventListener('click', (event) => {
             console.log('event: ', event.target)
 
-            makeRequest('POST', 'multEmployee', 'application/json', JSON.stringify({dbObjects}), ()=>{
+            makeRequest('POST', 'multEmployee', 'application/json', JSON.stringify({ dbObjects }), () => {
               window.location.reload()
             })
           })
@@ -378,17 +380,17 @@
     }
 
     // function to transform simple objects to database object: 
-    const transformSimpleObjectsToDbObjects = (objectArrays)=>{
+    const transformSimpleObjectsToDbObjects = (objectArrays) => {
       var dbObjectArray = []
-      objectArrays.forEach(objectArray=>{
+      objectArrays.forEach(objectArray => {
         var sampleObj = employeeMetadataSample()
         var object = {
           infos: [],
           metadata: []
         }
-        objectArray.forEach(object=>{
+        objectArray.forEach(object => {
 
-          if(object.name === "avatar"){
+          if (object.name === "avatar") {
             sampleObj[object.name].value = '/images/userPicture.png'
           } else {
             sampleObj[object.name].value = object.value
@@ -403,7 +405,7 @@
       })
       return dbObjectArray
     }
-  
+
   </script>
 
 </body>

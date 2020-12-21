@@ -9,6 +9,8 @@ var ItemType = require('../../../models/itemType')
 var Fund = require('../../../models/fund')
 var Contract = require('../../../models/contract')
 var ReceiptId = require('../../../models/receiptId')
+var Role = require('../../../models/role')
+var JobTitle = require('../../../models/jobTitle')
 var async = require('async');
 var atob = require('atob')
 var btoa = require('btoa')
@@ -18,6 +20,7 @@ var json2csv = require('json2csv').parse
 var mongoose = require('mongoose');
 const { find } = require('lodash');
 const store = require('../../../models/store');
+const checkRole = require('../../../js/roleMiddlleware')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -28,6 +31,10 @@ router.get('/', function (req, res, next) {
 // EMPLOYEES
 // get all employees
 router.get('/employees', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   async.parallel({
     stores: callback => {
       // try catch to prevent "store" field id is null
@@ -45,6 +52,13 @@ router.get('/employees', (req, res, next) => {
         console.error(err)
       }
 
+    },
+    jobTitles: callback => {
+      try {
+        JobTitle.find({}).populate('role').exec(callback)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }, async (err, results) => {
     if (err) throw err
@@ -63,12 +77,16 @@ router.get('/employees', (req, res, next) => {
       })
     }
 
-    res.render('employees', { employeeList: results.employees, storeList, roleAbility: req.roleAbility })
+    res.render('employees', { employeeList: results.employees, storeList, jobTitles: results.jobTitles })
   })
 })
 
 // create new employee
 router.post('/employees', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canCreate: true }
+  next()
+}, checkRole, (req, res, next) => {
   // console.log('req.body: ', req.body)
   var avatar = findNestedObj(req.body, 'name', 'avatar').value
   let base64Ext = avatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
@@ -95,7 +113,11 @@ router.post('/employees', (req, res, next) => {
 })
 
 // upload multiple employees
-router.post('/multEmployee', async (req, res) => {
+router.post('/multEmployee', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canCreate: true }
+  next()
+}, checkRole, async (req, res) => {
   // console.log('req.body: ', req.body)
   await req.body.dbObjects.forEach(object => {
     var employee = new Employee(object)
@@ -108,6 +130,10 @@ router.post('/multEmployee', async (req, res) => {
 
 // upate employee
 router.put('/employees/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canEdit: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   var employeeAvatar = findNestedObj(req.body.metadata, 'name', 'avatar') ? findNestedObj(req.body.metadata, 'name', 'avatar').value : 'None'
   var name = findNestedObj(req.body, 'name', 'name') ? findNestedObj(req.body, 'name', 'name').value : 'Unknown'
@@ -131,6 +157,10 @@ router.put('/employees/:id', (req, res, next) => {
 
 // delete employee
 router.delete('/employees/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canDelete: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   Employee.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
     if (err) throw err
@@ -140,6 +170,10 @@ router.delete('/employees/:id', (req, res, next) => {
 
 // search
 router.post('/employees/search', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin', 'admin', 'member']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('req.body: ', req.body)
   const arrayValue = req.body.data
   var arrayMetadataConditions = []
@@ -163,6 +197,10 @@ router.post('/employees/search', (req, res, next) => {
 // STORES
 // get all stores
 router.get('/stores', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   async.parallel({
     stores: callback => {
       try {
@@ -213,6 +251,10 @@ const createMetadata = (name = "", value = null, cType = "text", dataVie = "viet
 
 // create new store
 router.post('/stores', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canCreate: true }
+  next()
+}, checkRole, (req, res, next) => {
   // console.log('req.body: ', req.body)
   var store = new Store(req.body)
 
@@ -255,6 +297,10 @@ router.post('/stores', (req, res, next) => {
 
 // update store
 router.put('/stores/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canEdit: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   async.parallel({
     store: callback => {
@@ -274,6 +320,10 @@ router.put('/stores/:id', (req, res, next) => {
 
 // delete store
 router.delete('/stores/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canDelete: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   async.parallel({
     store: callback => {
@@ -292,6 +342,10 @@ router.delete('/stores/:id', (req, res, next) => {
 
 // search store
 router.post('/stores/search', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin', 'admin', 'member']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('req.body: ', req.body)
   const arrayValue = req.body.data
   var arrayMetadataConditions = []
@@ -310,6 +364,10 @@ router.post('/stores/search', (req, res, next) => {
 // WAREHOUSE
 // get all warehouses
 router.get('/warehouses', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   async.parallel({
     warehouses: callback => {
       try {
@@ -374,6 +432,10 @@ router.get('/warehouses', (req, res, next) => {
 
 // create new warehouse
 router.post('/warehouses', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canCreate: true }
+  next()
+}, checkRole, (req, res, next) => {
   var warehouse = new Warehouse(req.body)
   warehouse.save((err, result) => {
     if (err) throw err
@@ -383,6 +445,10 @@ router.post('/warehouses', (req, res, next) => {
 
 // update warehouse
 router.put('/warehouses/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canEdit: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   console.log('req body: ', req.body)
   Warehouse.findByIdAndUpdate({ _id: req.params.id },
@@ -399,6 +465,10 @@ router.put('/warehouses/:id', (req, res, next) => {
 
 // delete warehouse
 router.delete('/warehouses/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canDelete: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   Warehouse.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
     if (err) throw err
@@ -408,6 +478,10 @@ router.delete('/warehouses/:id', (req, res, next) => {
 
 // search warehouse
 router.post('/warehouses/search', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin', 'admin', 'member']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('req.body: ', req.body)
   const arrayValue = req.body.data
   var arrayMetadataConditions = []
@@ -425,6 +499,10 @@ router.post('/warehouses/search', (req, res, next) => {
 
 // get property list of a warehouse
 router.get('/warehouses/:id/properties', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   async.parallel({
     propertyList: callback => {
@@ -494,6 +572,10 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
 // PROPERTIES
 // get all properties 
 router.get('/properties', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin', 'admin', 'member']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
@@ -554,6 +636,10 @@ router.get('/properties', (req, res, next) => {
 
 // update property
 router.put('/properties/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canEdit: true }
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   console.log('body: ', req.body)
   var updateObj = req.body
@@ -964,14 +1050,22 @@ router.get('/testPaydown4', (req, res) => {
 })
 
 // funding management
-router.get('/funds', (req, res) => {
+router.get('/funds', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res) => {
   Fund.find({}).exec((err, result) => {
     res.render('funds', { fundList: result })
   })
 })
 
 // get fund detail
-router.get('/funds/:id', (req, res) => {
+router.get('/funds/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res) => {
   async.parallel({
     funds: callback => {
       Fund.find().exec(callback)
@@ -986,7 +1080,11 @@ router.get('/funds/:id', (req, res) => {
 })
 
 // transfer money
-router.put('/funds/:id', (req, res) => {
+router.put('/funds/:id', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canEdit: true }
+  next()
+}, checkRole, (req, res) => {
   console.log('req body: ', req.body)
   var obj = req.body
   async.parallel({
@@ -1089,8 +1187,8 @@ const handleReceiptArray = (chosenDate, chosenMonth, fund, callback) => {
           dailyMoneyReport.push(receipt)
         }
         if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
-        && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
-        && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+          && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+          && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
           monthlyMoneyReport.push(receipt)
           return receipt
         }
@@ -1170,8 +1268,8 @@ const handleReceiptArray2 = (chosenDate, chosenMonth, contracts, callback) => {
 
           contract.loanPackage.receiptRecords.map(receipt => {
             if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
-            && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
-            && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+              && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
               if (receipt !== null) {
                 monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
               }
@@ -1253,8 +1351,8 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
 
           contract.loanPackage.receiptRecords.map(receipt => {
             if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
-            && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
-            && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+              && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
               if (receipt !== null) {
                 monthlyMoneyReport.push({
                   ...receipt, storeId: receipt.id.split('.')[0],
@@ -1269,8 +1367,8 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
 
           contract.loanPackage.receiptRecords.forEach(receipt => {
             if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
-            && new Date(receipt.date).getMonth() <= new Date(chosenDate).getMonth()
-            && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+              && new Date(receipt.date).getMonth() <= new Date(chosenDate).getMonth()
+              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
               if (receipt !== null) {
                 totalMoneyReport.push({
                   ...receipt, storeId: receipt.id.split('.')[0],
@@ -1331,18 +1429,18 @@ router.post('/statisticReport/getReport', (req, res) => {
 })
 
 // check table summary report
-router.get('/checkTableSummaryReport', (req, res)=>{
+router.get('/checkTableSummaryReport', (req, res) => {
   res.render('checkTableSummaryReport', {})
 })
 
-router.post('/checkTableSummaryReport/getReport', (req, res)=>{
+router.post('/checkTableSummaryReport/getReport', (req, res) => {
   var chosenDate = new Date(req.body.date)
-  Contract.find({}).exec((err, result)=>{
-    if(err) throw err
-    var loanPackages = result.map(contrat=>{
+  Contract.find({}).exec((err, result) => {
+    if (err) throw err
+    var loanPackages = result.map(contrat => {
       return contrat.loanPackage
     })
-    res.send({loanPackages})
+    res.send({ loanPackages })
   })
 })
 
@@ -1361,6 +1459,81 @@ router.post('/receiptId', (req, res) => {
     if (err) throw err
     res.send({ message: 'Save to db successfully!' })
   })
+})
+
+// role management
+router.get('/roles',(req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canSee: true }
+  next()
+}, checkRole, (req, res) => {
+  async.parallel({
+    roles: callback=>{
+      Role.find({}).exec(callback)
+    },
+    jobTitles: callback=>{
+      JobTitle.find({}).populate('role').exec(callback)
+    }
+  }, (err, results)=>{
+    if(err) throw err
+    res.render('roles', { roles: results.roles, jobTitles: results.jobTitles })
+
+  })
+  
+})
+
+router.post('/roles', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canEdit: true }
+  next()
+}, checkRole, async (req, res) => {
+  console.log('req body: ', req.body)
+  const roleList = req.body
+  try {
+    await roleList.forEach(role => {
+      Role.findOne({ name: role.name }).exec((err, result) => {
+        if (err) throw err
+        if (result) {
+          Role.findOneAndUpdate({ name: role.name }, { $set: { abilities: role } }).exec((err, result))
+        } else {
+          new Role({
+            name: role.name,
+            abilities: role
+          }).save()
+        }
+      })
+    })
+    res.send('Save successfylly!')
+  } catch (error) {
+    console.error(error)
+  }
+
+
+})
+
+router.post('/jobTitle', (req, res, next) => {
+  req.roleCanDo = ['root', 'superAdmin']
+  req.abilitiesCanDo = { canCreate: true }
+  next()
+}, checkRole, async (req, res) => {
+  console.log('req body: ', req.body)
+  try {
+    Role.findOne({ name: req.body.role }).select('name abilities').exec(async (err, result) => {
+      if (err) throw err
+      if (result) {
+        await new JobTitle({
+          ...req.body,
+          role: new mongoose.Types.ObjectId(result._id)
+        }).save()
+        res.send('Save successfylly!')
+      } else {
+        res.send({ success: false, message: 'Failed to save!' })
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
 })
 
 module.exports = router;
