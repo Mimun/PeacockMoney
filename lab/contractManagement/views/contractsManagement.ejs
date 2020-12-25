@@ -116,12 +116,12 @@
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
     });
-    var abc = <% - JSON.stringify(originalContractList) %>;
+    // var abc = <% - JSON.stringify(originalContractList) %>;
     // console.log(`typeof abc: ${typeof abc}, abc: ${abc}`)
     // console.log('original list: ', JSON.parse(abc))
-    const contractList = JSON.parse('<%- JSON.stringify(contractList) %>');
-    const roleAbility = JSON.parse('<%- JSON.stringify(roleAbility) %>');
-    const payload = JSON.parse('<%- JSON.stringify(payload) %>');
+    const contractList = <%- JSON.stringify(contractList) %>;
+    const roleAbility = <%- JSON.stringify(roleAbility)%> %;
+    const payload = <%- JSON.stringify(payload) %>;
     console.log('contract list: ', contractList)
     var contracts = [], packages = [], receipts = []
 
