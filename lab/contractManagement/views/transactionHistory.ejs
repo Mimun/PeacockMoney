@@ -157,11 +157,11 @@
 
   <script type="module">
     import { makeRequest } from '/makeRequest.js'
-    const loanPackage = JSON.parse('<%- JSON.stringify(loanPackage) %>')
+    const loanPackage = <%- JSON.stringify(loanPackage) %>;
     console.log('loan package array: ', loanPackage)
     // const contract = JSON.parse('<%- JSON.stringify(contract) %>')
     // console.log('contract: ', contract)
-    const fund = JSON.parse('<%- JSON.stringify(fund)%>')
+    const fund = <%- JSON.stringify(fund)%>;
     console.log('fund: ', fund)
 
     var optionArray = fund.map(fund => {

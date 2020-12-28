@@ -155,9 +155,9 @@
 
     }
 
-    const contract = JSON.parse('<%- JSON.stringify(contract) %>')
+    const contract = <%- JSON.stringify(contract) %>
     console.log('contract detail: ', contract.loanPackage.receiptRecords)
-    const date = JSON.parse('<%-JSON.stringify(date) %>')
+    const date = <%-JSON.stringify(date) %>
     console.log('contract date: ', date)
     if (contract && contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
       const customArray = contract.loanPackage.receiptRecords.filter(rep => {

@@ -38,7 +38,7 @@
     </div>
   </div>
   <script>
-    const goingToDoPeriod = JSON.parse('<%- JSON.stringify(goingToDoPeriodArray)%>')
+    const goingToDoPeriod = <%- JSON.stringify(goingToDoPeriodArray)%>;
     console.log('going to do period :', goingToDoPeriod)
 
     if (goingToDoPeriod.length !== 0) {
