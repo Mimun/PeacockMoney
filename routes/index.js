@@ -2,17 +2,125 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken')
 var Employee = require('../models/employee')
+var JobTitle = require('../models/jobTitle')
+var Role = require('../models/role')
 const accessTokenSecret = 'somerandomaccesstoken';
 const refreshTokenSecret = 'somerandomstringforrefreshtoken';
 const refreshTokens = [];
-const auth = require('./checkAuthentication')
-
-const rootAcc = {
-  userName: 'root',
-  password: '123456',
-  avatar: '/images/userPicture.png',
-  role: 'root'
+const auth = require('./checkAuthentication');
+const mongoose = require('mongoose');
+const async = require('async')
+// const rootAcc = {
+//   userName: 'root',
+//   password: '123456',
+//   avatar: '/images/userPicture.png',
+//   role: 'root'
+// }
+const rootRole = {
+  name: "root",
+  abilities: {
+    name: "root",
+    canCreate: true,
+    canEdit: true,
+    canDelete: true,
+    canSee: true
+  },
 }
+const rootAcc = {
+  metadata: [{
+    cType: "image",
+    dataKor: "koreanString",
+    name: "avatar",
+    value: "",
+    dataVie: "anhDaiDien"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: 'name',
+    value: "root",
+    dataVie: "Họ tên"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: "id",
+    value: "manhanviencapcao",
+    dataVie: "Mã nhân viên"
+  }, {
+    cType: "date",
+    dataKor: "koreanString",
+    name: "dateOfBirth",
+    value: "0220-12-31",
+    dataVie: "Ngày sinh"
+  }, {
+    cType: "date",
+    dataKor: "koreanString",
+    name: "joiningDate",
+    value: "2000-12-31",
+    dataVie: "Ngày vào công ty"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: "address",
+    value: "dia chi nhan vien cap cao",
+    dataVie: "Địa chỉ"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: "idCard",
+    value: "cmnd 2",
+    dataVie: "CMND"
+  }, {
+    cType: "date",
+    dataKor: "koreanString",
+    name: "providingDate",
+    value: "2020-12-31",
+    dataVie: "Ngày cấp"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: "providingPlace",
+    value: "noi cap 2",
+    dataVie: "Nơi cấp"
+  }, {
+    cType: "number",
+    dataKor: "koreanString",
+    name: "phoneNumber",
+    value: "0123123",
+    dataVie: "Số điện thoại"
+  }, {
+    cType: "email",
+    dataKor: "koreanString",
+    name: "email",
+    value: "nhanviencapcao@email.com",
+    dataVie: "email"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: "note",
+    value: "ghi chu 2",
+    dataVie: "Ghi chú"
+  }, {
+    cType: "text",
+    dataKor: "koreanString",
+    name: "password",
+    value: "123456",
+    dataVie: "Mật khẩu"
+  }, {
+    cType: "select",
+    dataKor: "koreanString",
+    name: "store",
+    value: "",
+    dataVie: "cuaHang"
+  }, {
+    cType: "select",
+    dataKor: "koreanString",
+    name: "role",
+    value: "specialJobTitle",
+    dataVie: "phanQuyen"
+  }],
+
+}
+
 
 // LOGIN
 router.get('/', function (req, res, next) {
@@ -21,7 +129,44 @@ router.get('/', function (req, res, next) {
 
 // get login
 router.get('/login', (req, res, next) => {
-  res.render('login', {})
+  Employee.findOne({ $and: [{ 'metadata.value': 'root' }, { 'metadata.value': '123456' }] }, (err, result) => {
+    if (err) throw err
+    if (!result) {
+      try {
+        async.parallel({
+          employee: callback => {
+            new Employee(rootAcc).save(callback)
+          },
+          jobTitle: callback => {
+            Role.findOne({ name: 'root' }).exec((err, result) => {
+              if (err) throw err
+              if (result) {
+                new JobTitle({
+                  name: 'specialJobTitle',
+                  role: new mongoose.Types.ObjectId(result._id)
+                }).save(callback)
+              } else {
+                new Role(rootRole).save((err, result) => {
+                  if (err) throw err
+                  new JobTitle({
+                    name: 'specialJobTitle',
+                    role: new mongoose.Types.ObjectId(result._id)
+                  }).save(callback)
+                })
+              }
+            })
+          }
+        }, (err, results) => {
+          if (err) throw err
+
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    res.render('login', {})
+
+  })
 })
 
 // post login
@@ -85,6 +230,7 @@ router.post('/register', (req, res, next) => {
 // home page
 router.get('/home', auth.isAuthenticated, auth.checkRole, (req, res, next) => {
   res.render('index', { title: 'Happy Money' });
+
 })
 
 const findNestedObj = (entireObj, keyToFind, valToFind) => {

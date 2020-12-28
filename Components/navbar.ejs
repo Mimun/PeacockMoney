@@ -130,8 +130,8 @@
   }
 
   const logout = () => {
+    window.location.href = '/'
     window.localStorage.removeItem('accessToken')
     window.localStorage.removeItem('user')
-    window.location.href = '/'
   }
 </script>

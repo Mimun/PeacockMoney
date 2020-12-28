@@ -47,7 +47,7 @@ router.get('/employees', (req, res, next) => {
     },
     employees: callback => {
       try {
-        Employee.find({}).exec(callback)
+        Employee.find({'metadata.value': {$ne: 'specialJobTitle'}}).exec(callback)
       } catch (err) {
         console.error(err)
       }
@@ -55,7 +55,7 @@ router.get('/employees', (req, res, next) => {
     },
     jobTitles: callback => {
       try {
-        JobTitle.find({}).populate('role').exec(callback)
+        JobTitle.find({name: {$ne: 'specialJobTitle'}}).populate('role').exec(callback)
       } catch (error) {
         console.error(error)
       }
@@ -1472,7 +1472,7 @@ router.get('/roles',(req, res, next) => {
       Role.find({}).exec(callback)
     },
     jobTitles: callback=>{
-      JobTitle.find({}).populate('role').exec(callback)
+      JobTitle.find({name: {$ne: 'specialJobTitle'}}).populate('role').exec(callback)
     }
   }, (err, results)=>{
     if(err) throw err
