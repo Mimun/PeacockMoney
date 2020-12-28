@@ -14,129 +14,129 @@
 
 <body>
   <%- include('../Components/navbar.ejs') %>
-  <template id="info">
-    <div class="form-group mr-3 flex-grow-1">
-      <label for="" class="bmd-label-floating"></label>
-      <input type="" class="form-control" id="" disabled>
+    <template id="info">
+      <div class="form-group mr-3 flex-grow-1">
+        <label for="" class="bmd-label-floating"></label>
+        <input type="" class="form-control" id="" disabled>
+      </div>
+    </template>
+    <template id="item-info">
+      <div class="table-container">
+        <h6></h6>
+        <div class="item-info-container d-flex flex-wrap justify-content-start"></div>
+      </div>
+    </template>
+    <div class="d-flex" id="wrapper">
+      <%- include('../Components/sideBar.ejs') %>
+        <div id="page-content-wrapper">
+          <h2>Chi tiết hợp đồng</h2>
+          <div class="table-container">
+            <h5>Thao tác</h5>
+            <button class="btn btn-sm btn-default" id="btn-update"></button>
+            <button class="btn btn-sm btn-primary" id="btn-check-table">Check table</button>
+            <button class="btn btn-sm btn-primary" id="btn-contract-paper">Hợp đồng giấy</button>
+            <button class="btn btn-sm btn-danger" id="btn-delete">Delete</button>
+          </div>
+          <div class="table-container">
+            <h5>I. Thông tin khách hàng</h5>
+            <div class="customer d-flex flex-wrap justify-content-start" id="customer"></div>
+          </div>
+          <div class="table-container">
+            <h5>II. Thông tin hợp đồng</h5>
+            <div class="contract d-flex flex-wrap justify-content-start" id="contract"></div>
+          </div>
+          <div class="table-container">
+            <h5>III. Thông tin tài sản hợp đồng</h5>
+            <div class="item d-flex flex-wrap justify-content-start" id="item"></div>
+          </div>
+
+        </div>
     </div>
-  </template>
-  <template id="item-info">
-    <div class="table-container">
-      <h6></h6>
-      <div class="item-info-container d-flex flex-wrap justify-content-start"></div>
-    </div>
-  </template>
-  <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %>
-    <div id="page-content-wrapper">
-      <h2>Chi tiết hợp đồng</h2>
-      <div class="table-container">
-        <h5>Thao tác</h5>
-        <button class="btn btn-sm btn-default" id="btn-update"></button>
-        <button class="btn btn-sm btn-primary" id="btn-check-table">Check table</button>
-        <button class="btn btn-sm btn-primary" id="btn-contract-paper">Hợp đồng giấy</button>
-        <button class="btn btn-sm btn-danger" id="btn-delete">Delete</button>
-      </div>
-      <div class="table-container">
-        <h5>I. Thông tin khách hàng</h5>
-        <div class="customer d-flex flex-wrap justify-content-start" id="customer"></div>
-      </div>
-      <div class="table-container">
-        <h5>II. Thông tin hợp đồng</h5>
-        <div class="contract d-flex flex-wrap justify-content-start" id="contract"></div>
-      </div>
-      <div class="table-container">
-        <h5>III. Thông tin tài sản hợp đồng</h5>
-        <div class="item d-flex flex-wrap justify-content-start" id="item"></div>
-      </div>
+    <script type="module">
+      import { makeRequest } from '/makeRequest.js'
+      var contract = <%- JSON.stringify(contract) %>;
+      console.log('contract: ', contract)
 
-    </div>
-  </div>
-  <script type="module">
-    import { makeRequest } from '/makeRequest.js'
-    var contract = JSON.parse('<%- JSON.stringify(contract)%>')
-    console.log('contract: ', contract)
-
-    if (contract) {
-      // display customer and contract info
-      contract.contractMetadata.forEach(info => {
-        var infoDiv = document.querySelector('template#info').content.cloneNode('true')
-        infoDiv.querySelector('label').innerHTML = info.dataVie
-        infoDiv.querySelector('input').value = info.value
-        if (info.name.includes('customer')) {
-          document.querySelector('.table-container div#customer').appendChild(infoDiv)
-        } else {
-          document.querySelector('.table-container div#contract').appendChild(infoDiv)
-
-        }
-      })
-
-      // display items info
-      contract.items.forEach(item => {
-        var itemDiv = document.querySelector('template#item-info').content.cloneNode('true')
-
-        item.infos.forEach((inf, index) => {
-          if (index === 0) {
-            itemDiv.querySelector('h6').innerHTML = inf.value
+      if (contract) {
+        // display customer and contract info
+        contract.contractMetadata.forEach(info => {
+          var infoDiv = document.querySelector('template#info').content.cloneNode('true')
+          infoDiv.querySelector('label').innerHTML = info.dataVie
+          infoDiv.querySelector('input').value = info.value
+          if (info.name.includes('customer')) {
+            document.querySelector('.table-container div#customer').appendChild(infoDiv)
           } else {
-            var infoDiv = document.querySelector('template#info').content.cloneNode('true')
-            infoDiv.querySelector('label').innerHTML = inf.name
-            infoDiv.querySelector('input').value = inf.value
+            document.querySelector('.table-container div#contract').appendChild(infoDiv)
 
-            itemDiv.querySelector('div.item-info-container').appendChild(infoDiv)
           }
         })
-        document.querySelector('.table-container div#item').appendChild(itemDiv)
-      })
 
-    }
+        // display items info
+        contract.items.forEach(item => {
+          var itemDiv = document.querySelector('template#item-info').content.cloneNode('true')
 
-    // check table button
-    document.querySelector('button#btn-check-table').addEventListener('click', (event) => {
-      window.location.href = `/contractMng/contracts/${contract._id}/checkTable?token=${window.localStorage.getItem('accessToken')}`
-    })
+          item.infos.forEach((inf, index) => {
+            if (index === 0) {
+              itemDiv.querySelector('h6').innerHTML = inf.value
+            } else {
+              var infoDiv = document.querySelector('template#info').content.cloneNode('true')
+              infoDiv.querySelector('label').innerHTML = inf.name
+              infoDiv.querySelector('input').value = inf.value
 
-    // delete button
-    document.querySelector('button#btn-delete').addEventListener('click', (event) => {
-      makeRequest('DELETE', `/contractMng/contracts/${contract._id}`, 'application/json', {}, () => {
-        window.location.href = `/contractMng/contracts?token=${window.localStorage.getItem('accessToken')}`
-      })
-    })
-
-    // update button
-    var updateBtn = document.querySelector('button#btn-update')
-    switch (contract.contractStatus) {
-      case 'waiting':
-        updateBtn.innerHTML = 'Approve'
-
-        break;
-      case 'approved':
-        updateBtn.innerHTML = 'Complete'
-
-        break;
-      case 'completed':
-        updateBtn.closest('div.table-container').removeChild(updateBtn)
-
-        break;
-
-      default:
-        updateBtn.innerHTML = 'Approve'
-        break;
-    }
-
-    updateBtn.addEventListener('click', event => {
-      makeRequest('PUT', `/contractMng/contracts/${contract._id}?token=${window.localStorage.getItem('accessToken')}`,
-        'application/json', JSON.stringify({ contractStatus: 'completed' }), () => {
-          window.location.reload()
+              itemDiv.querySelector('div.item-info-container').appendChild(infoDiv)
+            }
+          })
+          document.querySelector('.table-container div#item').appendChild(itemDiv)
         })
-    })
 
-    // contract paper button
-    document.querySelector('button#btn-contract-paper').addEventListener('click', (event) => {
-      window.location.href = `/contractMng/contracts/${contract._id}/print?token=${window.localStorage.getItem('accessToken')}`
-    })
+      }
 
-  </script>
+      // check table button
+      document.querySelector('button#btn-check-table').addEventListener('click', (event) => {
+        window.location.href = `/contractMng/contracts/${contract._id}/checkTable?token=${window.localStorage.getItem('accessToken')}`
+      })
+
+      // delete button
+      document.querySelector('button#btn-delete').addEventListener('click', (event) => {
+        makeRequest('DELETE', `/contractMng/contracts/${contract._id}`, 'application/json', {}, () => {
+          window.location.href = `/contractMng/contracts?token=${window.localStorage.getItem('accessToken')}`
+        })
+      })
+
+      // update button
+      var updateBtn = document.querySelector('button#btn-update')
+      switch (contract.contractStatus) {
+        case 'waiting':
+          updateBtn.innerHTML = 'Approve'
+
+          break;
+        case 'approved':
+          updateBtn.innerHTML = 'Complete'
+
+          break;
+        case 'completed':
+          updateBtn.closest('div.table-container').removeChild(updateBtn)
+
+          break;
+
+        default:
+          updateBtn.innerHTML = 'Approve'
+          break;
+      }
+
+      updateBtn.addEventListener('click', event => {
+        makeRequest('PUT', `/contractMng/contracts/${contract._id}?token=${window.localStorage.getItem('accessToken')}`,
+          'application/json', JSON.stringify({ contractStatus: 'completed' }), () => {
+            window.location.reload()
+          })
+      })
+
+      // contract paper button
+      document.querySelector('button#btn-contract-paper').addEventListener('click', (event) => {
+        window.location.href = `/contractMng/contracts/${contract._id}/print?token=${window.localStorage.getItem('accessToken')}`
+      })
+
+    </script>
 
 </body>
 
