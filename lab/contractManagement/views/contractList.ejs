@@ -144,7 +144,6 @@
     console.log('contract now: ', <%- JSON.stringify(contractNow)%>)
 
     console.log('contract list: ', contractList)
-    console.log('role ability: ', roleAbility)
     console.log('payload: ', payload)
 
    
@@ -153,7 +152,7 @@
     console.log('previous url: ', document.referrer.split('/').includes('createNewContract'))
 
     contractList.map(contract => {
-      generateContractListHTML(contract, template, 'list-container', payload, roleAbility)
+      generateContractListHTML(contract, template, 'list-container', payload, {})
     })
 
     if (document.referrer.split('/').includes('contractTemplates')) {
