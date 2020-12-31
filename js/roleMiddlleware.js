@@ -2,6 +2,7 @@ const Role = require('../models/role')
 const JobTitle = require('../models/jobTitle')
 const atob = require('atob');
 const role = require('../models/role');
+const { result } = require('lodash');
 
 function parseJwt(token) {
   var base64Url = token.split('.')[1];
@@ -14,7 +15,7 @@ function parseJwt(token) {
 };
 
 function checkRoleAbilities(roleAbilities, abilitiesCanDo) {
-  console.log('role abilities: ', roleAbilities, ', abilities can do: ',abilitiesCanDo, ', is equal: ')
+  console.log('role abilities: ', roleAbilities, ', abilities can do: ', abilitiesCanDo, ', is equal: ')
 
   var canDo = false
   for (var prop in abilitiesCanDo) {
@@ -34,8 +35,8 @@ function checkRoleAbilities(roleAbilities, abilitiesCanDo) {
 // abilitiesCando(object): require specific abilitites to execute the action
 // must have 2 conditions to enter the route
 module.exports = (req, res, next) => {
-  var roleCanDo = req.roleCanDo, abilitiesCanDo = req.abilitiesCanDo
-  // console.log('role can do: ', roleCanDo, ', abilities can do: ', abilitiesCanDo)
+  var url = req.url, type = req.type
+  console.log('url: ', url, ', type: ', type)
 
   try {
     var jwtToken = ''
@@ -53,27 +54,21 @@ module.exports = (req, res, next) => {
     }
     var decodedJwt = parseJwt(jwtToken)
     console.log('decoded jwt: ', decodedJwt)
-    JobTitle.findOne({ name: decodedJwt.role }).populate('role').exec(async (err, result) => {
-      console.log('job title: ', result)
-      if (err) {
-        res.send('You cannot execute the action1!')
-      } else {
-        var roleName = result.role.name
-        var roleAbilities = result.role.abilities
-        var canDo = await checkRoleAbilities(roleAbilities, abilitiesCanDo)
-        // console.log('role can do2: ', roleName, ', abilities can do2: ', roleAbilities, ', can enter: ', canDo)
-        console.log('can do: ', canDo, ', is included: ', roleCanDo.includes(roleName))
-        if (roleCanDo.includes(roleName) && canDo) {
+    Role.findOne({ name: decodedJwt.role }).exec((err, result) => {
+      if (err) throw err
+      console.log('result abc: ', result)
+      if(result){
+        var reqUrlAbilitiesObj = result.urls[url]
+        if(reqUrlAbilitiesObj[type]){
           next()
         } else {
-          res.send('You cannot execute the action2!')
-
+          res.send('Your role cannot execute the action!')
         }
-
+      } else {
+        res.send('You need to have a role to execute the action!')
       }
 
     })
-    // next()
   } catch (error) {
     console.error(error)
     res.redirect('/login')

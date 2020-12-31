@@ -42,319 +42,133 @@
       height: 40px;
       object-fit: cover;
     }
+
+    @media (min-width: 576px) {
+      .modal-dialog {
+        max-width: 80% !important;
+        margin: 1.75rem auto !important;
+      }
+
+    }
   </style>
 </head>
 
 <body>
   <%- include('../Components/navbar.ejs') %>
-  <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %>
-    <!-- create employee template for modal -->
-
-
-    <div id="page-content-wrapper">
-      <h2>Danh sách chức vụ & quyền</h2>
-      <button class="btn btn-primary" id="setting">Cài đặt nhóm quyền</button>
-      <button class="btn btn-primary" id="create">Tạo chức vụ</button>
-      <table class="table table-responsive table-bordered table-striped table-hover job-titles-table">
-        <thead>
-          <tr>
-            <th id="name">Tên chức vụ</th>
-            <th id="role.name">Tên nhóm quyền</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="modal" id="setting-modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-name">Cài đặt nhóm quyền</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <table class="table table-bordered table-striped table-hover">
-                <thead>
-                  <tr>
-                    <th id="name">Tên nhóm</th>
-                    <th id="canCreate">Tạo</th>
-                    <th id="canEdit">Sửa</th>
-                    <th id="canDelete">Xóa</th>
-                    <th id="canSee">Xem</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr id="root">
-                    <th id="name">Root</th>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canCreate" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canEdit" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canDelete" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canSee" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-
-                  </tr>
-                  <tr id="superAdmin">
-                    <th id="name">Super admin</th>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canCreate" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canEdit" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canDelete" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canSee" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-
-                  </tr>
-                  <tr id="admin">
-                    <th id="name">Admin</th>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canCreate" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canEdit" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canDelete" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canSee" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-
-                  </tr>
-                  <tr id="member">
-                    <th id="name">Member</th>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canCreate" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canEdit" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canDelete" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="checkbox">
-                        <label>
-                          <input id="canSee" type="checkbox">
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="save">Save changes</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal" id="create-modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-name">Tạo chức vụ</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="container">
-                <div class="row">
-                  <div class="col">
-                    <div class="form-group">
-                      <label for="name" class="bmd-label-floating">Tên chức vụ</label>
-                      <input type="email" class="form-control" id="name">
-                    </div>
+    <div class="d-flex" id="wrapper">
+      <%- include('../Components/sideBar.ejs') %>
+        <!-- create employee template for modal -->
+        <div id="page-content-wrapper">
+          <h2>Danh sách chức vụ & quyền</h2>
+          <button class="btn btn-primary" id="create">Tạo chức vụ</button>
+          <table class="table table-hover table-striped table-bordered role-table">
+            <thead>
+              <tr>
+                <th id="name">Tên nhóm quyền</th>
+              </tr>
+            <tbody></tbody>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <div class="modal" id="create-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-name">Cài đặt nhóm quyền</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="name" class="bmd-label-floating">Tên nhóm quyền</label>
+                    <input type="email" class="form-control" id="name">
                   </div>
-                  <div class="col">
-                    <label for="">Nhóm quyền</label>
-                    <div class="radio">
-                      <label>
-                        <input type="radio" name="optionsRadios" id="role" value="root" checked>Root
-                      </label>
-                    </div>
-                    <div class="radio">
-                      <label>
-                        <input type="radio" name="optionsRadios" id="role" value="superAdmin">Super Admin
-                      </label>
-                    </div>
-                    <div class="radio">
-                      <label>
-                        <input type="radio" name="optionsRadios" id="role" value="admin">Admin
-                      </label>
-                    </div>
-                    <div class="radio">
-                      <label>
-                        <input type="radio" name="optionsRadios" id="role" value="member">Member
-                      </label>
-                    </div>
-                  </div>
+                  <table class="table table-hover table-striped table-bordered role-abilities-table">
+                    <thead>
+                      <tr>
+                        <th>Link truy cập</th>
+                        <th>Xem</th>
+                        <th>Tạo</th>
+                        <th>Sửa</th>
+                        <th>Xóa</th>
 
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <%- include('./urlCheckTable.ejs') %>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="save">Save changes</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
               </div>
-
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="save2">Save changes</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
+
         </div>
-      </div>
     </div>
-  </div>
+    <script>
+      var roleList = <%- JSON.stringify(roles) %>;
+      console.log('role list: ', roleList)
 
-  <script>
-    var roleList = JSON.parse('<%- JSON.stringify(roles)%>')
-    console.log('role list: ', roleList)
-    var jobTitles = JSON.parse('<%- JSON.stringify(jobTitles)%>')
-    console.log('job titles: ', jobTitles)
+      roleList.forEach(role => {
+        var tr = document.createElement('tr')
+        tr.addEventListener('click', event => {
+          document.querySelector('input#name').value = role['name']
+          document.querySelectorAll(`#create-modal tr`).forEach(element => {
+            element.querySelectorAll('input').forEach(input=>{
+              role.urls[element.querySelector('th').id][input.id]? input.setAttribute('checked', true): input.removeAttribute('checked')
 
-    // display job titles table
-    jobTitles.forEach(jobTitle => {
-      var tr = document.createElement('tr')
-      document.querySelectorAll('table.job-titles-table thead th').forEach(element => {
-        var th = document.createElement('th')
-        th.innerHTML = element.id !== "role.name"? jobTitle[element.id] : jobTitle.role.name
-        tr.appendChild(th)
-      })
-      document.querySelector('table.job-titles-table tbody').appendChild(tr)
-    })
+            })
+          })
+          $('#create-modal').modal('show')
 
-
-    roleList.forEach(role => {
-      document.querySelectorAll(`#setting-modal .modal-body tbody tr#${role.name} input`).forEach(input => {
-        input.checked = role.abilities[input.id]
-      })
-    })
-
-    document.querySelector('button#setting').addEventListener('click', event => {
-      $('#setting-modal').modal('show')
-
-    })
-
-    document.querySelector('button#create').addEventListener('click', event => {
-      $('#create-modal').modal('show')
-
-    })
-
-    document.querySelector('button#save').addEventListener('click', event => {
-      console.log('event: ', event.target)
-      var objArray = []
-      document.querySelectorAll('#setting-modal .modal-body table tbody tr').forEach(element => {
-        var obj = {
-          name: element.id
-        }
-        element.querySelectorAll('input[type="checkbox"]').forEach(input => {
-          obj[input.id] = input.checked
         })
-        objArray.push(obj)
+        document.querySelectorAll('table.role-table thead th').forEach(element => {
+          var th = document.createElement('th')
+          th.innerHTML = role[element.id]
+          tr.appendChild(th)
+        })
+        document.querySelector('table.role-table tbody').appendChild(tr)
       })
-      console.log('obj: ', objArray)
-      $.ajax({
-        type: 'POST',
-        url: `/systemMng/roles?token=${window.localStorage.getItem('accessToken')}`,
-        contentType: 'application/json',
-        data: JSON.stringify(objArray),
-        success: result => {
-          console.log('result: ', result)
-          window.location.reload()
-        }
-      })
-    })
 
-    document.querySelector('button#save2').addEventListener('click', event => {
-      var obj = {}
-      document.querySelectorAll('#create-modal .modal-body input:not([type="radio"]), #create-modal .modal-body input:checked').forEach(input => {
-        obj[input.id] = input.value
+      // open modal button
+      document.querySelector('button#create').addEventListener('click', (event) => {
+        document.querySelectorAll('#create-modal input').forEach(element=>{
+          element.type=== 'checkbox'? element.removeAttribute('checked'): element.value = ''
+        })
+        $('#create-modal').modal('show')
       })
-      console.log('obj: ', obj)
-      $.ajax({
-        type: 'POST',
-        url: `/systemMng/jobTitle?token=${window.localStorage.getItem('accessToken')}`,
-        contentType: 'application/json',
-        data: JSON.stringify(obj),
-        success: result => {
-          console.log('result: ', result)
+
+      // create button
+      document.querySelector('button#save').addEventListener('click', event => {
+        var roleObj = {
+          name: document.querySelector('input#name').value,
+          urls: {},
         }
+        document.querySelectorAll('table.role-abilities-table tbody tr').forEach(element => {
+          var abilities = {}
+          element.querySelectorAll('input').forEach(element => {
+            abilities[element.id] = element.checked
+          })
+          roleObj.urls[element.querySelector('th').id] = abilities
+        })
+        console.log('role obj: ', roleObj)
+        $.ajax({
+          type: 'POST',
+          url: `/systemMng/roles?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          data: JSON.stringify(roleObj),
+          success: result => {
+            console.log('result: ', result)
+          }
+        })
       })
-    })
-  </script>
+    </script>
 
 </body>
 

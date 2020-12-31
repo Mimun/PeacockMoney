@@ -199,18 +199,18 @@
     import { employeeMetadataSample } from '/employeeConfig.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;
     const storeList = <%- JSON.stringify(storeList) %>;
-    const jobTitles = <%-JSON.stringify(jobTitles) %>;
+    const roles = <%-JSON.stringify(roles) %>;
     const user = JSON.parse(window.localStorage.getItem('user'))
 
     console.log('employee list: ', employeeList)
     console.log('store list: ', storeList)
-    console.log('job title list: ', jobTitles)
+    console.log('job title list: ', roles)
 
 
     const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 
     if (employeeList.length !== 0) {
-      generateEmployeeManagementList(employeeList, storeList, jobTitles, 'employee-table-container', 'employees', user)
+      generateEmployeeManagementList(employeeList, storeList, roles, 'employee-table-container', 'employees', user)
     }
 
     var selectContainer = document.createElement('div')
@@ -224,17 +224,17 @@
     // store select options
     var storeSelectOptions = []
     storeSelectOptions.push('<option value="">Không có cửa hàng</option>')
-    var jobTitleSelectOptions = []
+    var roleselectOptions = []
     if (storeList !== 0) {
       storeList.map(select => {
         var option = `<option name="store" data-vie="Cửa Hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
         storeSelectOptions.push(option)
       })
     }
-    if (jobTitles !== 0) {
-      jobTitles.map(select => {
+    if (roles !== 0) {
+      roles.map(select => {
         var option = `<option name="role" data-vie="Chức vụ" data-kor="koreanString" value="${select.name}">${select.name}</option>`
-        jobTitleSelectOptions.push(option)
+        roleselectOptions.push(option)
       })
     }
     // role select options
@@ -290,7 +290,7 @@
         modalContent.innerHTML = ''
         modalContent.appendChild(createEmployee)
         modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', false, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
-        modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', false, jobTitleSelectOptions, selectLabel, 'Phân quyền', selectContainer))
+        modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', false, roleselectOptions, selectLabel, 'Phân quyền', selectContainer))
         // modalContent.querySelector('.modal-body').querySelector('#role').querySelectorAll('option').forEach(option => {
         //   if (!roleAbility.create.includes(option.getAttribute('value'))) {
         //     option.style.display = 'none'

@@ -14,6 +14,8 @@ const ItemType = require('../../../models/itemType')
 const ReceiptId = require('../../../models/receiptId')
 const Fund = require('../../../models/fund')
 const fetch = require('fetch')
+const checkRole = require('../../../js/roleMiddlleware')
+
 const CronJob = require('cron').CronJob
 require('dotenv').config()
 
@@ -25,7 +27,6 @@ var contractMngURL = (process.env.CONTRACTMNG || 'http://localhost:3000')
 
 var fs = require('fs');
 var async = require('async');
-const auth = require('../../authentication/routes/checkAuthentication');
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -59,7 +60,11 @@ function formatDate(date) {
 
 // CONTRACT TEMPLATE
 // contract template list for admin
-router.get('/', function (req, res, next) {
+router.get('/',(req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'GET'
+  next()
+}, checkRole,  function (req, res, next) {
   async.parallel({
     contractTemplateList: callback => {
       ContractTemplate.find({}).exec(callback)
@@ -75,7 +80,11 @@ router.get('/', function (req, res, next) {
 })
 
 // contract template list for user
-router.get('/contractTemplates', (req, res, next) => {
+router.get('/contractTemplates',(req, res, next) => {
+  req.url = '/contractMng/contractTemplates'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res, next) => {
   ContractTemplate.find({}, (err, results) => {
     if (err) throw err
 
@@ -186,7 +195,11 @@ router.post('/findContractTemplates', (req, res, next) => {
 })
 
 // create new contract template route
-router.post('/createNewContractTemplate', (req, res, next) => {
+router.post('/createNewContractTemplate',(req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'POST'
+  next()
+}, checkRole, (req, res, next) => {
   // console.log('body: ', req.body)
 
   const itemObject = req.body
@@ -212,7 +225,11 @@ router.post('/createNewContractTemplate', (req, res, next) => {
 })
 
 // get a contract template to create new contract
-router.get('/contractTemplates/:id', (req, res) => {
+router.get('/contractTemplates/:id',(req, res, next) => {
+  req.url = '/contractMng/contractTemplates'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
 
   console.log('req: ', req.params.id)
   async.parallel({
@@ -314,7 +331,11 @@ router.post('/search', (req, res, next) => {
 })
 
 // delete contract template route
-router.delete('/deleteContractTemplate/:id', (req, res) => {
+router.delete('/deleteContractTemplate/:id',(req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'DELETE'
+  next()
+}, checkRole, (req, res) => {
   console.log('ID received: ', JSON.stringify('public' + req.body.value))
   // fs.stat(JSON.stringify('public' + req.body.value), (err, stats) => {
   //   console.log('stats: ', stats)
@@ -337,7 +358,11 @@ router.delete('/deleteContractTemplate/:id', (req, res) => {
 // contract list
 
 // get contract management
-router.get('/contracts', (req, res) => {
+router.get('/contracts', (req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   try {
     async.parallel({
       contract: callback => {
@@ -404,7 +429,11 @@ router.get('/contracts', (req, res) => {
   }
 })
 
-router.get('/contracts/:id', (req, res) => {
+router.get('/contracts/:id', (req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   Contract.findOne({ _id: req.params.id }).exec((err, result) => {
     if (err) throw err
     res.render('contractDetail', { contract: result })
@@ -412,7 +441,11 @@ router.get('/contracts/:id', (req, res) => {
 })
 
 // waiting contract list
-router.get('/waitingContracts', (req, res) => {
+router.get('/waitingContracts', (req, res, next) => {
+  req.url = '/contractMng/waitingContracts'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   const checkDate = formatDate(new Date())
   console.log('date now: ', checkDate)
   async.parallel({
@@ -431,7 +464,11 @@ router.get('/waitingContracts', (req, res) => {
 })
 
 // create new contract
-router.post('/contracts', (req, res) => {
+router.post('/contracts', (req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'POST'
+  next()
+}, checkRole, (req, res) => {
   var data = req.body
   var storeId = getNestedValue(findNestedObj(data.store, 'name', 'store'))
   var employeeId = getNestedValue(findNestedObj(data.employee, 'name', 'employee'))
@@ -463,7 +500,11 @@ router.post('/contracts', (req, res) => {
 
 })
 
-router.post('/contractArray', (req, res) => {
+router.post('/contractArray', (req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'POST'
+  next()
+}, checkRole, (req, res) => {
   var data = req.body
   console.log('req body: ', req.body)
   try {
@@ -507,6 +548,10 @@ router.post('/contractArray', (req, res) => {
 
 // delete contract
 router.delete('/contracts/:id', (req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'DELETE'
+  next()
+}, checkRole, (req, res, next) => {
   console.log('id: ', req.params.id)
   Contract.findByIdAndDelete({ _id: req.params.id }).exec((err, result) => {
     if (err) throw err
@@ -539,7 +584,11 @@ const createPropertyId = (contractId, itemTypeId, index = 0) => {
 }
 
 // update status of a contract
-router.put('/contracts/:id', async (req, res) => {
+router.put('/contracts/:id',(req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'PUT'
+  next()
+}, checkRole,   async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body)
   var token = req.headers['x-access-token'].split(' ')[1].trim()
@@ -720,7 +769,11 @@ router.put('/contracts/:id', async (req, res) => {
 })
 
 // get contract detail
-router.get('/contracts/:id/print', (req, res) => {
+router.get('/contracts/:id/print',(req, res, next) => {
+  req.url = '/contractMng/contracts'
+  req.type = 'GET'
+  next()
+}, checkRole,   (req, res) => {
   console.log('id received', req.params.id)
   Contract.findById(req.params.id).exec((err, contractResult) => {
     if (err) throw err
@@ -780,7 +833,11 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
 })
 
 // transaction history
-router.get('/transactionHistory', (req, res) => {
+router.get('/transactionHistory',(req, res, next) => {
+  req.url = '/contractMng/transactionHistory'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   async.parallel({
     contracts: callback => {
       Contract.find({}).exec(callback)
@@ -832,7 +889,11 @@ router.get('/transactionHistory', (req, res) => {
 })
 
 // receipt page
-router.get('/contracts/:id/receipt', (req, res) => {
+router.get('/contracts/:id/receipt',(req, res, next) => {
+  req.url = '/systemMng/receiptId'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   console.log('req query: ', req.query)
   try {
     Contract.findOne({ _id: req.params.id }).exec((err, result) => {
@@ -851,7 +912,11 @@ router.get('/contracts/:id/receipt', (req, res) => {
 })
 
 // get going to do period package
-router.get('/goingToDo', (req, res) => {
+router.get('/goingToDo', (req, res, next) => {
+  req.url = '/contractMng/goingToDo'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   try {
     Contract.find({}).exec(async (err, result) => {
       if (err) throw err
@@ -877,7 +942,11 @@ router.get('/goingToDo', (req, res) => {
 })
 
 // get late periods
-router.get('/latePeriod', (req, res) => {
+router.get('/latePeriod', (req, res, next) => {
+  req.url = '/contractMng/latePeriod'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   try {
     Contract.find({}).exec(async (err, result) => {
       if (err) throw err
@@ -902,7 +971,11 @@ router.get('/latePeriod', (req, res) => {
 })
 
 // update fund (pending)
-router.post('/funds/pending', (req, res) => {
+router.post('/funds/pending', (req, res, next) => {
+  req.url = '/contractMng/pending'
+  req.type = 'GET'
+  next()
+}, checkRole, (req, res) => {
   var obj = req.body
   console.log('req.body', req.body)
   async.parallel({
