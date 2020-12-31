@@ -50,6 +50,11 @@
       }
 
     }
+
+    .modal-content {
+      max-height: 80vh;
+      overflow-y: scroll;
+    }
   </style>
 </head>
 
@@ -84,6 +89,11 @@
                   <div class="form-group">
                     <label for="name" class="bmd-label-floating">Tên nhóm quyền</label>
                     <input type="email" class="form-control" id="name">
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="all">All
+                    </label>
                   </div>
                   <table class="table table-hover table-striped table-bordered role-abilities-table">
                     <thead>
@@ -120,8 +130,8 @@
         tr.addEventListener('click', event => {
           document.querySelector('input#name').value = role['name']
           document.querySelectorAll(`#create-modal tr`).forEach(element => {
-            element.querySelectorAll('input').forEach(input=>{
-              role.urls[element.querySelector('th').id][input.id]? input.setAttribute('checked', true): input.removeAttribute('checked')
+            element.querySelectorAll('input').forEach(input => {
+              role.urls[element.querySelector('th').id][input.id] ? input.setAttribute('checked', true) : input.removeAttribute('checked')
 
             })
           })
@@ -138,8 +148,8 @@
 
       // open modal button
       document.querySelector('button#create').addEventListener('click', (event) => {
-        document.querySelectorAll('#create-modal input').forEach(element=>{
-          element.type=== 'checkbox'? element.removeAttribute('checked'): element.value = ''
+        document.querySelectorAll('#create-modal input').forEach(element => {
+          element.type === 'checkbox' ? element.removeAttribute('checked') : element.value = ''
         })
         $('#create-modal').modal('show')
       })
@@ -168,6 +178,15 @@
           }
         })
       })
+    
+      // all checkbox
+      document.querySelector('input#all').addEventListener('change', event=>{
+        console.log('value: ', event.target.checked)
+        document.querySelectorAll('table.role-abilities-table input[type="checkbox"]').forEach(element=>{
+          event.target.checked? element.setAttribute('checked', true): element.removeAttribute('checked')
+        })
+      })
+
     </script>
 
 </body>
