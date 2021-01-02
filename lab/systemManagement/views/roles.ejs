@@ -95,21 +95,41 @@
                       <input type="checkbox" id="all">All
                     </label>
                   </div>
-                  <table class="table table-hover table-striped table-bordered role-abilities-table">
-                    <thead>
-                      <tr>
-                        <th>Link truy cập</th>
-                        <th>Xem</th>
-                        <th>Tạo</th>
-                        <th>Sửa</th>
-                        <th>Xóa</th>
+                  <div class="container" style="max-width: 100%;">
+                    <div class="row">
+                      <div class="col-8">
+                        <table class="table table-hover table-striped table-bordered role-abilities-table">
+                          <thead>
+                            <tr>
+                              <th>Link truy cập</th>
+                              <th>Xem</th>
+                              <th>Tạo</th>
+                              <th>Sửa</th>
+                              <th>Xóa</th>
+                              
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <%- include('./urlCheckTable.ejs') %>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="col" id="store-check-list">
+                        <h4>Cửa hàng nhóm quyền có thể xem</h4>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="only" id="only">Chỉ mình cửa hàng nhân viên thuộc về
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="all" id="all">Tất cả cửa hàng
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <%- include('./urlCheckTable.ejs') %>
-                    </tbody>
-                  </table>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-primary" id="save">Save changes</button>
@@ -123,17 +143,33 @@
     </div>
     <script>
       var roleList = <%- JSON.stringify(roles) %>;
-      console.log('role list: ', roleList)
+      var storeList = <%- JSON.stringify(stores) %>;
 
+      console.log('role list: ', roleList)
+      console.log('store list: ', storeList)
+      // append store list into modal body
+      storeList.forEach(store => {
+        var div = document.createElement('div')
+        div.className = 'checkbox'
+        div.innerHTML = `<label>
+        <input type="checkbox" value=${store.id} id=${store.id}>${store.name}
+      </label>`
+        document.querySelector('.modal-body div#store-check-list').appendChild(div)
+      })
+
+      // display role list
       roleList.forEach(role => {
         var tr = document.createElement('tr')
         tr.addEventListener('click', event => {
           document.querySelector('input#name').value = role['name']
           document.querySelectorAll(`#create-modal tr`).forEach(element => {
-            element.querySelectorAll('input').forEach(input => {
+            element.querySelectorAll('table.role-abilities-table input').forEach(input => {
               role.urls[element.querySelector('th').id][input.id] ? input.setAttribute('checked', true) : input.removeAttribute('checked')
 
             })
+          })
+          document.querySelectorAll('div#store-check-list input').forEach(input=>{
+            role.stores.includes(input.id)? input.setAttribute('checked', true): input.removeAttribute('checked')
           })
           $('#create-modal').modal('show')
 
@@ -159,6 +195,7 @@
         var roleObj = {
           name: document.querySelector('input#name').value,
           urls: {},
+          stores: []
         }
         document.querySelectorAll('table.role-abilities-table tbody tr').forEach(element => {
           var abilities = {}
@@ -166,6 +203,9 @@
             abilities[element.id] = element.checked
           })
           roleObj.urls[element.querySelector('th').id] = abilities
+        })
+        document.querySelectorAll('div#store-check-list input:checked').forEach(input=>{
+          roleObj.stores.push(input.value)
         })
         console.log('role obj: ', roleObj)
         $.ajax({
@@ -178,12 +218,12 @@
           }
         })
       })
-    
+
       // all checkbox
-      document.querySelector('input#all').addEventListener('change', event=>{
+      document.querySelector('input#all').addEventListener('change', event => {
         console.log('value: ', event.target.checked)
-        document.querySelectorAll('table.role-abilities-table input[type="checkbox"]').forEach(element=>{
-          event.target.checked? element.setAttribute('checked', true): element.removeAttribute('checked')
+        document.querySelectorAll('table.role-abilities-table input[type="checkbox"]').forEach(element => {
+          event.target.checked ? element.setAttribute('checked', true) : element.removeAttribute('checked')
         })
       })
 

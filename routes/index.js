@@ -4,6 +4,7 @@ var jwt = require('jsonwebtoken')
 var Employee = require('../models/employee')
 var JobTitle = require('../models/jobTitle')
 var Role = require('../models/role')
+var Store = require('../models/store')
 const accessTokenSecret = 'somerandomaccesstoken';
 const refreshTokenSecret = 'somerandomstringforrefreshtoken';
 const refreshTokens = [];
@@ -11,143 +12,143 @@ const auth = require('./checkAuthentication');
 const mongoose = require('mongoose');
 const async = require('async')
 
-const rootRole ={
+const rootRole = {
   name: "root",
   urls: {
-      "/contractMng/waitingContracts": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/contractMng/latePeriod": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/contractMng/goingToDo": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/contractMng/contracts": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/evaluationMng/evaluation": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/contractMng/contractTemplates": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/properties": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/statistic": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/moneyReport": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/companyMoneyReport": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/statisticReport": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/checkTableSummaryReport": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/contractMng": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/stores": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/warehouses": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/itemStatus": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/employees": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/evaluationMng": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/itemType": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/receiptId": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/contractMng/transactionHistory": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      },
-      "/systemMng/roles": {
-          "GET": true,
-          "POST": true,
-          "PUT": true,
-          "DELETE": true
-      }
+    "/contractMng/waitingContracts": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/contractMng/latePeriod": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/contractMng/goingToDo": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/contractMng/contracts": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/evaluationMng/evaluation": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/contractMng/contractTemplates": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/properties": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/statistic": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/moneyReport": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/companyMoneyReport": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/statisticReport": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/checkTableSummaryReport": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/contractMng": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/stores": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/warehouses": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/itemStatus": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/employees": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/evaluationMng": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/itemType": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/receiptId": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/contractMng/transactionHistory": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    },
+    "/systemMng/roles": {
+      "GET": true,
+      "POST": true,
+      "PUT": true,
+      "DELETE": true
+    }
   },
- 
+  stores: ['all']
 }
 const rootAcc = {
   metadata: [{
@@ -260,7 +261,7 @@ router.get('/login', (req, res, next) => {
           employee: callback => {
             new Employee(rootAcc).save(callback)
           },
-          role: callback=>{
+          role: callback => {
             new Role(rootRole).save(callback)
           }
         }, (err, results) => {
@@ -277,9 +278,9 @@ router.get('/login', (req, res, next) => {
 })
 
 // post login
-const jwtSign = (name, role, id) => {
-  const accessToken = jwt.sign({ userName: name, role, id }, accessTokenSecret, { expiresIn: '24h' })
-  const refreshToken = jwt.sign({ userName: name, role, id }, refreshTokenSecret)
+const jwtSign = (name, role, id, store) => {
+  const accessToken = jwt.sign({ userName: name, role, id, store }, accessTokenSecret, { expiresIn: '24h' })
+  const refreshToken = jwt.sign({ userName: name, role, id, store }, refreshTokenSecret)
   refreshTokens.push(refreshToken)
   return {
     accessToken, refreshToken
@@ -303,14 +304,31 @@ router.post('/login', (req, res, next) => {
         console.log('result: ', result)
         var resultUserName = findNestedObj(result, 'name', 'name') ? findNestedObj(result, 'name', 'name').value : 'None'
         var resultRole = findNestedObj(result, 'name', 'role') ? findNestedObj(result, 'name', 'role').value : 'None'
+        var employeeId = result._id
         var resultAvatar = findNestedObj(result, 'name', 'avatar') ? findNestedObj(result, 'name', 'avatar').value : 'None'
-        var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, result._id)
-        res.send({
-          accessToken, refreshToken, user: {
-            userName: resultUserName, role: resultRole, _id: result._id, avatar: resultAvatar
-          }, isLoggedIn: false
-        })
-      } 
+        if (findNestedObj(result, 'name', 'store') && findNestedObj(result, 'name', 'store').value) {
+          Store.findOne({ 'metadata.value': findNestedObj(result, 'name', 'store').value }).exec((err, result) => {
+            if (err) throw err
+            var store = result._id
+            var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store)
+            res.send({
+              accessToken, refreshToken, user: {
+                userName: resultUserName, role: resultRole, _id: employeeId, store, avatar: resultAvatar
+              }, isLoggedIn: false
+            })
+          })
+
+        } else {
+          var store = ""
+          var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store)
+          res.send({
+            accessToken, refreshToken, user: {
+              userName: resultUserName, role: resultRole, _id: employeeId, store, avatar: resultAvatar
+            }, isLoggedIn: false
+          })
+        }
+
+      }
     })
   }
 

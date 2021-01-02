@@ -1229,6 +1229,8 @@ router.get('/moneyReport', (req, res, next) => {
 router.post('/moneyReport/getReport', (req, res, next) => {
   req.url = '/systemMng/moneyReport'
   req.type = 'GET'
+  req.checkStores = true
+
   next()
 }, checkRole, (req, res) => {
   console.log('req body: ', req.body)
@@ -1314,6 +1316,8 @@ router.get('/companyMoneyReport', (req, res, next) => {
 router.post('/companyMoneyReport/getReport', (req, res, next) => {
   req.url = '/systemMng/companyMoneyReport'
   req.type = 'GET'
+  req.checkStores = true
+
   next()
 }, checkRole, (req, res) => {
   console.log('req body: ', req.body)
@@ -1434,6 +1438,8 @@ router.get('/statisticReport', (req, res, next) => {
 router.post('/statisticReport/getReport', (req, res, next) => {
   req.url = '/systemMng/statisticReport'
   req.type = 'GET'
+  req.checkStores = true
+
   next()
 }, checkRole, (req, res) => {
   console.log('req body: ', req.body)
@@ -1460,6 +1466,7 @@ router.get('/checkTableSummaryReport', (req, res, next) => {
 router.post('/checkTableSummaryReport/getReport', (req, res, next) => {
   req.url = '/systemMng/checkTableSummaryReport'
   req.type = 'GET'
+  req.checkStores = true
   next()
 }, checkRole, (req, res) => {
   var chosenDate = new Date(req.body.date)
@@ -1506,10 +1513,20 @@ router.get('/roles', (req, res, next) => {
   async.parallel({
     roles: callback => {
       Role.find({}).exec(callback)
+    },
+    stores: callback=>{
+      Store.find({}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
-    res.render('roles', { roles: results.roles })
+    var stores = results.stores.map(store=>{
+      var name = getNestedValue(findNestedObj(store, 'name', 'name'))
+      var _id = store._id
+      return {
+        name, id: _id
+      }
+    })
+    res.render('roles', { roles: results.roles, stores })
 
   })
 

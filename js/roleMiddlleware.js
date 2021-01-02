@@ -1,7 +1,7 @@
 const Role = require('../models/role')
 const JobTitle = require('../models/jobTitle')
+const Store = require('../models/store')
 const atob = require('atob');
-const role = require('../models/role');
 const { result } = require('lodash');
 
 function parseJwt(token) {
@@ -54,13 +54,36 @@ module.exports = (req, res, next) => {
     }
     var decodedJwt = parseJwt(jwtToken)
     console.log('decoded jwt: ', decodedJwt)
+
     Role.findOne({ name: decodedJwt.role }).exec((err, result) => {
       if (err) throw err
-      console.log('result abc: ', result)
-      if(result){
+      if (result) {
+
         var reqUrlAbilitiesObj = result.urls[url]
-        if(reqUrlAbilitiesObj[type]){
-          next()
+        if (reqUrlAbilitiesObj[type]) {
+          if (req.checkStores) {
+            var storeQueries = result.stores.map(store => {
+              if (store === 'only') {
+                return { _id: decodedJwt.store }
+              } else if (store === 'all') {
+                return {}
+              } else {
+                return { _id: store }
+              }
+            })
+            Store.find({ $or: storeQueries }).exec((err, result) => {
+              if (err) throw err
+              req.stores = result.map(store=>{
+                return JSON.stringify(store._id)
+              })
+              next()
+
+            })
+
+          } else {
+            next()
+
+          }
         } else {
           res.send('Your role cannot execute the action!')
         }

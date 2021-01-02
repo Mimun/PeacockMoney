@@ -60,11 +60,11 @@ function formatDate(date) {
 
 // CONTRACT TEMPLATE
 // contract template list for admin
-router.get('/',(req, res, next) => {
-  req.url = '/contractMng/contracts'
+router.get('/', (req, res, next) => {
+  req.url = '/contractMng/contractTemplates'
   req.type = 'GET'
   next()
-}, checkRole,  function (req, res, next) {
+}, checkRole, function (req, res, next) {
   async.parallel({
     contractTemplateList: callback => {
       ContractTemplate.find({}).exec(callback)
@@ -80,7 +80,7 @@ router.get('/',(req, res, next) => {
 })
 
 // contract template list for user
-router.get('/contractTemplates',(req, res, next) => {
+router.get('/contractTemplates', (req, res, next) => {
   req.url = '/contractMng/contractTemplates'
   req.type = 'GET'
   next()
@@ -195,8 +195,8 @@ router.post('/findContractTemplates', (req, res, next) => {
 })
 
 // create new contract template route
-router.post('/createNewContractTemplate',(req, res, next) => {
-  req.url = '/contractMng/contracts'
+router.post('/createNewContractTemplate', (req, res, next) => {
+  req.url = '/contractMng/contractTemplates'
   req.type = 'POST'
   next()
 }, checkRole, (req, res, next) => {
@@ -225,7 +225,7 @@ router.post('/createNewContractTemplate',(req, res, next) => {
 })
 
 // get a contract template to create new contract
-router.get('/contractTemplates/:id',(req, res, next) => {
+router.get('/contractTemplates/:id', (req, res, next) => {
   req.url = '/contractMng/contractTemplates'
   req.type = 'GET'
   next()
@@ -331,7 +331,7 @@ router.post('/search', (req, res, next) => {
 })
 
 // delete contract template route
-router.delete('/deleteContractTemplate/:id',(req, res, next) => {
+router.delete('/deleteContractTemplate/:id', (req, res, next) => {
   req.url = '/contractMng/contracts'
   req.type = 'DELETE'
   next()
@@ -361,8 +361,10 @@ router.delete('/deleteContractTemplate/:id',(req, res, next) => {
 router.get('/contracts', (req, res, next) => {
   req.url = '/contractMng/contracts'
   req.type = 'GET'
+  req.checkStores = true
   next()
 }, checkRole, (req, res) => {
+  console.log('store queries: ', req.stores)
   try {
     async.parallel({
       contract: callback => {
@@ -378,47 +380,56 @@ router.get('/contracts', (req, res, next) => {
       if (err) throw err
       var propertyList = result2.property
       var contractList = result2.contract.map(contract => {
-        var numberOfLatePeriods = 0,
-          numberOfLateDays = 0
-        // number of late periods
-        if (contract.loanPackage) {
-          var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
-            return period.daysBetween > 0 && period.periodStatus === false
-
-          })
-          numberOfLatePeriods = latePeriodsArray.length
-          latePeriodsArray.forEach(period => {
-            numberOfLateDays += period.daysBetween
-          })
+        if (req.stores.includes(JSON.stringify(contract.store.value._id))) {
+          return contract
         }
-        return {
-          contract_Id: contract._id,
-          contractId: contract.id,
-          customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
-          customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-          contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
-          contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
-          loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
-          itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
-          itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
-          staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
-          interestRate: contract.loanPackage ? contract.loanPackage.interestRate : (getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))),
-          employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
-          employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
-          accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
-          incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
-          presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
-          contractStatus: contract.contractStatus,
-          totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
-          estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
-          numberOfLatePeriods,
-          numberOfLateDays,
-          lastPaidDate: '-',
-          numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
-          numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
-          // property: getProperty(propertyList, contract.id)
+      }).map(contract => {
+        if (contract) {
+          {
+            var numberOfLatePeriods = 0,
+              numberOfLateDays = 0
+            // number of late periods
+            if (contract.loanPackage) {
+              var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
+                return period.daysBetween > 0 && period.periodStatus === false
 
+              })
+              numberOfLatePeriods = latePeriodsArray.length
+              latePeriodsArray.forEach(period => {
+                numberOfLateDays += period.daysBetween
+              })
+            }
+            return {
+              contract_Id: contract._id,
+              contractId: contract.id,
+              customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+              customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+              contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
+              contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
+              loan: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')),
+              itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
+              itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
+              staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
+              interestRate: contract.loanPackage ? contract.loanPackage.interestRate : (getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))),
+              employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
+              employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
+              accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
+              incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
+              presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
+              contractStatus: contract.contractStatus,
+              totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
+              estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
+              numberOfLatePeriods,
+              numberOfLateDays,
+              lastPaidDate: '-',
+              numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
+              numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
+              // property: getProperty(propertyList, contract.id)
+
+            }
+          }
         }
+
 
       })
       res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
@@ -584,11 +595,11 @@ const createPropertyId = (contractId, itemTypeId, index = 0) => {
 }
 
 // update status of a contract
-router.put('/contracts/:id',(req, res, next) => {
+router.put('/contracts/:id', (req, res, next) => {
   req.url = '/contractMng/contracts'
   req.type = 'PUT'
   next()
-}, checkRole,   async (req, res) => {
+}, checkRole, async (req, res) => {
   console.log('id received: ', req.params.id)
   console.log('body: ', req.body)
   var token = req.headers['x-access-token'].split(' ')[1].trim()
@@ -769,11 +780,11 @@ router.put('/contracts/:id',(req, res, next) => {
 })
 
 // get contract detail
-router.get('/contracts/:id/print',(req, res, next) => {
+router.get('/contracts/:id/print', (req, res, next) => {
   req.url = '/contractMng/contracts'
   req.type = 'GET'
   next()
-}, checkRole,   (req, res) => {
+}, checkRole, (req, res) => {
   console.log('id received', req.params.id)
   Contract.findById(req.params.id).exec((err, contractResult) => {
     if (err) throw err
@@ -833,7 +844,7 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
 })
 
 // transaction history
-router.get('/transactionHistory',(req, res, next) => {
+router.get('/transactionHistory', (req, res, next) => {
   req.url = '/contractMng/transactionHistory'
   req.type = 'GET'
   next()
@@ -889,7 +900,7 @@ router.get('/transactionHistory',(req, res, next) => {
 })
 
 // receipt page
-router.get('/contracts/:id/receipt',(req, res, next) => {
+router.get('/contracts/:id/receipt', (req, res, next) => {
   req.url = '/systemMng/receiptId'
   req.type = 'GET'
   next()
