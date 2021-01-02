@@ -8,132 +8,247 @@
 <body>
   <%- include('../Components/navbar.ejs') %>
 
-  <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %>
-    <div id="page-content-wrapper">
-      <main>
-        <template id="temp_contract">
-          <div class="align-items-stretch object-div" c-data="true">
-            <div class="card object-div" c-data="true" style="width: 320px; margin-bottom: 15px;">
-              <img class="card-img-top" src="" alt="Card image cap">
-              <div class="card-body">
-                <h5 class="card-title"></h5>
-                <p class="card-text"></p>
+    <div class="d-flex" id="wrapper">
+      <%- include('../Components/sideBar.ejs') %>
+        <div id="page-content-wrapper">
+          <main>
+            <template id="temp_contract">
+              <div class="align-items-stretch object-div" c-data="true">
+                <div class="card object-div" c-data="true" style="width: 320px; margin-bottom: 15px;">
+                  <img class="card-img-top" src="" alt="Card image cap">
+                  <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"></p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-        </template>
+            </template>
 
-        <template id="contract_detail">
-          <%- include('templateDetailscopy.ejs') %>
-        </template>
+            <template id="contract_detail">
+              <%- include('templateDetailscopy.ejs') %>
+            </template>
 
-        <header>
-          <h2>
-            <b>Quản lý và tạo mẫu hợp đồng</b>
-          </h2>
-        </header>
-        <submain>
-          <div id="template-handler" class="card-deck"></div>
-          <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Thêm mẫu hợp đồng</button>
-          <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Danh sách hợp đồng</button>
-        </submain>
-      </main>
+            <header>
+              <h2>
+                <b>Quản lý và tạo mẫu hợp đồng</b>
+              </h2>
+            </header>
+            <submain>
+              <button type="button" class="btn btn-primary btn-sm" id="addTemplate">Thêm mẫu hợp đồng</button>
+              <button class="btn btn-raised btn-primary btn-sm" id="redirect-page">Danh sách hợp đồng</button>
+              <!-- <div id="template-handler" class="card-deck"></div> -->
+              <table class="table table-hover table-bordered table-striped contract-template-table">
+                <thead>
+                  <tr>
+                    <th id="image"></th>
+                    <th id="templateName">Tên mẫu hợp đồng</th>
+                    <th id="itemType">Loại tài sản</th>
+                    <th id="itemTypeId">Mã loại tài sản</th>
+                    <th id="paymentMethod">Kiểu vay</th>
+                    <th id="min">Min</th>
+                    <th id="max">Max</th>
+                    <th id="interestRate">Lãi%/ngày</th>
+                    <th id="numberOfAcceptanceTerms">Số kỳ thu</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </submain>
+          </main>
 
-      <div class="container-fluid">
-        <!-- Modal -->
+          <div class="container-fluid">
+            <!-- Modal -->
 
-        <!-- Central Modal Small -->
-        <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-          aria-hidden="true">
+            <!-- Central Modal Small -->
+            <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+              aria-hidden="true">
 
-          <!-- Change class .modal-sm to change the size of the modal -->
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title w-100" id="myModalLabel">Tạo mẫu hợp đồng</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <!-- Adding dynamic content here -->
-                <h2>I am going to add a dynamic content here</h2>
-              </div>
-              <div class="modal-footer justify-content-center">
-                <div class="btn-options d-flex">
+              <!-- Change class .modal-sm to change the size of the modal -->
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title w-100" id="myModalLabel">Tạo mẫu hợp đồng</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- Adding dynamic content here -->
+                    <h2>I am going to add a dynamic content here</h2>
+                  </div>
+                  <div class="modal-footer justify-content-center">
+                    <div class="btn-options d-flex">
 
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+            <!-- Central Modal Small -->
           </div>
         </div>
-        <!-- Central Modal Small -->
-      </div>
     </div>
-  </div>
 
 
-  <script type="module">
-    import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
-    import { ObjectId } from '/createMongooseID.js'
-    import { findNestedObj } from '/findNestedObj.js'
-    const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
-    const itemTypeList = <%- JSON.stringify(itemTypeList) %>;
-    console.log('item type list: ', itemTypeList)
+    <script type="module">
+      import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
+      import { ObjectId } from '/createMongooseID.js'
+      import { findNestedObj } from '/findNestedObj.js'
+      import {makeRequest} from '/makeRequest.js'
+      const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
+      const itemTypeList = <%- JSON.stringify(itemTypeList) %>;
+      console.log('item type list: ', itemTypeList)
 
-
-    const contractTemplate = document.getElementById('temp_contract');
-
-    console.log('contract template list: ', contractTemplateList)
-
-
-    // card_handler = document.querySelector('template-handler')
-    for (var i = 0; i < contractTemplateList.length; i++) {
-      generateContractTemplateCard(contractTemplateList[i], contractTemplate, 'template-handler')
-    }
-
-    document.getElementById('addTemplate').addEventListener('click', (evt) => {
-      // create new contract template button
-      const modalBody = document.querySelector('.modal-body')
-      const modalFooter = document.querySelector('.modal-footer')
-
-      modalBody.innerHTML = ""
-      if (modalFooter.querySelector('.btn-options')) {
-        modalFooter.querySelector('.btn-options').innerHTML = ""
-
+      const getNestedValue = (obj) => {
+        var value = obj ? (obj.value ? obj.value : '-') : '-'
+        return value
       }
-      var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
-      modalBody.appendChild(tmpContent)
-      $("#centralModalSm").modal('show');
-      // create item type list option
-      if (itemTypeList.length !== 0) {
-        var itemTypeOptions = []
-        itemTypeList.forEach(itemType => {
-          var option = `<option value=${itemType.id} id="${itemType.id}" name="${itemType.name}" >${itemType.name}</option>`
-          itemTypeOptions.push(option)
-        })
-        var selectItemType = document.querySelector('select#itemType')
-        console.log('select: ', document.querySelector('select#itemType'))
-        selectItemType ? selectItemType.innerHTML= itemTypeOptions : null
-        console.log('value: ', selectItemType.options[selectItemType.selectedIndex].id)
-        var itemTypeId = document.querySelector('input[name="itemTypeId"]')
-        itemTypeId? itemTypeId.value = selectItemType.options[selectItemType.selectedIndex].id : ''
-        // to fix the label is rendered wrongly
-        itemTypeId.closest('.form-group').classList.add('is-filled')
-        selectItemType.addEventListener('change', (event)=>{
-          itemTypeId? itemTypeId.value = event.target.options[event.target.selectedIndex].id : ''
-        })
-      }
-      $(tmpContent).bootstrapMaterialDesign()
-    })
 
-    // go to contract list button
-    var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
-      window.location.href = "contracts?token=" + window.localStorage.getItem('accessToken')
-    })
-  </script>
+      const handleRowClick = (event)=>{
+        var itemObj = event.target.closest('tr').C_DATA
+        const clone = document.querySelector('template#temp_contract').content.cloneNode(true)
+        var modalBody = document.querySelector('.modal-body')
+          var modalFooter = document.querySelector('.modal-footer')
+          $("#centralModalSm").modal('show');
+
+          while (modalBody.firstChild) {
+            modalBody.removeChild(modalBody.lastChild)
+          }
+          const container = document.createElement('div')
+          container.className = 'container'
+          container.innerHTML = `<div class="row">
+            <div class="col-4 template-preview"></div>
+            <div class="col template-info"></div>
+          
+          </div>`
+          modalBody.appendChild(container)
+
+          const buttonOptions = modalFooter.querySelector('.btn-options')
+          while (buttonOptions.firstChild) {
+            buttonOptions.removeChild(buttonOptions.lastChild)
+          }
+          const createNewContractButton = document.createElement('button')
+          createNewContractButton.id = 'btn-create-new-contract'
+          createNewContractButton.className = "btn btn-primary btn-sm"
+          createNewContractButton.innerHTML = "Create new contract"
+          createNewContractButton.addEventListener('click', () => {
+            window.location.href = `contractTemplates/${itemObj._id}?token=${window.localStorage.getItem('accessToken')}`
+          })
+          buttonOptions.appendChild(createNewContractButton)
+
+          const deleteContractTemplateButton = document.createElement('button')
+          deleteContractTemplateButton.id = 'btn-delete-contract-template'
+          deleteContractTemplateButton.className = "btn btn-outline-danger btn-sm"
+          deleteContractTemplateButton.innerHTML = "Delete template"
+          deleteContractTemplateButton.addEventListener('click', (event) => {
+            makeRequest('DELETE', 'deleteContractTemplate/' + itemObj._id, 'application/json', JSON.stringify({}), window.location.reload())
+          })
+          buttonOptions.appendChild(deleteContractTemplateButton)
+          modalFooter.appendChild(buttonOptions)
+          var contractTemplateImage = findNestedObj(itemObj, 'name', 'image').value
+          clone.querySelector('img').setAttribute('src', contractTemplateImage)
+
+          var cardClone = clone.querySelector('img').cloneNode(true)
+          // cardClone.C_DATA = this.C_DATA
+          // cardClone.className = "d-flex align-items-stretch object-div"
+          modalBody.querySelector('.template-preview').prepend(cardClone)
+
+          const templateInfoContainer = document.createElement('div')
+          templateInfoContainer.className = "template-info-container list-group"
+          templateInfoContainer.style.margin = '14px 0'
+
+          itemObj.templateMetadata.map(info => {
+            if (info.name !== "image" && info.name !== "contractContent" && info.name !== "category" && info.name !== "templateType") {
+              const infoContainer = document.createElement('div')
+              infoContainer.className = 'info-container list-group-item'
+              infoContainer.style.display = 'flex'
+              infoContainer.style.flexDirection = 'row'
+
+              const label = document.createElement('div')
+              label.className = 'label'
+              label.innerHTML = info.dataVie + ": " + info.value
+              infoContainer.appendChild(label)
+              templateInfoContainer.appendChild(infoContainer)
+            }
+          })
+          modalBody.querySelector('.template-info').appendChild(templateInfoContainer)
+      }
+
+      const contractTemplate = document.getElementById('temp_contract');
+
+      console.log('contract template list: ', contractTemplateList)
+
+      contractTemplateList.forEach(contractTemplate => {
+        var tr = document.createElement('tr')
+        tr.C_DATA = contractTemplate
+        tr.addEventListener('click', event => {
+          handleRowClick(event)
+        })
+        document.querySelectorAll('table.contract-template-table thead th').forEach(element => {
+          if (element.id === 'image') {
+            var td = document.createElement('td')
+            td.style.width = 'fit-content'
+            var img = document.createElement('img')
+            img.style.height = '80px'
+            img.style.width = 'auto'
+            img.src = getNestedValue(findNestedObj(contractTemplate, 'name', 'image'))
+            td.appendChild(img)
+            tr.appendChild(td)
+
+          } else {
+            var th = document.createElement('th')
+            th.innerHTML = getNestedValue(findNestedObj(contractTemplate, 'name', element.id)).toLocaleString()
+            tr.appendChild(th)
+          }
+        })
+        document.querySelector('table.contract-template-table tbody').appendChild(tr)
+      })
+      // card_handler = document.querySelector('template-handler')
+      // for (var i = 0; i < contractTemplateList.length; i++) {
+      //   generateContractTemplateCard(contractTemplateList[i], contractTemplate, 'template-handler')
+      // }
+
+      document.getElementById('addTemplate').addEventListener('click', (evt) => {
+        // create new contract template button
+        const modalBody = document.querySelector('.modal-body')
+        const modalFooter = document.querySelector('.modal-footer')
+
+        modalBody.innerHTML = ""
+        if (modalFooter.querySelector('.btn-options')) {
+          modalFooter.querySelector('.btn-options').innerHTML = ""
+
+        }
+        var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
+        modalBody.appendChild(tmpContent)
+        $("#centralModalSm").modal('show');
+        // create item type list option
+        if (itemTypeList.length !== 0) {
+          var itemTypeOptions = []
+          itemTypeList.forEach(itemType => {
+            var option = `<option value=${itemType.id} id="${itemType.id}" name="${itemType.name}" >${itemType.name}</option>`
+            itemTypeOptions.push(option)
+          })
+          var selectItemType = document.querySelector('select#itemType')
+          console.log('select: ', document.querySelector('select#itemType'))
+          selectItemType ? selectItemType.innerHTML = itemTypeOptions : null
+          console.log('value: ', selectItemType.options[selectItemType.selectedIndex].id)
+          var itemTypeId = document.querySelector('input[name="itemTypeId"]')
+          itemTypeId ? itemTypeId.value = selectItemType.options[selectItemType.selectedIndex].id : ''
+          // to fix the label is rendered wrongly
+          itemTypeId.closest('.form-group').classList.add('is-filled')
+          selectItemType.addEventListener('change', (event) => {
+            itemTypeId ? itemTypeId.value = event.target.options[event.target.selectedIndex].id : ''
+          })
+        }
+        $(tmpContent).bootstrapMaterialDesign()
+      })
+
+      // go to contract list button
+      var redirectBtn = document.querySelector('#redirect-page').addEventListener('click', () => {
+        window.location.href = "contracts?token=" + window.localStorage.getItem('accessToken')
+      })
+    </script>
 </body>
 
 </html>
