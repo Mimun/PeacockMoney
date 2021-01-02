@@ -3,6 +3,7 @@ const JobTitle = require('../models/jobTitle')
 const Store = require('../models/store')
 const atob = require('atob');
 const { result } = require('lodash');
+const store = require('../models/store');
 
 function parseJwt(token) {
   var base64Url = token.split('.')[1];
@@ -64,13 +65,14 @@ module.exports = (req, res, next) => {
           if (req.checkStores) {
             var storeQueries = result.stores.map(store => {
               if (store === 'only') {
-                return { _id: decodedJwt.store }
+                return decodedJwt.store? { _id: decodedJwt.store } : {}
               } else if (store === 'all') {
                 return {}
               } else {
                 return { _id: store }
               }
             })
+            console.log('store queries: ', storeQueries)
             Store.find({ $or: storeQueries }).exec((err, result) => {
               if (err) throw err
               req.stores = result.map(store=>{

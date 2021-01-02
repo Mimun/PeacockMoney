@@ -169,23 +169,18 @@ const editBtnFunction = (event, routerName, user) => {
     case "Edit":
       console.log('edit')
       if (modalBody.C_DATA._id) {
-        if (roleAbility.editInfo === "all") {
-          modalBody.querySelectorAll('input').forEach(input => {
-            input.removeAttribute('disabled')
-          })
-          modalBody.querySelectorAll('select').forEach(select => {
-            select.disabled = false
-          })
-          modalBody.querySelector('.img-container').style.display = 'none'
-          modalBody.querySelector('.cropper-container').style.display = 'block'
-          modalBody.querySelector('.cropper-container').querySelector('cropper-wc').addEventListener('CROPPED', (event) => {
-            console.log('image: ', event.detail['image'])
-          })
-          console.log('img: ', modalBody.querySelector('.cropper-container').querySelector('cropper-wc').querySelector('img'))
-        } else {
-          modalBody.querySelector('input[name="password"]').disabled = false
-
-        }
+        modalBody.querySelectorAll('input').forEach(input => {
+          input.removeAttribute('disabled')
+        })
+        modalBody.querySelectorAll('select').forEach(select => {
+          select.disabled = false
+        })
+        modalBody.querySelector('.img-container').style.display = 'none'
+        modalBody.querySelector('.cropper-container').style.display = 'block'
+        modalBody.querySelector('.cropper-container').querySelector('cropper-wc').addEventListener('CROPPED', (event) => {
+          console.log('image: ', event.detail['image'])
+        })
+        console.log('img: ', modalBody.querySelector('.cropper-container').querySelector('cropper-wc').querySelector('img'))
         event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
       } else {
