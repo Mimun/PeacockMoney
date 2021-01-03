@@ -526,6 +526,11 @@
         data.items.push(itemInfo)
       })
 
+      var valueNeedToBeApproved = findNestedObj(data.contractMetadata, 'name', 'valueNeedToBeApproved').value
+      var loan = findNestedObj(data.contractMetadata, 'name', 'loan').value
+      if(loan> valueNeedToBeApproved){
+        data.contractStatus = 'pending'
+      }
       console.log('data: ', data)
       makeRequest('POST', '/contractMng/contracts', 'application/json', JSON.stringify(data), () => {
         window.localStorage.removeItem('evaluatingItem')

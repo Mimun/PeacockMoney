@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .blink-bg {
+      animation: blinkingBackground 4s 0s;
+    }
+
+    @keyframes blinkingBackground {
+      0% {
+        background-color: #ffffff;
+      }
+
+      25% {
+        background-color: #e0f2f1;
+      }
+
+      50% {
+        background-color: #ffffff;
+      }
+
+      75% {
+        background-color: #e0f2f1;
+      }
+
+      100% {
+        background-color: #ffffff;
+      }
+    }
+    .container:hover{
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+
+  <div class="d-flex" id="wrapper">
+    <%- include('../Components/sideBar.ejs') %>
+    <div id="page-content-wrapper">
+      <template id="contract-card-template">
+        <style>
+          .list-group-item:hover {
+            cursor: pointer;
+            background-color: lightgrey;
+          }
+        </style>
+
+        <div class="list-group-item object-div" style="border: 1px solid lightgrey; margin: 8px 0;">
+          <div class="container info">
+            <div class="row">
+              <div class="col-3" style="margin: auto">
+                <div class="image-container" style="width: 193px; max-width: 256px; height: auto; max-height: 192px;">
+                  <img alt="" style="width: 100%; height: auto;">
+
+                </div>
+              </div>
+              <div class="col" style="margin: auto;">
+                <p class="h4 mb-4 contract-title">Template title</p>
+                <div class="contract-info"></div>
+                <div class="contract-id"></div>
+              </div>
+              <div class="col-2 btn-options" style="margin: auto;">
+                <button class="btn btn-primary btn-sm"></button>
+                <!-- <button class="btn btn-outline-danger btn-sm" id="btn-complete">Complete</button> -->
+              </div>
+            </div>
+          </div>
+          <div class="container interact">
+            <div class="row">
+              <div class="col-3">
+
+              </div>
+              <div class="col">
+                <div class="contract-likes"></div>
+
+              </div>
+              <div class="col-2"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </template>
+
+      <template id="contract-detail-container-template">
+        <%- include('contractDetail2.ejs') %>
+
+      </template>
+
+      <div class="contract-list-container container" style="padding: 5% 2%; ">
+        <div class="title-container" style="margin: auto;">
+          <p class="h2 mb-2" style="text-align: center; ">Danh sách hợp đồng</p>
+        </div>
+
+        <!-- filter|selector -->
+        <!-- <div class="filter-boxes" style="padding-bottom: 5%;">
+          <select class="browser-default custom-select selector" style="width: 200px;">
+            <option selected value="all">All</option>
+            <option value="waiting">Waiting</option>
+            <option value="approved">Aproved</option>
+            <option value="completed">Completed</option>
+          </select>
+
+        </div> -->
+
+        <div class="list-group-flush" id="list-container">
+
+        </div>
+
+      </div>
+
+      <!-- modal -->
+      <div class="container-fluid">
+        <!-- Modal -->
+
+        <!-- Central Modal Small -->
+        <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+          aria-hidden="true">
+
+          <!-- Change class .modal-sm to change the size of the modal -->
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title w-100" id="myModalLabel">Thông tin chi tiết hợp đồng</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <modal-body style="width: fit-content;">
+                  <!-- Adding dynamic content here -->
+                  <h2>I am going to add a dynamic content here</h2>
+                </modal-body>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Central Modal Small -->
+      </div>
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { generatePendingContractListHTML } from '/generatePendingContractListHTML.js'
+    import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+    const contractList = <%- JSON.stringify(contractList) %>;
+    const payload = <%- JSON.stringify(payload) %>;
+    const isCheckMember = <%- JSON.stringify(isCheckMember)%>;
+    const isApproveMember = <%- JSON.stringify(isApproveMember)%>;
+
+    console.log('contract list: ', contractList)
+    console.log('payload: ', payload)
+
+    const template = document.querySelector('#contract-card-template')
+    console.log('previous url: ', document.referrer.split('/').includes('createNewContract'))
+
+    contractList.map(contract => {
+      generatePendingContractListHTML(contract, template, 'list-container', payload, {}, isCheckMember, isApproveMember)
+    })
+
+    if (document.referrer.split('/').includes('contractTemplates')) {
+      console.log('first element: ', document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div'))
+      var firstElement = document.querySelector('.contract-list-container').querySelector('#list-container').querySelector('.object-div')
+      firstElement ? firstElement.classList.add('blink-bg') : null
+    }
+
+    const addClickEvent = () => {
+      // handling contract onclick event (contract detail page)
+      document.querySelectorAll('.object-div .info').forEach(element => {
+        element.addEventListener('click', (event) => {
+          console.log('clicked to object div')
+          document.querySelector('.modal-body').innerHTML = ''
+          const contractDetailContainerTemplate = document.querySelector('#contract-detail-container-template')
+          const contractDetailContainerTemplateClone = contractDetailContainerTemplate.content.cloneNode(true)
+          document.querySelector('.modal-body').appendChild(contractDetailContainerTemplateClone)
+
+          const contractTemplate = document.querySelector('#contract-template')
+          console.log('contract template', contractTemplate)
+          generateContractDetailHTML(event.target.closest('.object-div').C_DATA, contractTemplate, 'contract-info')
+
+          $("#centralModalSm").modal();
+        })
+      })
+    }
+    addClickEvent()
+
+    const addClickEvent2 = ()=>{
+      document.querySelectorAll('.object-div .interact').forEach(element => {
+        element.addEventListener('click', (event) => {
+          document.querySelector('.modal-body').innerHTML = ''
+          var likes = event.target.closest('.object-div').C_DATA.likes
+          if(likes.length !== 0){
+            likes.forEach(like=>{
+              var p = document.createElement('p')
+              p.innerHTML = `${like.userName} - ${like.role}`
+              document.querySelector('.modal-body').appendChild(p)
+            })
+          } else {
+            var p = document.createElement('p')
+            p.innerHTML = `${likes.length} người đã đồng ý hợp đồng này.`
+            document.querySelector('.modal-body').appendChild(p)
+          }
+         
+          // const contractDetailContainerTemplate = document.querySelector('#contract-detail-container-template')
+          // const contractDetailContainerTemplateClone = contractDetailContainerTemplate.content.cloneNode(true)
+          // document.querySelector('.modal-body').appendChild(contractDetailContainerTemplateClone)
+
+          // const contractTemplate = document.querySelector('#contract-template')
+          // console.log('contract template', contractTemplate)
+          // generateContractDetailHTML(event.target.closest('.object-div').C_DATA, contractTemplate, 'contract-info')
+
+          $("#centralModalSm").modal();
+        })
+      })
+    }
+    addClickEvent2()
+
+
+
+  </script>
+</body>
+
+</html>

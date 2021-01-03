@@ -1,6 +1,7 @@
 const Role = require('../models/role')
 const JobTitle = require('../models/jobTitle')
 const Store = require('../models/store')
+const Employee = require('../models/employee')
 const atob = require('atob');
 const { result } = require('lodash');
 const store = require('../models/store');
@@ -11,30 +12,11 @@ function parseJwt(token) {
   var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
+  console.log('decoded jwt: ', JSON.parse(jsonPayload))
 
   return JSON.parse(jsonPayload);
 };
 
-function checkRoleAbilities(roleAbilities, abilitiesCanDo) {
-  console.log('role abilities: ', roleAbilities, ', abilities can do: ', abilitiesCanDo, ', is equal: ')
-
-  var canDo = false
-  for (var prop in abilitiesCanDo) {
-
-    if (roleAbilities[prop] === abilitiesCanDo[prop]) {
-      canDo = true
-
-    } else {
-      canDo = false
-    }
-
-  }
-  return canDo
-}
-
-// roleCanDo(array): require specific role to execute the action
-// abilitiesCando(object): require specific abilitites to execute the action
-// must have 2 conditions to enter the route
 module.exports = (req, res, next) => {
   var url = req.url, type = req.type
   console.log('url: ', url, ', type: ', type)
@@ -54,7 +36,6 @@ module.exports = (req, res, next) => {
       res.redirect('/login')
     }
     var decodedJwt = parseJwt(jwtToken)
-    console.log('decoded jwt: ', decodedJwt)
 
     Role.findOne({ name: decodedJwt.role }).exec((err, result) => {
       if (err) throw err
@@ -65,7 +46,7 @@ module.exports = (req, res, next) => {
           if (req.checkStores) {
             var storeQueries = result.stores.map(store => {
               if (store === 'only') {
-                return decodedJwt.store? { _id: decodedJwt.store } : {}
+                return decodedJwt.store ? { _id: decodedJwt.store } : {}
               } else if (store === 'all') {
                 return {}
               } else {
@@ -75,16 +56,20 @@ module.exports = (req, res, next) => {
             console.log('store queries: ', storeQueries)
             Store.find({ $or: storeQueries }).exec((err, result) => {
               if (err) throw err
-              req.stores = result.map(store=>{
+              req.stores = result.map(store => {
                 return JSON.stringify(store._id)
               })
               next()
 
             })
 
-          } else {
+          } else if (req.checkMember) {
+            req.isCheckMember = decodedJwt.isCheckMember
+            req.isApproveMember = decodedJwt.isApproveMember
             next()
 
+          } else {
+            next()
           }
         } else {
           res.send('Your role cannot execute the action!')

@@ -39,7 +39,8 @@ const contractSchema = new mongoose.Schema({
   id: { type: String },
   loanPackage: { type: Object, default: null },
   blockRules: [{ type: Object }],
-  penaltyRules: [{ type: Object }]
+  penaltyRules: [{ type: Object }],
+  likes: [{type: Object}]
 
   // item: {type: mongoose.Types.ObjectId, ref: 'Item', required: false},
   // itemStatus: [{type: mongoose.Types.ObjectId, ref: 'ItemStatus', required: false}],

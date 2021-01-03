@@ -457,8 +457,7 @@ router.get('/waitingContracts', (req, res, next) => {
   req.type = 'GET'
   next()
 }, checkRole, (req, res) => {
-  const checkDate = formatDate(new Date())
-  console.log('date now: ', checkDate)
+
   async.parallel({
     contract: callback => {
       Contract.find({ contractStatus: 'waiting' }, {}, { sort: { '_id': -1 } }).exec(callback)
@@ -472,6 +471,34 @@ router.get('/waitingContracts', (req, res, next) => {
 
   })
 
+})
+
+// pending contract list
+router.get('/pendingContracts', (req, res, next) => {
+  req.url = '/contractMng/pendingContracts'
+  req.type = 'GET'
+  req.checkMember = true
+
+  next()
+}, checkRole, (req, res) => {
+  console.log('is check member: ', req.isCheckMember)
+  console.log('is approve member: ', req.isApproveMember)
+
+  async.parallel({
+    contract: callback => {
+      Contract.find({ contractStatus: 'pending' }, {}, { sort: { '_id': -1 } }).exec(callback)
+    },
+    contractNow: callback => {
+      Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
+    }
+  }, (err, result2) => {
+    if (err) throw err
+    res.render('pendingContractList', {
+      contractList: result2.contract, roleAbility: req.roleAbility,
+      payload: req.payload, contractNow: result2.contractNow, isCheckMember: req.isCheckMember, isApproveMember: req.isApproveMember
+    })
+
+  })
 })
 
 // create new contract
@@ -673,7 +700,7 @@ router.put('/contracts/:id', (req, res, next) => {
 
     var updateQuery = { $set: { 'contractStatus': req.body.contractStatus } }
     loanPackage ? updateQuery.$set.loanPackage = loanPackage : null
-
+    req.body.likes ? updateQuery.$set.likes = req.body.likes : null
     try {
       Contract.findOneAndUpdate({ _id: req.params.id }, updateQuery, { new: true })
         .exec(async (err, contractResult) => {
@@ -769,6 +796,8 @@ router.put('/contracts/:id', (req, res, next) => {
             } catch (err) {
               console.error(err)
             }
+          } else {
+            res.send('Saved successfully!')
           }
         })
     } catch (err) {

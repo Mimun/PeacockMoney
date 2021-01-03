@@ -134,6 +134,16 @@
           <input type="text" class="form-control validate" name="password" data-vie="Mật khẩu" data-kor="koreanString"
             value="12345">
         </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="isCheckMember" data-vie="Thành viên ban kiểm duyệt" data-kor="koreanString"> Thành viên ban kiểm duyệt
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="isApproveMember" data-vie="Thành viên ban phê duyệt" data-kor="koreanString"> Thành viên ban phê duyệt
+          </label>
+        </div>
       </div>
       <div class="modal-footer d-flex justify-content-center">
         <button class="btn btn-outline-primary" id="btn-create-employee">Tạo</button>
@@ -263,17 +273,22 @@
             value: event.target.closest('.modal-content').querySelector('.modal-body').querySelector('cropper-wc').getImageData(),
             dataVie: 'anhDaiDien'
           })
-          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('input').forEach(input => {
-            employeeObj.metadata.push({
-              cType: input.type,
-              dataKor: input.getAttribute('data-kor'),
-              name: input.getAttribute('name'),
-              value: input.value,
-              dataVie: input.getAttribute('data-vie')
-            })
+          event.target.closest('.modal-content').querySelectorAll('.modal-body input').forEach(input => {
+            if(input.type !== 'checkbox'){
+              employeeObj.metadata.push({
+                cType: input.type,
+                dataKor: input.getAttribute('data-kor'),
+                name: input.getAttribute('name'),
+                value: input.value,
+                dataVie: input.getAttribute('data-vie')
+              })
+            } else {
+              employeeObj[input.name] = input.checked
+            }
+           
 
           })
-          event.target.closest('.modal-content').querySelector('.modal-body').querySelectorAll('select').forEach(select => {
+          event.target.closest('.modal-content').querySelectorAll('.modal-body select').forEach(select => {
             employeeObj.metadata.push({
               name: select.getAttribute('name'),
               value: select.value,
@@ -289,6 +304,7 @@
         })
         modalContent.innerHTML = ''
         modalContent.appendChild(createEmployee)
+        $(createEmployee).bootstrapMaterialDesign();
         modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', false, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
         modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', false, roleselectOptions, selectLabel, 'Phân quyền', selectContainer))
         // modalContent.querySelector('.modal-body').querySelector('#role').querySelectorAll('option').forEach(option => {

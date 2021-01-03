@@ -84,7 +84,7 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         info.name === "min" || "max" || "millionPerDay" ? input.value = addSeparator(info.value) : input.value = info.value
       }
 
-      if (info.name === "loan" || info.name === "min" || info.name === "max" || info.name === "millionPerDay") {
+      if (info.name === "loan" || info.name === "min" || info.name === "valueNeedToBeApproved" || info.name === "max" || info.name === "millionPerDay") {
         input.setAttribute('data-type', 'currency')
         input.type = 'text'
         input.setAttribute('name', info.name)

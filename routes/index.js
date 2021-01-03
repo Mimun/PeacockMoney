@@ -21,6 +21,12 @@ const rootRole = {
       "PUT": true,
       "DELETE": true
     },
+    "/contractMng/pendingContracts": {
+      "GET": true,
+      "POST": false,
+      "PUT": false,
+      "DELETE": false
+    },
     "/contractMng/latePeriod": {
       "GET": true,
       "POST": true,
@@ -242,6 +248,8 @@ const rootAcc = {
     value: "root",
     dataVie: "phanQuyen"
   }],
+  isCheckMember: true,
+  isApproveMember: true
 
 }
 
@@ -262,7 +270,15 @@ router.get('/login', (req, res, next) => {
             new Employee(rootAcc).save(callback)
           },
           role: callback => {
-            new Role(rootRole).save(callback)
+            Role.findOne({name: 'root'}).exec((err, result)=>{
+              if(err) throw err
+              if(!result){
+                new Role(rootRole).save(callback)
+
+              } else {
+                callback(null, {})
+              }
+            })
           }
         }, (err, results) => {
           if (err) throw err
@@ -271,6 +287,14 @@ router.get('/login', (req, res, next) => {
       } catch (error) {
         console.error(error)
       }
+    } else {
+      Role.findOne({name: 'root'}).exec((err, result)=>{
+        if(err) throw err
+        if(!result){
+          new Role(rootRole).save()
+
+        } 
+      })
     }
     res.render('login', {})
 
@@ -278,9 +302,9 @@ router.get('/login', (req, res, next) => {
 })
 
 // post login
-const jwtSign = (name, role, id, store) => {
-  const accessToken = jwt.sign({ userName: name, role, id, store }, accessTokenSecret, { expiresIn: '24h' })
-  const refreshToken = jwt.sign({ userName: name, role, id, store }, refreshTokenSecret)
+const jwtSign = (name, role, id, store, isCheckMember, isApproveMember) => {
+  const accessToken = jwt.sign({ userName: name, role, id, store, isCheckMember: isCheckMember, isApproveMember: isApproveMember }, accessTokenSecret, { expiresIn: '48h' })
+  const refreshToken = jwt.sign({ userName: name, role, id, store, isCheckMember: isCheckMember, isApproveMember: isApproveMember }, refreshTokenSecret)
   refreshTokens.push(refreshToken)
   return {
     accessToken, refreshToken
@@ -305,25 +329,27 @@ router.post('/login', (req, res, next) => {
         var resultUserName = findNestedObj(result, 'name', 'name') ? findNestedObj(result, 'name', 'name').value : 'None'
         var resultRole = findNestedObj(result, 'name', 'role') ? findNestedObj(result, 'name', 'role').value : 'None'
         var employeeId = result._id
+        var isCheckMember = result.isCheckMember
+        var isApproveMember = result.isApproveMember
         var resultAvatar = findNestedObj(result, 'name', 'avatar') ? findNestedObj(result, 'name', 'avatar').value : 'None'
         if (findNestedObj(result, 'name', 'store') && findNestedObj(result, 'name', 'store').value) {
-          Store.findOne({ 'metadata.value': findNestedObj(result, 'name', 'store').value }).exec((err, result) => {
+          Store.findOne({ 'metadata.value': findNestedObj(result, 'name', 'store').value }).exec((err, store) => {
             if (err) throw err
-            var store = result._id
-            var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store)
+            var storeId = store._id
+            var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, storeId, isCheckMember, isApproveMember)
             res.send({
               accessToken, refreshToken, user: {
-                userName: resultUserName, role: resultRole, _id: employeeId, store, avatar: resultAvatar
+                userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
               }, isLoggedIn: false
             })
           })
 
         } else {
           var store = ""
-          var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store)
+          var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store, isCheckMember, isApproveMember)
           res.send({
             accessToken, refreshToken, user: {
-              userName: resultUserName, role: resultRole, _id: employeeId, store, avatar: resultAvatar
+              userName: resultUserName, role: resultRole, _id: employeeId, store, isCheckMember, isApproveMember, avatar: resultAvatar
             }, isLoggedIn: false
           })
         }
