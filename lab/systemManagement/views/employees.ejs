@@ -305,7 +305,7 @@
         modalContent.innerHTML = ''
         modalContent.appendChild(createEmployee)
         $(createEmployee).bootstrapMaterialDesign();
-        modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', false, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
+        modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', false, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
         modalContent.querySelector('.modal-body').appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', false, roleselectOptions, selectLabel, 'Phân quyền', selectContainer))
         // modalContent.querySelector('.modal-body').querySelector('#role').querySelectorAll('option').forEach(option => {
         //   if (!roleAbility.create.includes(option.getAttribute('value'))) {

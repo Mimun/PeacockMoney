@@ -19,7 +19,7 @@ export const employeeMetadataSample = () => {
       "dataKor": "koreanString",
       "name": "id",
       "value": "",
-      "dataVie": "maNhanVien"
+      "dataVie": "maNhân viên"
     },
     dateOfBirth: {
       "cType": "date",
@@ -103,7 +103,7 @@ export const employeeMetadataSample = () => {
       "dataKor": "koreanString",
       "name": "store",
       "value": "",
-      "dataVie": "cuaHang"
+      "dataVie": "Cửa hàng"
     },
     role: {
       "cType": "select",

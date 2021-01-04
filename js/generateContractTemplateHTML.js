@@ -118,11 +118,11 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
         contractInfoDiv.querySelector('.contract-info').appendChild(clone)
       }
     } else if (info.name === 'store') {
-      var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'cuaHang',
+      var selectContainerClone = createSelect(select, '', 'store', 'select-store', 'Cửa hàng',
         'koreanString', storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer)
       aSideInfoDiv.appendChild(selectContainerClone)
 
-      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'nhanVien',
+      var selectContainerClone2 = createSelect(select, '', 'employee', 'select-employee', 'Nhân viên',
         'koreanString', [], selectLabel, 'Người đại diện', selectContainer)
       selectContainerClone2.querySelector('#employee').disabled = true
       aSideInfoDiv.appendChild(selectContainerClone2)

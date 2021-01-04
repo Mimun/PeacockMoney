@@ -253,7 +253,7 @@
 
                 break
               default:
-                th.innerHTML = loan[element.id] !== null && loan[element.id] !== undefined ? loan[element.id] : '-'
+                th.innerHTML = loan[element.id] !== null && loan[element.id] !== undefined ? loan[element.id].toLocaleString() : '-'
                 break;
             }
 
@@ -269,7 +269,7 @@
     const acceptTransaction = (obj) => {
       if (obj) {
         makeRequest('POST', '/contractMng/funds/approve', 'application/json', JSON.stringify(obj), () => {
-
+          window.location.reload()
         })
       }
 
@@ -279,6 +279,7 @@
       // console.log('obj denied: ', obj)
       if (obj) {
         makeRequest('POST', '/contractMng/funds/deny', 'application/json', JSON.stringify(obj), () => {
+          window.location.reload()
 
         })
 

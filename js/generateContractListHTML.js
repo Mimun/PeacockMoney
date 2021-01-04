@@ -20,7 +20,7 @@ export const generateContractListHTML = (itemObj, template, elementName, payload
 
   // contract id
   var contractId = itemObj.id
-  clone.querySelector('.contract-id').innerHTML = `Ma hop dong: ${contractId}`
+  clone.querySelector('.contract-id').innerHTML = `Mã hợp đồng: ${contractId}`
 
   // contract info
   itemObj.contractMetadata.forEach(item => {

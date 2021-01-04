@@ -173,7 +173,7 @@ const rootAcc = {
     cType: "text",
     dataKor: "koreanString",
     name: "id",
-    value: "manhanviencapcao",
+    value: "maNhân viêncapcao",
     dataVie: "Mã nhân viên"
   }, {
     cType: "date",
@@ -221,7 +221,7 @@ const rootAcc = {
     cType: "email",
     dataKor: "koreanString",
     name: "email",
-    value: "nhanviencapcao@email.com",
+    value: "Nhân viêncapcao@email.com",
     dataVie: "email"
   }, {
     cType: "text",
@@ -240,7 +240,7 @@ const rootAcc = {
     dataKor: "koreanString",
     name: "store",
     value: "",
-    dataVie: "cuaHang"
+    dataVie: "Cửa hàng"
   }, {
     cType: "select",
     dataKor: "koreanString",

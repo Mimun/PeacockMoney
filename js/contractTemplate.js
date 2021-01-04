@@ -4,14 +4,14 @@ export var contract = () => {
       cType: 'text',
       dataKor: 'koreanString',
       name: 'store',
-      dataVie: 'cuaHang',
+      dataVie: 'Cửa hàng',
       value: null
     },
     employee: {
       cType: 'text',
       dataKor: 'koreanString',
       name: 'employee',
-      dataVie: 'nhanVien',
+      dataVie: 'Nhân viên',
       value: null
     },
     infos: [],

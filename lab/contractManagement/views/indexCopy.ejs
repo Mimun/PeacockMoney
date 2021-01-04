@@ -112,6 +112,22 @@
         option.innerHTML = itemObj.charAt(0).toUpperCase() + itemObj.slice(1)
         select.appendChild(option)
       })
+      // "create new option"
+      // if(variable === 'types'){
+      //   const option2 = document.createElement('option')
+      //   option2.value = "addNew"
+      //   option2.innerHTML = "Thêm mới..."
+        
+      //   select.appendChild(option2)
+      // }
+
+      // select.addEventListener('change', event=>{
+      //   if(event.target.value === 'addNew'){
+      //     window.location.href = variable === 'types'? `/systemMng/itemType?token=${window.localStorage.getItem('accessToken')}`: `#`
+
+      //   }
+      // })
+     
       document.querySelector('' + elementName + '').appendChild(select)
 
     }

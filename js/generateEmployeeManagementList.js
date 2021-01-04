@@ -102,7 +102,7 @@ export const generateEmployeeManagementList = async (mainList, selectList, selec
         storeSelectOptions.push('<option value="">No store</option>')
         if (selectList !== 0) {
           selectList.map(select => {
-            var option = `<option name="store" data-vie="cuaHang" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
+            var option = `<option name="store" data-vie="Cửa hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
             storeSelectOptions.push(option)
           })
         }
@@ -114,15 +114,15 @@ export const generateEmployeeManagementList = async (mainList, selectList, selec
           })
         }
         if (findNestedObj(itemObj, 'name', 'store')) {
-          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
 
           // if (selectList.includes(findNestedObj(itemObj, 'name', 'store').value)) {
           // } else {
-          //   modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          //   modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
           // }
 
         } else {
-          modalBody.appendChild(createSelect(select, '', 'store', 'cuaHang', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
 
         }
         if (findNestedObj(itemObj, 'name', 'role')) {

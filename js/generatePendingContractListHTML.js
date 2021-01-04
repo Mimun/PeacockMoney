@@ -35,7 +35,7 @@ export const generatePendingContractListHTML = (itemObj, template, elementName, 
 
   // contract id
   var contractId = itemObj.id
-  clone.querySelector('.contract-id').innerHTML = `Ma hop dong: ${contractId}`
+  clone.querySelector('.contract-id').innerHTML = `Mã hợp đồng: ${contractId}`
 
   // contract like
   var contractLikes = itemObj.likes

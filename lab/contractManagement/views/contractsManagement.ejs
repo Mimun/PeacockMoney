@@ -13,267 +13,293 @@
 <body>
   <%- include('../Components/navbar.ejs') %>
 
-  <div class="d-flex" id="wrapper">
-    <%- include('../Components/sideBar.ejs') %>
-    <div id="page-content-wrapper">
-      <h2>Quản lý hợp đồng</h2>
-      <div class="form-group">
-        <!-- <label for="import" class="bmd-label-floating">Import file HĐ</label>
+    <div class="d-flex" id="wrapper">
+      <%- include('../Components/sideBar.ejs') %>
+        <div id="page-content-wrapper">
+          <h2>Quản lý hợp đồng</h2>
+          <div class="form-group">
+            <!-- <label for="import" class="bmd-label-floating">Import file HĐ</label>
             <input type="file" accept=".csv" class="form-control-file" id="import"> -->
-        <button class="btn btn-sm btn-default" id="import">Import</button>
-      </div>
-      <!-- <button class="btn btn-primary" id="btn-choose-column">Choose column</button> -->
+            <button class="btn btn-sm btn-default" id="import">Import</button>
+            <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+            <form action="#" id="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+            </form>
+          </div>
+          <!-- <button class="btn btn-primary" id="btn-choose-column">Choose column</button> -->
 
-      <table class="table table-hover table-responsive table-bordered table-striped contract-table">
-        <thead>
-          <tr>
-            <th scope="col" id="contractId">Số hợp đồng</th>
-            <th scope="col" id="customerId">Mã khách hàng</th>
-            <th scope="col" id="customer">Tên khách hàng</th>
-            <th scope="col" id="contractCreatedDate">Ngày bắt đầu cho vay</th>
-            <th scope="col" id="contractEndingDate">Ngày kết thúc hợp đồng</th>
-            <th scope="col" id="loan" data-cal="calculate">Số tiền vay</th>
-            <th scope="col" id="itemType">Loại tài sản</th>
-            <th scope="col" id="itemName">Tên tài sản</th>
-            <th scope="col" id="staticRedemptionDate">Ngày đóng lãi cố định</th>
-            <th scope="col" id="interestRate">Lãi suất</th>
-            <th scope="col" id="employeeId">Mã nhân viên thẩm định</th>
-            <th scope="col" id="employeeName">Tên nhân viên thẩm định</th>
-            <th scope="col" id="accumulatedPaidInterest" data-cal="calculate">Lãi đã trả lũy kế</th>
-            <th scope="col" id="incrementalPaidPrincipal" data-cal="calculate">Gốc đã trả cộng dồn</th>
-            <th scope="col" id="presentValue" data-cal="calculate">Dư nợ hiện tại</th>
-            <th scope="col" id="contractStatus">Tình trạng hợp đồng</th>
-            <th scope="col" id="totalLoanDays">Tổng số ngày vay</th>
-            <th scope="col" id="estimatingInterest">Lãi dự tính</th>
-            <th scope="col" id="numberOfLatePeriods">Số kỳ đóng chậm</th>
-            <th scope="col" id="numberOfLateDays">Số ngày đóng chậm</th>
-            <th scope="col" id="lastPaidDate">Ngày đóng cuối cùng</th>
-            <th scope="col" id="numberOfPayingDownTimes">Số lần trả bớt gốc</th>
-            <th scope="col" id="numberOfPayment">Số lần trả</th>
+          <table class="table table-hover table-responsive table-bordered table-striped contract-table">
+            <thead>
+              <tr>
+                <th scope="col" id="contractId">Số hợp đồng</th>
+                <th scope="col" id="customerId">Mã khách hàng</th>
+                <th scope="col" id="customer">Tên khách hàng</th>
+                <th scope="col" id="contractCreatedDate">Ngày bắt đầu cho vay</th>
+                <th scope="col" id="contractEndingDate">Ngày kết thúc hợp đồng</th>
+                <th scope="col" id="loan" data-cal="calculate">Số tiền vay</th>
+                <th scope="col" id="itemType">Loại tài sản</th>
+                <th scope="col" id="itemName">Tên tài sản</th>
+                <th scope="col" id="staticRedemptionDate">Ngày đóng lãi cố định</th>
+                <th scope="col" id="interestRate">Lãi suất</th>
+                <th scope="col" id="employeeId">Mã nhân viên thẩm định</th>
+                <th scope="col" id="employeeName">Tên nhân viên thẩm định</th>
+                <th scope="col" id="accumulatedPaidInterest" data-cal="calculate">Lãi đã trả lũy kế</th>
+                <th scope="col" id="incrementalPaidPrincipal" data-cal="calculate">Gốc đã trả cộng dồn</th>
+                <th scope="col" id="presentValue" data-cal="calculate">Dư nợ hiện tại</th>
+                <th scope="col" id="contractStatus">Tình trạng hợp đồng</th>
+                <th scope="col" id="totalLoanDays">Tổng số ngày vay</th>
+                <th scope="col" id="estimatingInterest">Lãi dự tính</th>
+                <th scope="col" id="numberOfLatePeriods">Số kỳ đóng chậm</th>
+                <th scope="col" id="numberOfLateDays">Số ngày đóng chậm</th>
+                <th scope="col" id="lastPaidDate">Ngày đóng cuối cùng</th>
+                <th scope="col" id="numberOfPayingDownTimes">Số lần trả bớt gốc</th>
+                <th scope="col" id="numberOfPayment">Số lần trả</th>
 
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
 
-      <!-- modal -->
-      <div class="modal" tabindex="-1" role="dialog" id="import-modal">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Import hợp đồng</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="container" style="margin: 0; padding: 0;">
-                <div class="row">
-                  <div class="col">
-                    <div class="table-container">
-                      <p>Import thông tin hợp đồng</p>
-                      <label for="import" class="bmd-label-floating">Import file HĐ</label>
-                      <input type="file" accept=".csv" class="form-control-file" id="contract">
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="table-container">
-                      <p>Import thông tin gói vay</p>
-                      <label for="import" class="bmd-label-floating">Import file gói nợ</label>
-                      <input type="file" accept=".csv" class="form-control-file" id="package">
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="table-container">
-                      <p>Import thông tin thu gốc, lãi</p>
-                      <label for="import" class="bmd-label-floating">Import file phiếu</label>
-                      <input type="file" accept=".csv" class="form-control-file" id="receipt">
+          <!-- modal -->
+          <div class="modal" tabindex="-1" role="dialog" id="import-modal">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Import hợp đồng</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="container" style="margin: 0; padding: 0;">
+                    <div class="row">
+                      <div class="col">
+                        <div class="table-container">
+                          <p>Import thông tin hợp đồng</p>
+                          <label for="import" class="bmd-label-floating">Import file HĐ</label>
+                          <input type="file" accept=".csv" class="form-control-file" id="contract">
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="table-container">
+                          <p>Import thông tin gói vay</p>
+                          <label for="import" class="bmd-label-floating">Import file gói nợ</label>
+                          <input type="file" accept=".csv" class="form-control-file" id="package">
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="table-container">
+                          <p>Import thông tin thu gốc, lãi</p>
+                          <label for="import" class="bmd-label-floating">Import file phiếu</label>
+                          <input type="file" accept=".csv" class="form-control-file" id="receipt">
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="save">Save changes</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
               </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="save">Save changes</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <script src="https://d3js.org/d3.v6.min.js"></script>
-  <script type="module">
-    import { generateContractListHTML } from '/generateContractListHTML.js'
-    import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
-    import { findNestedObj } from '/findNestedObj.js'
-    import { contract } from '/contractTemplate.js'
-    import { packageTemp } from '/packageTemplate.js'
-    import { makeRequest } from '/makeRequest.js'
-    $("#menu-toggle").click(function (e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
-    // console.log(`typeof abc: ${typeof abc}, abc: ${abc}`)
-    // console.log('original list: ', JSON.parse(abc))
-    const contractList = <%- JSON.stringify(contractList) %>;
-    const payload = <%- JSON.stringify(payload) %>;
-    console.log('contract list: ', contractList)
-    var contracts = [], packages = [], receipts = []
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script type="module">
+      import { generateContractListHTML } from '/generateContractListHTML.js'
+      import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
+      import { findNestedObj } from '/findNestedObj.js'
+      import { contract } from '/contractTemplate.js'
+      import { packageTemp } from '/packageTemplate.js'
+      import { makeRequest } from '/makeRequest.js'
+      import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
 
-    // hanlde inporting contract csv file
-    document.querySelectorAll('.modal-body input').forEach(element => {
-      element.addEventListener('change', event => {
-        const file = event.target.files[0]
-        // console.log('file: ', file)
-        var fileReader = new FileReader()
-        fileReader.onload = (e) => {
-          var csv = e.target.result
-          switch (element.id) {
-            case ('contract'):
-              contracts = d3.csvParse(csv, d3.autoType)
-              break;
-            case ('package'):
-              packages = d3.csvParse(csv, d3.autoType)
-              break;
-            case ('receipt'):
-              receipts = d3.csvParse(csv, d3.autoType)
-              break;
+      $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+      });
+      // console.log(`typeof abc: ${typeof abc}, abc: ${abc}`)
+      // console.log('original list: ', JSON.parse(abc))
+      const contractList = <%- JSON.stringify(contractList) %>;
+      const payload = <%- JSON.stringify(payload) %>;
+      console.log('contract list: ', contractList)
+      var contracts = [], packages = [], receipts = []
 
-            default:
-              contracts = d3.csvParse(csv, d3.autoType)
-              break;
+      // hanlde inporting contract csv file
+      document.querySelectorAll('.modal-body input').forEach(element => {
+        element.addEventListener('change', event => {
+          const file = event.target.files[0]
+          // console.log('file: ', file)
+          var fileReader = new FileReader()
+          fileReader.onload = (e) => {
+            var csv = e.target.result
+            switch (element.id) {
+              case ('contract'):
+                contracts = d3.csvParse(csv, d3.autoType)
+                break;
+              case ('package'):
+                packages = d3.csvParse(csv, d3.autoType)
+                break;
+              case ('receipt'):
+                receipts = d3.csvParse(csv, d3.autoType)
+                break;
+
+              default:
+                contracts = d3.csvParse(csv, d3.autoType)
+                break;
+            }
+            // handleContracts(parsed)
+            // console.log('parsed: ', parsed)
+            console.log({ contracts, packages, receipts })
+
           }
-          // handleContracts(parsed)
-          // console.log('parsed: ', parsed)
-          console.log({ contracts, packages, receipts })
-
-        }
-        fileReader.readAsText(file, 'ISO-8859-1')
+          fileReader.readAsText(file, 'ISO-8859-1')
+        })
       })
-    })
 
-    document.querySelector('button#import').addEventListener('click', (event) => {
-      $('#import-modal').modal('show')
-    })
+      document.querySelector('button#import').addEventListener('click', (event) => {
+        $('#import-modal').modal('show')
+      })
 
-    const calculateColumnSum = (query) => {
-      // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
-      var tr = document.createElement('tr')
-      document.querySelectorAll(`${query} thead th`).forEach((element, index) => {
-        var th = document.createElement('th')
-        if (index === 0) {
-          th.innerHTML = 'Total'
+      const calculateColumnSum = (query) => {
+        // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
+        var tr = document.createElement('tr')
+        document.querySelectorAll(`${query} thead th`).forEach((element, index) => {
+          var th = document.createElement('th')
+          if (index === 0) {
+            th.innerHTML = 'Total'
 
-        } else {
-          var sum = 0
-          document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
-            // console.log('is containe: ', tr.querySelectorAll('th')[index].getAttribute('data-cal'))
-            sum += element.getAttribute('data-cal') ? (parseFloat(tr.querySelectorAll('th')[index].textContent) ?
-              parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0) : 0
+          } else {
+            var sum = 0
+            document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+              // console.log('is containe: ', tr.querySelectorAll('th')[index].getAttribute('data-cal'))
+              sum += element.getAttribute('data-cal') ? (parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+                parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0) : 0
 
-          })
-          th.innerHTML = sum.toLocaleString()
+            })
+            th.innerHTML = sum.toLocaleString()
+            tr.appendChild(th)
+
+          }
           tr.appendChild(th)
 
-        }
-        tr.appendChild(th)
+        })
+        document.querySelector(`${query} tbody`).prepend(tr)
 
-      })
-      document.querySelector(`${query} tbody`).prepend(tr)
+      }
 
-    }
+      const findObjInArray = (array, value) => {
+        return _.find(array, { id: value })
+      }
 
-    const findObjInArray = (array, value) => {
-      return _.find(array, { id: value })
-    }
-
-    const handleContracts = async (contracts, packages, receipts) => {
-      var contractCsv = []
-      await contracts.forEach(item => {
-        var contractTemplate = contract()
-        for (var prop in item) {
-          if (prop === 'contractId') {
-            contractTemplate.id = item[prop]
-          } else {
-            findNestedObj(contractTemplate, 'name', prop).value = item[prop]
-
-          }
-        }
-        contractCsv.push(contractTemplate)
-
-      })
-
-      await packages.forEach(item => {
-        var loanPackageTemplate = packageTemp()
-        for (var prop in item) {
-          loanPackageTemplate[prop] = item[prop]
-        }
-        if (item && item.contractId) {
-          var obj = findObjInArray(contractCsv, item.contractId)
-          console.log('obj: ', obj, ', item contract: ', item.contractId)
-          obj.loanPackage = loanPackageTemplate
-
-        }
-
-      })
-
-      await receipts.forEach(item => {
-        if (item && item.contractId) {
-          var obj = findObjInArray(contractCsv, item.contractId)
-          if (obj.loanPackage) {
-            obj.loanPackage.periodRecords.push(item)
-          }
-        }
-      })
-      return contractCsv
-      // await console.log('contract csv: ', contractCsv)
-      makeRequest('POST', 'contractArray', 'application/json', JSON.stringify(contractCsv), () => {
-        window.location.reload()
-      })
-    }
-
-    // handle modal open
-    // document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
-    //   $('#choose-column-modal').modal('show')
-
-    // })
-
-    document.querySelector('button#save').addEventListener('click', async (event) => {
-      var abc = await handleContracts(contracts, packages, receipts)
-      console.log('contract csv: ', abc)
-
-    })
-
-    const displayTable = (array, query) => {
-      array.forEach(contract => {
-        // fill info to table
-        if (contract) {
-          var tr = document.createElement('tr')
-          tr.id = contract.contract_Id
-          tr.addEventListener('click', event => {
-            window.location.href = `/contractMng/contracts/${tr.id}?token=${window.localStorage.getItem('accessToken')}`
-          })
-          document.querySelectorAll(`table thead th`).forEach(element => {
-            var th = document.createElement('th')
-            if (contract[element.id]) {
-              th.innerHTML = contract[element.id].toLocaleString()
-
+      const handleContracts = async (contracts, packages, receipts) => {
+        var contractCsv = []
+        await contracts.forEach(item => {
+          var contractTemplate = contract()
+          for (var prop in item) {
+            if (prop === 'contractId') {
+              contractTemplate.id = item[prop]
             } else {
-              th.innerHTML = '-'
-            }
-            tr.appendChild(th)
-          })
-          document.querySelector(query).appendChild(tr)
-        }
-      });
-    }
-    displayTable(contractList, 'table tbody')
-    calculateColumnSum('table.contract-table')
+              findNestedObj(contractTemplate, 'name', prop).value = item[prop]
 
-  </script>
+            }
+          }
+          contractCsv.push(contractTemplate)
+
+        })
+
+        await packages.forEach(item => {
+          var loanPackageTemplate = packageTemp()
+          for (var prop in item) {
+            loanPackageTemplate[prop] = item[prop]
+          }
+          if (item && item.contractId) {
+            var obj = findObjInArray(contractCsv, item.contractId)
+            console.log('obj: ', obj, ', item contract: ', item.contractId)
+            obj.loanPackage = loanPackageTemplate
+
+          }
+
+        })
+
+        await receipts.forEach(item => {
+          if (item && item.contractId) {
+            var obj = findObjInArray(contractCsv, item.contractId)
+            if (obj.loanPackage) {
+              obj.loanPackage.periodRecords.push(item)
+            }
+          }
+        })
+        return contractCsv
+        // await console.log('contract csv: ', contractCsv)
+        makeRequest('POST', 'contractArray', 'application/json', JSON.stringify(contractCsv), () => {
+          window.location.reload()
+        })
+      }
+
+      // handle modal open
+      // document.querySelector('#btn-choose-column').addEventListener('click', (event) => {
+      //   $('#choose-column-modal').modal('show')
+
+      // })
+
+      document.querySelector('button#save').addEventListener('click', async (event) => {
+        var abc = await handleContracts(contracts, packages, receipts)
+        console.log('contract csv: ', abc)
+
+      })
+
+      const displayTable = (array, query) => {
+        document.querySelector(query).innerHTML = ''
+        array.forEach(contract => {
+          // fill info to table
+          if (contract) {
+            var tr = document.createElement('tr')
+            tr.id = contract.contract_Id
+            tr.addEventListener('click', event => {
+              window.location.href = `/contractMng/contracts/${tr.id}?token=${window.localStorage.getItem('accessToken')}`
+            })
+            document.querySelectorAll(`table thead th`).forEach(element => {
+              var th = document.createElement('th')
+              if (contract[element.id]) {
+                th.innerHTML = contract[element.id].toLocaleString()
+
+              } else {
+                th.innerHTML = '-'
+              }
+              tr.appendChild(th)
+            })
+            document.querySelector(query).appendChild(tr)
+          }
+        });
+      }
+      displayTable(contractList, 'table tbody')
+      calculateColumnSum('table.contract-table')
+
+      // search contract
+      document.querySelector('#search').addEventListener('submit', (event) => {
+        event.preventDefault()
+        var array = event.target.querySelector('input').value.split(" ")
+        makeRequest('POST', 'contracts/search', 'application/json', JSON.stringify({ data: array }), result => {
+          displayTable(result.contractList, 'table tbody')
+          calculateColumnSum('table.contract-table')
+          
+        })
+
+      })
+
+      // export button
+      document.querySelector('button#export').addEventListener('click', event => {
+        exportHTMLTableToExcel(['contract-table'], `Quản_lý_hợp_đồng_${new Date(Date.now()).toLocaleDateString()}`)
+      })
+    </script>
+    
 </body>
 
 </html>
