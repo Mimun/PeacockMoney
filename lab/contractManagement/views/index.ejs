@@ -96,12 +96,13 @@
       import { ObjectId } from '/createMongooseID.js'
       import { findNestedObj } from '/findNestedObj.js'
       import {makeRequest} from '/makeRequest.js'
+      import {addSeparator} from '/addSeparatorOnInputChange.js'
       const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
       const itemTypeList = <%- JSON.stringify(itemTypeList) %>;
       console.log('item type list: ', itemTypeList)
 
       const getNestedValue = (obj) => {
-        var value = obj ? (obj.value ? obj.value : '-') : '-'
+        var value = obj ? (obj.value!==null && obj.value!==undefined ? obj.value : '-') : '-'
         return value
       }
 
@@ -198,7 +199,7 @@
 
           } else {
             var th = document.createElement('th')
-            th.innerHTML = getNestedValue(findNestedObj(contractTemplate, 'name', element.id)).toLocaleString()
+            th.innerHTML = element.id==="min"|| element.id==="max"? addSeparator(getNestedValue(findNestedObj(contractTemplate, 'name', element.id))) : getNestedValue(findNestedObj(contractTemplate, 'name', element.id)).toLocaleString()
             tr.appendChild(th)
           }
         })
