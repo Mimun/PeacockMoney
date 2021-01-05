@@ -261,44 +261,65 @@ router.get('/', function (req, res, next) {
 
 // get login
 router.get('/login', (req, res, next) => {
-  Employee.findOne({ $and: [{ 'metadata.value': 'root' }, { 'metadata.value': '123456' }] }, (err, result) => {
+  async.parallel({
+    employee: callback => {
+      Employee.findOne({ $and: [{ 'metadata.value': 'root' }, { 'metadata.value': '123456' }] }).exec(callback)
+    },
+    role: callback => {
+      Role.findOne({ name: 'root' }).exec(callback)
+    }
+  }, (err, results) => {
     if (err) throw err
-    if (!result) {
+    // handle no root account
+    if (!results.employee) {
+      console.log('no root account')
       try {
-        async.parallel({
-          employee: callback => {
-            new Employee(rootAcc).save(callback)
-          },
-          role: callback => {
-            Role.findOne({name: 'root'}).exec((err, result)=>{
-              if(err) throw err
-              if(!result){
-                new Role(rootRole).save(callback)
-
-              } else {
-                callback(null, {})
-              }
-            })
-          }
-        }, (err, results) => {
-          if (err) throw err
-
-        })
+        new Employee(rootAcc).save()
       } catch (error) {
         console.error(error)
       }
     } else {
-      Role.findOne({name: 'root'}).exec((err, result)=>{
-        if(err) throw err
-        if(!result){
-          new Role(rootRole).save()
+      if (results.employee.isCheckMember === undefined || results.employee.isApproveMember === undefined
+        || results.employee.isCheckMember === null || results.employee.isApproveMember === null
+        || results.employee.isCheckMember === false || results.employee.isApproveMember === false) {
+        try {
+          Employee.deleteOne({ $and: [{ 'metadata.value': 'root' }, { 'metadata.value': '123456' }] }).exec((err, result) => {
+            if (err) throw err
+            new Employee(rootAcc).save()
 
-        } 
-      })
+          })
+        } catch (error) {
+          console.error(error)
+        }
+
+      }
     }
-    res.render('login', {})
 
+    // handle no role root
+    if (!results.role) {
+      try {
+        new Role(rootRole).save()
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
+      if (results.role.urls === undefined || results.role.urls === null
+        || results.role.store === undefined || results.role.store === null) {
+        try {
+          Role.deleteOne({ name: 'root' }).exec((err, result) => {
+            if (err) throw err
+            new Role(rootRole).save()
+
+          })
+        } catch (error) {
+          console.error(error)
+        }
+
+      }
+    }
   })
+  res.render('login', {})
+
 })
 
 // post login
