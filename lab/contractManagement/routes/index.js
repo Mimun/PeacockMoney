@@ -602,17 +602,25 @@ router.post('/contracts/search', (req, res, next) => {
   var contractMetadataQueries = []
   var idQueries = []
   var contractStatusQueries = []
+  var employeeQueries = []
+  var itemQueries = []
   arrayValue.forEach(value => {
     const regex = new RegExp(escapeRegex(value), 'gi')
-    templateMetadataQueries.push({ 'metadata.value': regex })
-    contractMetadataQueries.push({ 'infos.value': regex })
+    templateMetadataQueries.push({ 'templateMetadata.value': regex })
+    contractMetadataQueries.push({ 'contractMetadata.value': regex })
     idQueries.push({ 'id': regex })
     contractStatusQueries.push({ 'contractStatus': regex })
+    employeeQueries.push({ 'employee.value.metadata.value': regex })
+    itemQueries.push({'items.infos.value': regex})
   })
-  console.log('array metadata condition: ', templateMetadataQueries)
-  console.log('array infos condition: ', contractMetadataQueries)
-  Contract.find({ $or: [{ $and: templateMetadataQueries }, { $and: contractMetadataQueries }, { $and: idQueries }, { $and: contractStatusQueries }] }).exec((err, results) => {
+
+  Contract.find({
+    $or: [{ $and: templateMetadataQueries }, { $and: contractMetadataQueries },
+    { $and: idQueries }, { $and: contractStatusQueries },
+    { $and: employeeQueries }]
+  }).exec((err, results) => {
     if (err) throw err
+    console.log('result after searching: ', results)
     var contractList = handleGetContract(results, req)
     res.send({ contractList })
 
@@ -910,9 +918,9 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
 
 // flat function
 Object.defineProperty(Array.prototype, 'flat', {
-  value: function(depth = 1) {
+  value: function (depth = 1) {
     return this.reduce(function (flat, toFlatten) {
-      return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
+      return flat.concat((Array.isArray(toFlatten) && (depth > 1)) ? toFlatten.flat(depth - 1) : toFlatten);
     }, []);
   }
 });

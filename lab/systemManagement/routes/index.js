@@ -1332,7 +1332,11 @@ router.post('/companyMoneyReport/getReport', (req, res, next) => {
     }
   }, (err, results) => {
     if (err) throw err
+    console.log('results contract: ', results.contracts.length)
     handleReceiptArray2(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
+      console.log('daily result: ', dailyMoneyReport.length)
+      console.log('monthly result: ', monthlyMoneyReport.length)
+
       res.send({ store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
     })
   })

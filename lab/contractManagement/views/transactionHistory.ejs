@@ -179,7 +179,9 @@
     var array = []
     var arrayPending = []
     fund.forEach(fund => {
-      array = array.concat(fund.receiptRecords)
+      array = array.concat(fund.receiptRecords).sort((a, b)=>{
+        return new Date(a.date) > new Date(b.date) ? -1 : 1; 
+      })
       arrayPending = arrayPending.concat(fund.pendingReceiptRecords)
     })
     console.log('array: ', arrayPending)
