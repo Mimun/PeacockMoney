@@ -908,6 +908,15 @@ router.put('/contracts/:id/loanPackage', (req, res) => {
 
 })
 
+// flat function
+Object.defineProperty(Array.prototype, 'flat', {
+  value: function(depth = 1) {
+    return this.reduce(function (flat, toFlatten) {
+      return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
+    }, []);
+  }
+});
+
 // transaction history
 router.get('/transactionHistory', (req, res, next) => {
   req.url = '/contractMng/transactionHistory'
@@ -952,7 +961,7 @@ router.get('/transactionHistory', (req, res, next) => {
     })
     try {
       res.render('transactionHistory', {
-        loanPackage: loanPackage.flat(Infinity),
+        loanPackage: _.flatten(loanPackage),
         contract: results.contracts,
         fund: results.funds
       })
