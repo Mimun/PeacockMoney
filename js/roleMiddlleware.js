@@ -17,6 +17,17 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 };
 
+const findNestedObj = (entireObj, keyToFind, valToFind)=>{
+  let foundObj;
+  JSON.stringify(entireObj, (_, nestedValue) => {
+    if (nestedValue && nestedValue[keyToFind] === valToFind) {
+      foundObj = nestedValue;
+    }
+    return nestedValue;
+  });
+  return foundObj;
+}
+
 module.exports = (req, res, next) => {
   var url = req.url, type = req.type
   console.log('url: ', url, ', type: ', type)
@@ -46,18 +57,18 @@ module.exports = (req, res, next) => {
           if (req.checkStores) {
             var storeQueries = result.stores.map(store => {
               if (store === 'only') {
-                return decodedJwt.store ? { _id: decodedJwt.store } : {}
+                return decodedJwt.store ? { 'metadata.value': decodedJwt.store } : {}
               } else if (store === 'all' || store === '') {
                 return {}
               } else {
-                return { _id: store }
+                return { 'metadata.value': store }
               }
             })
             console.log('store queries: ', storeQueries)
             Store.find({ $or: storeQueries }).exec((err, result) => {
               if (err) throw err
               req.stores = result.map(store => {
-                return JSON.stringify(store._id)
+                return findNestedObj(store.metadata, 'name', 'id') ? findNestedObj(store.metadata, 'name', 'id').value : ''
               })
               next()
 

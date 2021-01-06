@@ -149,10 +149,11 @@
       console.log('store list: ', storeList)
       // append store list into modal body
       storeList.forEach(store => {
+        var storeId = findNestedObj(store.metadata, 'name', 'id')? findNestedObj(store.metadata, 'name', 'id').value: ''
         var div = document.createElement('div')
         div.className = 'checkbox'
         div.innerHTML = `<label>
-        <input type="checkbox" value=${store.id} id=${store.id}>${store.name}
+        <input type="checkbox" value=${storeId} id=${store.id}>${store.name}
       </label>`
         document.querySelector('.modal-body div#store-check-list').appendChild(div)
       })
