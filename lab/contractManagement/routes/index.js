@@ -361,6 +361,8 @@ const handleGetContract = (contracts, req) => {
   var contractList = contracts.map(contract => {
     if (req.stores.includes(JSON.stringify(contract.store.value._id))) {
       return contract
+    } else {
+      return contract
     }
   }).map(contract => {
     if (contract) {
