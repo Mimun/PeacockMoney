@@ -419,7 +419,7 @@ router.get('/contracts', (req, res, next) => {
   req.checkStores = true
   next()
 }, checkRole, (req, res) => {
-  console.log('store queries: ', req.stores)
+  console.log('req.stores: ', req.stores)
   try {
     async.parallel({
       contract: callback => {

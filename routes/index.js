@@ -366,7 +366,7 @@ router.post('/login', (req, res, next) => {
           })
 
         } else {
-          var store = resultRole === "root" ? "all" : ""
+          var store = ""
           var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store, isCheckMember, isApproveMember)
           res.send({
             accessToken, refreshToken, user: {
