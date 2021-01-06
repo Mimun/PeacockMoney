@@ -361,7 +361,7 @@ const handleGetContract = (contracts, req) => {
   var contractList = contracts.map(contract => {
     if (req.stores.includes(JSON.stringify(contract.store.value._id))) {
       return contract
-    } 
+    }
   }).map(contract => {
     if (contract) {
       {
@@ -435,6 +435,7 @@ router.get('/contracts', (req, res, next) => {
       if (err) throw err
       var propertyList = result2.property
       var contractList = handleGetContract(result2.contract, req)
+      console.log('contract list after processing: ', contractList)
       res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
     })
@@ -611,7 +612,7 @@ router.post('/contracts/search', (req, res, next) => {
     idQueries.push({ 'id': regex })
     contractStatusQueries.push({ 'contractStatus': regex })
     employeeQueries.push({ 'employee.value.metadata.value': regex })
-    itemQueries.push({'items.infos.value': regex})
+    itemQueries.push({ 'items.infos.value': regex })
   })
 
   Contract.find({
