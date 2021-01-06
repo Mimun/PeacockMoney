@@ -47,7 +47,7 @@ module.exports = (req, res, next) => {
             var storeQueries = result.stores.map(store => {
               if (store === 'only') {
                 return decodedJwt.store ? { _id: decodedJwt.store } : {}
-              } else if (store === 'all') {
+              } else if (store === 'all' || store === '') {
                 return {}
               } else {
                 return { _id: store }
