@@ -359,9 +359,12 @@ router.delete('/deleteContractTemplate/:id', (req, res, next) => {
 // handle get contracts function
 const handleGetContract = (contracts, req) => {
   var contractList = contracts.map(contract => {
-    if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
-      return contract
-    } 
+    if (contract && contract.store && contract.store.value) {
+      if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
+        return contract
+      }
+    }
+
   }).map(contract => {
     if (contract) {
       {
@@ -611,7 +614,7 @@ router.post('/contracts/search', (req, res, next) => {
     idQueries.push({ 'id': regex })
     contractStatusQueries.push({ 'contractStatus': regex })
     employeeQueries.push({ 'employee.value.metadata.value': regex })
-    itemQueries.push({'items.infos.value': regex})
+    itemQueries.push({ 'items.infos.value': regex })
   })
 
   Contract.find({
