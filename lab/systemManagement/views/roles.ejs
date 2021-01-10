@@ -141,7 +141,8 @@
 
         </div>
     </div>
-    <script>
+    <script type="module">
+      import {findNestedObj} from '/findNestedObj.js'
       var roleList = <%- JSON.stringify(roles) %>;
       var storeList = <%- JSON.stringify(stores) %>;
 

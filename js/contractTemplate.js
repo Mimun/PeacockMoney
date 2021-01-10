@@ -141,6 +141,12 @@ export var contract = () => {
       value: "100000000",
       dataVie: "Số tiền max"
     }, {
+      cType: "text",
+      dataKor: "koreanString",
+      name: "valueNeedToBeApproved",
+      value: "50000000",
+      dataVie: "Ngưỡng cần duyệt"
+    }, {
       cType: "date",
       dataKor: "koreanString",
       name: "contractCreatedDate",

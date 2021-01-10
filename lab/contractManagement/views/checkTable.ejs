@@ -476,7 +476,7 @@
       tr.C_DATA = object
       document.querySelectorAll(`div.${elementName} table thead th`).forEach((element, index) => {
         var th = document.createElement('th')
-        if (object[element.id] !== undefined) {
+        if (object[element.id] !== undefined && object[element.id] !== null) {
           switch (element.id) {
             case ('redemptionDate'):
             case ('date'):

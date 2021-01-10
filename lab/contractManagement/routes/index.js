@@ -391,7 +391,7 @@ const handleGetContract = (contracts, req) => {
           loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
           itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
           itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
-          staticRedemptionDate: contract.loanPackage ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-',
+          staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
           interestRate: contract.loanPackage ? contract.loanPackage.interestRate : (getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))),
           employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
           employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
@@ -568,7 +568,7 @@ router.post('/contractArray', (req, res, next) => {
           if (err) throw err
           item.store.value = results.store
           item.employee.value = results.employee
-          const contract = new Contract({ ...item, contractStatus: 'completed' })
+          const contract = new Contract(item)
           try {
             contract.save((err, result) => {
               if (err) throw err

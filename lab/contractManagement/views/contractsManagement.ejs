@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-
+    .modal-dialog {
+      max-width: 100% !important;
+    }
   </style>
 </head>
 
@@ -74,7 +76,7 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <div class="container" style="margin: 0; padding: 0;">
+                  <div class="container" style="max-width: 100%;">
                     <div class="row">
                       <div class="col">
                         <div class="table-container">
@@ -94,6 +96,13 @@
                         <div class="table-container">
                           <p>Import thông tin thu gốc, lãi</p>
                           <label for="import" class="bmd-label-floating">Import file phiếu</label>
+                          <input type="file" accept=".csv" class="form-control-file" id="transaction">
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="table-container">
+                          <p>Import thông tin phiếu thu</p>
+                          <label for="import" class="bmd-label-floating">Import file phiếu thu</label>
                           <input type="file" accept=".csv" class="form-control-file" id="receipt">
                         </div>
                       </div>
@@ -129,7 +138,7 @@
       const contractList = <%- JSON.stringify(contractList) %>;
       const payload = <%- JSON.stringify(payload) %>;
       console.log('contract list: ', contractList)
-      var contracts = [], packages = [], receipts = []
+      var contracts = [], packages = [], transactions = [], receipts = []
 
       // hanlde inporting contract csv file
       document.querySelectorAll('.modal-body input').forEach(element => {
@@ -146,6 +155,9 @@
               case ('package'):
                 packages = d3.csvParse(csv, d3.autoType)
                 break;
+              case ('transaction'):
+                transactions = d3.csvParse(csv, d3.autoType)
+                break;
               case ('receipt'):
                 receipts = d3.csvParse(csv, d3.autoType)
                 break;
@@ -156,7 +168,7 @@
             }
             // handleContracts(parsed)
             // console.log('parsed: ', parsed)
-            console.log({ contracts, packages, receipts })
+            console.log({ contracts, packages, transactions })
 
           }
           fileReader.readAsText(file, 'ISO-8859-1')
@@ -198,7 +210,7 @@
         return _.find(array, { id: value })
       }
 
-      const handleContracts = async (contracts, packages, receipts) => {
+      const handleContracts = async (contracts, packages, transactions, receipts) => {
         var contractCsv = []
         await contracts.forEach(item => {
           var contractTemplate = contract()
@@ -228,19 +240,55 @@
 
         })
 
-        await receipts.forEach(item => {
+        await transactions.forEach(item => {
           if (item && item.contractId) {
+            for (var prop in item) {
+              if(typeof item[prop] === 'string'){
+                if (item[prop].toLowerCase() === "true" || item[prop].toLowerCase() === "false") {
+                  item[prop] = item[prop].toLowerCase() === "true" ? true : false
+                } 
+                if(prop === 'appliedRule' || prop === 'blockPenalty' || prop === 'paymentRecords' || prop === 'penaltyRecord' || prop === 'ruleArray' || prop === 'blockArray'){
+                  item[prop]=[]
+                }
+              }
+             
+            }
             var obj = findObjInArray(contractCsv, item.contractId)
             if (obj.loanPackage) {
               obj.loanPackage.periodRecords.push(item)
             }
           }
         })
+
+        await receipts.forEach(item => {
+          if (item && item.contractId) {
+            var obj = findObjInArray(contractCsv, item.contractId)
+            if(obj.loanPackage){
+              obj.loanPackage.receiptRecords.push(item)
+              
+            }
+
+          }
+        })
+
+        await contractCsv.forEach(contract=>{
+          if(contract && contract.loanPackage && contract.loanPackage.receiptRecords){
+            contract.loanPackage.receiptRecords = _(contract.loanPackage.receiptRecords).groupBy(item=>{
+              return [item.id, item.date]
+            }).map((array, key)=>{
+              console.log({key, array})
+              return {
+                id: key.split(',')? key.split(',')[0]: '',
+                date: key.split(',')? key.split(',')[1]: '',
+                array
+              }
+            }).value()
+          }
+        })
+        
         return contractCsv
         // await console.log('contract csv: ', contractCsv)
-        makeRequest('POST', 'contractArray', 'application/json', JSON.stringify(contractCsv), () => {
-          window.location.reload()
-        })
+        
       }
 
       // handle modal open
@@ -250,9 +298,11 @@
       // })
 
       document.querySelector('button#save').addEventListener('click', async (event) => {
-        var abc = await handleContracts(contracts, packages, receipts)
+        var abc = await handleContracts(contracts, packages, transactions, receipts)
         console.log('contract csv: ', abc)
-
+        makeRequest('POST', '/contractMng/contractArray', 'application/json', JSON.stringify(abc), () => {
+          window.location.reload()
+        })
       })
 
       const displayTable = (array, query) => {
@@ -289,7 +339,7 @@
         makeRequest('POST', 'contracts/search', 'application/json', JSON.stringify({ data: array }), result => {
           displayTable(result.contractList, 'table tbody')
           calculateColumnSum('table.contract-table')
-          
+
         })
 
       })
@@ -299,7 +349,7 @@
         exportHTMLTableToExcel(['contract-table'], `Quản_lý_hợp_đồng_${new Date(Date.now()).toLocaleDateString()}`)
       })
     </script>
-    
+
 </body>
 
 </html>
