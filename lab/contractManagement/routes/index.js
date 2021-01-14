@@ -357,7 +357,8 @@ router.delete('/deleteContractTemplate/:id', (req, res, next) => {
 // CONTRACT
 // contract list
 // handle get contracts function
-const handleGetContract = (contracts, req) => {
+const handleGetContract = (contracts, properties, req) => {
+  console.log('property list: ', properties.length)
   var contractList = contracts.map(contract => {
     if (contract && contract.store && contract.store.value && contract.store.value.metadata) {
       if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
@@ -381,7 +382,24 @@ const handleGetContract = (contracts, req) => {
             numberOfLateDays += period.daysBetween
           })
         }
+        // get properties
+        var propertiesArray = []
+        properties.forEach(property=>{
+      //     console.log({propertyContractId: property.contract._id,
+      //     typeofPropertyContractId: typeof property.contract._id,
+      //   contractId: contract._id,
+      // typeofContractId: typeof contract._id})
+          if(property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)){
+            propertiesArray.push({
+              isIn: property.isIn,
+              name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
+              store: getNestedValue(findNestedObj(property.currentWarehouse.metadata, 'name', 'name'))
+            })
+          }
+        })
+        console.log({propertiesArray})
         return {
+          storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
           contract_Id: contract._id,
           contractId: contract.id,
           customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
@@ -406,7 +424,10 @@ const handleGetContract = (contracts, req) => {
           lastPaidDate: '-',
           numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
           numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
-          // property: getProperty(propertyList, contract.id)
+          propertyName: propertiesArray[0]? propertiesArray[0].name: '-',
+          propertyIsIn: propertiesArray[0]? propertiesArray[0].isIn: '-',
+          propertyStore: propertiesArray[0]? propertiesArray[0].store: '-'
+
 
         }
       }
@@ -437,7 +458,7 @@ router.get('/contracts', (req, res, next) => {
     }, (err, result2) => {
       if (err) throw err
       var propertyList = result2.property
-      var contractList = handleGetContract(result2.contract, req)
+      var contractList = handleGetContract(result2.contract, result2.property, req)
       res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
     })
@@ -616,18 +637,25 @@ router.post('/contracts/search', (req, res, next) => {
     employeeQueries.push({ 'employee.value.metadata.value': regex })
     itemQueries.push({ 'items.infos.value': regex })
   })
-
-  Contract.find({
-    $or: [{ $and: templateMetadataQueries }, { $and: contractMetadataQueries },
-    { $and: idQueries }, { $and: contractStatusQueries },
-    { $and: employeeQueries }]
-  }).exec((err, results) => {
+  async.parallel({
+    contracts: callback=>{
+      Contract.find({
+        $or: [{ $and: templateMetadataQueries }, { $and: contractMetadataQueries },
+        { $and: idQueries }, { $and: contractStatusQueries },
+        { $and: employeeQueries }]
+      }).exec(callback)
+    },
+    properties: callback=>{
+      Property.find({}).exec(callback)
+    }
+  }, (err, results) => {
     if (err) throw err
     console.log('result after searching: ', results)
-    var contractList = handleGetContract(results, req)
+    var contractList = handleGetContract(results.contracts, results.properties, req)
     res.send({ contractList })
 
   })
+  
 
 })
 
