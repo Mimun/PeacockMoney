@@ -270,7 +270,9 @@
 
     const acceptTransaction = (obj) => {
       if (obj) {
-        makeRequest('POST', '/contractMng/funds/approve', 'application/json', JSON.stringify(obj), () => {
+        makeRequest('POST', '/contractMng/funds/approve', 'application/json', JSON.stringify(obj), (result) => {
+          window.open(`/contractMng/funds/receipt?receipt=${JSON.stringify(result.fundFrom)}&token=${window.localStorage.getItem('accessToken')}`)
+          window.open(`/contractMng/funds/receipt?receipt=${JSON.stringify(result.fundTo)}&token=${window.localStorage.getItem('accessToken')}`)
           window.location.reload()
         })
       }
@@ -280,7 +282,8 @@
     const denyTransaction = (obj) => {
       // console.log('obj denied: ', obj)
       if (obj) {
-        makeRequest('POST', '/contractMng/funds/deny', 'application/json', JSON.stringify(obj), () => {
+        makeRequest('POST', '/contractMng/funds/deny', 'application/json', JSON.stringify(obj), (result) => {
+          
           window.location.reload()
 
         })

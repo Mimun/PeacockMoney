@@ -27,6 +27,7 @@ var contractMngURL = (process.env.CONTRACTMNG || 'http://localhost:3000')
 
 var fs = require('fs');
 var async = require('async');
+const { Router } = require('express');
 
 function findNestedObj(entireObj, keyToFind, valToFind) {
   let foundObj;
@@ -410,7 +411,7 @@ const handleGetContract = (contracts, properties, req) => {
           itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
           itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
           staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
-          interestRate: contract.loanPackage ? contract.loanPackage.interestRate : (getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))),
+          interestRate: contract.loanPackage ? (parseFloat(contract.loanPackage.interestRate)? parseFloat(contract.loanPackage.interestRate)*30: contract.loanPackage.interestRate) : (getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth'))),
           employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
           employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
           accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
@@ -1035,6 +1036,11 @@ router.get('/contracts/:id/receipt', (req, res, next) => {
 
 })
 
+router.get('/funds/receipt', (req, res)=>{
+  console.log('receipt query: ', req.query)
+  res.render('fundReceipt', {receipt: JSON.parse(req.query.receipt)})
+})
+
 // get going to do period package
 router.get('/goingToDo', (req, res, next) => {
   req.url = '/contractMng/goingToDo'
@@ -1233,7 +1239,7 @@ router.post('/funds/approve', (req, res) => {
       async.parallel({
         fundFrom: callback => {
           if (fundFrom) {
-            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, {new: true}).exec(callback)
 
           } else {
             callback(null, {})
@@ -1241,7 +1247,7 @@ router.post('/funds/approve', (req, res) => {
         },
         fundTo: callback => {
           if (fundTo) {
-            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }, {new: true}).exec(callback)
 
           } else {
             callback(null, {})
@@ -1249,7 +1255,7 @@ router.post('/funds/approve', (req, res) => {
         }
       }, (err, results) => {
         if (err) throw err
-        res.send('save successfully')
+        res.send({fundFrom: results.fundFrom.receiptRecords[results.fundFrom.receiptRecords.length-1], fundTo: results.fundTo.receiptRecords[results.fundTo.receiptRecords.length-1]})
       })
     } catch (error) {
       console.error(error)

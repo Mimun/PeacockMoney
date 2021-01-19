@@ -321,7 +321,7 @@
             document.querySelectorAll(`table thead th`).forEach(element => {
               var th = document.createElement('th')
               if (contract[element.id]) {
-                th.innerHTML = contract[element.id].toLocaleString()
+                th.innerHTML = element.id==="propertyIsIn"? (contract[element.id]? 'Lưu kho': 'Đã trả lại'): contract[element.id].toLocaleString()
 
               } else {
                 th.innerHTML = '-'

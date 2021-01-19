@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .receipt-container {
+      max-width: 1000px;
+      border: 0.5px solid black;
+      padding: 32px 32px 128px 32px;
+      margin: 64px 0;
+    }
+
+    .post-header p {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <template id="receipt-template">
+    <div class="receipt-container">
+      <div class="header">
+        <div class="d-flex justify-content-between">
+          <h4><strong>Công ty TNHH TM và Liên kết NANO</strong></h4>
+          <h5><strong><span id="storeId"></span></strong></h5>
+        </div>
+        <div class="text-center">
+          <h2 id=""><strong>PHIẾU <span id="receiptType"></span> TIỀN <span id="type"></span></strong></h2>
+        </div>
+      </div>
+      <div class="post-header">
+        <div class="container">
+          <div class="row info">
+            <div class="col">
+              <div><strong>Người nộp tiền: </strong><span id="customer"></span></div>
+              <div><strong>Mã khách hàng: </strong><span id="customerId"></span></div>
+            </div>
+            <div class="col">
+              <div><strong>Số hợp đồng: </strong><span id="receiptId"></span></div>
+              <div><strong>Ngày tạo hợp đồng: </strong><span id="receiptCreatedDate"></span></div>
+            </div>
+            <div class="col">
+              <div><strong>Số phiếu: </strong><span id="id"></span></div>
+              <div><strong>Ngày: </strong><span id="date"></span></div>
+            </div>
+
+            <!-- <div class="col right">
+              <div><strong>Số phiếu: </strong><span id="receiptId"></span></div>
+              <div><strong>Ngày: </strong><span id="receiptId"></span></div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      <div class="receipt-table">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th id="receiptId"></th>
+              <th id="receiptReason">Nội dung</th>
+              <th id="root"></th>
+              <th id="paid"></th>
+              <th id="remain">Còn lại</th>
+
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="footer">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="jobTitle text-center">
+                <p><strong>Cửa hàng trưởng</strong></p>
+              </div>
+              <div class="note text-center">
+                <p>(Ký, họ tên)</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="jobTitle text-center">
+                <p><strong>Cửa hàng trưởng</strong></p>
+              </div>
+              <div class="note text-center">
+                <p>(Ký, họ tên)</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="jobTitle text-center">
+                <p><strong>Cửa hàng trưởng</strong></p>
+              </div>
+              <div class="note text-center">
+                <p>(Ký, họ tên)</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="jobTitle text-center">
+                <p><strong>Cửa hàng trưởng</strong></p>
+              </div>
+              <div class="note text-center">
+                <p>(Ký, họ tên)</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <%- include('../Components/navbar.ejs') %>
+
+  <div class="d-flex" id="wrapper">
+    <div id="page-content-wrapper">
+
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { findNestedObj } from '/findNestedObj.js'
+
+    const getNestedValue = (obj) => {
+      var value = obj ? (obj.value ? obj.value : '-') : '-'
+      return value
+    }
+
+    const formatDate = (date, type) => {
+      var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2)
+        month = '0' + month;
+      if (day.length < 2)
+        day = '0' + day;
+
+      switch (type) {
+        // id
+        case (1):
+          return [day, month, year].join('');
+          break
+        // normal formate date
+        case (2):
+          return [day, month, year].join('-');
+          break
+        default:
+          return [day, month, year].join('-');
+
+      }
+
+    }
+
+    const receipt = <%- JSON.stringify(receipt) %>;
+    console.log('receipt detail: ', receipt)
+    
+    const receiptTemplate = document.querySelector('template#receipt-template')
+        const receiptDiv = receiptTemplate.content.cloneNode(true)
+        console.log('receipt: ', receipt)
+        // receipt header
+        var obj = {
+          type: receipt.type === 'cash' ? 'MẶT' : 'GỬI',
+          receiptType: receipt.receiptType === 1 ? 'THU' : 'CHI',
+          storeId: receipt.receiptId.split('.')[0]
+
+        }
+        receiptDiv.querySelectorAll('.header span').forEach(element => {
+          element.innerHTML = obj[element.id]
+        })
+
+        // receipt info
+        var obj1 = {
+          customer: getNestedValue(findNestedObj(receipt.receiptMetadata, 'name', 'customer')),
+          customerId: getNestedValue(findNestedObj(receipt.receiptMetadata, 'name', 'customerId')),
+          receiptId: receipt.id,
+          receiptCreatedDate: getNestedValue(findNestedObj(receipt.receiptMetadata, 'name', 'receiptCreatedDate')),
+          date: formatDate(receipt.date),
+          id: receipt.id
+        }
+        receiptDiv.querySelectorAll('.post-header .info span').forEach(element => {
+          element.innerHTML = obj1[element.id]
+        })
+
+        // table
+        var tr = document.createElement('tr')
+            receiptDiv.querySelectorAll('div.receipt-table table thead th').forEach(element => {
+              switch (element.id) {
+                case "receiptId":
+                  element.innerHTML = receipt.receiptType === 1 ? 'Mã thu' : 'Mã chi'
+                  break;
+                case "root":
+                  element.innerHTML = receipt.receiptType === 1 ? 'Phải thu' : 'Phải chi'
+                  break;
+                case "paid":
+                  element.innerHTML = receipt.receiptType === 1 ? 'Thực thu' : 'Thực chi'
+                  break;
+                default:
+                  break;
+              }
+              var th = document.createElement('th')
+              th.innerHTML = receipt[element.id].toLocaleString()
+              tr.appendChild(th)
+            })
+            receiptDiv.querySelector('div.receipt-table table tbody').appendChild(tr)
+
+        document.querySelector('div#page-content-wrapper').appendChild(receiptDiv)
+
+  </script>
+
+</body>
+
+</html>
