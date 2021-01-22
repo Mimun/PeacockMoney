@@ -31,8 +31,8 @@
                   <tr>
                     <th id="storeId">Mã cửa hàng</th>
                     <th id="name">Tên quỹ tiền</th>
-                    <th id="cash">Quỹ tiền mặt</th>
-                    <th id="iCash">Quỹ tiền chuyển khoản</th>
+                    <th class="number-cell" id="cash">Quỹ tiền mặt</th>
+                    <th class="number-cell" id="iCash">Quỹ tiền chuyển khoản</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -49,7 +49,7 @@
                     <th id="id">Số phiếu</th>
                     <th id="customerId">Mã KH</th>
                     <th id="receiptReason">Nội dung giao dịch</th>
-                    <th id="paid">Số tiền giao dịch</th>
+                    <th class="number-cell" id="paid">Số tiền giao dịch</th>
                     <th id="type">Loại tiền</th>
                     <th id="receiptId">Mã thu chi</th>
                     <th id="employeeId">Mã NV thẩm định</th>
@@ -77,8 +77,8 @@
               <th id="customerId">Mã KH</th>
               <th id="customerName">Tên KH</th>
               <th id="receiptReason">Nội dung giao dịch</th>
-              <th id="paid1">Thu</th>
-              <th id="paid2">Chi</th>
+              <th class="number-cell" id="paid1">Thu</th>
+              <th class="number-cell" id="paid2">Chi</th>
               <th id="type">Loại tiền</th>
               <th id="receiptId">Mã thu chi</th>
               <th id="note">Ghi chú</th>
@@ -221,6 +221,9 @@
           tr.C_DATA = loan
           document.querySelectorAll(`${query} thead th`).forEach(element => {
             var th = document.createElement('th')
+            if(element.classList.contains('number-cell')){
+              th.style.textAlign = 'right'
+            }
             var td = null
             switch (element.id) {
               case ('paid1'):

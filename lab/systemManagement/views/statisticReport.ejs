@@ -276,6 +276,7 @@
               break;
           }
           th.id = store.storeId
+          th.classList.add('number-cell')
           var thClone = th.cloneNode(true)
           var thClone2 = th.cloneNode(true)
           var thClone3 = th.cloneNode(true)
@@ -342,13 +343,18 @@
               } else {
                 th.innerHTML = '-'
               }
+
             } else {
+             
               th.innerHTML = obj.presentValue.toLocaleString()
             }
 
           } else {
             th.innerHTML = '-'
           }
+          if(element1.classList.contains('number-cell')||element2.classList.contains('number-cell')){
+                th.style.textAlign = 'right'
+              }
           element2.appendChild(th)
 
         })
@@ -377,6 +383,7 @@
         var th = document.createElement('th')
         if (index === 0) {
           th.innerHTML = 'Total'
+          th.style.textAlign = 'center'
 
         } else {
           var sum = 0
@@ -386,6 +393,8 @@
 
           })
           th.innerHTML = sum.toLocaleString()
+          th.style.textAlign = 'right'
+
           tr.appendChild(th)
 
         }

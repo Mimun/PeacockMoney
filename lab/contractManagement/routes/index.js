@@ -44,8 +44,21 @@ function escapeRegex(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
-// function to format date as YYYY-MM-DD
-function formatDate(date) {
+const getProperty = (array, value) => {
+  return array.find(element => {
+    if (element.contract.id === value) {
+      return element.isIn
+
+    }
+  })
+}
+
+const getNestedValue = (obj) => {
+  var value = obj ? (obj.value ? obj.value : '-') : '-'
+  return value
+}
+
+const formatDate = (date, type) => {
   var d = new Date(date),
     month = '' + (d.getMonth() + 1),
     day = '' + d.getDate(),
@@ -56,8 +69,23 @@ function formatDate(date) {
   if (day.length < 2)
     day = '0' + day;
 
-  return [year, month, day].join('-');
+  switch (type) {
+    // id
+    case (1):
+      return [day, month, year].join('');
+      break
+    // normal formate date
+    case (2):
+      return [day, month, year].join('-');
+      break
+    default:
+      return [day, month, year].join('-');
+
+  }
+
 }
+
+
 
 // CONTRACT TEMPLATE
 // contract template list for admin
@@ -359,7 +387,8 @@ router.delete('/deleteContractTemplate/:id', (req, res, next) => {
 // contract list
 // handle get contracts function
 const handleGetContract = (contracts, properties, req) => {
-  console.log('property list: ', properties.length)
+  // console.log('property list: ', properties.length)
+
   var contractList = contracts.map(contract => {
     if (contract && contract.store && contract.store.value && contract.store.value.metadata) {
       if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
@@ -369,69 +398,97 @@ const handleGetContract = (contracts, properties, req) => {
 
   }).map(contract => {
     if (contract) {
-      {
-        var numberOfLatePeriods = 0,
-          numberOfLateDays = 0
-        // number of late periods
-        if (contract.loanPackage) {
-          var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
-            return period.daysBetween > 0 && period.periodStatus === false
+      console.log('contracat length: ', contracts.length)
+      var mergeWithObj = null
+      var numberOfLatePeriods = 0,
+        numberOfLateDays = 0,
+        lastPaidDate = ''
+      // number of late periods
+      if (contract.loanPackage) {
+        var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
+          return period.daysBetween > 0 && period.periodStatus === false
 
-          })
-          numberOfLatePeriods = latePeriodsArray.length
-          latePeriodsArray.forEach(period => {
-            numberOfLateDays += period.daysBetween
-          })
-        }
-        // get properties
-        var propertiesArray = []
-        properties.forEach(property=>{
-      //     console.log({propertyContractId: property.contract._id,
-      //     typeofPropertyContractId: typeof property.contract._id,
-      //   contractId: contract._id,
-      // typeofContractId: typeof contract._id})
-          if(property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)){
-            propertiesArray.push({
-              isIn: property.isIn,
-              name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
-              store: getNestedValue(findNestedObj(property.currentWarehouse.metadata, 'name', 'name'))
-            })
-          }
         })
-        console.log({propertiesArray})
-        return {
-          storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
-          contract_Id: contract._id,
-          contractId: contract.id,
-          customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
-          customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-          contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
-          contractEndingDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate')),
-          loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
-          itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
-          itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
-          staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
-          interestRate: contract.loanPackage ? (parseFloat(contract.loanPackage.interestRate)? parseFloat(contract.loanPackage.interestRate)*30: contract.loanPackage.interestRate) : (getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth'))),
-          employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
-          employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
-          accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
-          incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
-          presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
-          contractStatus: contract.contractStatus,
-          totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
-          estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
-          numberOfLatePeriods,
-          numberOfLateDays,
-          lastPaidDate: '-',
-          numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
-          numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
-          propertyName: propertiesArray[0]? propertiesArray[0].name: '-',
-          propertyIsIn: propertiesArray[0]? propertiesArray[0].isIn: '-',
-          propertyStore: propertiesArray[0]? propertiesArray[0].store: '-'
+        numberOfLatePeriods = latePeriodsArray.length
+        latePeriodsArray.forEach(period => {
+          numberOfLateDays += period.daysBetween
+        })
 
+        lastPaidDate = contract.loanPackage.receiptRecords[contract.loanPackage.receiptRecords.length - 1] ?
+          (contract.loanPackage.receiptRecords[contract.loanPackage.receiptRecords.length - 1].date) : '-'
 
-        }
+        mergeWithObj = _.mergeWith({}, ...contract.loanPackage.periodRecords, _.add)
+        // console.log('merge obj: ', mergeWithObj)
       }
+      // get properties
+      var propertiesArray = []
+      properties.forEach(property => {
+        //     console.log({propertyContractId: property.contract._id,
+        //     typeofPropertyContractId: typeof property.contract._id,
+        //   contractId: contract._id,
+        // typeofContractId: typeof contract._id})
+        if (property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)) {
+          propertiesArray.push({
+            isIn: property.isIn,
+            name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
+            store: getNestedValue(findNestedObj(property.currentWarehouse.metadata, 'name', 'name'))
+          })
+        }
+      })
+
+      var obj = {
+        contract_Id: contract._id,
+
+        storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
+        contractId: contract.id,
+        customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+        customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+        customerPhone: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerPhoneNumber')),
+        contractCreatedDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate'))),
+        contractEndingDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate'))),
+        loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
+        loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0) : 0,
+        itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
+        itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
+        staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
+        interestRatePerMonth: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')),
+        millionPerDay: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'millionPerDay')),
+        employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
+        employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
+
+        accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
+        paidInterest: mergeWithObj.paidInterest,
+
+        // realLiceCollectedInterest: mergeWithObj.paidInterest,
+        paidPrincipal: mergeWithObj.paidPrincipal,
+        realLifeCollectedPrincipal: mergeWithObj.paidPrincipal,
+        remainPrincipal: mergeWithObj.remainPrincipal,
+        contractStatus: contract.contractStatus,
+        propertyIsIn: propertiesArray[0] ? propertiesArray[0].isIn : '-',
+        propertyStore: propertiesArray[0] ? propertiesArray[0].store : '-',
+
+        totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
+        estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
+
+        excessInterest: mergeWithObj.paidInterest - mergeWithObj.interest > 0 ? mergeWithObj.paidInterest - mergeWithObj.interest : 0,
+        remainInterest: mergeWithObj.remainInterest,
+        numberOfLatePeriods,
+
+        lastPaidDate: formatDate(lastPaidDate),
+        numberOfLateDays,
+
+
+        incrementalPaidPrincipal: contract.loanPackage ? contract.loanPackage.incrementalPaidPrincipal : '-',
+        presentValue: contract.loanPackage ? contract.loanPackage.presentValue : '-',
+        numberOfPayingDownTimes: contract.loanPackage ? contract.loanPackage.numberOfPayingDownTimes : '-',
+        numberOfPayment: contract.loanPackage ? contract.loanPackage.periodPaymentSlip ? contract.loanPackage.periodPaymentSlip.length : '-' : '-',
+        propertyName: propertiesArray[0] ? propertiesArray[0].name : '-',
+
+
+
+      }
+      // console.log('obj acb: ', obj)
+      return obj
     }
   })
   return contractList
@@ -456,11 +513,13 @@ router.get('/contracts', (req, res, next) => {
       property: callback => {
         Property.find({}).exec(callback)
       }
-    }, (err, result2) => {
+    }, async (err, result2) => {
       if (err) throw err
       var propertyList = result2.property
-      var contractList = handleGetContract(result2.contract, result2.property, req)
-      res.render('contractsManagement', { originalContractList: result2.contract, contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+      var contractList = await handleGetContract(result2.contract, result2.property, req)
+      console.log('contract list: ', contractList.length)
+
+      res.render('contractsManagement', { originalContractList: result2.contract, contractList: contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
     })
   } catch (error) {
@@ -639,14 +698,14 @@ router.post('/contracts/search', (req, res, next) => {
     itemQueries.push({ 'items.infos.value': regex })
   })
   async.parallel({
-    contracts: callback=>{
+    contracts: callback => {
       Contract.find({
         $or: [{ $and: templateMetadataQueries }, { $and: contractMetadataQueries },
         { $and: idQueries }, { $and: contractStatusQueries },
         { $and: employeeQueries }]
       }).exec(callback)
     },
-    properties: callback=>{
+    properties: callback => {
       Property.find({}).exec(callback)
     }
   }, (err, results) => {
@@ -656,7 +715,7 @@ router.post('/contracts/search', (req, res, next) => {
     res.send({ contractList })
 
   })
-  
+
 
 })
 
@@ -1036,9 +1095,9 @@ router.get('/contracts/:id/receipt', (req, res, next) => {
 
 })
 
-router.get('/funds/receipt', (req, res)=>{
+router.get('/funds/receipt', (req, res) => {
   console.log('receipt query: ', req.query)
-  res.render('fundReceipt', {receipt: JSON.parse(req.query.receipt)})
+  res.render('fundReceipt', { receipt: JSON.parse(req.query.receipt) })
 })
 
 // get going to do period package
@@ -1239,7 +1298,7 @@ router.post('/funds/approve', (req, res) => {
       async.parallel({
         fundFrom: callback => {
           if (fundFrom) {
-            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, {new: true}).exec(callback)
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, { new: true }).exec(callback)
 
           } else {
             callback(null, {})
@@ -1247,7 +1306,7 @@ router.post('/funds/approve', (req, res) => {
         },
         fundTo: callback => {
           if (fundTo) {
-            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }, {new: true}).exec(callback)
+            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }, { new: true }).exec(callback)
 
           } else {
             callback(null, {})
@@ -1255,7 +1314,7 @@ router.post('/funds/approve', (req, res) => {
         }
       }, (err, results) => {
         if (err) throw err
-        res.send({fundFrom: results.fundFrom.receiptRecords[results.fundFrom.receiptRecords.length-1], fundTo: results.fundTo.receiptRecords[results.fundTo.receiptRecords.length-1]})
+        res.send({ fundFrom: results.fundFrom.receiptRecords[results.fundFrom.receiptRecords.length - 1], fundTo: results.fundTo.receiptRecords[results.fundTo.receiptRecords.length - 1] })
       })
     } catch (error) {
       console.error(error)
@@ -1423,20 +1482,6 @@ var job = new CronJob('0 0 * * *', function () {
   }
 })
 job.start()
-
-const getProperty = (array, value) => {
-  return array.find(element => {
-    if (element.contract.id === value) {
-      return element.isIn
-
-    }
-  })
-}
-
-const getNestedValue = (obj) => {
-  var value = obj ? (obj.value ? obj.value : '-') : '-'
-  return value
-}
 
 
 

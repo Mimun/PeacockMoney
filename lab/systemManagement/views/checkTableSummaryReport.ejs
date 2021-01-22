@@ -63,25 +63,25 @@
           <thead>
             <tr>
               <th scope="col" id="key">Mã hợp đồng</th>
-              <th scope="col" id="redemption">Số tiền đóng (gốc hàng tháng + lãi)</th>
-              <th scope="col" id="interest">Lãi phải thu</th>
-              <th scope="col" id="paidInterest">Lãi đã thu</th>
-              <th scope="col" id="remainInterest">Lãi còn lại</th>
-              <th scope="col" id="accumulatedPaidInterest">Lãi đã trả lũy kế</th>
+              <th scope="col" class="number-cell" id="redemption">Số tiền đóng (gốc hàng tháng + lãi)</th>
+              <th scope="col" class="number-cell" id="interest">Lãi phải thu</th>
+              <th scope="col" class="number-cell" id="paidInterest">Lãi đã thu</th>
+              <th scope="col" class="number-cell" id="remainInterest">Lãi còn lại</th>
+              <th scope="col" class="number-cell" id="accumulatedPaidInterest">Lãi đã trả lũy kế</th>
 
-              <th scope="col" id="principal">Gốc phải thu</th>
-              <th scope="col" id="paidPrincipal">Gốc đã thu</th>
-              <th scope="col" id="remainPrincipal">Gốc còn lại</th>
-              <th scope="col" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
+              <th scope="col" class="number-cell" id="principal">Gốc phải thu</th>
+              <th scope="col" class="number-cell" id="paidPrincipal">Gốc đã thu</th>
+              <th scope="col" class="number-cell" id="remainPrincipal">Gốc còn lại</th>
+              <th scope="col" class="number-cell" id="incrementalPaidPrincipal">Gốc đã trả cộng dồn</th>
 
-              <th scope="col" id="totalPenalty">TỔng phạt phải thu</th>
-              <th scope="col" id="paidTotalPenalty">Tổng phạt đã thu</th>
-              <th scope="col" id="remainTotalPenalty">Tổng phạt còn lại</th>
-              <th scope="col" id="payDown">Trả bớt</th>
-              <th scope="col" id="loanMore">Vay thêm</th>
-              <th scope="col" id="totalPayment">Tổng tiền đóng (tổng phạt + số tiền đóng)</th>
-              <th scope="col" id="paid">Đã trả</th>
-              <th scope="col" id="remain">Còn lại</th>
+              <th scope="col" class="number-cell" id="totalPenalty">TỔng phạt phải thu</th>
+              <th scope="col" class="number-cell" id="paidTotalPenalty">Tổng phạt đã thu</th>
+              <th scope="col" class="number-cell" id="remainTotalPenalty">Tổng phạt còn lại</th>
+              <th scope="col" class="number-cell" id="payDown">Trả bớt</th>
+              <th scope="col" class="number-cell" id="loanMore">Vay thêm</th>
+              <th scope="col" class="number-cell" id="totalPayment">Tổng tiền đóng (tổng phạt + số tiền đóng)</th>
+              <th scope="col" class="number-cell" id="paid">Đã trả</th>
+              <th scope="col" class="number-cell" id="remain">Còn lại</th>
               <th scope="col" id="periodStatus">Tình trạng kỳ</th>
               <th scope="col" id="daysBetween">Số ngày đóng chậm</th>
               <th scope="col" id="penalty">Phạt đóng chậm</th>
@@ -172,8 +172,12 @@
         document.querySelectorAll(`${query} thead th`).forEach(element => {
           var th = document.createElement('th')
           th.innerHTML = obj[element.id].toLocaleString()
+          if(element.classList.contains('number-cell')){
+            th.style.textAlign = 'right'
+          }
           tr.appendChild(th)
         })
+       
         document.querySelector(`${query} tbody`).appendChild(tr)
 
       })
@@ -186,7 +190,7 @@
         var th = document.createElement('th')
         if (index === 0) {
           th.innerHTML = 'Total'
-
+          th.style.textAlign = 'center'
         } else {
           var sum = 0
           document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
@@ -195,7 +199,8 @@
 
           })
           th.innerHTML = sum.toLocaleString()
-          tr.appendChild(th)
+          th.style.textAlign = 'right'
+          // tr.appendChild(th)
 
         }
         tr.appendChild(th)

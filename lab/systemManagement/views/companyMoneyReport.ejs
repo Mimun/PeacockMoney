@@ -52,10 +52,10 @@
           <thead>
             <tr>
               <th class="calculate monthly" id="storeId">Thu(tháng)</th>
-              <th class="calculate monthly" id="T-Gốc">Gốc</th>
-              <th class="calculate monthly" id="T-Lãi">Lãi</th>
-              <th class="calculate monthly" id="T-Nhận NB">Nhận NB</th>
-              <th class="calculate monthly" id="T-Khác">Khác</th>
+              <th class="calculate monthly number-cell" id="T-Gốc">Gốc</th>
+              <th class="calculate monthly number-cell" id="T-Lãi">Lãi</th>
+              <th class="calculate monthly number-cell" id="T-Nhận NB">Nhận NB</th>
+              <th class="calculate monthly number-cell" id="T-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -65,10 +65,10 @@
           <thead>
             <tr>
               <th class="calculate monthly" id="storeId">Chi(tháng)</th>
-              <th class="calculate monthly" id="C-Giải ngân mới">Giải ngân mới</th>
-              <th class="calculate monthly" id="C-Vay thêm">Vay thêm</th>
-              <th class="calculate monthly" id="C-Chuyển NB">Chuyển NB</th>
-              <th class="calculate monthly" id="C-Khác">Khác</th>
+              <th class="calculate monthly number-cell" id="C-Giải ngân mới">Giải ngân mới</th>
+              <th class="calculate monthly number-cell" id="C-Vay thêm">Vay thêm</th>
+              <th class="calculate monthly number-cell" id="C-Chuyển NB">Chuyển NB</th>
+              <th class="calculate monthly number-cell" id="C-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -87,10 +87,10 @@
           <thead>
             <tr>
               <th class="calculate daily" id="storeId">Thu(ngày)</th>
-              <th class="calculate daily" id="T-Gốc">Gốc</th>
-              <th class="calculate daily" id="T-Lãi">Lãi</th>
-              <th class="calculate daily" id="T-Nhận NB">Nhận NB</th>
-              <th class="calculate daily" id="T-Khác">Khác</th>
+              <th class="calculate daily number-cell" id="T-Gốc">Gốc</th>
+              <th class="calculate daily number-cell" id="T-Lãi">Lãi</th>
+              <th class="calculate daily number-cell" id="T-Nhận NB">Nhận NB</th>
+              <th class="calculate daily number-cell" id="T-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -100,10 +100,10 @@
           <thead>
             <tr>
               <th class="calculate daily" id="storeId">Chi(ngày)</th>
-              <th class="calculate daily" id="C-Giải ngân mới">Giải ngân mới</th>
-              <th class="calculate daily" id="C-Vay thêm">Vay thêm</th>
-              <th class="calculate daily" id="C-Chuyển NB">Chuyển NB</th>
-              <th class="calculate daily" id="C-Khác">Khác</th>
+              <th class="calculate daily number-cell" id="C-Giải ngân mới">Giải ngân mới</th>
+              <th class="calculate daily number-cell" id="C-Vay thêm">Vay thêm</th>
+              <th class="calculate daily number-cell" id="C-Chuyển NB">Chuyển NB</th>
+              <th class="calculate daily number-cell" id="C-Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -187,13 +187,17 @@
         if (report) {
           if (element.id === 'storeId') {
             th.innerHTML = report.storeId ? report.storeId : '-'
+          th.style.textAlign = 'center'
+
           } else {
             th.innerHTML = getNestedValue(findNestedObj(report, 'receiptId', element.id)).toLocaleString()
           }
         } else {
           th.innerHTML = '-'
         }
-
+        if(element.classList.contains('number-cell')){
+          th.style.textAlign = 'right'
+        }
         tr.appendChild(th)
       })
       document.querySelector(query2).appendChild(tr)
@@ -208,6 +212,8 @@
           })
           var th = document.createElement('th')
           th.innerHTML = sum.toLocaleString()
+          th.style.textAlign = 'right'
+
           tr.appendChild(th)
         })
       })
@@ -222,6 +228,7 @@
         var th = document.createElement('th')
         if (index === 0) {
           th.innerHTML = 'Total'
+          th.style.textAlign = 'center'
 
         } else {
           var sum = 0
@@ -232,9 +239,11 @@
           })
           th.innerHTML = sum.toLocaleString()
           tr.appendChild(th)
-          console.log('sum of column ', index, ': ', sum)
-          console.log('<------------------------->')
+        
+          th.style.textAlign = 'right'
+
         }
+
         tr.appendChild(th)
 
       })

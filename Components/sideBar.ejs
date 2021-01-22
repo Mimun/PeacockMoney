@@ -167,7 +167,7 @@
     margin-bottom: 16px;
   }
 
-  table{
+  table {
     max-height: 70vh;
   }
 </style>
@@ -177,7 +177,7 @@
   <div class="sidebar-container d-flex">
     <div class="sidebar">
       <div class="list-group list-group-flush justify-content-center">
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Dashboard</a>
+        <!-- reminding -->
         <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
           data-toggle="collapse" data-target="#reminding-item">
           Nhắc nhở
@@ -197,63 +197,88 @@
             class="list-group-item list-group-item-action list-group-item-dark">Khoản thu sắp thực
             hiện<span class="badge badge-warning ml-2">0</span></a>
         </div>
-        <!-- <a onclick="getPage('/contractMng/contracts')"
-          class="list-group-item list-group-item-action list-group-item-secondary">Danh sách hợp đồng</a> -->
+
+        <!-- contract -->
         <a onclick="getPage('/contractMng/contracts')"
           class="list-group-item list-group-item-action list-group-item-secondary">Quản lý hợp đồng</a>
-        <a onclick="getPage('/evaluationMng/evaluation')"
-          class="list-group-item list-group-item-action list-group-item-secondary">Thẩm định giá</a>
-        <a onclick="getPage('/contractMng/contractTemplates')" id="createNewContract"
-          class="list-group-item list-group-item-action list-group-item-secondary">Tạo mới hợp đồng</a>
-        <a onclick="getPage('/systemMng/properties')"
-          class="list-group-item list-group-item-action list-group-item-secondary">Quản lý tài sản</a>
+
+        <!-- evaluating -->
         <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
-          data-toggle="collapse" data-target="#statistic-item">Thống kê/ báo cáo
+          data-toggle="collapse" data-target="#evaluating-item">
+          Thẩm định giá
           <span class="material-icons rotate">chevron_left</span>
         </a>
-        <div class="collapse" id="statistic-item">
+        <div class="collapse" id="evaluating-item">
+          <a onclick="getPage('/evaluationMng/evaluation')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Thẩm định giá</a>
+          <a onclick="getPage('/evaluationMng')"
+            class="list-group-item list-group-item-action list-group-item-dark">Quản lý thẩm định giá</a>
+        </div>
+
+        <a onclick="getPage('/contractMng/contractTemplates')" id="createNewContract"
+          class="list-group-item list-group-item-action list-group-item-secondary">Tạo hợp đồng</a>
+
+        <!-- property -->
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
+          data-toggle="collapse" data-target="#property-item">
+          Quản lý tài sản
+          <span class="material-icons rotate">chevron_left</span>
+        </a>
+        <div class="collapse" id="property-item">
+          <a onclick="getPage('/systemMng/properties')"
+            class="list-group-item list-group-item-action list-group-item-secondary">Quản lý tài sản</a>
           <a onclick="getPage('/systemMng/statistic')"
-            class="list-group-item list-group-item-action list-group-item-dark">Báo cáo kho</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Bảng kê nhập-xuất tài sản</a>
+        </div>
+
+        <!-- transaction -->
+        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
+          data-toggle="collapse" data-target="#transaction-item">
+          Quản lý thu/chi
+          <span class="material-icons rotate">chevron_left</span>
+        </a>
+        <div class="collapse" id="transaction-item">
           <a onclick="getPage('/systemMng/moneyReport')"
             class="list-group-item list-group-item-action list-group-item-dark">Báo cáo quỹ tiền phòng GD</a>
           <a onclick="getPage('/systemMng/companyMoneyReport')"
             class="list-group-item list-group-item-action list-group-item-dark">Báo cáo quỹ tiền Công ty</a>
           <a onclick="getPage('/systemMng/statisticReport')"
-            class="list-group-item list-group-item-action list-group-item-dark">Thống kê báo cáo</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Báo cáo tiền tổng hợp</a>
           <a onclick="getPage('/systemMng/checkTableSummaryReport')"
             class="list-group-item list-group-item-action list-group-item-dark">Báo cáo thu gốc, lãi</a>
+          <a onclick="getPage('/contractMng/transactionHistory')"
+            class="list-group-item list-group-item-action list-group-item-dark">Bảng kê thu/chi</a>
         </div>
 
+        <!-- system -->
         <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
           data-toggle="collapse" data-target="#management-item">Quản lý hệ thống
           <span class="material-icons rotate">chevron_left</span>
         </a>
         <div class="collapse" id="management-item">
-          <a onclick="getPage('/contractMng')" class="list-group-item list-group-item-action list-group-item-dark">Quản
-            lý mẫu hợp đồng</a>
+          <a onclick="getPage('/contractMng')" class="list-group-item list-group-item-action list-group-item-dark">Danh
+            sách mẫu hợp đồng</a>
           <!-- <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Quan ly mau phieu</a> -->
           <a onclick="getPage('/systemMng/stores')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý cửa hàng</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Danh sách cửa hàng</a>
           <a onclick="getPage('/systemMng/warehouses')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý kho</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Danh sách kho</a>
           <a onclick="getPage('/evaluationMng/itemStatus')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý tình trạng tài sản</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Danh sách tình trạng tài sản</a>
           <a onclick="getPage('/systemMng/employees')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý nhân viên</a>
-          <a onclick="getPage('/evaluationMng')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý thẩm định giá</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Danh sách nhân viên</a>
+
           <a onclick="getPage('/systemMng/itemType')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý loại tài sản</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Danh sách loại tài sản</a>
           <a onclick="getPage('/systemMng/receiptId')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý mã phiếu thu/chi</a>
+            class="list-group-item list-group-item-action list-group-item-dark">Danh sách mã phiếu thu/chi</a>
           <!-- <a onclick="getPage('/systemMng/funds')"
             class="list-group-item list-group-item-action list-group-item-dark">Quản lý quỹ tiền</a> -->
-          <a onclick="getPage('/contractMng/transactionHistory')"
-            class="list-group-item list-group-item-action list-group-item-dark">Bảng kê thu/chi</a>
-          <a onclick="getPage('/systemMng/roles')"
-            class="list-group-item list-group-item-action list-group-item-dark">Quản lý phân quyền</a>
+
         </div>
-        <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
+        <a onclick="getPage('/systemMng/roles')"
+          class="list-group-item list-group-item-action list-group-item-dark">Quản lý phân quyền</a>
+        <!-- <a href="#" class="list-group-item list-group-item-action list-group-item-secondary rotate-list-item"
           data-toggle="collapse" data-target="#test-loan">Test tính lãi
           <span class="material-icons rotate">chevron_left</span>
         </a>
@@ -275,7 +300,7 @@
             class="list-group-item list-group-item-action list-group-item-dark">Test tra bot hang thang</a>
           <a onclick="getPage('/systemMng/testPaydown4')"
             class="list-group-item list-group-item-action list-group-item-dark">Test tra bot du no co dinh dau ky</a>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="btn-toggle-container">

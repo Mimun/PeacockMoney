@@ -54,34 +54,34 @@
               <th colspan="2">Monthly</th>
             </tr>
             <tr>
-              <th class="calculate static">Số tiền giải ngân</th>
-              <th class="calculate daily" id="T-">Thu</th>
-              <th class="calculate daily" id="C-">Chi</th>
-              <th class="calculate monthly" id="T-">Thu</th>
-              <th class="calculate monthly" id="C-">Chi</th>
+              <th class="number-cell calculate static">Số tiền giải ngân</th>
+              <th class="number-cell calculate daily" id="T-">Thu</th>
+              <th class="number-cell calculate daily" id="C-">Chi</th>
+              <th class="number-cell calculate monthly" id="T-">Thu</th>
+              <th class="number-cell calculate monthly" id="C-">Chi</th>
             </tr>
           </thead>
           <tbody>
             <tr id="Gốc">
-              <th class="static">Gốc</th>
+              <th class="number-cell static" style="text-align: center;">Gốc</th>
             </tr>
             <tr id="Lãi">
-              <th class="static">Lãi</th>
+              <th class="number-cell static" style="text-align: center;">Lãi</th>
             </tr>
             <tr id="Giải ngân mới">
-              <th class="static">Giải ngân</th>
+              <th class="number-cell static" style="text-align: center;">Giải ngân</th>
             </tr>
             <tr id="Chuyển NB">
-              <th class="static">Chuyển NB</th>
+              <th class="number-cell static" style="text-align: center;">Chuyển NB</th>
             </tr>
             <tr id="Phí khác">
-              <th class="static">Phí khác</th>
+              <th class="number-cell static" style="text-align: center;">Phí khác</th>
             </tr>
             <tr id="Nhận NB">
-              <th class="static">Nhận NB</th>
+              <th class="number-cell static" style="text-align: center;">Nhận NB</th>
             </tr>
             <tr id="Phạt">
-              <th class="static">Phạt</th>
+              <th class="number-cell static" style="text-align: center;">Phạt</th>
             </tr>
             <!-- <tr id="Total">
               <th class="static">Total</th>
@@ -98,34 +98,34 @@
               <th colspan="2">Monthly</th>
             </tr>
             <tr>
-              <th class="calculate static">Số vụ vay</th>
-              <th class="calculate daily" id="T-">Thu</th>
-              <th class="calculate daily" id="C-">Chi</th>
-              <th class="calculate monthly" id="T-">Thu</th>
-              <th class="calculate monthly" id="C-">Chi</th>
+              <th class="number-cell calculate static">Số vụ vay</th>
+              <th class="number-cell calculate daily" id="T-">Thu</th>
+              <th class="number-cell calculate daily" id="C-">Chi</th>
+              <th class="number-cell calculate monthly" id="T-">Thu</th>
+              <th class="number-cell calculate monthly" id="C-">Chi</th>
             </tr>
           </thead>
           <tbody>
             <tr id="Gốc">
-              <th class="static">Gốc</th>
+              <th class="number-cell static" style="text-align: center;">Gốc</th>
             </tr>
             <tr id="Lãi">
-              <th class="static">Lãi</th>
+              <th class="number-cell static" style="text-align: center;">Lãi</th>
             </tr>
             <tr id="Giải ngân mới">
-              <th class="static">Giải ngân</th>
+              <th class="number-cell static" style="text-align: center;">Giải ngân</th>
             </tr>
             <tr id="Chuyển NB">
-              <th class="static">Chuyển NB</th>
+              <th class="number-cell static" style="text-align: center;">Chuyển NB</th>
             </tr>
             <tr id="Phí khác">
-              <th class="static">Phí khác</th>
+              <th class="number-cell static" style="text-align: center;">Phí khác</th>
             </tr>
             <tr id="Nhận NB">
-              <th class="static">Nhận NB</th>
+              <th class="number-cell static" style="text-align: center;">Nhận NB</th>
             </tr>
             <tr id="Phạt">
-              <th class="static">Phạt</th>
+              <th class="number-cell static" style="text-align: center;">Phạt</th>
             </tr>
           </tbody>
         </table>
@@ -139,19 +139,19 @@
               <th colspan="2">Monthly</th>
             </tr>
             <tr>
-              <th class="calculate static">Số vụ vay</th>
-              <th class="calculate daily" id="T-">Thu</th>
-              <th class="calculate daily" id="C-">Chi</th>
-              <th class="calculate monthly" id="T-">Thu</th>
-              <th class="calculate monthly" id="C-">Chi</th>
+              <th class="number-cell calculate static">Số vụ vay</th>
+              <th class="number-cell calculate daily" id="T-">Thu</th>
+              <th class="number-cell calculate daily" id="C-">Chi</th>
+              <th class="number-cell calculate monthly" id="T-">Thu</th>
+              <th class="number-cell calculate monthly" id="C-">Chi</th>
             </tr>
           </thead>
           <tbody>
             <tr id="1">
-              <th class="static">Cash</th>
+              <th class="number-cell static" style="text-align: center;">Cash</th>
             </tr>
             <tr id="2">
-              <th class="static">Bank</th>
+              <th class="number-cell static" style="text-align: center;">Bank</th>
             </tr>
           </tbody>
         </table>
@@ -272,6 +272,9 @@
             default:
               break;
           }
+          if(element1.classList.contains('number-cell') || element2.classList.contains('number-cell')){
+            th.style.textAlign = 'right'
+          }
           element2.appendChild(th)
         })
       })
@@ -287,6 +290,7 @@
           })
           var th = document.createElement('th')
           th.innerHTML = sum.toLocaleString()
+          th.style.textAlign = 'right'
           tr.appendChild(th)
         })
       })
@@ -300,6 +304,7 @@
         var th = document.createElement('th')
         if (index === 0) {
           th.innerHTML = 'Total'
+          th.style.textAlign = 'center'
 
         } else {
           var sum = 0
@@ -309,6 +314,8 @@
 
           })
           th.innerHTML = sum.toLocaleString()
+        th.style.textAlign = 'right'
+
           tr.appendChild(th)
         }
         tr.appendChild(th)

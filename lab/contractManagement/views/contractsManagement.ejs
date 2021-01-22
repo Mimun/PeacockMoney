@@ -38,30 +38,39 @@
                 <th scope="col" id="storeId">Mã cửa hàng</th>
                 <th scope="col" id="contractId">Số hợp đồng</th>
                 <th scope="col" id="customerId">Mã khách hàng</th>
-                <th scope="col" id="customer">Tên khách hàng</th>
+                <th scope="col" id="customer">Họ và tên KH</th>
+                <th scope="col" id="customerPhoneNumber">Số điện thoại</th>
                 <th scope="col" id="contractCreatedDate">Ngày bắt đầu cho vay</th>
                 <th scope="col" id="contractEndingDate">Ngày kết thúc hợp đồng</th>
-                <th scope="col" id="loan" data-cal="calculate">Số tiền vay</th>
+                <th scope="col" class="number-cell" id="loan" data-cal="calculate">Số tiền vay</th>
+                <th scope="col" class="number-cell" id="loanMorePayDown">Gốc vay thêm/trả bớt</th>
+
                 <th scope="col" id="itemType">Loại tài sản</th>
                 <th scope="col" id="itemName">Tên tài sản</th>
+
                 <th scope="col" id="staticRedemptionDate">Ngày đóng lãi cố định</th>
-                <th scope="col" id="interestRate">Lãi suất</th>
+                <th scope="col" id="interestRatePerMonth">Tổng % lãi suất</th>
+                <th scope="col" class="number-cell" id="millionPerDay">Phí vay/tr/ngày theo HĐ</th>
+
                 <th scope="col" id="employeeId">Mã nhân viên thẩm định</th>
                 <th scope="col" id="employeeName">Tên nhân viên thẩm định</th>
-                <th scope="col" id="accumulatedPaidInterest" data-cal="calculate">Lãi đã trả lũy kế</th>
-                <th scope="col" id="incrementalPaidPrincipal" data-cal="calculate">Gốc đã trả cộng dồn</th>
-                <th scope="col" id="presentValue" data-cal="calculate">Dư nợ hiện tại</th>
+                
+                <th scope="col" class="number-cell" id="accumulatedPaidInterest" data-cal="calculate">Tổng số lãi đã nộp (Cộng dồn)</th>
+                <th scope="col" class="number-cell" id="paidInterest" data-cal="calculate">Số tiền lãi thực thu trong tháng</th>
+
+                <th scope="col" class="number-cell" id="paidPrincipal" data-cal="calculate">Tổng số gốc đã thu lại</th>
+                <th scope="col" class="number-cell" id="realLifeCollectedPrincipal" data-cal="calculate">Số tiền gốc thực thu trong tháng</th>
+                <th scope="col" class="number-cell" id="remainPrincipal" data-cal="calculate">Tiền gốc còn nợ</th>
                 <th scope="col" id="contractStatus">Tình trạng hợp đồng</th>
                 <th scope="col" id="propertyIsIn">Tình trạng tài sản</th>
                 <th scope="col" id="propertyStore">Nơi lưu tài sản</th>
-                <th scope="col" id="totalLoanDays">Tổng số ngày vay</th>
-                <th scope="col" id="estimatingInterest">Lãi dự tính</th>
-                <th scope="col" id="numberOfLatePeriods">Số kỳ đóng chậm</th>
-                <th scope="col" id="numberOfLateDays">Số ngày đóng chậm</th>
-                <th scope="col" id="lastPaidDate">Ngày đóng cuối cùng</th>
-                <th scope="col" id="numberOfPayingDownTimes">Số lần trả bớt gốc</th>
-                <th scope="col" id="numberOfPayment">Số lần trả</th>
+                <th scope="col" id="totalLoanDays" data-cal="calculate">Tổng số ngày vay</th>
+                <th scope="col" class="number-cell" id="estimatingInterest" data-cal="calculate">Tổng số tiền lãi dự tính</th>
+                <th scope="col" class="number-cell" id="excessInterest" data-cal="calculate">Số tiền lãi thu thừa(nếu có)</th>
 
+                <th scope="col" id="numberOfLatePeriods">Số kỳ quá hạn</th>
+                <th scope="col" id="lastPaidDate">Ngày đóng gốc cuối cùng</th>
+                <th scope="col" id="numberOfLateDays">Số ngày quá hạn</th>
               </tr>
             </thead>
             <tbody>
@@ -202,6 +211,9 @@
             tr.appendChild(th)
 
           }
+          if(element.className.includes('number-cell')){
+                th.style.textAlign = 'right'
+              }
           tr.appendChild(th)
 
         })
@@ -325,6 +337,9 @@
 
               } else {
                 th.innerHTML = '-'
+              }
+              if(element.className.includes('number-cell')){
+                th.style.textAlign = 'right'
               }
               tr.appendChild(th)
             })
