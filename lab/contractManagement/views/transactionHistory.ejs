@@ -217,8 +217,14 @@
       array.forEach(loan => {
         if (loan) {
           var tr = document.createElement('tr')
-          tr.id = loan.contract_Id
+          tr.id = loan.storeId
           tr.C_DATA = loan
+          if(query === 'table.table2'){
+            tr.addEventListener('click', event=>{
+              console.log('event: ', event.target.closest('tr').C_DATA)
+              openNewTab(`/contractMng/funds/receipt?receipt=${JSON.stringify(event.target.closest('tr').C_DATA)}&code=1&token=${window.localStorage.getItem('accessToken')}`)
+            })
+          }
           document.querySelectorAll(`${query} thead th`).forEach(element => {
             var th = document.createElement('th')
             if(element.classList.contains('number-cell')){
@@ -274,12 +280,19 @@
     const acceptTransaction = (obj) => {
       if (obj) {
         makeRequest('POST', '/contractMng/funds/approve', 'application/json', JSON.stringify(obj), (result) => {
-          window.open(`/contractMng/funds/receipt?receipt=${JSON.stringify(result.fundFrom)}&token=${window.localStorage.getItem('accessToken')}`)
-          window.open(`/contractMng/funds/receipt?receipt=${JSON.stringify(result.fundTo)}&token=${window.localStorage.getItem('accessToken')}`)
+          openNewTab(`/contractMng/funds/receipt?receipt=${JSON.stringify(result.fundFrom)}&code=1&token=${window.localStorage.getItem('accessToken')}`)
+          setTimeout(function(){
+            openNewTab(`/contractMng/funds/receipt?receipt=${JSON.stringify(result.fundTo)}&code=2&token=${window.localStorage.getItem('accessToken')}`)
+
+          }, 500)
           window.location.reload()
         })
       }
 
+    }
+
+    const openNewTab = (url)=>{
+      window.open(url)
     }
 
     const denyTransaction = (obj) => {

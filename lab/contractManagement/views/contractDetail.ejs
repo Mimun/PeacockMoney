@@ -32,7 +32,7 @@
           <h2>Chi tiết hợp đồng</h2>
           <div class="table-container">
             <h5>Thao tác</h5>
-            <button class="btn btn-sm btn-default" id="btn-update"></button>
+            <!-- <button class="btn btn-sm btn-default" id="btn-update"></button> -->
             <button class="btn btn-sm btn-primary" id="btn-check-table">Check table</button>
             <button class="btn btn-sm btn-primary" id="btn-contract-paper">Hợp đồng giấy</button>
             <button class="btn btn-sm btn-danger" id="btn-delete">Delete</button>
@@ -104,32 +104,32 @@
       })
 
       // update button
-      var updateBtn = document.querySelector('button#btn-update')
-      switch (contract.contractStatus) {
-        case 'waiting':
-          updateBtn.innerHTML = 'Approve'
+      // var updateBtn = document.querySelector('button#btn-update')
+      // switch (contract.contractStatus) {
+      //   case 'waiting':
+      //     updateBtn.innerHTML = 'Approve'
 
-          break;
-        case 'approved':
-          updateBtn.innerHTML = 'Complete'
+      //     break;
+      //   case 'approved':
+      //     updateBtn.innerHTML = 'Complete'
 
-          break;
-        case 'completed':
-          updateBtn.closest('div.table-container').removeChild(updateBtn)
+      //     break;
+      //   case 'completed':
+      //     updateBtn.closest('div.table-container').removeChild(updateBtn)
 
-          break;
+      //     break;
 
-        default:
-          updateBtn.innerHTML = 'Approve'
-          break;
-      }
+      //   default:
+      //     updateBtn.innerHTML = 'Approve'
+      //     break;
+      // }
 
-      updateBtn.addEventListener('click', event => {
-        makeRequest('PUT', `/contractMng/contracts/${contract._id}?token=${window.localStorage.getItem('accessToken')}`,
-          'application/json', JSON.stringify({ contractStatus: 'completed' }), () => {
-            window.location.reload()
-          })
-      })
+      // updateBtn.addEventListener('click', event => {
+      //   makeRequest('PUT', `/contractMng/contracts/${contract._id}?token=${window.localStorage.getItem('accessToken')}`,
+      //     'application/json', JSON.stringify({ contractStatus: 'completed' }), () => {
+      //       window.location.reload()
+      //     })
+      // })
 
       // contract paper button
       document.querySelector('button#btn-contract-paper').addEventListener('click', (event) => {

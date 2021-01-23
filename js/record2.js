@@ -43,6 +43,17 @@ export default class Record {
     this.balance += amount
   }
 
+  saveToFund(obj) {
+    $.ajax({
+      type: 'POST',
+      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+      contentType: 'application/json',
+      data: JSON.stringify(obj),
+      success: result => {
+      }
+    })
+  }
+
   paidInterest(updateObj, payment, paymentObj, type) {
     var object = {
       id: `${this.contractId}.${formatDate(this.realLifeDate, 1)}`,
@@ -78,14 +89,7 @@ export default class Record {
 
         }
         object.array.push(object2)
-        $.ajax({
-          type: 'POST',
-          url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
-          contentType: 'application/json',
-          data: JSON.stringify(object2),
-          success: result => {
-          }
-        })
+        this.saveToFund(object2)
       }
 
 
@@ -120,14 +124,8 @@ export default class Record {
           contractId: this.contractId
         }
         object.array.push(object2)
-        $.ajax({
-          type: 'POST',
-          url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
-          contentType: 'application/json',
-          data: JSON.stringify(object2),
-          success: result => {
-          }
-        })
+        this.saveToFund(object2)
+
       }
 
 
@@ -162,14 +160,8 @@ export default class Record {
           contractId: this.contractId
         }
         object.array.push(object2)
-        $.ajax({
-          type: 'POST',
-          url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
-          contentType: 'application/json',
-          data: JSON.stringify(object2),
-          success: result => {
-          }
-        })
+        this.saveToFund(object2)
+
       }
 
     } else if (updateObj.remainTotalPenalty <= 0) {

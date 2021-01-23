@@ -128,20 +128,25 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
       aSideInfoDiv.appendChild(selectContainerClone2)
 
       aSideInfoDiv.querySelector('#store').addEventListener('change', (event) => {
-        makeRequest('POST', '/contractMng/getStores', 'application/json', JSON.stringify({ data: event.target.value }), (result) => {
-          var employeeSelectOptions = []
-          employeeSelectOptions.unshift('<option value="">No employee</option>')
-          if (result.employeeList.length !== 0) {
-            result.employeeList.map(employee => {
-              // var employeeName = findNestedObj(employee, 'name', 'name')
-              // var employeeRole = findNestedObj(employee, 'name', 'role')
-              var option = `<option value=${employee._id}>${employee.name}-${employee.role}</option>`
-              employeeSelectOptions.push(option)
-            })
-          }
-          aSideInfoDiv.querySelector('#employee').innerHTML = employeeSelectOptions
-          aSideInfoDiv.querySelector('#employee').disabled = false
-        })
+        if(event.target.value){
+          makeRequest('POST', '/contractMng/getStores', 'application/json', JSON.stringify({ data: event.target.value }), (result) => {
+            var employeeSelectOptions = []
+            employeeSelectOptions.unshift('<option value="">No employee</option>')
+            if (result.employeeList.length !== 0) {
+              result.employeeList.map(employee => {
+                // var employeeName = findNestedObj(employee, 'name', 'name')
+                // var employeeRole = findNestedObj(employee, 'name', 'role')
+                var option = `<option value=${employee._id}>${employee.name}-${employee.role}</option>`
+                employeeSelectOptions.push(option)
+              })
+            }
+            aSideInfoDiv.querySelector('#employee').innerHTML = employeeSelectOptions
+            aSideInfoDiv.querySelector('#employee').disabled = false
+          })
+        } else {
+          window.alert('Vui lòng chọn kho!')
+        }
+        
 
       })
     }

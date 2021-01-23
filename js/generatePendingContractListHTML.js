@@ -60,6 +60,7 @@ export const generatePendingContractListHTML = (itemObj, template, elementName, 
 
   if (button) {
     switch (contractStatus) {
+      case ("pending"):
       case ("waiting"):
         button.id = 'btn-approve'
         button.innerHTML = 'approve'
@@ -132,7 +133,7 @@ export const generatePendingContractListHTML = (itemObj, template, elementName, 
   var likeBtn = document.createElement('button')
   likeBtn.className = 'btn btn-info btn-raised btn-sm'
   likeBtn.innerHTML = checkObjInArray(user, obj.likes) ? 'dislike' : 'like'
-  isCheckMember ? likeBtn.style.visibility = 'box': likeBtn.style.visibility = 'hidden'
+  isCheckMember ? likeBtn.style.visibility = 'box' : likeBtn.style.visibility = 'hidden'
   likeBtn.addEventListener('click', (event) => {
     // console.log('event: ', event.target.closest('.object-div').C_DATA._id)
     event.stopPropagation()

@@ -1255,34 +1255,30 @@ router.post('/moneyReport/getReport', (req, res, next) => {
 })
 
 // money report of company
-const handleReceiptArray2 = (chosenDate, chosenMonth, contracts, callback) => {
+const handleReceiptArray2 = (chosenDate, chosenMonth, funds, callback) => {
   try {
     var dailyMoneyReport = [],
-      monthlyMoneyReport = []
-    if (contracts.length !== 0) {
-      contracts.forEach(contract => {
-        if (contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-          contract.loanPackage.receiptRecords.forEach(receipt => {
-            if (new Date(receipt.date).getDate() === chosenDate.getDate()
-              && new Date(receipt.date).getMonth() === chosenDate.getMonth()
-              && new Date(receipt.date).getFullYear() === chosenDate.getFullYear()) {
-              if (receipt !== null) {
-                dailyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
-              }
-            }
-          })
+      monthlyMoneyReport = [],
+      customFundReceiptRecords = []
+    funds.forEach(fund => {
+      customFundReceiptRecords = customFundReceiptRecords.concat(fund.receiptRecords)
+    })
+    console.log('custom fund receipt: ', customFundReceiptRecords)
+    if (customFundReceiptRecords && customFundReceiptRecords.length !== 0) {
 
-          contract.loanPackage.receiptRecords.map(receipt => {
-            if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
-              && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
-              && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
-              if (receipt !== null) {
-                monthlyMoneyReport.push({ ...receipt, storeId: receipt.id.split('.')[0] })
-              }
-
-            }
-          })
+      customFundReceiptRecords.forEach(receipt => {
+        if (new Date(receipt.date).getDate() === new Date(chosenDate).getDate()
+          && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+          && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+          dailyMoneyReport.push(receipt)
         }
+        if (new Date(receipt.date).getDate() <= new Date(chosenDate).getDate()
+          && new Date(receipt.date).getMonth() === new Date(chosenDate).getMonth()
+          && new Date(receipt.date).getFullYear() === new Date(chosenDate).getFullYear()) {
+          monthlyMoneyReport.push(receipt)
+          return receipt
+        }
+
       })
     }
     callback(dailyMoneyReport, monthlyMoneyReport)
@@ -1304,11 +1300,14 @@ router.get('/companyMoneyReport', (req, res, next) => {
     },
     contracts: callback => {
       Contract.find({}).exec(callback)
+    }, funds: callback => {
+      Fund.find({}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
-    handleReceiptArray2(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
-      res.render('companyMoneyReport', { store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+    handleReceiptArray2(chosenDate, chosenMonth, results.funds, (dailyMoneyReport, monthlyMoneyReport) => {
+      res.render('companyMoneyReport', { store: results.stores, contracts: results.funds, dailyMoneyReport, monthlyMoneyReport })
+
     })
   })
 })
@@ -1329,15 +1328,19 @@ router.post('/companyMoneyReport/getReport', (req, res, next) => {
     },
     contracts: callback => {
       Contract.find({}).exec(callback)
+    },
+    funds: callback => {
+      Fund.find().exec(callback)
     }
+
   }, (err, results) => {
     if (err) throw err
     console.log('results contract: ', results.contracts.length)
-    handleReceiptArray2(chosenDate, chosenMonth, results.contracts, (dailyMoneyReport, monthlyMoneyReport) => {
+    handleReceiptArray2(chosenDate, chosenMonth, results.funds, (dailyMoneyReport, monthlyMoneyReport) => {
       console.log('daily result: ', dailyMoneyReport.length)
       console.log('monthly result: ', monthlyMoneyReport.length)
 
-      res.send({ store: results.stores, contracts: results.contracts, dailyMoneyReport, monthlyMoneyReport })
+      res.send({ store: results.stores, funds: results.funds, dailyMoneyReport, monthlyMoneyReport })
     })
   })
 })
@@ -1518,12 +1521,12 @@ router.get('/roles', (req, res, next) => {
     roles: callback => {
       Role.find({}).exec(callback)
     },
-    stores: callback=>{
+    stores: callback => {
       Store.find({}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
-    var stores = results.stores.map(store=>{
+    var stores = results.stores.map(store => {
       var name = getNestedValue(findNestedObj(store, 'name', 'name'))
       var _id = store._id
       return {

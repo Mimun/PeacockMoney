@@ -411,7 +411,7 @@ const handleGetContract = (contracts, properties, req) => {
         })
         numberOfLatePeriods = latePeriodsArray.length
         latePeriodsArray.forEach(period => {
-          numberOfLateDays += period.daysBetween
+          numberOfLateDays += period.daysBetween > 0 ? period.daysBetween : 0
         })
 
         lastPaidDate = contract.loanPackage.receiptRecords[contract.loanPackage.receiptRecords.length - 1] ?
@@ -457,12 +457,12 @@ const handleGetContract = (contracts, properties, req) => {
         employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
 
         accumulatedPaidInterest: contract.loanPackage ? contract.loanPackage.accumulatedPaidInterest : '-',
-        paidInterest: mergeWithObj.paidInterest,
+        paidInterest: mergeWithObj ? mergeWithObj.paidInterest : 0,
 
         // realLiceCollectedInterest: mergeWithObj.paidInterest,
-        paidPrincipal: mergeWithObj.paidPrincipal,
-        realLifeCollectedPrincipal: mergeWithObj.paidPrincipal,
-        remainPrincipal: mergeWithObj.remainPrincipal,
+        paidPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
+        realLifeCollectedPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
+        remainPrincipal: mergeWithObj ? mergeWithObj.remainPrincipal : 0,
         contractStatus: contract.contractStatus,
         propertyIsIn: propertiesArray[0] ? propertiesArray[0].isIn : '-',
         propertyStore: propertiesArray[0] ? propertiesArray[0].store : '-',
@@ -470,8 +470,8 @@ const handleGetContract = (contracts, properties, req) => {
         totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
         estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
 
-        excessInterest: mergeWithObj.paidInterest - mergeWithObj.interest > 0 ? mergeWithObj.paidInterest - mergeWithObj.interest : 0,
-        remainInterest: mergeWithObj.remainInterest,
+        excessInterest: mergeWithObj ? (mergeWithObj.paidInterest - mergeWithObj.interest > 0 ? mergeWithObj.paidInterest - mergeWithObj.interest : 0) : 0,
+        remainInterest: mergeWithObj ? mergeWithObj.remainInterest : 0,
         numberOfLatePeriods,
 
         lastPaidDate: formatDate(lastPaidDate),
@@ -613,7 +613,7 @@ router.post('/contracts', (req, res, next) => {
       try {
         contract.save((err, result) => {
           if (err) throw err
-          res.send('Saved contract successfully!')
+          res.send({ contract: result })
         })
       } catch (error) {
         console.error(error)
@@ -1267,7 +1267,7 @@ router.post('/funds/approve', (req, res) => {
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.cash = parseFloat(fundTo.cash) + Math.abs(parseFloat(obj.paid))
-            fundTo.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundTo.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Nhận NB', receiptReason: 'Nhận NB' })
           }
           break
         case ('iCash'):
@@ -1287,7 +1287,7 @@ router.post('/funds/approve', (req, res) => {
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.iCash = parseFloat(fundTo.iCash) + Math.abs(parseFloat(obj.paid))
-            fundTo.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Chuyển NB', receiptReason: 'Chuyển NB' })
+            fundTo.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Nhận NB', receiptReason: 'Nhận NB' })
           }
           break
         default:
@@ -1437,7 +1437,7 @@ router.post('/funds2', (req, res) => {
       async.parallel({
         fundFrom: callback => {
           if (fundFrom) {
-            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }).exec(callback)
+            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, {new: true}).exec(callback)
 
           } else {
             callback(null, {})
@@ -1445,7 +1445,7 @@ router.post('/funds2', (req, res) => {
         },
         fundTo: callback => {
           if (fundTo) {
-            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }).exec(callback)
+            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }, {new: true}).exec(callback)
 
           } else {
             callback(null, {})
@@ -1453,7 +1453,12 @@ router.post('/funds2', (req, res) => {
         }
       }, (err, results) => {
         if (err) throw err
-        res.send('save successfully')
+        if(results.fundFrom){
+          res.send('save fund from successfully')
+        } else {
+          res.send('save fund to successfully')
+
+        }
       })
     } catch (error) {
       console.error(error)

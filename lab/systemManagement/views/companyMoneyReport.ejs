@@ -148,7 +148,7 @@
     const getCustomArray = (array, keys) => {
       var abc = _(array).groupBy('storeId').map((objs, key) => {
         return {
-          storeId: key, receipts: _(objs).flatMap('array').groupBy('receiptId').map((objects, key) => {
+          storeId: key, receipts: _(objs).groupBy('receiptId').map((objects, key) => {
             var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
             return { receiptId: key, value: def.paid }
           }).value()
@@ -224,7 +224,7 @@
       // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
       var tr = document.createElement('tr')
       document.querySelectorAll(`${query} thead th.calculate`).forEach((element, index) => {
-        console.log('index: ', index, ', element: ', element)
+        // console.log('index: ', index, ', element: ', element)
         var th = document.createElement('th')
         if (index === 0) {
           th.innerHTML = 'Total'
