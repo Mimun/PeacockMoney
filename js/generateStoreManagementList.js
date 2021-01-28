@@ -13,7 +13,6 @@ detailStoreTemplate.innerHTML = `
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
   <button class="btn btn-raised btn-primary btn-sm" id="btn-money-report">Báo cáo tiền PGD</button>
-  <button class="btn btn-danger btn-sm" id="btn-delete">Delete</button>
 </div>`
 
 const detailInfoTemplate = document.createElement('div')
@@ -183,14 +182,14 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
 })
 
 // delete button
-modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
-  var { routerName } = param
-  makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
-    'application/json', {}, () => {
-      window.location.reload()
-    })
+// modalFooter.querySelector('#btn-delete').addEventListener('click', event => {
+//   var { routerName } = param
+//   makeRequest('DELETE', routerName + '/' + event.target.closest('.modal-content').querySelector('.object-div').C_DATA._id,
+//     'application/json', {}, () => {
+//       window.location.reload()
+//     })
 
-})
+// })
 
 // money report
 modalFooter.querySelector('#btn-money-report').addEventListener('click', event => {
