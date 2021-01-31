@@ -109,7 +109,35 @@
       itemObjs.forEach(itemObj => {
         const option = document.createElement('option')
         option.value = itemObj
-        option.innerHTML = itemObj.charAt(0).toUpperCase() + itemObj.slice(1)
+        if(variable === "payOptions"){
+          console.log('pay option: ', typeof itemObj)
+          switch (itemObj) {
+            case '1':
+              option.innerHTML = 'Dư nợ cố định cuối kỳ'
+              
+              break;
+            case '2':
+              option.innerHTML = 'Dư nợ giảm dần'
+
+              break
+            case '3':
+              option.innerHTML = 'Dư nợ hàng tháng'
+
+              break
+            case '4':
+              option.innerHTML = 'Dư nợ cố định đầu kỳ'
+
+              break
+          
+            default:
+              option.innerHTML = 'Dư nợ cố định cuối kỳ'
+
+              break;
+          }
+        } else {
+          option.innerHTML = itemObj.charAt(0).toUpperCase() + itemObj.slice(1)
+          
+        }
         select.appendChild(option)
       })
       // "create new option"

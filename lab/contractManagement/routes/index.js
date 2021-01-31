@@ -777,13 +777,13 @@ router.put('/contracts/:id', (req, res, next) => {
       var customerName = getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer'))
       var employeeId = getNestedValue(findNestedObj(contract.employee.value.metadata, 'name', 'id'))
       var employeeName = getNestedValue(findNestedObj(contract.employee.value.metadata, 'name', 'name'))
-      var interestRate = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate')))
+      var interestRate = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')) !== '3'? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))): parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')))
       var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
       var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
       var numberOfPeriods = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
       var ruleArray = contract.penaltyRules
       var blockArray = contract.blockRules
-      var realLifeDate = new Date(agreementDate)
+      var realLifeDate = new Date(Date.now())
       var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
       loanPackage = new Record({
         interestRate, presentValue, agreementDate,
