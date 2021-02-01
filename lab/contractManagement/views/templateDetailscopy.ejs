@@ -319,19 +319,19 @@
     addSeparatorOnInputChange()
     document.querySelector('input#millionPerDay').addEventListener('change', event => {
       var interestRatePerMonth = (parseFloat(event.target.value)*100 * 30) / 1000000
-      document.querySelector('input#interestRatePerMonth').value = (interestRatePerMonth).toFixed(1)
-      document.querySelector('input#interestRate').value = (interestRatePerMonth / 30).toFixed(1)
+      document.querySelector('input#interestRatePerMonth').value = (interestRatePerMonth).toFixed(2)
+      document.querySelector('input#interestRate').value = (interestRatePerMonth / 30).toFixed(2)
     })
 
     document.querySelector('input#interestRatePerMonth').addEventListener('change', event => {
       document.querySelector('input#millionPerDay').value = ((parseFloat(event.target.value) * 10000) / 30).toFixed(1)
-      document.querySelector('input#interestRate').value = (parseFloat(event.target.value) / 30).toFixed(1)
+      document.querySelector('input#interestRate').value = (parseFloat(event.target.value) / 30).toFixed(2)
 
     })
 
     document.querySelector('input#interestRate').addEventListener('change', event => {
       document.querySelector('#millionPerDay').value = (parseFloat(event.target.value) * 10000).toFixed(1)
-      document.querySelector('#interestRatePerMonth').value = (parseFloat(event.target.value) * 30).toFixed(1)
+      document.querySelector('#interestRatePerMonth').value = (parseFloat(event.target.value) * 30).toFixed(2)
 
     })
 
