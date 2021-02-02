@@ -332,8 +332,27 @@
             })
             document.querySelectorAll(`table thead th`).forEach(element => {
               var th = document.createElement('th')
-              if (contract[element.id]) {
-                th.innerHTML = element.id==="propertyIsIn"? (contract[element.id]? 'Lưu kho': 'Đã trả lại'): contract[element.id].toLocaleString()
+              if (contract[element.id] !== null || contract[element.id]!==undefined) {
+                switch (element.id) {
+                  case "propertyIsIn":
+                    th.innerHTML =contract[element.id]? 'Lưu kho': 'Đã trả lại'
+                    break;
+                  case "contractStatus":
+                    console.log('alkfjskldjfajsdlkfjlaskd')
+                    if(contract[element.id]==='waiting'||contract[element.id]==='pending'){
+                      th.innerHTML = 'Đang chờ duyệt'
+                    } else if(contract[element.id]==='completed'){
+                      th.innerHTML = 'Đã đóng'
+                    } else {
+                      th.innerHTML = 'Đang mở'
+                    }
+                    break
+                    // th.innerHTML = contract[element.id]!=='completed'&&contract[element.id]!=="waiting"&& contract[element.id]!=="pending"? '': 'Đang mở'
+                  default:
+                    th.innerHTML =  contract[element.id].toLocaleString()
+                    break;
+                }
+                // th.innerHTML = : contract[element.id].toLocaleString()
 
               } else {
                 th.innerHTML = '-'

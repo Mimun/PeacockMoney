@@ -457,7 +457,7 @@
       var storeSelect = contractTemplateContainer.querySelector('select[name="store"]')
       var storeCustomId = storeSelect.options[storeSelect.selectedIndex].getAttribute('name')
       var createdDate = contractTemplateContainer.querySelector('input[name="contractCreatedDate"]').value
-      data.id = createContractCustomId(contractNow, storeCustomId, createdDate)
+      // data.id = createContractCustomId(contractNow, storeCustomId, createdDate)
 
       // contract info
       contractTemplateContainer.querySelectorAll('select').forEach(select => {

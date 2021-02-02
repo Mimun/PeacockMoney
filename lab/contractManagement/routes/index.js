@@ -78,14 +78,15 @@ const formatDate = (date, type) => {
     case (2):
       return [day, month, year].join('-');
       break
+    case (3):
+      return [year, month, day].join('-');
+      break
     default:
       return [day, month, year].join('-');
 
   }
 
 }
-
-
 
 // CONTRACT TEMPLATE
 // contract template list for admin
@@ -438,16 +439,16 @@ const handleGetContract = (contracts, properties, req) => {
 
       var obj = {
         contract_Id: contract._id,
-
+        
         storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
         contractId: contract.id,
         customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
         customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-        customerPhone: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerPhoneNumber')),
+        customerPhoneNumber: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerPhoneNumber')),
         contractCreatedDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate'))),
         contractEndingDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate'))),
         loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
-        loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0) : 0,
+        loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.length!==1? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0): 0) : 0,
         itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
         itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
         staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
@@ -508,7 +509,7 @@ router.get('/contracts', (req, res, next) => {
         Contract.find({}, {}, { sort: { '_id': -1 } }).exec(callback)
       },
       contractNow: callback => {
-        Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
+        Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now()), 3) }).exec(callback)
       },
       property: callback => {
         Property.find({}).exec(callback)
@@ -596,6 +597,8 @@ router.post('/contracts', (req, res, next) => {
 }, checkRole, (req, res) => {
   var data = req.body
   var storeId = getNestedValue(findNestedObj(data.store, 'name', 'store'))
+  console.log('data: ', storeId)
+
   var employeeId = getNestedValue(findNestedObj(data.employee, 'name', 'employee'))
   try {
     async.parallel({
@@ -604,12 +607,19 @@ router.post('/contracts', (req, res, next) => {
       },
       employee: callback => {
         Employee.findOne({ _id: employeeId }).exec(callback)
+      },
+      contractsInStore: callback=>{
+        Contract.find({'store.value._id': mongoose.Types.ObjectId(storeId)}).exec(callback)
       }
     }, (err, results) => {
       if (err) throw err
+      console.log('contract in store: ', results.contractsInStore.length)
       data.store.value = results.store
       data.employee.value = results.employee
+      var storeCustomId = getNestedValue(findNestedObj(results.store, 'name', 'id'))
+      data.id = `${storeCustomId}.${formatDate(new Date(Date.now()), 1)}.${results.contractsInStore.length}`
       const contract = new Contract(data)
+      console.log('new contract id: ', data.id)
       try {
         contract.save((err, result) => {
           if (err) throw err
@@ -1465,8 +1475,8 @@ router.post('/funds2', (req, res) => {
     }
   })
 })
-
-var job = new CronJob('0 0 * * *', function () {
+// 0 0 * * *
+var job = new CronJob('*/1 * * * *', function () {
   try {
     Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
       if (err) throw err
