@@ -643,7 +643,7 @@
     // calculate and display payment
     // NOTE: receiptType: 1: receive, 2: spend
     //       type: 1: cash, 2: iCash
-    document.querySelector('button#btn-payment-slip').addEventListener('click', (event) => {
+    document.querySelector('button#btn-payment-slip').addEventListener('click', async (event) => {
       window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
       if (loanPackage) {
         console.log('event: ', event.target.closest('div').querySelector('input:checked').value)
@@ -672,8 +672,9 @@
         })
         if (notDonePeriodArray.length !== 0) {
           console.log('not done period array: ', notDonePeriodArray)
-          loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
-          updateLoanPackage(loanPackage)
+          
+          await loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
+          await updateLoanPackage(loanPackage)
 
           displayPaymentHistory()
         } else {

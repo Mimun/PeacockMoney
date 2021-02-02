@@ -387,17 +387,21 @@ router.delete('/deleteContractTemplate/:id', (req, res, next) => {
 // CONTRACT
 // contract list
 // handle get contracts function
-const handleGetContract = (contracts, properties, req) => {
+const handleGetContract = async (contracts, properties, req) => {
   // console.log('property list: ', properties.length)
 
-  var contractList = contracts.map(contract => {
+  // filter for only seeing contracts of specific stores
+  var contractList = await contracts.map(contract => {
     if (contract && contract.store && contract.store.value && contract.store.value.metadata) {
       if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
         return contract
+      } else {
+        return
       }
-    }
-
-  }).map(contract => {
+    } else return
+  })
+  // return a customized array of contract
+  contractList = await contractList.map(contract => {
     if (contract) {
       console.log('contracat length: ', contracts.length)
       var mergeWithObj = null
@@ -439,7 +443,7 @@ const handleGetContract = (contracts, properties, req) => {
 
       var obj = {
         contract_Id: contract._id,
-        
+
         storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
         contractId: contract.id,
         customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
@@ -448,7 +452,7 @@ const handleGetContract = (contracts, properties, req) => {
         contractCreatedDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate'))),
         contractEndingDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate'))),
         loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
-        loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.length!==1? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0): 0) : 0,
+        loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.length !== 1 ? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0) : 0) : 0,
         itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
         itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
         staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
@@ -608,8 +612,8 @@ router.post('/contracts', (req, res, next) => {
       employee: callback => {
         Employee.findOne({ _id: employeeId }).exec(callback)
       },
-      contractsInStore: callback=>{
-        Contract.find({'store.value._id': mongoose.Types.ObjectId(storeId)}).exec(callback)
+      contractsInStore: callback => {
+        Contract.find({ 'store.value._id': mongoose.Types.ObjectId(storeId) }).exec(callback)
       }
     }, (err, results) => {
       if (err) throw err
@@ -787,7 +791,7 @@ router.put('/contracts/:id', (req, res, next) => {
       var customerName = getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer'))
       var employeeId = getNestedValue(findNestedObj(contract.employee.value.metadata, 'name', 'id'))
       var employeeName = getNestedValue(findNestedObj(contract.employee.value.metadata, 'name', 'name'))
-      var interestRate = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')) !== '3'? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))): parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')))
+      var interestRate = getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')) !== '3' ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRate'))) : parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')))
       var presentValue = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan')))
       var agreementDate = new Date(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')))
       var numberOfPeriods = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
@@ -1003,9 +1007,9 @@ router.get('/contracts/:id/checkTable', (req, res) => {
 // update loan package
 router.put('/contracts/:id/loanPackage', (req, res) => {
   console.log('id: ', req.params.id)
-  console.log('body: ', req.body)
   var updateQuery = { $set: { loanPackage: req.body } }
   req.body.presentValue === 0 ? updateQuery.$set.contractStatus = 'completed' : null
+
   try {
     Contract.findOneAndUpdate({ _id: req.params.id }, updateQuery, { new: true }).exec((err, result) => {
       if (err) throw err
@@ -1412,7 +1416,6 @@ router.post('/funds2', (req, res) => {
     }
   }, (err, results) => {
     if (err) throw err
-    console.log('results: ', results)
     var fundFrom = results.fundFrom
     var fundTo = results.fundTo
     try {
@@ -1420,61 +1423,77 @@ router.post('/funds2', (req, res) => {
         case ('cash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
             fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.paid)
-            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
+            // fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
+            updateFund(fundFrom, { ...obj, paid: -obj.paid })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.paid)
-            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
+            // fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
+            updateFund(fundTo,{ ...obj, paid: +obj.paid })
           }
           break
         case ('iCash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
             fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.paid)
-            fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
+            // fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
+            updateFund(fundFrom,{ ...obj, paid: -obj.paid })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.paid)
-            fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
+            // fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
+            updateFund(fundTo,{ ...obj, paid: +obj.paid })
           }
           break
         default:
       }
-      console.log('fund from after transferring: ', fundFrom)
-      console.log('fund to after transferring: ', fundTo)
-
-      async.parallel({
-        fundFrom: callback => {
-          if (fundFrom) {
-            Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, {new: true}).exec(callback)
-
-          } else {
-            callback(null, {})
-          }
-        },
-        fundTo: callback => {
-          if (fundTo) {
-            Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }, {new: true}).exec(callback)
-
-          } else {
-            callback(null, {})
-          }
-        }
-      }, (err, results) => {
-        if (err) throw err
-        if(results.fundFrom){
-          res.send('save fund from successfully')
-        } else {
-          res.send('save fund to successfully')
-
-        }
-      })
+      // updateFund(fundFrom, fundTo)
+      res.send('Save successfully!')
     } catch (error) {
       console.error(error)
     }
   })
 })
+
+const updateFund = async (fund, obj) => {
+  if(fund){
+    Fund.findOneAndUpdate({ _id: fund._id },{$set: fund} , { new: true }).exec((err, result) => {
+      if (err) throw err
+      Fund.findOneAndUpdate({_id: result._id}, { $push: {'receiptRecords': obj} }, {new: true}).exec((err, result)=>{
+        console.log('ABCDEFGHIJKL123', result)
+
+      })
+
+    })
+  }
+  // async.parallel({
+  //   fundFrom: callback => {
+  //     if (fundFrom) {
+  //       Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, {new: true}).exec(callback)
+
+  //     } else {
+  //       callback(null, {})
+  //     }
+  //   },
+  //   fundTo: callback => {
+  //     if (fundTo) {
+  //       Fund.findOneAndUpdate({ _id: fundTo._id }, { $set: fundTo }, {new: true}).exec(callback)
+
+  //     } else {
+  //       callback(null, {})
+  //     }
+  //   }
+  // }, (err, results) => {
+  //   if (err) throw err
+  //   if(results.fundFrom){
+  //     console.log('save fund from successfully')
+  //   } else {
+  //     console.log('save fund to successfully')
+
+  //   }
+  // })
+}
 // 0 0 * * *
 var job = new CronJob('*/30 * * * *', function () {
   try {
