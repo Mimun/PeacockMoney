@@ -1476,7 +1476,7 @@ router.post('/funds2', (req, res) => {
   })
 })
 // 0 0 * * *
-var job = new CronJob('*/1 * * * *', function () {
+var job = new CronJob('*/30 * * * *', function () {
   try {
     Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
       if (err) throw err
