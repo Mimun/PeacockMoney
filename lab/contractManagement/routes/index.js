@@ -387,11 +387,11 @@ router.delete('/deleteContractTemplate/:id', (req, res, next) => {
 // CONTRACT
 // contract list
 // handle get contracts function
-const handleGetContract = async (contracts, properties, req) => {
+const handleGetContract = (contracts, properties, req) => {
   // console.log('property list: ', properties.length)
 
   // filter for only seeing contracts of specific stores
-  var contractList = await contracts.map(contract => {
+  var contractList = contracts.map(contract => {
     if (contract && contract.store && contract.store.value && contract.store.value.metadata) {
       if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
         return contract
@@ -401,7 +401,7 @@ const handleGetContract = async (contracts, properties, req) => {
     } else return
   })
   // return a customized array of contract
-  contractList = await contractList.map(contract => {
+  contractList = contractList.map(contract => {
     if (contract) {
       console.log('contracat length: ', contracts.length)
       var mergeWithObj = null
@@ -522,8 +522,6 @@ router.get('/contracts', (req, res, next) => {
       if (err) throw err
       var propertyList = result2.property
       var contractList = await handleGetContract(result2.contract, result2.property, req)
-      console.log('contract list: ', contractList.length)
-
       await res.render('contractsManagement', { originalContractList: result2.contract, contractList: contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
     })
