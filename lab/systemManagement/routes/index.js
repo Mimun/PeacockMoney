@@ -301,14 +301,29 @@ router.put('/stores/:id', (req, res, next) => {
   async.parallel({
     store: callback => {
       Store.findByIdAndUpdate({ _id: req.params.id },
-        { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }).exec(callback)
+        { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, {new: true}).exec(callback)
     },
     warehouse: callback => {
       Warehouse.findByIdAndUpdate({ _id: req.params.id },
         { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }).exec(callback)
+    }, 
+    contracts: callback=>{
+      Contract.find({'store.value._id': new mongoose.Types.ObjectId(req.params.id)}).exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
+    console.log('contract found: ', results.contracts.length)
+    results.contracts.forEach(contract=>{
+      var contractCustomId = contract.id.split('.')
+      contractCustomId[0] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
+      var newContractCustomId = contractCustomId.join('.')
+      console.log('array id: ', newContractCustomId)
+
+      Contract.findOneAndUpdate({_id: contract._id}, {$set: {'store.value': results.store, 'id': newContractCustomId}}).exec(err, result=>{
+        if(err) throw err
+        console.log('')
+      })
+    })
     res.status(200).send("Update store and warehouse successfully!")
   })
 
