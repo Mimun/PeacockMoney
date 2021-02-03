@@ -524,7 +524,7 @@ router.get('/contracts', (req, res, next) => {
       var contractList = await handleGetContract(result2.contract, result2.property, req)
       console.log('contract list: ', contractList.length)
 
-      res.render('contractsManagement', { originalContractList: result2.contract, contractList: contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+      await res.render('contractsManagement', { originalContractList: result2.contract, contractList: contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
     })
   } catch (error) {

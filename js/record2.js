@@ -66,6 +66,7 @@ export default class Record {
       temp1 = value
       updateObj.paidInterest += value
       updateObj.remainInterest = updateObj.interest - updateObj.paidInterest
+      updateObj.accumulatedPaidInterest += parseFloat(value)
       payment = payment - value
       if (type === 1) {
         var object2 = {
@@ -73,7 +74,7 @@ export default class Record {
           paid: temp1,
           remain: updateObj.remainInterest,
           receiptId: 'T-Lãi',
-          receiptReason: `Lãi kỳ ${updateObj.period}`,
+          receiptReason: `Lãi kỳ ${updateObj.period +1}`,
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
@@ -89,6 +90,7 @@ export default class Record {
 
         }
         object.array.push(object2)
+
         this.saveToFund(object2)
       }
 
@@ -102,6 +104,7 @@ export default class Record {
       temp2 = value
       updateObj.paidPrincipal += value
       updateObj.remainPrincipal = updateObj.principal - updateObj.paidPrincipal
+      updateObj.incrementalPaidPrincipal += parseFloat(value)
       payment = payment - value
       if (type === 1) {
         var object2 = {
@@ -224,8 +227,8 @@ export default class Record {
           updateObj.periodStatus = true
           // updateObj.penalty = 0
           this.presentValue = this.presentValue - updateObj.principal
-          this.accumulatedPaidInterest += updateObj.interest
-          this.incrementalPaidPrincipal += updateObj.principal
+          // this.accumulatedPaidInterest += updateObj.interest
+          // this.incrementalPaidPrincipal += updateObj.principal
 
           // this.updatePresentValue()
           updateObj.presentValue = this.presentValue

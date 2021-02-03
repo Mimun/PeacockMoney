@@ -349,7 +349,7 @@
                     break
                     // th.innerHTML = contract[element.id]!=='completed'&&contract[element.id]!=="waiting"&& contract[element.id]!=="pending"? '': 'Đang mở'
                   default:
-                    th.innerHTML =  contract[element.id].toLocaleString()
+                    th.innerHTML = contract[element.id]? contract[element.id].toLocaleString(): '-'
                     break;
                 }
                 // th.innerHTML = : contract[element.id].toLocaleString()
