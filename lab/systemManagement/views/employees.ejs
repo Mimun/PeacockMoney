@@ -258,8 +258,7 @@
 
     // create new employee button
     document.querySelector('#create-new-employee').addEventListener('click', (event) => {
-      $("#modalContactForm").on('show.bs.modal', () => {
-        const createEmployee = document.querySelector('#create-employee-template').content.cloneNode(true)
+      const createEmployee = document.querySelector('#create-employee-template').content.cloneNode(true)
 
         createEmployee.querySelector("#btn-create-employee").addEventListener('click', (event) => {
           var employeeObj = {
@@ -298,9 +297,18 @@
             })
           })
           console.log('input: ', employeeObj)
-          makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), () => {
-            window.location.reload()
+          var canCreate = true
+          document.querySelectorAll('.modal-body input, .modal-body select').forEach(element=>{
+            if(!element.value){
+              canCreate = false
+            } 
           })
+          canCreate? (
+             makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), () => {
+                window.location.reload()
+              })
+          ): window.alert('Vui lòng điền đầy đủ thông tin nhân viên trước khi tạo!')
+         
         })
         modalContent.innerHTML = ''
         modalContent.appendChild(createEmployee)
@@ -312,7 +320,6 @@
         //     option.style.display = 'none'
         //   }
         // })
-      })
 
 
       $("#modalContactForm").modal('show')
