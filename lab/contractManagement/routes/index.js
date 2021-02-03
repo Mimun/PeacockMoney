@@ -393,6 +393,7 @@ const handleGetContract = (contracts, properties, req) => {
   // filter for only seeing contracts of specific stores
   var contractList = contracts.map(contract => {
     if (contract && contract.store && contract.store.value && contract.store.value.metadata) {
+      console.log('value: ', findNestedObj(contract.store.value.metadata, 'name', 'id').value)
       if (req.stores.includes(findNestedObj(contract.store.value.metadata, 'name', 'id').value)) {
         return contract
       } else {
