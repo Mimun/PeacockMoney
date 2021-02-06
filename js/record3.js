@@ -43,6 +43,17 @@ module.exports = class Record {
     this.balance += amount
   }
 
+  saveToFund(obj) {
+    $.ajax({
+      type: 'POST',
+      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+      contentType: 'application/json',
+      data: JSON.stringify(obj),
+      success: result => {
+      }
+    })
+  }
+
   paidInterest(updateObj, payment, paymentObj, type) {
     var object = {
       id: `${this.contractId}.${formatDate(this.realLifeDate, 1)}`,
@@ -55,14 +66,15 @@ module.exports = class Record {
       temp1 = value
       updateObj.paidInterest += value
       updateObj.remainInterest = updateObj.interest - updateObj.paidInterest
+      updateObj.accumulatedPaidInterest += parseFloat(value)
       payment = payment - value
       if (type === 1) {
-        object.array.push({
+        var object2 = {
           root: updateObj.interest,
           paid: temp1,
           remain: updateObj.remainInterest,
           receiptId: 'T-Lãi',
-          receiptReason: `Lãi kỳ ${updateObj.period}`,
+          receiptReason: `Lãi kỳ ${updateObj.period +1}`,
           date: this.realLifeDate,
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
@@ -76,7 +88,10 @@ module.exports = class Record {
           employeeName: this.employeeName,
           contractId: this.contractId
 
-        })
+        }
+        object.array.push(object2)
+
+        this.saveToFund(object2)
       }
 
 
@@ -89,9 +104,10 @@ module.exports = class Record {
       temp2 = value
       updateObj.paidPrincipal += value
       updateObj.remainPrincipal = updateObj.principal - updateObj.paidPrincipal
+      updateObj.incrementalPaidPrincipal += parseFloat(value)
       payment = payment - value
       if (type === 1) {
-        object.array.push({
+        var object2 = {
           root: updateObj.principal,
           paid: temp2,
           remain: updateObj.remainPrincipal,
@@ -109,7 +125,10 @@ module.exports = class Record {
           employeeId: this.employeeId,
           employeeName: this.employeeName,
           contractId: this.contractId
-        })
+        }
+        object.array.push(object2)
+        this.saveToFund(object2)
+
       }
 
 
@@ -124,7 +143,7 @@ module.exports = class Record {
       updateObj.remainTotalPenalty = updateObj.totalPenalty - updateObj.paidTotalPenalty
       payment = payment - value
       if (type === 1) {
-        object.array.push({
+        var object2 = {
           root: updateObj.totalPenalty,
           paid: temp3,
           remain: updateObj.remainTotalPenalty,
@@ -142,7 +161,10 @@ module.exports = class Record {
           employeeId: this.employeeId,
           employeeName: this.employeeName,
           contractId: this.contractId
-        })
+        }
+        object.array.push(object2)
+        this.saveToFund(object2)
+
       }
 
     } else if (updateObj.remainTotalPenalty <= 0) {
@@ -205,8 +227,8 @@ module.exports = class Record {
           updateObj.periodStatus = true
           // updateObj.penalty = 0
           this.presentValue = this.presentValue - updateObj.principal
-          this.accumulatedPaidInterest += updateObj.interest
-          this.incrementalPaidPrincipal += updateObj.principal
+          // this.accumulatedPaidInterest += updateObj.interest
+          // this.incrementalPaidPrincipal += updateObj.principal
 
           // this.updatePresentValue()
           updateObj.presentValue = this.presentValue
@@ -737,7 +759,7 @@ module.exports = class Record {
       date: obj.date,
       array: []
     }
-    object.array.push({
+    var object2 = {
       root: 0,
       paid: obj.value,
       remain: 0,
@@ -755,8 +777,18 @@ module.exports = class Record {
       employeeId: this.employeeId,
       employeeName: this.employeeName,
       contractId: this.contractId
+    }
+    object.array.push(object2)
+    $.ajax({
+      type: 'POST',
+      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+      contentType: 'application/json',
+      data: JSON.stringify(object2),
+      success: result => {
+      }
     })
     this.receiptRecords.push(object)
+
 
     // update the length of number of payments
     this.numberOfPeriods += 1
@@ -813,7 +845,7 @@ module.exports = class Record {
       date: obj.date,
       array: []
     }
-    object.array.push({
+    var object2 = {
       root: this.periodRecords[paydownPeriodIndex].interest,
       paid: this.periodRecords[paydownPeriodIndex].paidInterest,
       remain: this.periodRecords[paydownPeriodIndex].remainInterest,
@@ -831,6 +863,15 @@ module.exports = class Record {
       employeeId: this.employeeId,
       employeeName: this.employeeName,
       contractId: this.contractId
+    }
+    object.array.push(object2)
+    $.ajax({
+      type: 'POST',
+      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
+      contentType: 'application/json',
+      data: JSON.stringify(object2),
+      success: result => {
+      }
     })
     this.receiptRecords.push(object)
     this.numberOfPayingDownTimes += 1
