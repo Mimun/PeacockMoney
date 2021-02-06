@@ -196,7 +196,7 @@ const editBtnFunction = (event, routerName, user) => {
         cType: 'image',
         dataKor: 'koreanString',
         name: 'avatar',
-        value: modalBody.querySelector('.cropper-container').querySelector('cropper-wc').getImageData(),
+        value: modalBody.querySelector('.cropper-container').querySelector('cropper-wc').getImageData()?modalBody.querySelector('.cropper-container').querySelector('cropper-wc').getImageData(): '' ,
         dataVie: 'anhDaiDien'
       })
 
