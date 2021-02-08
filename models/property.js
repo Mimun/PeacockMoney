@@ -12,7 +12,7 @@ const propertySchema = new mongoose.Schema({
   }],
   evaluationItem: { type: Object, _id: false, },
   status: [{ type: Object, _id: false, }],
-  contract: { type: Object, default: null, _id: false },
+  contract: { type: mongoose.Types.ObjectId, ref: 'Contract' },
   originWarehouse: { type: Object, default: null, _id: false },
   currentWarehouse: { type: Object, default: null, _id: false },
   lastWarehouse: { type: Object, default: null, _id: false },

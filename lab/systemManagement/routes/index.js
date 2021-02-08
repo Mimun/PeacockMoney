@@ -18,7 +18,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var json2csv = require('json2csv').parse
 var mongoose = require('mongoose');
-const { find } = require('lodash');
+const { find, result } = require('lodash');
 const store = require('../../../models/store');
 const checkRole = require('../../../js/roleMiddlleware')
 
@@ -300,31 +300,66 @@ router.put('/stores/:id', (req, res, next) => {
   console.log('id: ', req.params.id)
   async.parallel({
     store: callback => {
-      Store.findByIdAndUpdate({ _id: req.params.id },
-        { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, {new: true}).exec(callback)
+      Store.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, { new: true }).exec(callback)
     },
     warehouse: callback => {
       Warehouse.findByIdAndUpdate({ _id: req.params.id },
         { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }).exec(callback)
+    },
+    contracts: callback => {
+      Contract.find({ 'store.value._id': new mongoose.Types.ObjectId(req.params.id) }).exec(callback)
+    },
+    warehouses: callback=>{
+      Warehouse.findOneAndUpdate({ 'store': req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, { new: true }).exec(callback)
+
     }, 
-    contracts: callback=>{
-      Contract.find({'store.value._id': new mongoose.Types.ObjectId(req.params.id)}).exec(callback)
-    }
-  }, (err, results) => {
+ 
+  }, async (err, results) => {
     if (err) throw err
     console.log('contract found: ', results.contracts.length)
-    results.contracts.forEach(contract=>{
+    await results.contracts.forEach(async contract => {
       var contractCustomId = contract.id.split('.')
       contractCustomId[0] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
       var newContractCustomId = contractCustomId.join('.')
-      console.log('array id: ', newContractCustomId)
+      console.log('new contract id: ', newContractCustomId)
 
-      Contract.findOneAndUpdate({_id: contract._id}, {$set: {'store.value': results.store, 'id': newContractCustomId}}).exec(err, result=>{
-        if(err) throw err
-        console.log('')
+      try {
+        await Property.find({ contract: contract._id }).exec((err, result2) => {
+          if (err) throw err
+          result2.forEach(property => {
+            var customPropertyId = property.id.split('.')
+            customPropertyId[1] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
+            var newPropertyCustomId = customPropertyId.join('.')
+            try {
+              Property.findOneAndUpdate({ _id: property._id }, { $set: { 'id': newPropertyCustomId } }).exec((err, result3) => {
+                if (err) throw err
+              })
+            } catch (error) {
+              console.error(error)
+            }
+
+
+          })
+        })
+      } catch (error) {
+        console.error(error)
+      }
+
+
+      await Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'store.value': results.store, 'id': newContractCustomId } }).exec(err, result => {
+        if (err) throw err
       })
     })
-    res.status(200).send("Update store and warehouse successfully!")
+    // await Employee.find({'metadata.value': findNestedObj(results.store.metadata, 'name', 'id').value}).exec((err, result2)=>{
+    //   if(err) throw err
+    //   console.log('employee found: ', result2.l)
+    //   // findNestedObj(result2.metadata, 'name', 'store').value = findNestedObj(results.store.metadata, 'name', 'id').value
+    //   // Employee.findOneAndUpdate({_id: result2._id}, {$set: result2}).exec((err, result)=>{
+    //   //   if(err) throw err
+
+    //   // })
+    // })
+    await res.status(200).send("Update store and warehouse successfully!")
   })
 
 })
@@ -506,7 +541,7 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({ 'currentWarehouse._id': mongoose.Types.ObjectId(req.params.id) }).exec(callback)
+        Property.find({ 'currentWarehouse._id': mongoose.Types.ObjectId(req.params.id) }).populate('contract').exec(callback)
       } catch (error) {
         console.log(error)
       }
@@ -578,7 +613,7 @@ router.get('/properties', (req, res, next) => {
   async.parallel({
     propertyList: callback => {
       try {
-        Property.find({}).exec(callback)
+        Property.find({}).populate('contract').exec(callback)
       } catch (error) {
         console.log(error)
       }
@@ -707,7 +742,7 @@ router.post('/statistic/import', (req, res) => {
   console.log('req body: ', req.body)
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
-  Property.find({}).sort({ _id: -1 }).exec((err, result) => {
+  Property.find({}).populate('contract').sort({ _id: -1 }).exec((err, result) => {
     if (err) throw err
     callback(result, dateConditions, res)
   })
@@ -719,7 +754,7 @@ router.post('/statistic/export', (req, res) => {
   console.log('req body: ', req.body)
   var chosenWarehouse = req.body.warehouses
   var dateConditions = req.body.dateConditions
-  Property.find({}).sort({ _id: -1 }).exec((err, result) => {
+  Property.find({}).populate('contract').sort({ _id: -1 }).exec((err, result) => {
     if (err) throw err
     callback2(result, dateConditions, res)
   })
@@ -754,7 +789,7 @@ router.post('/statistic/search', (req, res) => {
       { $and: arrayItemTypeIdConditions },
 
     ]
-  }).sort({ _id: -1 }).exec((err, result) => {
+  }).populate('contract').sort({ _id: -1 }).exec((err, result) => {
     if (err) throw err
     req.body.type === 'import' ? callback(result, dateConditions, res)
       : callback2(result, dateConditions, res)

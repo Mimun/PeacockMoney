@@ -122,14 +122,14 @@ export const generateEmployeeManagementList = async (mainList, selectList, selec
           // }
 
         } else {
-          modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+          modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
 
         }
         if (findNestedObj(itemObj, 'name', 'role')) {
           modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'role').value, 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
 
         } else {
-          modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
+          modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phân quyền', selectContainer))
 
         }
         // modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {

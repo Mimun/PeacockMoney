@@ -237,7 +237,7 @@
     var roleselectOptions = []
     if (storeList !== 0) {
       storeList.map(select => {
-        var option = `<option name="store" data-vie="Cửa Hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
+        var option = `<option name="store" data-vie="Cửa Hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.id}</option>`
         storeSelectOptions.push(option)
       })
     }

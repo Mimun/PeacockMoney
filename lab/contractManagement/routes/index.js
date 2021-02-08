@@ -517,7 +517,7 @@ router.get('/contracts', (req, res, next) => {
         Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now()), 3) }).exec(callback)
       },
       property: callback => {
-        Property.find({}).exec(callback)
+        Property.find({}).populate('contract').exec(callback)
       }
     }, async (err, result2) => {
       if (err) throw err
@@ -719,7 +719,7 @@ router.post('/contracts/search', (req, res, next) => {
       }).exec(callback)
     },
     properties: callback => {
-      Property.find({}).exec(callback)
+      Property.find({}).populate('contract').exec(callback)
     }
   }, (err, results) => {
     if (err) throw err
