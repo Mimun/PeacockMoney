@@ -941,6 +941,7 @@
         data: JSON.stringify(loanPackage),
         success: result => {
           console.log('result: ', result)
+          window.alert('Giao dịch thành công!')
           document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
           loanPackage.periodRecords.forEach(rec => {
             displayTable(rec, 'period-table-container')
@@ -961,6 +962,8 @@
         contentType: 'application/json',
         data: JSON.stringify(transHistory),
         success: result => {
+          window.alert('Giao dịch thành công!')
+
           callback()
         }
       })

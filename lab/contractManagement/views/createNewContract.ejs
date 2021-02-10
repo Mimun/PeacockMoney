@@ -536,6 +536,10 @@
       document.querySelectorAll('#contract-info-container select, #contract-info-container input').forEach(element=>{
         if(element.value === ''|| element.value === null || element.value === undefined){
           canCreate = false
+          element.closest('div').querySelector('label').style.color = 'red'
+        } else {
+          element.closest('div').querySelector('label').style.color = null
+
         }
       })
       if(canCreate){

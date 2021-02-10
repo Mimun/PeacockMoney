@@ -433,7 +433,7 @@ const handleGetContract = (contracts, properties, req) => {
         //     typeofPropertyContractId: typeof property.contract._id,
         //   contractId: contract._id,
         // typeofContractId: typeof contract._id})
-        if (property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)) {
+        if (property && JSON.stringify(property.contract) === JSON.stringify(contract._id)) {
           propertiesArray.push({
             isIn: property.isIn,
             name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
@@ -450,6 +450,7 @@ const handleGetContract = (contracts, properties, req) => {
         customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
         customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
         customerPhoneNumber: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerPhoneNumber')),
+        customerSource: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerSource')),
         contractCreatedDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate'))),
         contractEndingDate: formatDate(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractEndingDate'))),
         loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,

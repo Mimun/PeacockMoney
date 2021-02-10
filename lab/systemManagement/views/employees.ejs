@@ -301,7 +301,11 @@
           document.querySelectorAll('.modal-body input, .modal-body select').forEach(element=>{
             if(!element.value){
               canCreate = false
-            } 
+              element.closest('div').querySelector('label').style.color = 'red'
+            } else {
+              element.closest('div').querySelector('label').style.color = null
+
+            }
           })
           canCreate? (
              makeRequest('POST', 'employees', 'application/json', JSON.stringify(employeeObj), () => {
