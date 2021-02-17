@@ -1495,12 +1495,13 @@ const updateFund = async (fund, obj) => {
   // })
 }
 // 0 0 * * *
-var job = new CronJob('*/30 * * * *', function () {
+var job = new CronJob('*/5 * * * * *', function () {
   try {
     Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
       if (err) throw err
       if (result) {
         result.forEach(contract => {
+          // console.log('abcdefghi: ', contract.loanPackage)
           contract.loanPackage = new Record(contract.loanPackage)
           // contract.loanPackage.reassignPeriodRecords()
           contract.loanPackage.count()
