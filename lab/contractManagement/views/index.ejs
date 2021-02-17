@@ -95,85 +95,136 @@
       import { generateContractTemplateCard } from '/generateContractTemplateCard.js'
       import { ObjectId } from '/createMongooseID.js'
       import { findNestedObj } from '/findNestedObj.js'
-      import {makeRequest} from '/makeRequest.js'
-      import {addSeparator} from '/addSeparatorOnInputChange.js'
+      import { makeRequest } from '/makeRequest.js'
+      import { addSeparator } from '/addSeparatorOnInputChange.js'
       const contractTemplateList = <%- JSON.stringify(contractTemplateList) %>;
       const itemTypeList = <%- JSON.stringify(itemTypeList) %>;
       console.log('item type list: ', itemTypeList)
 
       const getNestedValue = (obj) => {
-        var value = obj ? (obj.value!==null && obj.value!==undefined ? obj.value : '-') : '-'
+        var value = obj ? (obj.value !== null && obj.value !== undefined ? obj.value : '-') : '-'
         return value
       }
 
-      const handleRowClick = (event)=>{
+      const handleRowClick = (event) => {
         var itemObj = event.target.closest('tr').C_DATA
         const clone = document.querySelector('template#temp_contract').content.cloneNode(true)
         var modalBody = document.querySelector('.modal-body')
-          var modalFooter = document.querySelector('.modal-footer')
-          $("#centralModalSm").modal('show');
+        var modalFooter = document.querySelector('.modal-footer')
+        $("#centralModalSm").modal('show');
 
-          while (modalBody.firstChild) {
-            modalBody.removeChild(modalBody.lastChild)
-          }
-          const container = document.createElement('div')
-          container.className = 'container'
-          container.innerHTML = `<div class="row">
+        while (modalBody.firstChild) {
+          modalBody.removeChild(modalBody.lastChild)
+        }
+        const container = document.createElement('div')
+        container.className = 'container'
+        container.innerHTML = `<div class="row">
             <div class="col-4 template-preview"></div>
             <div class="col template-info"></div>
           
           </div>`
-          modalBody.appendChild(container)
+        modalBody.appendChild(container)
 
-          const buttonOptions = modalFooter.querySelector('.btn-options')
-          while (buttonOptions.firstChild) {
-            buttonOptions.removeChild(buttonOptions.lastChild)
+        const buttonOptions = modalFooter.querySelector('.btn-options')
+        while (buttonOptions.firstChild) {
+          buttonOptions.removeChild(buttonOptions.lastChild)
+        }
+
+        // clone contract template
+        const cloneContractTemplateButton = document.createElement('button')
+        cloneContractTemplateButton.id = 'btn-clone-contract-template'
+        cloneContractTemplateButton.className = "btn btn-primary btn-sm"
+        cloneContractTemplateButton.innerHTML = "Sao chép và tạo mới mẫu"
+        cloneContractTemplateButton.addEventListener('click', () => {
+          // create new contract template button
+          const modalBody = document.querySelector('.modal-body')
+          const modalFooter = document.querySelector('.modal-footer')
+
+          modalBody.innerHTML = ""
+          if (modalFooter.querySelector('.btn-options')) {
+            modalFooter.querySelector('.btn-options').innerHTML = ""
+
           }
-          const createNewContractButton = document.createElement('button')
-          createNewContractButton.id = 'btn-create-new-contract'
-          createNewContractButton.className = "btn btn-primary btn-sm"
-          createNewContractButton.innerHTML = "Create new contract"
-          createNewContractButton.addEventListener('click', () => {
-            window.location.href = `contractTemplates/${itemObj._id}?token=${window.localStorage.getItem('accessToken')}`
+          var tmpContent = document.getElementById('contract_detail').content.cloneNode(true);
+          console.log('itemObj: ', tmpContent.querySelectorAll('input'))
+          tmpContent.querySelectorAll('input, selector').forEach(element=>{
+            element.value = findNestedObj(itemObj, 'name', element.getAttribute('name'))?findNestedObj(itemObj, 'name', element.getAttribute('name')).value: ''
           })
-          buttonOptions.appendChild(createNewContractButton)
+          modalBody.appendChild(tmpContent)
 
-          const deleteContractTemplateButton = document.createElement('button')
-          deleteContractTemplateButton.id = 'btn-delete-contract-template'
-          deleteContractTemplateButton.className = "btn btn-outline-danger btn-sm"
-          deleteContractTemplateButton.innerHTML = "Delete template"
-          deleteContractTemplateButton.addEventListener('click', (event) => {
-            makeRequest('DELETE', 'deleteContractTemplate/' + itemObj._id, 'application/json', JSON.stringify({}), window.location.reload())
-          })
-          buttonOptions.appendChild(deleteContractTemplateButton)
-          modalFooter.appendChild(buttonOptions)
-          var contractTemplateImage = findNestedObj(itemObj, 'name', 'image').value
-          clone.querySelector('img').setAttribute('src', contractTemplateImage)
+          $("#centralModalSm").modal('show');
+          // create item type list option
+          if (itemTypeList.length !== 0) {
+            var itemTypeOptions = []
+            itemTypeList.forEach(itemType => {
+              var option = `<option value="${itemType.name}" id="${itemType.id}" name="${itemType.name}" >${itemType.name}</option>`
+              itemTypeOptions.push(option)
+            })
+            var selectItemType = document.querySelector('select#itemType')
+            console.log('select: ', document.querySelector('select#itemType'))
+            selectItemType ? selectItemType.innerHTML = itemTypeOptions : null
+            console.log('value: ', selectItemType.options[selectItemType.selectedIndex].id)
+            var itemTypeId = document.querySelector('input[name="itemTypeId"]')
+            itemTypeId ? itemTypeId.value = selectItemType.options[selectItemType.selectedIndex].id : ''
+            // to fix the label is rendered wrongly
+            itemTypeId.closest('.form-group').classList.add('is-filled')
+            selectItemType.addEventListener('change', (event) => {
+              itemTypeId ? itemTypeId.value = event.target.options[event.target.selectedIndex].id : ''
+            })
+          }
+          
+          $(tmpContent).bootstrapMaterialDesign()
+          // window.location.href = `contractTemplates/${itemObj._id}?token=${window.localStorage.getItem('accessToken')}`
+        })
+        buttonOptions.appendChild(cloneContractTemplateButton)
 
-          var cardClone = clone.querySelector('img').cloneNode(true)
-          // cardClone.C_DATA = this.C_DATA
-          // cardClone.className = "d-flex align-items-stretch object-div"
-          modalBody.querySelector('.template-preview').prepend(cardClone)
+        // create new contract
+        const createNewContractButton = document.createElement('button')
+        createNewContractButton.id = 'btn-create-new-contract'
+        createNewContractButton.className = "btn btn-primary btn-sm"
+        createNewContractButton.innerHTML = "Tạo hợp đồng"
+        createNewContractButton.addEventListener('click', () => {
+          window.location.href = `contractTemplates/${itemObj._id}?token=${window.localStorage.getItem('accessToken')}`
+        })
+        buttonOptions.appendChild(createNewContractButton)
 
-          const templateInfoContainer = document.createElement('div')
-          templateInfoContainer.className = "template-info-container list-group"
-          templateInfoContainer.style.margin = '14px 0'
+        // delete contract template
+        const deleteContractTemplateButton = document.createElement('button')
+        deleteContractTemplateButton.id = 'btn-delete-contract-template'
+        deleteContractTemplateButton.className = "btn btn-outline-danger btn-sm"
+        deleteContractTemplateButton.innerHTML = "Xóa mẫu hợp đồng"
+        deleteContractTemplateButton.addEventListener('click', (event) => {
+          makeRequest('DELETE', 'deleteContractTemplate/' + itemObj._id, 'application/json', JSON.stringify({}), window.location.reload())
+        })
+        buttonOptions.appendChild(deleteContractTemplateButton)
+        modalFooter.appendChild(buttonOptions)
+        var contractTemplateImage = findNestedObj(itemObj, 'name', 'image').value
+        clone.querySelector('img').setAttribute('src', contractTemplateImage)
 
-          itemObj.templateMetadata.map(info => {
-            if (info.name !== "image" && info.name !== "contractContent" && info.name !== "category" && info.name !== "templateType") {
-              const infoContainer = document.createElement('div')
-              infoContainer.className = 'info-container list-group-item'
-              infoContainer.style.display = 'flex'
-              infoContainer.style.flexDirection = 'row'
+        var cardClone = clone.querySelector('img').cloneNode(true)
+        // cardClone.C_DATA = this.C_DATA
+        // cardClone.className = "d-flex align-items-stretch object-div"
+        modalBody.querySelector('.template-preview').prepend(cardClone)
 
-              const label = document.createElement('div')
-              label.className = 'label'
-              label.innerHTML = info.dataVie + ": " + info.value
-              infoContainer.appendChild(label)
-              templateInfoContainer.appendChild(infoContainer)
-            }
-          })
-          modalBody.querySelector('.template-info').appendChild(templateInfoContainer)
+        const templateInfoContainer = document.createElement('div')
+        templateInfoContainer.className = "template-info-container list-group"
+        templateInfoContainer.style.margin = '14px 0'
+
+        itemObj.templateMetadata.map(info => {
+          if (info.name !== "image" && info.name !== "contractContent" && info.name !== "category" && info.name !== "templateType") {
+            const infoContainer = document.createElement('div')
+            infoContainer.className = 'info-container list-group-item'
+            infoContainer.style.display = 'flex'
+            infoContainer.style.flexDirection = 'row'
+
+            const label = document.createElement('div')
+            label.className = 'label'
+            label.innerHTML = info.dataVie + ": " + info.value
+            infoContainer.appendChild(label)
+            templateInfoContainer.appendChild(infoContainer)
+          }
+        })
+        modalBody.querySelector('.template-info').appendChild(templateInfoContainer)
       }
 
       const contractTemplate = document.getElementById('temp_contract');
@@ -199,7 +250,7 @@
 
           } else {
             var th = document.createElement('th')
-            th.innerHTML = element.id==="min"|| element.id==="max"? addSeparator(getNestedValue(findNestedObj(contractTemplate, 'name', element.id))) : getNestedValue(findNestedObj(contractTemplate, 'name', element.id)).toLocaleString()
+            th.innerHTML = element.id === "min" || element.id === "max" ? addSeparator(getNestedValue(findNestedObj(contractTemplate, 'name', element.id))) : getNestedValue(findNestedObj(contractTemplate, 'name', element.id)).toLocaleString()
             tr.appendChild(th)
           }
         })
