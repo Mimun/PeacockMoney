@@ -256,6 +256,7 @@
           <div class="col-1">
             <button class="btn btn-sm btn-primary" id="btn-expand">Gia hạn hợp đồng</button>
             <button class="btn btn-sm btn-primary" id="btn-undo">Undo</button>
+            <button class="btn btn-sm btn-primary" id="btn-pay-all">Tất toán</button>
           </div>
 
           <!-- <button class="btn btn-sm" id="receipt">In phiếu</button> -->
@@ -686,6 +687,70 @@
 
       }
 
+    })
+
+    // calculate and display pay all
+    document.querySelector('button#btn-pay-all').addEventListener('click', (event)=>{
+      window.localStorage.setItem('prevLoanPackage', JSON.stringify(loanPackage))
+
+      if (loanPackage) {
+        if (loanPackage.isLoanMoreOrPayDown === false) {
+
+          var numberOfNewPeriods = 1
+          var payDownObj = {
+            date: loanPackage.realLifeDate,
+            value: parseFloat(loanPackage.presentValue),
+            type: 'cash',
+            receiptType: 1,
+
+          }
+          var transHistoryObj = {
+            date: payDownObj.date,
+            fromStore: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+            toStore: `${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'name'))} - ${getNestedValue(findNestedObj(contract.store.metadata, 'name', 'id'))}`,
+            from: `${getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId'))}`,
+            to: contract.store._id,
+            value: payDownObj.value,
+            type: payDownObj.type,
+            receiptType: payDownObj.receiptType,
+
+          }
+          console.log('paydown obj: ', payDownObj)
+          var remainPeriods = loanPackage.periodRecords.filter(rec => {
+            return new Date(rec.redemptionDate).getTime() < new Date(loanPackage.realLifeDate).getTime() && rec.periodStatus === false
+          }).map(rec => {
+            return rec.period
+          })
+
+          if (remainPeriods.length !== 0) {
+            window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          } else {
+            if (simulation === 3) {
+              if (numberOfNewPeriods) {
+                loanPackage.payDown(payDownObj, numberOfNewPeriods)
+
+              } else {
+                window.alert('You need to enter the number of new periods!')
+
+              }
+            } else {
+              loanPackage.payDown(payDownObj)
+            }
+            console.log('loan package after paying down: ', loanPackage)
+            updateLoanPackage(loanPackage)
+
+            console.log('trans his: ', transHistoryObj)
+            displayLoanMorePayDownHistory()
+            displayPaymentHistory()
+          }
+        } else {
+          window.alert('You have loaned more or payed down today. Please comeback later!')
+        }
+
+      } else {
+        window.alert('This contract is not approved!')
+
+      }
     })
 
     // calculate and display pay down

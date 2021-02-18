@@ -408,7 +408,8 @@ const handleGetContract = (contracts, properties, req) => {
       var mergeWithObj = null
       var numberOfLatePeriods = 0,
         numberOfLateDays = 0,
-        lastPaidDate = ''
+        lastPaidDate = '',
+        interestSoFar = 0
       // number of late periods
       if (contract.loanPackage) {
         var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
@@ -424,6 +425,21 @@ const handleGetContract = (contracts, properties, req) => {
           (contract.loanPackage.receiptRecords[contract.loanPackage.receiptRecords.length - 1].date) : '-'
 
         mergeWithObj = _.mergeWith({}, ...contract.loanPackage.periodRecords, _.add)
+        switch (contract.simulation) {
+          case 3:
+            var numberOfPeriods = contract.periodRecords.filter(period => {
+              if (new Date(period.redemptionDate).getTime() <= new Date(Date.now()).getTime()) {
+                return period
+              }
+            })
+            interestSoFar = numberOfPeriods.length * contract.interestRate
+            break;
+
+          default:
+            interestSoFar = ((new Date(Date.now()).getTime() - new Date(contract.loanPackage.agreementDate).getTime()) / (1000 * 3600 * 24)) * parseFloat(contract.loanPackage.interestRate)
+
+            break;
+        }
         // console.log('merge obj: ', mergeWithObj)
       }
       // get properties
@@ -459,6 +475,7 @@ const handleGetContract = (contracts, properties, req) => {
         itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
         staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
         interestRatePerMonth: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')),
+        interestSoFar,
         millionPerDay: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'millionPerDay')),
         employeeId: getNestedValue(findNestedObj(contract.employee, 'name', 'id')),
         employeeName: getNestedValue(findNestedObj(contract.employee, 'name', 'name')),
@@ -1430,20 +1447,20 @@ router.post('/funds2', (req, res) => {
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.paid)
             // fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
-            updateFund(fundTo,{ ...obj, paid: +obj.paid })
+            updateFund(fundTo, { ...obj, paid: +obj.paid })
           }
           break
         case ('iCash'):
           if (fundFrom && !_.isEmpty(fundFrom)) {
             fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.paid)
             // fundFrom.receiptRecords.push({ ...obj, paid: -obj.paid })
-            updateFund(fundFrom,{ ...obj, paid: -obj.paid })
+            updateFund(fundFrom, { ...obj, paid: -obj.paid })
           }
 
           if (fundTo && !_.isEmpty(fundTo)) {
             fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.paid)
             // fundTo.receiptRecords.push({ ...obj, paid: +obj.paid })
-            updateFund(fundTo,{ ...obj, paid: +obj.paid })
+            updateFund(fundTo, { ...obj, paid: +obj.paid })
           }
           break
         default:
@@ -1457,10 +1474,10 @@ router.post('/funds2', (req, res) => {
 })
 
 const updateFund = async (fund, obj) => {
-  if(fund){
-    Fund.findOneAndUpdate({ _id: fund._id },{$set: fund} , { new: true }).exec((err, result) => {
+  if (fund) {
+    Fund.findOneAndUpdate({ _id: fund._id }, { $set: fund }, { new: true }).exec((err, result) => {
       if (err) throw err
-      Fund.findOneAndUpdate({_id: result._id}, { $push: {'receiptRecords': obj} }, {new: true}).exec((err, result)=>{
+      Fund.findOneAndUpdate({ _id: result._id }, { $push: { 'receiptRecords': obj } }, { new: true }).exec((err, result) => {
         console.log('ABCDEFGHIJKL123', result)
 
       })

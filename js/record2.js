@@ -386,7 +386,7 @@ export default class Record {
 
   createPeriodRecord(periodStartDate, periodEndDate, period, presentValue, numberOfPeriods, blockPenalty = 0) {
     var redemptionDate = null
-    var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60)) + (period === 0 ? 1 : 0)
+    var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60)) + (this.simulation !== 3 ? (period === 0 ? 1 : 0) : 0)
     switch (this.simulation) {
       case (1):
         redemptionDate = new Date(periodEndDate)
@@ -502,7 +502,7 @@ export default class Record {
     const period = periodObj.period
 
     // periodObj.blockPenalty = blockPenalty
-    var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60)) + (periodObj.period === 0 ? 1 : 0)
+    var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60)) + (this.simulation !== 3 ? (periodObj.period === 0 ? 1 : 0) : 0)
     switch (this.simulation) {
       case (1):
         var redemptionDate = new Date(periodEndDate)
@@ -569,7 +569,7 @@ export default class Record {
     var periodEndDate = new Date(tempPaydownDate)
     var realLifeDate = new Date(tempPaydownDate.setDate(tempPaydownDate.getDate() + 1))
     // periodObj.blockPenalty = blockPenalty
-    var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60)) + (periodObj.period === 0 ? 1 : 0)
+    var daysInMonth = Math.abs((periodEndDate - periodStartDate) / (1000 * 24 * 60 * 60)) + (this.simulation !== 3 ? (periodObj.period === 0 ? 1 : 0) : 0)
     const period = periodObj.period
 
     switch (this.simulation) {
