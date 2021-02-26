@@ -38,6 +38,7 @@ const contractSchema = new mongoose.Schema({
   },
   id: { type: String },
   loanPackage: { type: Object, default: null },
+  originalLoanPackage: {type: Object, default: null},
   blockRules: [{ type: Object }],
   penaltyRules: [{ type: Object }],
   likes: [{type: Object}]

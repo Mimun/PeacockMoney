@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .modal-dialog {
+      max-width: 100% !important;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../Components/navbar.ejs') %>
+
+    <div class="d-flex" id="wrapper">
+      <%- include('../Components/sideBar.ejs') %>
+        <div id="page-content-wrapper">
+          <h2>Báo cáo thu nợ</h2>
+          <div class="form-group">
+            <!-- <label for="import" class="bmd-label-floating">Import file HĐ</label>
+            <input type="file" accept=".csv" class="form-control-file" id="import"> -->
+            <button class="btn btn-sm btn-default" id="import">Import</button>
+            <button class="btn btn-sm btn-primary" id="export">Export Excel</button>
+            <button class="btn btn-sm btn-default" id="update_loan">Save</button>
+            <form action="#" id="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+            </form>
+          </div>
+          <!-- <button class="btn btn-primary" id="btn-choose-column">Choose column</button> -->
+
+          <table class="table table-hover table-responsive table-bordered table-striped contract-table">
+            <thead>
+              <tr>
+                <th scope="col" id="storeId">Mã cửa hàng</th>
+                <th scope="col" id="contractId">Mã hợp đồng</th>
+                <th scope="col" id="customer">Tên khách hàng</th>
+                <th scope="col" id="contractEndingDate">Hạn trả gốc</th>
+                <th scope="col" class="number-cell" id="loan" data-cal="calculate">Số tiền vay</th>
+
+                <th scope="col" id="itemType">Nhóm tài sản thế chấp</th>
+                <th scope="col" id="itemName">Tên tài sản thế chấp</th>
+
+                <th scope="col" id="owedLoanNotDue">Nợ gốc chưa đến hạn</th>
+                <th scope="col" id="owedLoanDue">Nợ gốc đến hạn</th>
+                <th scope="col" id="owedInterest">Nợ lãi</th>
+                <th scope="col" id="totalOwedDue">Tổng nợ đến hạn</th>
+
+                <th scope="col" id="loanDaysOverdue">Số ngày quá hạn trả gốc</th>
+                <th scope="col" id="numberOfLateDays">Số ngày chậm lãi</th>
+                <th scope="col" id="numberOfLatePeriods">Số kỳ chậm lãi</th>
+
+                <th scope="col" id="reminding_status">Tình trạng nhắc hẹn</th>
+                <th scope="col" id="reminding_detail">Chi tiết</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script type="module">
+      import { generateContractListHTML } from '/generateContractListHTML.js'
+      import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
+      import { findNestedObj } from '/findNestedObj.js'
+      import { contract } from '/contractTemplate.js'
+      import { packageTemp } from '/packageTemplate.js'
+      import { makeRequest } from '/makeRequest.js'
+      import { exportHTMLTableToExcel } from '/exportHTMLTableToExcel.js'
+
+      $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+      });
+      // console.log(`typeof abc: ${typeof abc}, abc: ${abc}`)
+      // console.log('original list: ', JSON.parse(abc))
+      const contractList = <%- JSON.stringify(debts) %>;
+      const payload = <%- JSON.stringify(debts) %>;
+      console.log('contract list: ', contractList)
+      var contracts = [], packages = [], transactions = [], receipts = []
+
+      const calculateColumnSum = (query) => {
+        // document.querySelector(`${query} tbody`).removeChild(document.querySelector(`${query} tbody`).lastChild)
+        var tr = document.createElement('tr')
+        document.querySelectorAll(`${query} thead th`).forEach((element, index) => {
+          var th = document.createElement('th')
+          if (index === 0) {
+            th.innerHTML = 'Total'
+
+          } else {
+            var sum = 0
+            document.querySelectorAll(`${query} tbody tr`).forEach(tr => {
+              // console.log('is containe: ', tr.querySelectorAll('th')[index].getAttribute('data-cal'))
+              sum += element.getAttribute('data-cal') ? (parseFloat(tr.querySelectorAll('th')[index].textContent) ?
+                parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0) : 0
+
+            })
+            th.innerHTML = sum.toLocaleString()
+            tr.appendChild(th)
+
+          }
+          if(element.className.includes('number-cell')){
+                th.style.textAlign = 'right'
+              }
+          tr.appendChild(th)
+
+        })
+        document.querySelector(`${query} tbody`).prepend(tr)
+
+      }
+
+      const findObjInArray = (array, value) => {
+        return _.find(array, { id: value })
+      }
+
+
+      const displayTable = (array, query) => {
+        document.querySelector(query).innerHTML = ''
+        array.forEach(contract => {
+          // fill info to table
+          if (contract) {
+            var tr = document.createElement('tr')
+            tr.id = contract.contract_Id
+            tr.C_DATA = contract.loanPackage
+            document.querySelectorAll(`table thead th`).forEach(element => {
+              switch (element.id) {
+                case "reminding_status":
+                case "reminding_detail":
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.id = element.id
+                  input.value = contract[element.id]
+                  td.appendChild(input)
+                  tr.appendChild(td)
+                  break;
+              
+                default:
+                var th = document.createElement('th')
+                if (contract[element.id] !== null || contract[element.id]!==undefined) {
+                  th.innerHTML = contract[element.id]!==undefined && contract[element.id]!==null? contract[element.id].toLocaleString(): '-'
+
+                } else {
+                  th.innerHTML = '-'
+                }
+                if(element.className.includes('number-cell')){
+                  th.style.textAlign = 'right'
+                }
+                tr.appendChild(th)
+                  break;
+              }
+             
+            })
+            document.querySelector(query).appendChild(tr)
+          }
+        });
+      }
+      displayTable(contractList, 'table tbody')
+      calculateColumnSum('table.contract-table')
+
+      // search contract
+      document.querySelector('#search').addEventListener('submit', (event) => {
+        event.preventDefault()
+        var array = event.target.querySelector('input').value.split(" ")
+        makeRequest('POST', 'contracts/search', 'application/json', JSON.stringify({ data: array }), result => {
+          displayTable(result.contractList, 'table tbody')
+          calculateColumnSum('table.contract-table')
+
+        })
+
+      })
+
+      // export button
+      document.querySelector('button#export').addEventListener('click', event => {
+        exportHTMLTableToExcel(['contract-table'], `Quản_lý_hợp_đồng_${new Date(Date.now()).toLocaleDateString()}`)
+      })
+
+      // save loan
+      document.querySelector('button#update_loan').addEventListener('click', event=>{
+        document.querySelectorAll('table.contract-table tbody tr').forEach(async tr=>{
+          var loanPackage = tr.C_DATA
+          tr.querySelectorAll('input').forEach(input=>{
+            loanPackage[input.id] = input.value
+          })
+          console.log('contrat: ', tr.id)
+          await new Promise((resolve, reject)=>{
+            makeRequest('PUT',`/contractMng/contracts/${tr.id}/loanPackage`, 'application/json', JSON.stringify(loanPackage), result=>{
+              window.location.reload()
+            })
+          })
+          
+         
+        })
+      })
+    </script>
+
+</body>
+
+</html>

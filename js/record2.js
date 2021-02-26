@@ -1,4 +1,6 @@
+
 import PeriodRecord from './periodRecord2.js'
+import { findNestedObj } from '/findNestedObj.js'
 // const PeriodRecord = require('./periodRecord3.js')
 export default class Record {
   constructor(object) {
@@ -35,6 +37,12 @@ export default class Record {
     return this
   }
 
+  createId() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+
   updatePaymentRecord(period, obj) {
     this.periodRecords[period] = obj
   }
@@ -50,17 +58,23 @@ export default class Record {
       contentType: 'application/json',
       data: JSON.stringify(obj),
       success: result => {
+        console.log('Save fund successfully!')
       }
     })
   }
 
-  paidInterest(updateObj, payment, paymentObj, type) {
-    var object = {
-      id: `${this.contractId}.${formatDate(this.realLifeDate, 1)}`,
-      date: this.realLifeDate,
-      array: []
-    }
-    var temp1 = 0, temp2 = 0, temp3 = 0
+  saveToReceiptRecords(obj) {
+    this.receiptRecords.push(obj)
+  }
+
+  returnPromise() {
+    return new Promise((resolve, reject) => {
+      resolve()
+    })
+  }
+
+  paidInterest(updateObj, payment, paymentObj, type, id) {
+    var temp1 = 0, temp2 = 0, temp3 = 0, object1 = null, object2 = null, object3 = null
     if (updateObj.remainInterest > 0) {
       var value = payment <= updateObj.remainInterest ? payment : updateObj.remainInterest
       temp1 = value
@@ -70,13 +84,14 @@ export default class Record {
       this.accumulatedPaidInterest += parseFloat(value)
       payment = payment - value
       if (type === 1) {
-        var object2 = {
+        object1 = {
+          id,
           root: updateObj.interest,
           paid: temp1,
           remain: updateObj.remainInterest,
           receiptId: 'T-Lãi',
           receiptReason: `Lãi kỳ ${updateObj.period + 1}`,
-          date: this.realLifeDate,
+          date: new Date(this.realLifeDate),
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
           from: this.customerId,
@@ -87,12 +102,15 @@ export default class Record {
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
-          contractId: this.contractId
+          contractId: this.contractId,
+          isLoanMoreOrPayDownReceipt: false,
 
         }
-        object.array.push(object2)
-
-        this.saveToFund(object2)
+        // object.array.push(object2)
+        this.saveToReceiptRecords(object1)
+        // await this.returnPromise().then(()=>{
+        //   this.saveToFund(object2)
+        // })
       }
 
 
@@ -110,13 +128,14 @@ export default class Record {
 
       payment = payment - value
       if (type === 1) {
-        var object2 = {
+        object2 = {
+          id,
           root: updateObj.principal,
           paid: temp2,
           remain: updateObj.remainPrincipal,
           receiptId: 'T-Gốc',
           receiptReason: `Gốc`,
-          date: this.realLifeDate,
+          date: new Date(this.realLifeDate),
           type: paymentObj.type,
           receiptType: paymentObj.receiptType,
           from: this.customerId,
@@ -127,10 +146,15 @@ export default class Record {
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
-          contractId: this.contractId
+          contractId: this.contractId,
+          isLoanMoreOrPayDownReceipt: false,
+
         }
-        object.array.push(object2)
-        this.saveToFund(object2)
+        // object.array.push(object2)
+        this.saveToReceiptRecords(object2)
+        // await this.returnPromise().then(()=>{
+        //   this.saveToFund(object2)
+        // })
 
       }
 
@@ -146,7 +170,8 @@ export default class Record {
       updateObj.remainTotalPenalty = updateObj.totalPenalty - updateObj.paidTotalPenalty
       payment = payment - value
       if (type === 1) {
-        var object2 = {
+        object3 = {
+          id,
           root: updateObj.totalPenalty,
           paid: temp3,
           remain: updateObj.remainTotalPenalty,
@@ -163,114 +188,118 @@ export default class Record {
           customerName: this.customerName,
           employeeId: this.employeeId,
           employeeName: this.employeeName,
-          contractId: this.contractId
+          contractId: this.contractId,
+          isLoanMoreOrPayDownReceipt: false,
+
         }
-        object.array.push(object2)
-        this.saveToFund(object2)
+        // object.array.push(object2)
+        this.saveToReceiptRecords(object3)
+        // await this.returnPromise().then(()=>{
+        //   this.saveToFund(object2)
+        // })
 
       }
 
     } else if (updateObj.remainTotalPenalty <= 0) {
       temp3 = updateObj.totalPenalty
     }
-    if (type === 1) {
-      this.receiptRecords.push(object)
-
-    }
-    return { temp1, temp2, temp3 }
+    return { temp1, temp2, temp3, object1, object2, object3 }
   }
 
-  paidNotDonePeriod(amount, paidDate, notDonePeriodArray, paymentObj) {
+  async paidNotDonePeriod(amount, paidDate, notDonePeriodArray, paymentObj) {
     this.totalPayment += amount
     this.balance += amount
     var i = 0
-    this.paymentSlip.push(paymentObj)
-    const recursive = (balance, paidDate, notDonePeriod, record) => {
-      if (balance > 0) {
-        console.log('is instance in period record: ', notDonePeriod instanceof PeriodRecord)
-        var updateObj = notDonePeriod
-        // enough money for total payment of that period
-        var payment = balance <= updateObj.remain ? balance : updateObj.remain
-        updateObj.paid = updateObj.paid + payment
-        updateObj.remain = updateObj.remain - payment
-        balance = balance - payment
-        var { temp1, temp2, temp3 } = this.paidInterest(updateObj, payment, paymentObj, 1)
-        this.periodPaymentSlip.push({
-          id: `${this.contractId}.${formatDate(paymentObj.addedDate, 1)}`,
-          period: updateObj.period,
-          pay: payment,
+    const id = paymentObj.id ? paymentObj.id : this.createId()
+    findNestedObj(this.paymentSlip, 'id', id) ? null : this.paymentSlip.push({ ...paymentObj, id, paymentSlip: parseFloat(paymentObj.paymentSlip) })
 
-          interest: updateObj.interest,
-          paidInterest: temp1,
-          remainInterest: updateObj.remainInterest,
+    await new Promise((resolve, reject) => {
+      var receiptList = []
+      const recursive = (balance, paidDate, notDonePeriod, record) => {
+        if (balance > 0) {
+          console.log('waiting for the payment is done')
+          var updateObj = notDonePeriod
+          // enough money for total payment of that period
+          var payment = balance <= updateObj.remain ? balance : updateObj.remain
+          updateObj.paid = updateObj.paid + payment
+          updateObj.remain = updateObj.remain - payment
+          balance = balance - payment
+          var { temp1, temp2, temp3, object1, object2, object3 } = this.paidInterest(updateObj, payment, paymentObj, 1, id)
+          receiptList.push(object1, object2, object3)
+          this.periodPaymentSlip.push({
+            id: `${this.contractId}.${formatDate(paymentObj.addedDate, 1)}`,
+            period: updateObj.period,
+            pay: payment,
 
-          principal: updateObj.principal,
-          paidPrincipal: temp2,
-          remainPrincipal: updateObj.remainPrincipal,
+            interest: updateObj.interest,
+            paidInterest: temp1,
+            remainInterest: updateObj.remainInterest,
 
-          totalPenalty: updateObj.totalPenalty,
-          paidTotalPenalty: temp3,
-          remainTotalPenalty: updateObj.remainTotalPenalty,
+            principal: updateObj.principal,
+            paidPrincipal: temp2,
+            remainPrincipal: updateObj.remainPrincipal,
 
-          totalPayment: updateObj.totalPayment,
-          paid: updateObj.paid,
-          remain: updateObj.remain,
-          date: paymentObj.addedDate,
+            totalPenalty: updateObj.totalPenalty,
+            paidTotalPenalty: temp3,
+            remainTotalPenalty: updateObj.remainTotalPenalty,
 
-          type: paymentObj.type,
-          receiptType: paymentObj.receiptType,
-        })
-        // updateObj.paymentRecords.push({
-        //   paid: payment,
-        //   date: paidDate
-        // })
-        record.updatePaymentRecord(updateObj.period, updateObj)
+            totalPayment: updateObj.totalPayment,
+            paid: updateObj.paid,
+            remain: updateObj.remain,
+            date: paymentObj.addedDate,
 
-        if (updateObj.remain <= 0) {
-          updateObj.periodStatus = true
-          // updateObj.penalty = 0
-          this.presentValue = this.presentValue - updateObj.principal
+            type: paymentObj.type,
+            receiptType: paymentObj.receiptType,
+          })
+          updateObj.paymentRecords.push({
+            paid: payment,
+            date: paidDate
+          })
+          record.updatePaymentRecord(updateObj.period, updateObj)
 
 
-          // this.updatePresentValue()
-          updateObj.presentValue = this.presentValue
+          if (updateObj.remain <= 0) {
+            updateObj.periodStatus = true
+            this.presentValue = this.presentValue - updateObj.principal
+            updateObj.presentValue = this.presentValue
 
-          updateObj.accumulatedPaidInterest = this.accumulatedPaidInterest
-          updateObj.incrementalPaidPrincipal = this.incrementalPaidPrincipal
+            updateObj.accumulatedPaidInterest = this.accumulatedPaidInterest
+            updateObj.incrementalPaidPrincipal = this.incrementalPaidPrincipal
 
-          updateObj.stopCounting()
+            updateObj.stopCounting()
 
-        }
-        this.periodRecords.filter(record => {
-          return record.periodStatus === false && new Date(record.redemptionDate).getTime() > new Date(this.realLifeDate).getTime()
-        }).forEach(rec => {
-          rec.presentValue = this.presentValue
-        })
+          }
+          this.periodRecords.filter(record => {
+            return record.periodStatus === false && new Date(record.redemptionDate).getTime() > new Date(this.realLifeDate).getTime()
+          }).forEach(rec => {
+            rec.presentValue = this.presentValue
+          })
 
-        console.log('record after paying: ', record)
-        i++
-        if (notDonePeriodArray[i]) {
-          // if (updateObj.remain < 0) {
-          //   return recursive(Math.abs(update.remain), paidDate, notDonePeriodArray[i], record)
-          // } else {
-
-          // }
-          return recursive(balance, paidDate, notDonePeriodArray[i], record)
+          console.log('record after paying: ', record)
+          i++
+          if (notDonePeriodArray[i]) {
+            return recursive(balance, paidDate, notDonePeriodArray[i], record)
+          } else {
+            return balance
+          }
         } else {
           return balance
         }
-
-      } else {
-        return balance
       }
-    }
-    var balance = recursive(this.balance, paidDate, notDonePeriodArray[i], this)
-    this.balance = balance
+      var balance = recursive(this.balance, paidDate, notDonePeriodArray[i], this)
+      this.balance = balance
+
+      resolve(receiptList)
+    }).then((list) => {
+      // console.log('PRINT FROM PROMISE RESOLVE: ', list)
+      this.saveToFund(list)
+
+    })
 
   }
 
-  reCalculatePeriodPayment(periodArray) {
-    var tempTotalPayment = this.totalPayment
+  reCalculatePeriodPayment(periodArray, totalPayment) {
+    var tempTotalPayment = totalPayment
     var i = 0
     this.incrementalPaidPrincipal = 0
     this.accumulatedPaidInterest = 0
@@ -743,7 +772,7 @@ export default class Record {
 
   }
 
-  loanMore(obj, numberOfNewPeriods) {
+  async loanMore(obj, numberOfNewPeriods) {
     this.loanMorePayDownRecords.push({ ...obj, id: `${this.contractId}.${formatDate(obj.date, 1)}` })
     this.isLoanMoreOrPayDown = true
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
@@ -767,7 +796,7 @@ export default class Record {
       remain: 0,
       receiptId: 'C-Vay thêm',
       receiptReason: `Cho vay thêm`,
-      date: this.realLifeDate,
+      date: new Date(this.realLifeDate),
       type: obj.type,
       receiptType: obj.receiptType,
       from: this.storeId,
@@ -778,18 +807,12 @@ export default class Record {
       customerName: this.customerName,
       employeeId: this.employeeId,
       employeeName: this.employeeName,
-      contractId: this.contractId
+      contractId: this.contractId,
+      isLoanMoreOrPayDownReceipt: true,
+
     }
-    object.array.push(object2)
-    $.ajax({
-      type: 'POST',
-      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
-      contentType: 'application/json',
-      data: JSON.stringify(object2),
-      success: result => {
-      }
-    })
-    this.receiptRecords.push(object)
+    this.saveToFund([object2])
+    this.receiptRecords.push(object2)
 
 
     // update the length of number of payments
@@ -807,13 +830,13 @@ export default class Record {
     // this.updatePresentValue()
 
     this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate, numberOfNewPeriods)
-    this.reCalculatePeriodPayment(this.periodRecords)
+    this.reCalculatePeriodPayment(this.periodRecords, this.totalPayment)
     this.numberOfLoaningMoreTimes += 1
   }
 
-  payDown(obj, numberOfNewPeriods) {
+  async payDown(obj, numberOfNewPeriods) {
     this.loanMorePayDownRecords.push({ ...obj, id: `${this.contractId}.${formatDate(obj.date, 1)}`, value: -obj.value })
-    this.isLoanMoreOrPayDown = true
+    // this.isLoanMoreOrPayDown = true
     var blockPenalty = this.calculateBlock(obj, this.blockArray)
     var upperHalfPeriodRecords = this.periodRecords.filter(rec => {
       return new Date(rec.periodStartDate).getTime() <= new Date(obj.date).getTime()
@@ -840,7 +863,7 @@ export default class Record {
     // this.updatePresentValue()
 
     this.reCreatePeriodRecords(obj, paydownPeriod.period, numberOfPaymentsAfterPayingDown, oldPaydownPeriodEndDate, numberOfNewPeriods)
-    this.reCalculatePeriodPayment(this.periodRecords)
+    this.reCalculatePeriodPayment(this.periodRecords, this.totalPayment)
 
     var object = {
       id: `${this.contractId}.${formatDate(obj.date, 1)}`,
@@ -853,7 +876,7 @@ export default class Record {
       remain: this.periodRecords[paydownPeriodIndex].remainInterest,
       receiptId: 'T-Lãi',
       receiptReason: `Lãi kỳ ${this.periodRecords[paydownPeriodIndex].period}`,
-      date: this.realLifeDate,
+      date: new Date(this.realLifeDate),
       type: obj.type,
       receiptType: obj.receiptType,
       from: this.customerId,
@@ -864,18 +887,35 @@ export default class Record {
       customerName: this.customerName,
       employeeId: this.employeeId,
       employeeName: this.employeeName,
-      contractId: this.contractId
+      contractId: this.contractId,
+      isLoanMoreOrPayDownReceipt: true,
+
     }
-    object.array.push(object2)
-    $.ajax({
-      type: 'POST',
-      url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
-      contentType: 'application/json',
-      data: JSON.stringify(object2),
-      success: result => {
-      }
-    })
-    this.receiptRecords.push(object)
+    var object3 = {
+      root: 0,
+      paid: obj.value,
+      remain: 0,
+      receiptId: 'T-Trả bớt',
+      receiptReason: `Trả bớt`,
+      date: new Date(this.realLifeDate),
+      type: obj.type,
+      receiptType: obj.receiptType,
+      from: this.customerId,
+      to: this.storeId,
+      storeId: this.customerId,
+      storeName: this.customerName,
+      customerId: this.storeId,
+      customerName: this.storeName,
+      employeeId: this.employeeId,
+      employeeName: this.employeeName,
+      contractId: this.contractId,
+      isLoanMoreOrPayDownReceipt: true,
+
+    }
+    this.saveToFund([object2, object3])
+    this.saveToReceiptRecords(object2)
+    this.saveToReceiptRecords(object3)
+
     this.numberOfPayingDownTimes += 1
   }
 

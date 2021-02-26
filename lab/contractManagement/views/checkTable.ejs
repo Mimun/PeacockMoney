@@ -286,6 +286,7 @@
               </table>
             </div>
           </div>
+         
         </div>
 
         <!-- loan more pay down history -->
@@ -294,7 +295,7 @@
           <div class="col">
             <div class="loan-more-pay-down-history">
               <h4>Lịch sử VTTB</h4>
-              <table class="table table-responsive table-hover  payment-history-table">
+              <table class="table table-responsive table-bordered table-striped table-hover payment-history-table">
                 <thead>
                   <tr>
                     <th scope="col" id="id">Mã thu, chi</th>
@@ -309,137 +310,53 @@
               </table>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- modal -->
-      <div class="modal" tabindex="-1" role="dialog" id="choose-column-modal">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Chọn cột hiển thị</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row row-cols-3">
-                <div class="col mb-4 ml-4 mr-4">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="all" data-vie="All" id="all"> All
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="numericalOrder" data-vie="STT"> STT
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="id" data-vie="Mã kỳ"> Mã kỳ
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="redemptionDate" data-vie="Ngày đóng"> Ngày đóng
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="redemption" data-vie="Số tiền đóng (gốc hàng tháng + lãi)"> Số tiền
-                      đóng (gốc hàng tháng + lãi)
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="principal" data-vie="Gốc hàng tháng"> Gốc hàng tháng
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="incrementalPaidPrincipal" data-vie="Gốc đã trả cộng dồn"> Gốc đã trả
-                      cộng dồn
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="interest" data-vie="Lãi"> Lãi
-                    </label>
-                  </div>
-                </div>
-                <div class="col mb-4 ml-4 mr-4">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="accumulatedPaidInterest" data-vie="Lãi đã trả lũy kế"> Lãi đã trả
-                      lũy kế
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="presentValue" data-vie="Gốc còn lại"> Gốc còn lại
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="payDown" data-vie="Trả bớt"> Trả bớt
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="loanMore" data-vie="Vay thêm"> Vay thêm
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="totalPayment" data-vie="Tổng tiền đóng (tổng phạt + số tiền đóng)">
-                      Tổng tiền đóng (tổng phạt + số tiền đóng)
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="paid" data-vie="Đã trả"> Đã trả
-                    </label>
-                  </div>
-                </div>
-                <div class="col mn-4 ml-4 mr-4">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="remain" data-vie="Còn lại"> Còn lại
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="periodStatus" data-vie="Tình trạng kỳ"> Tình trạng kỳ
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="daysBetween" data-vie="Số ngày đóng chậm"> Số ngày đóng chậm
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="penalty" data-vie="Phạt đóng chậm"> Phạt đóng chậm
-                    </label>
-                  </div>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="blockPenalty" data-vie="Phạt block"> Phạt block
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="save">Save changes</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <!-- payment array -->
+          <div class="col">
+            <div class="payment-array">
+              <h4>Số lần đóng tiền</h4>
+              <table class="table table-responsive table-bordered table-striped table-hover payment-array-table">
+                <thead>
+                  <tr>
+                    <th id="addedDate">Ngày đóng/thu</th>
+                    <th id="receiptType">Kiểu đóng/thu</th>
+                    <th id="type">Loại tiền đóng/thu</th>
+                    <th id="paymentSlip">Số tiền đóng/thu</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
     </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Chi tiết lượt đóng/thu</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="edit-btn">edit</button>
+            <button type="button" class="btn btn-danger" id="delete-btn">delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <template id="input-template">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="text" class="form-control" id="input" disabled>
+      </div>
+    </template>
   </div>
   </div>
 
@@ -479,9 +396,16 @@
         var th = document.createElement('th')
         if (object[element.id] !== undefined && object[element.id] !== null) {
           switch (element.id) {
+            case('addedDate'):
             case ('redemptionDate'):
             case ('date'):
               th.innerHTML = formatDate(object[element.id])
+              break
+            case ('receiptType'):
+              th.innerHTML = object[element.id] === 1? 'Thu': 'Chi'
+              break
+            case ('type'):
+              th.innerHTML = object[element.id] === 'cash'? 'Tiền mặt': 'Chuyển khoản'
               break
             default:
               th.innerHTML = object[element.id].toLocaleString()
@@ -611,14 +535,8 @@
     // display payment history
     const displayPaymentHistory = () => {
       document.querySelector('div.payment-history table tbody').innerHTML = ''
-      var customArray = []
-      loanPackage.receiptRecords.forEach(record => {
-        record.array.forEach(rec => {
-          customArray.push(rec)
-        })
-      })
-      console.log('custom array: ', customArray)
-      customArray.forEach(element => {
+    
+      loanPackage.receiptRecords.forEach(element => {
         displayTable(element, 'payment-history')
         addPrintButton('payment-history')
       })
@@ -638,6 +556,205 @@
       }
     }
     displayLoanMorePayDownHistory()
+
+    // display payment array
+    const displayPaymentArray = ()=>{
+      document.querySelector('div.payment-array table tbody').innerHTML = ''
+      loanPackage.paymentSlip.forEach(payment=>{
+        displayTable(payment, 'payment-array')
+      })
+      document.querySelectorAll('div.payment-array table tbody tr').forEach(element=>{
+        if(element){
+          element.addEventListener('click', event=>{
+            $('#exampleModal').modal('show')
+            document.querySelector('.modal .modal-body').innerHTML = ''
+            var payment = event.target.closest('tr').C_DATA
+            document.querySelector('.modal .modal-body').C_DATA = payment
+            for(var prop in payment){
+              if(prop === 'addedDate' || prop === 'receiptType' || prop === 'paymentSlip' || prop === 'type'){
+                var inputTemplate = document.querySelector('template#input-template').content.cloneNode(true)
+                inputTemplate.querySelector('input').id = prop
+                switch (prop) {
+                  case 'addedDate':
+                    inputTemplate.querySelector('label').innerHTML = 'Ngày đóng/thu'
+                    inputTemplate.querySelector('input').value = formatDate(payment[prop])
+
+                    break;
+                  case 'receiptType':
+                    inputTemplate.querySelector('label').innerHTML = 'Kiểu đóng/thu'
+                    inputTemplate.querySelector('input').value = payment[prop] === 1? 'Thu':'Chi'
+                    break
+                  case 'paymentSlip':
+                    inputTemplate.querySelector('label').innerHTML = 'Số tiền đóng/thu'
+                    inputTemplate.querySelector('input').value = payment[prop].toLocaleString()
+
+                    break
+                  case 'type':
+                    inputTemplate.querySelector('label').innerHTML = 'Loại tiền đóng/thu'
+                    inputTemplate.querySelector('input').value = payment[prop] === 'cash'? 'Tiền mặt': 'Chuyển khoản'
+
+                    break
+                  default:
+                    break;
+                }
+
+                document.querySelector('.modal .modal-body').appendChild(inputTemplate)
+              }
+              
+            }
+          })
+        }
+      })
+    }
+    displayPaymentArray()
+    
+
+    // delete payment 
+    document.querySelector('.modal-footer button#delete-btn').addEventListener('click', async (event)=>{
+      var idToFind = event.target.closest('.modal').querySelector('.modal-body').C_DATA.id
+
+      var payment = findNestedObj(loanPackage.paymentSlip, 'id', idToFind)
+      console.log('PAYMENT: ', payment)
+
+      var presentValue =  0
+      loanPackage.loanMorePayDownRecords.forEach(receipt=>{
+        if(receipt.receiptType && receipt.type){
+          presentValue = loanPackage.remainOrigin + parseFloat(receipt.value)
+          loanPackage.presentValue = presentValue
+        }
+      })
+
+      loanPackage.totalPayment = payment.receiptType === 1? loanPackage.totalPayment - payment.paymentSlip : loanPackage.totalPayment + payment.paymentSlip
+      console.log('TOTAL PAYMENT AFTER DELETING RECEIPT: ', loanPackage.totalPayment)
+
+      loanPackage.paymentSlip = loanPackage.paymentSlip.filter(obj=>obj.id !== idToFind)
+      console.log('PAYMENT SLIP AFRER FILTERING: ', loanPackage.paymentSlip)
+
+      loanPackage.periodRecords.forEach(period=>{
+        period.incrementalPaidPrincipal = 0
+        period.accumulatedPaidInterest = 0
+        period.periodStatus = false
+        period.presentValue = presentValue
+        period.paidInterest = 0
+        period.remainInterest = period.interest
+        period.paidPrincipal = 0
+        period.remainPrincipal = period.principal
+        period.paidTotalPenalty = 0
+        period.remainTotalPenalty = period.totalPenalty 
+        period.paid = 0
+        period.remain = period.totalPayment
+      })
+
+     
+      console.log('LOANPACKAGE AFTER RECALCULATING: ', loanPackage)
+      await new Promise((resolve, reject)=>{
+        console.log('RECEIPT BEFORE REMOVING: ', loanPackage.receiptRecords)
+
+        var removeReceipts = loanPackage.receiptRecords.filter(obj=>obj.isLoanMoreOrPayDownReceipt === false)
+        console.log('REMOVE RECEIPT IN FUND: ', removeReceipts)
+        $.ajax({
+          type: 'POST',
+          url: `/contractMng/funds3?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          data: JSON.stringify(removeReceipts),
+          success: result=>{
+
+          }
+        })
+        resolve()
+      }).then(()=>{
+        loanPackage.receiptRecords = loanPackage.receiptRecords.filter(obj=>obj.isLoanMoreOrPayDownReceipt!== false)
+        console.log('RECEIPT RECORDS AFTER REMOVING FALSE: ', loanPackage.receiptRecords)
+
+      })
+      loanPackage.incrementalPaidPrincipal = 0
+      loanPackage.accumulatedPaidInterest = 0
+      loanPackage.incrementalPayment =0
+
+      loanPackage.paymentSlip.forEach(payment=>{
+        loanPackage.paidNotDonePeriod(payment.paymentSlip, payment.addedDate, loanPackage.periodRecords.filter(period=>period.periodStatus === false), payment)
+      })
+      updateLoanPackage(loanPackage)
+      displayPaymentHistory()
+      displayPaymentArray()
+      $('#exampleModal').modal('hide')
+     
+    })
+
+    // edit payment
+    document.querySelector('.modal-footer button#edit-btn').addEventListener('click', async (event)=>{
+      console.log('EVENT CONTENT', event.target.textContent)
+      switch (event.target.textContent) {
+        case 'edit':
+          document.querySelectorAll('.modal .modal-body input').forEach(element=>{
+            if(element.id === 'paymentSlip'){
+              element.removeAttribute('disabled')
+            
+            }
+          })
+          break;
+        case 'save':
+          var payment =  findNestedObj(loanPackage.paymentSlip, 'id', document.querySelector('.modal .modal-body').C_DATA.id)
+          loanPackage.totalPayment = payment.receiptType === 1? loanPackage.totalPayment - payment.paymentSlip : loanPackage.totalPayment + payment.paymentSlip
+          console.log('TOTAL PAYMENT AFTER EDITING RECEIPT: ', loanPackage.totalPayment)
+
+          payment.paymentSlip = parseFloat(document.querySelector('.modal .modal-body input#paymentSlip').value.split(',').join(''))
+          console.log('RECEIPT AFTER EDITING: ', payment)
+
+          loanPackage.periodRecords.forEach(period=>{
+            period.incrementalPaidPrincipal = 0
+            period.accumulatedPaidInterest = 0
+            period.periodStatus = false
+            period.presentValue = presentValue
+            period.paidInterest = 0
+            period.remainInterest = period.interest
+            period.paidPrincipal = 0
+            period.remainPrincipal = period.principal
+            period.paidTotalPenalty = 0
+            period.remainTotalPenalty = period.totalPenalty 
+            period.paid = 0
+            period.remain = period.totalPayment
+          })
+
+        
+          console.log('LOANPACKAGE AFTER RECALCULATING: ', loanPackage)
+          await new Promise((resolve, reject)=>{
+            var removeReceipts = loanPackage.receiptRecords.filter(obj=>obj.isLoanMoreOrPayDownReceipt === false)
+            console.log('REMOVE RECEIPT IN FUND: ', removeReceipts)
+            $.ajax({
+              type: 'POST',
+              url: `/contractMng/funds3?token=${window.localStorage.getItem('accessToken')}`,
+              contentType: 'application/json',
+              data: JSON.stringify(removeReceipts),
+              success: result=>{
+
+              }
+            })
+            resolve()
+          }).then(()=>{
+            loanPackage.receiptRecords = loanPackage.receiptRecords.filter(obj=>obj.isLoanMoreOrPayDownReceipt!== false)
+            console.log('RECEIPT RECORDS AFTER REMOVING FALSE: ', loanPackage.receiptRecords)
+
+          })
+          loanPackage.incrementalPaidPrincipal = 0
+          loanPackage.accumulatedPaidInterest = 0
+          loanPackage.incrementalPayment =0
+
+          loanPackage.paymentSlip.forEach(payment=>{
+            loanPackage.paidNotDonePeriod(payment.paymentSlip, payment.addedDate, loanPackage.periodRecords.filter(period=>period.periodStatus === false), payment)
+          })
+          updateLoanPackage(loanPackage)
+          displayPaymentHistory()
+          displayPaymentArray()
+          $('#exampleModal').modal('hide')
+          break
+      
+        default:
+          break;
+      }
+      event.target.textContent = event.target.textContent === 'edit'? 'save':'edit'
+    })
+
     // date counter
     document.querySelector('#real-date-counter span').innerHTML = formatDate(loanPackage.realLifeDate)
 
@@ -673,11 +790,28 @@
         })
         if (notDonePeriodArray.length !== 0) {
           console.log('not done period array: ', notDonePeriodArray)
-          
-          await loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
-          await updateLoanPackage(loanPackage)
+          var paidNotDonePeriod= ()=>{
+            return new Promise((resolve, reject)=>{
+              resolve()
+            })
+          }
+          var update = ()=>{
+            return new Promise((resolve, reject)=>{
+              resolve()
+            })
+          }
+
+          await paidNotDonePeriod().then(()=>{
+            loanPackage.paidNotDonePeriod(parseFloat(paymentSlipObj.paymentSlip), paymentSlipObj.addedDate, notDonePeriodArray, paymentSlipObj)
+
+          })
+
+          await update().then(()=>{
+            updateLoanPackage(loanPackage)
+          })
 
           displayPaymentHistory()
+          displayPaymentArray()
         } else {
           // record.Paid(parseFloat(paymentSlipObj.paymentSlip, paymentSlipObj.addedDate))
           window.alert('You have paid all the periods.')
@@ -865,8 +999,6 @@
               loanPackage.loanMore(payDownObj)
 
             }
-            // updateLoanPackage(loanPackage)
-            document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
             updateLoanPackage(loanPackage)
 
             console.log('trans his: ', transHistoryObj)
@@ -918,7 +1050,7 @@
         }
         obj.array.push(payDownObj)
 
-        loanPackage.receiptRecords.push(obj)
+        loanPackage.receiptRecords.push(obj2)
         updateFund(payDownObj, () => {
           updateLoanPackage(loanPackage)
         })
@@ -965,39 +1097,7 @@
       $('#choose-column-modal').modal('show')
 
     })
-
-    document.querySelector('input#all').addEventListener('click', (event) => {
-      console.log('select: ', event.target.checked)
-      document.querySelectorAll('.modal-body input').forEach(element => {
-        element.checked = event.target.checked
-      })
-    })
-
-    document.querySelector('button#save').addEventListener('click', (event) => {
-      document.querySelector('table.period-table thead tr').innerHTML = ''
-      // console.log('all checked element: ', document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked'))
-      document.querySelectorAll('.modal .modal-body input[type="checkbox"]:checked:not(#all)').forEach(element => {
-        var th = document.createElement('th')
-        th.id = element.value
-        th.innerHTML = element.getAttribute('data-vie')
-        document.querySelector('table.period-table thead tr').appendChild(th)
-      })
-      $('#choose-column-modal').modal('hide')
-      document.querySelector('table.period-table tbody').innerHTML = ''
-
-      loanPackage.periodRecords.forEach((rec, index) => {
-        displayTable(rec, 'period-table-container')
-      })
-
-      $(function () {
-        $('table th').resizable({
-          handles: 'e',
-          minWidth: 18
-        });
-      });
-
-    })
-
+   
     const updateLoanPackage = (loanPackage) => {
       $.ajax({
         type: 'PUT',
@@ -1013,10 +1113,6 @@
           })
         }
       })
-      // document.querySelector('.period-table-container table.period-table tbody').innerHTML = ''
-      // loanPackage.periodRecords.forEach(rec => {
-      //   displayTable(rec, 'period-table-container')
-      // })
 
     }
 
@@ -1025,14 +1121,13 @@
         type: 'POST',
         url: `/contractMng/funds2?token=${window.localStorage.getItem('accessToken')}`,
         contentType: 'application/json',
-        data: JSON.stringify(transHistory),
+        data: JSON.stringify([transHistory]),
         success: result => {
           window.alert('Giao dịch thành công!')
 
           callback()
         }
       })
-      // callback()
     }
 
   </script>
