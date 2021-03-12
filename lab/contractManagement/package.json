@@ -17,7 +17,7 @@
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
     "jquery.redirect": "^1.1.4",
-    "jspdf": "^2.0.0",
+    "jspdf": "^2.3.1",
     "material-components-web": "^7.0.0",
     "mdbootstrap": "^4.19.1",
     "mongoose": "^5.10.0",
