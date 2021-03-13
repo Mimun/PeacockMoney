@@ -154,7 +154,7 @@
         var div = document.createElement('div')
         div.className = 'checkbox'
         div.innerHTML = `<label>
-        <input type="checkbox" value=${storeId} id=${store.id}>${store.name}
+        <input type="checkbox" value=${store.id} id=${store.id}>${store.name}
       </label>`
         document.querySelector('.modal-body div#store-check-list').appendChild(div)
       })
@@ -217,6 +217,7 @@
           data: JSON.stringify(roleObj),
           success: result => {
             console.log('result: ', result)
+            window.location.reload()
           }
         })
       })
