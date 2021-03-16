@@ -420,8 +420,10 @@
           if (object.name === "avatar") {
             sampleObj[object.name].value = '/images/userPicture.png'
           } else {
-            sampleObj[object.name].value = object.value
+            if(object.value){
+              sampleObj[object.name].value = object.value
 
+            }
           }
 
         })

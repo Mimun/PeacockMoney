@@ -353,16 +353,28 @@ router.post('/login', (req, res, next) => {
         var isCheckMember = result.isCheckMember
         var isApproveMember = result.isApproveMember
         var resultAvatar = findNestedObj(result, 'name', 'avatar') ? findNestedObj(result, 'name', 'avatar').value : 'None'
-        if (findNestedObj(result, 'name', 'store') && findNestedObj(result, 'name', 'store').value) {
-          Store.findOne({ 'metadata.value': findNestedObj(result, 'name', 'store').value }).exec((err, store) => {
+        var store = findNestedObj(result, 'name', 'store')? findNestedObj(result, 'name', 'store').value: ''
+        console.log("STORE FROM LOGIN: ", store)
+        if (store) {
+          Store.findOne({ 'metadata.value': store }).exec((err, store) => {
             if (err) throw err
-            var storeId = findNestedObj(store.metadata, 'name', 'id')? findNestedObj(store.metadata, 'name', 'id').value: ''
-            var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, storeId, isCheckMember, isApproveMember)
-            res.send({
-              accessToken, refreshToken, user: {
-                userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
-              }, isLoggedIn: false
-            })
+            if(store){
+              var storeId = findNestedObj(store.metadata, 'name', 'id')? findNestedObj(store.metadata, 'name', 'id').value: ''
+              var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, storeId, isCheckMember, isApproveMember)
+              res.send({
+                accessToken, refreshToken, user: {
+                  userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
+                }, isLoggedIn: false
+              })
+            } else {
+              var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, [], isCheckMember, isApproveMember)
+              res.send({
+                accessToken, refreshToken, user: {
+                  userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
+                }, isLoggedIn: false
+              })
+            }
+            
           })
 
         } else {

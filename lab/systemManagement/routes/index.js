@@ -1721,10 +1721,21 @@ router.post('/roles', (req, res, next) => {
   next()
 }, checkRole, async (req, res) => {
   console.log('req body: ', req.body)
-  new Role(req.body).save((err, result) => {
-    if (err) throw err
-    res.send('Save successfully!')
+  Role.findOne({name: req.body.name}).exec((err, result)=>{
+    if(err) throw err
+    if(!result){
+      new Role(req.body).save((err, result) => {
+        if (err) throw err
+        res.send('Save successfully!')
+      })
+    } else {
+      Role.findOneAndUpdate({name: req.body.name}, {$set: req.body}).exec((err, result1)=>{
+        if(err) throw err
+        res.send('Update successfully!')
+      })
+    }
   })
+  
 })
 
 router.post('/jobTitle', async (req, res) => {

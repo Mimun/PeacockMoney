@@ -109,7 +109,7 @@ export const employeeMetadataSample = () => {
       "cType": "select",
       "dataKor": "koreanString",
       "name": "role",
-      "value": "",
+      "value": "root",
       "dataVie": "phanQuyen"
     }
 
