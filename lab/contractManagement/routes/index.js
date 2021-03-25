@@ -261,10 +261,9 @@ router.post('/createNewContractTemplate', (req, res, next) => {
 router.get('/contractTemplates/:id', (req, res, next) => {
   req.url = '/contractMng/contractTemplates'
   req.type = 'GET'
+  req.checkStores = true
   next()
 }, checkRole, (req, res) => {
-
-  console.log('req: ', req.params.id)
   async.parallel({
     contractTemplate: callback => {
       ContractTemplate.findOne({ _id: req.params.id }).exec(callback)
@@ -276,7 +275,17 @@ router.get('/contractTemplates/:id', (req, res, next) => {
       ItemStatus.find({}).limit(20).exec(callback)
     },
     store: callback => {
-      Store.find({}).exec(callback)
+      var queries = req.stores.map(item => {
+        return { 'metadata.value': item }
+      })
+      console.log('STORE QUERIES: ', queries)
+      if (queries.length !== 0) {
+        Store.find({ $or: queries }).exec(callback)
+
+      } else {
+        Store.find({}).exec(callback)
+
+      }
     },
     contractNow: callback => {
       Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now())) }).exec(callback)
@@ -435,11 +444,11 @@ const handleGetContract = (contracts, properties, req) => {
                 return period
               }
             })
-            interestSoFar = numberOfPeriods.length * contract.interestRate
+            interestSoFar = numberOfPeriods.length * contract.interestRate * 1000
             break;
 
           default:
-            interestSoFar = ((new Date(Date.now()).getTime() - new Date(contract.loanPackage.agreementDate).getTime()) / (1000 * 3600 * 24)) * parseFloat(contract.loanPackage.interestRate)
+            interestSoFar = ((new Date(Date.now()).getTime() - new Date(contract.loanPackage.agreementDate).getTime()) / (1000 * 3600 * 24)) * parseFloat(contract.loanPackage.interestRate) * 1000
 
             break;
         }
@@ -1425,7 +1434,7 @@ router.post('/funds2', async (req, res) => {
                 switch (obj.type) {
                   case ('cash'):
                     if (fundFrom && !_.isEmpty(fundFrom)) {
-                      updateFund(fundFrom._id,{ $inc: { 'cash': -parseFloat(obj.paid) }, $push: { 'receiptRecords': { ...obj, paid: -obj.paid } } })
+                      updateFund(fundFrom._id, { $inc: { 'cash': -parseFloat(obj.paid) }, $push: { 'receiptRecords': { ...obj, paid: -obj.paid } } })
                     }
 
                     if (fundTo && !_.isEmpty(fundTo)) {
@@ -1438,7 +1447,7 @@ router.post('/funds2', async (req, res) => {
                     }
 
                     if (fundTo && !_.isEmpty(fundTo)) {
-                      updateFund(fundTo._id, { $inc: { 'iCash': +parseFloat(obj.paid) }, $push: { 'receiptRecords': { ...obj, paid:+obj.paid } } })
+                      updateFund(fundTo._id, { $inc: { 'iCash': +parseFloat(obj.paid) }, $push: { 'receiptRecords': { ...obj, paid: +obj.paid } } })
                     }
                     break
                   default:
@@ -1460,7 +1469,7 @@ router.post('/funds2', async (req, res) => {
 })
 
 // update fund when removing receipts
-router.post('/funds3',async (req, res)=>{
+router.post('/funds3', async (req, res) => {
   var objs = req.body
   console.log('BODY: ', objs)
   await new Promise((resolve, reject) => {

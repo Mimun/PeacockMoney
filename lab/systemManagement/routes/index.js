@@ -1705,8 +1705,9 @@ router.get('/roles', (req, res, next) => {
     var stores = results.stores.map(store => {
       var name = getNestedValue(findNestedObj(store, 'name', 'name'))
       var _id = store._id
+      var customId = getNestedValue(findNestedObj(store, 'name', 'id'))
       return {
-        name, id: _id
+        name, id: _id, customId
       }
     })
     res.render('roles', { roles: results.roles, stores })

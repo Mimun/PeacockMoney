@@ -360,7 +360,7 @@ router.post('/login', (req, res, next) => {
             if (err) throw err
             if(store){
               var storeId = findNestedObj(store.metadata, 'name', 'id')? findNestedObj(store.metadata, 'name', 'id').value: ''
-              var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, storeId, isCheckMember, isApproveMember)
+              var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, [storeId], isCheckMember, isApproveMember)
               res.send({
                 accessToken, refreshToken, user: {
                   userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar

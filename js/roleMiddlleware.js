@@ -47,6 +47,7 @@ module.exports = (req, res, next) => {
       res.redirect('/login')
     }
     var decodedJwt = parseJwt(jwtToken)
+    console.log('DECODED JWT: ', decodedJwt)
 
     Role.findOne({ name: decodedJwt.role }).exec((err, result) => {
       if (err) throw err
@@ -64,9 +65,11 @@ module.exports = (req, res, next) => {
                 return { 'metadata.value': store }
               }
             })
-            console.log('store queries: ', storeQueries)
+            console.log('STOREQUERIES: ', storeQueries)
+
             Store.find({ $or: storeQueries }).exec((err, result) => {
               if (err) throw err
+              console.log("RESULT: ", result)
               req.stores = result.map(store => {
                 return findNestedObj(store.metadata, 'name', 'id') ? findNestedObj(store.metadata, 'name', 'id').value : ''
               })

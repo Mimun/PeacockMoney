@@ -145,7 +145,9 @@
               <h4>Đóng tiền kỳ</h4>
               <div class="form-group">
                 <label>Số tiền đóng</label>
-                <input type="number" class="form-control" id="paymentSlip">
+                <!-- <input type="number" class="form-control" id="paymentSlip"> -->
+                <input type="text" class="form-control currency-field" data-type="currency" id="paymentSlip">
+
               </div>
               <div class="radio">
                 <label>
@@ -169,7 +171,9 @@
               <h4>Trả bớt</h4>
               <div class="form-group">
                 <label>Số tiền đóng</label>
-                <input type="number" class="form-control" id="payDown">
+                <!-- <input type="number" class="form-control" id="payDown"> -->
+                <input type="text" class="form-control currency-field" data-type="currency" id="payDown">
+                
               </div>
               <% if(simulation === 3){%>
               <div class="form-group">
@@ -199,7 +203,9 @@
               <h4>Vay thêm</h4>
               <div class="form-group">
                 <label>Số tiền đóng</label>
-                <input type="number" class="form-control" id="loanMore">
+                <!-- <input type="number" class="form-control" id="loanMore"> -->
+                <input type="text" class="form-control currency-field" data-type="currency" id="loanMore">
+
               </div>
               <% if(simulation === 3){%>
               <div class="form-group">
@@ -234,7 +240,9 @@
               </div>
               <div class="form-group">
                 <label>Số tiền</label>
-                <input type="number" class="form-control" id="loanMore">
+                <!-- <input type="number" class="form-control" id="loanMore"> -->
+                <input type="text" class="form-control currency-field" data-type="currency" id="loanMore">
+
               </div>
               <div class="radio">
                 <label>
@@ -443,7 +451,10 @@
   <script type="module">
     import Record from '/record2.js'
     import { findNestedObj } from '/findNestedObj.js'
+    import { addSeparatorOnInputChange, removeSeperator } from '/addSeparatorOnInputChange.js'
 
+    // add separator to number
+    addSeparatorOnInputChange()
     // var contract = JSON.parse('')
     var contract = <%- JSON.stringify(contract) %>;
     var simulation = JSON.parse('<%- JSON.stringify(simulation)%>')
@@ -772,7 +783,12 @@
         }
 
         document.querySelector('div.payment').querySelectorAll('input:not([type="radio"])').forEach(input => {
-          paymentSlipObj[input.getAttribute('id')] = input.value
+          if(input.getAttribute('id')==='paymentSlip'){
+            paymentSlipObj[input.getAttribute('id')] = removeSeperator(input.value)
+
+          } else {
+            paymentSlipObj[input.getAttribute('id')]
+          }
         })
         var transHistoryObj = {
           date: paymentSlipObj.addedDate,
@@ -856,10 +872,12 @@
             return rec.period
           })
 
-          if (remainPeriods.length !== 0) {
-            window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
-          } else {
-            if (simulation === 3) {
+          // if (remainPeriods.length !== 0) {
+          //   window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          // } else {
+            
+          // }
+          if (simulation === 3) {
               if (numberOfNewPeriods) {
                 loanPackage.payDown(payDownObj, numberOfNewPeriods)
 
@@ -876,7 +894,6 @@
             console.log('trans his: ', transHistoryObj)
             displayLoanMorePayDownHistory()
             displayPaymentHistory()
-          }
         } else {
           window.alert('You have loaned more or payed down today. Please comeback later!')
         }
@@ -897,7 +914,7 @@
           var numberOfNewPeriods = simulation === 3 ? document.querySelector('#pay-down input#numberOfNewPeriods').value : null
           var payDownObj = {
             date: loanPackage.realLifeDate,
-            value: parseFloat(document.querySelector('input#payDown').value),
+            value: parseFloat(removeSeperator(document.querySelector('input#payDown').value)),
             type: event.target.closest('div').querySelector('input:checked').value,
             receiptType: 1,
 
@@ -962,7 +979,7 @@
           var numberOfNewPeriods = simulation === 3 ? document.querySelector('#loan-more input#numberOfNewPeriods').value : null
           var payDownObj = {
             date: loanPackage.realLifeDate,
-            value: parseFloat(document.querySelector('input#loanMore').value),
+            value: parseFloat(removeSeperator(document.querySelector('input#loanMore').value)),
             type: event.target.closest('div').querySelector('input:checked').value,
             receiptType: 2,
 
@@ -1031,7 +1048,7 @@
         var receiptType = parseInt(event.target.closest('div').querySelector('select').options[event.target.closest('div').querySelector('select').selectedIndex].getAttribute('data-type'))
         var payDownObj = {
           root: 0,
-          paid: parseFloat(document.querySelector('div.another-fee').querySelector('input:not([type="radio"])').value),
+          paid: parseFloat(removeSeperator(document.querySelector('div.another-fee').querySelector('input:not([type="radio"])').value)),
           remain: 0,
           receiptId: event.target.closest('div').querySelector('select').value,
           receiptReason: 'Phí khác',
