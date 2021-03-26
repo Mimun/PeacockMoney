@@ -60,8 +60,10 @@ export const generateContractListHTML = (itemObj, template, elementName, payload
           event.target.closest('.object-div').C_DATA = result.result
           console.log('event: ', event.target.closest('.object-div').C_DATA)
           event.target.closest('.object-div').setAttribute('data-status', 'approved')
-          event.target.innerHTML = 'complete'
-          event.target.className = 'btn btn-raised btn-primary btn-sm'
+          // event.target.innerHTML = 'complete'
+          // event.target.className = 'btn btn-raised btn-primary btn-sm'
+          event.target.closest('.object-div').querySelector('.btn-options').removeChild(event.target)
+
         })
 
       } else if (textContent === "complete") {
