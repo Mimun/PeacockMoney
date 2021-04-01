@@ -1739,6 +1739,13 @@ router.post('/roles', (req, res, next) => {
   
 })
 
+router.delete('/roles/:id', (req, res, next)=>{
+  Role.findOneAndDelete({_id: req.params.id}).exec((err, result)=>{
+    if(err) throw err
+    res.send("Delete successfully!")
+  })
+})
+
 router.post('/jobTitle', async (req, res) => {
   console.log('req body: ', req.body)
   try {

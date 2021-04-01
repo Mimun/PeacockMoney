@@ -353,39 +353,80 @@ router.post('/login', (req, res, next) => {
         var isCheckMember = result.isCheckMember
         var isApproveMember = result.isApproveMember
         var resultAvatar = findNestedObj(result, 'name', 'avatar') ? findNestedObj(result, 'name', 'avatar').value : 'None'
-        var store = findNestedObj(result, 'name', 'store')? findNestedObj(result, 'name', 'store').value: ''
+        var store = findNestedObj(result, 'name', 'store') ? findNestedObj(result, 'name', 'store').value : ''
         console.log("STORE FROM LOGIN: ", store)
-        if (store) {
-          Store.findOne({ 'metadata.value': store }).exec((err, store) => {
-            if (err) throw err
-            if(store){
-              var storeId = findNestedObj(store.metadata, 'name', 'id')? findNestedObj(store.metadata, 'name', 'id').value: ''
-              var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, [storeId], isCheckMember, isApproveMember)
-              res.send({
-                accessToken, refreshToken, user: {
-                  userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
-                }, isLoggedIn: false
-              })
-            } else {
-              var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, [], isCheckMember, isApproveMember)
-              res.send({
-                accessToken, refreshToken, user: {
-                  userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
-                }, isLoggedIn: false
-              })
-            }
-            
-          })
 
-        } else {
-          var store = resultRole==="root"? ["all"]: []
-          var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store, isCheckMember, isApproveMember)
+        async.parallel({
+          store: callback => {
+            Store.findOne({ 'metadata.value': store }).exec(callback)
+          },
+          role: callback => {
+            Role.findOne({ name: resultRole }).exec(callback)
+          }
+        }, (err, results) => {
+          if (err) throw err
+          var storeId = '', role = ''
+          if (results.store && results.role) {
+            storeId = findNestedObj(results.store.metadata, 'name', 'id') ? findNestedObj(results.store.metadata, 'name', 'id').value : ''
+            role = results.role.name
+            var { accessToken, refreshToken } = jwtSign(resultUserName, role, employeeId, [storeId], isCheckMember, isApproveMember)
+            res.send({
+              accessToken, refreshToken, user: {
+                userName: resultUserName, role: role, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
+              }, isLoggedIn: false
+            })
+            return
+          } else if (results.store && !results.role) {
+            storeId = findNestedObj(results.store.metadata, 'name', 'id') ? findNestedObj(results.store.metadata, 'name', 'id').value : ''
+            role = 'root'
+          } else if (!results.store && results.role) {
+            storeId = results.role.name === "root" ? ["all"] : []
+            role = results.role.name
+          } else {
+            storeId = ["all"]
+            role = 'root'
+
+          }
+
+          var { accessToken, refreshToken } = jwtSign(resultUserName, role, employeeId, storeId, isCheckMember, isApproveMember)
           res.send({
             accessToken, refreshToken, user: {
-              userName: resultUserName, role: resultRole, _id: employeeId, store, isCheckMember, isApproveMember, avatar: resultAvatar
+              userName: resultUserName, role: role, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
             }, isLoggedIn: false
           })
-        }
+        })
+
+        // if (store) {
+        //   Store.findOne({ 'metadata.value': store }).exec((err, store) => {
+        //     if (err) throw err
+        //     if(store){
+        //       var storeId = findNestedObj(store.metadata, 'name', 'id')? findNestedObj(store.metadata, 'name', 'id').value: ''
+        //       var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, [storeId], isCheckMember, isApproveMember)
+        //       res.send({
+        //         accessToken, refreshToken, user: {
+        //           userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
+        //         }, isLoggedIn: false
+        //       })
+        //     } else {
+        //       var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, [], isCheckMember, isApproveMember)
+        //       res.send({
+        //         accessToken, refreshToken, user: {
+        //           userName: resultUserName, role: resultRole, _id: employeeId, storeId, isCheckMember, isApproveMember, avatar: resultAvatar
+        //         }, isLoggedIn: false
+        //       })
+        //     }
+
+        //   })
+
+        // } else {
+        //   var store = resultRole==="root"? ["all"]: []
+        //   var { accessToken, refreshToken } = jwtSign(resultUserName, resultRole, employeeId, store, isCheckMember, isApproveMember)
+        //   res.send({
+        //     accessToken, refreshToken, user: {
+        //       userName: resultUserName, role: resultRole, _id: employeeId, store, isCheckMember, isApproveMember, avatar: resultAvatar
+        //     }, isLoggedIn: false
+        //   })
+        // }
 
       }
     })

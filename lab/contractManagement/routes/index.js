@@ -448,7 +448,7 @@ const handleGetContract = (contracts, properties, req) => {
             break;
 
           default:
-            interestSoFar = ((new Date(Date.now()).getTime() - new Date(contract.loanPackage.agreementDate).getTime()) / (1000 * 3600 * 24)) * parseFloat(contract.loanPackage.interestRate) * 1000
+            interestSoFar = ((new Date(Date.now()).getTime() - new Date(contract.loanPackage.agreementDate).getTime()) /( (1000 * 3600 * 24)) * parseFloat(contract.loanPackage.interestRate) * 1000)
 
             break;
         }

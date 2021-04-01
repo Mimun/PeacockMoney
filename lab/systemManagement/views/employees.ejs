@@ -207,6 +207,7 @@
     import { generateEmployeeManagementList, createSelect } from '/generateEmployeeManagementList.js'
     import { makeRequest } from '/makeRequest.js'
     import { employeeMetadataSample } from '/employeeConfig.js'
+    import {findNestedObj} from '/findNestedObj.js'
     const employeeList = <%- JSON.stringify(employeeList) %>;
     const storeList = <%- JSON.stringify(storeList) %>;
     const roles = <%-JSON.stringify(roles) %>;
@@ -376,9 +377,10 @@
           generateEmployeeManagementList(dbObjects, storeList, 'employee-table-container', 'employees', user)
           document.querySelector('#upload-employees').style.display = 'inline-block'
           document.querySelector('#upload-employees').addEventListener('click', (event) => {
-            console.log('event: ', event.target)
+            console.log('event: ', dbObjects)
 
             makeRequest('POST', 'multEmployee', 'application/json', JSON.stringify({ dbObjects }), () => {
+              window.alert(`Chỉ có ${dbObjects.length}/${simpleObjects.length} nhân viên được tạo mới! Vui lòng kiểm tra thông tin nhân viên một cách cẩn thận trước khi tạo!`)
               window.location.reload()
             })
           })
@@ -430,7 +432,12 @@
         console.log('test: ', sampleObj)
 
         object.metadata = Object.values(sampleObj)
-        dbObjectArray.push(object)
+        var id = findNestedObj(object.metadata, 'name', 'id')
+        console.log('ID: ', id)
+        if(id && id.value){
+          dbObjectArray.push(object)
+        }
+        
       })
       return dbObjectArray
     }

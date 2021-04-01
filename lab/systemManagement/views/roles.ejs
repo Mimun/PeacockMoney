@@ -132,6 +132,7 @@
 
                 </div>
                 <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" id="delete">Delete</button>
                   <button type="button" class="btn btn-primary" id="save">Save changes</button>
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
@@ -163,7 +164,9 @@
       // display role list
       roleList.forEach(role => {
         var tr = document.createElement('tr')
+        tr.C_DATA = role
         tr.addEventListener('click', event => {
+          document.querySelector('#create-modal').C_DATA = event.target.closest('tr').C_DATA
           document.querySelector('input#name').value = role['name']
           document.querySelectorAll(`#create-modal tr`).forEach(element => {
             element.querySelectorAll('table.role-abilities-table input').forEach(input => {
@@ -187,6 +190,7 @@
 
       // open modal button
       document.querySelector('button#create').addEventListener('click', (event) => {
+        // document.querySelector('#create-modal').C_DATA = role
         document.querySelectorAll('#create-modal input').forEach(element => {
           element.type === 'checkbox' ? element.removeAttribute('checked') : element.value = ''
         })
@@ -222,6 +226,20 @@
           }
         })
      
+      })
+
+      // delete button
+      document.querySelector('button#delete').addEventListener("click", (event)=>{
+        console.log('PROP: ', event.target.closest('.modal').C_DATA)
+        $.ajax({
+          type: 'DELETE',
+          url: `/systemMng/roles/${event.target.closest('.modal').C_DATA._id}?token=${window.localStorage.getItem('accessToken')}`,
+          contentType: 'application/json',
+          success: result => {
+            console.log('result: ', result)
+            window.location.reload()
+          }
+        })
       })
 
       // all checkbox
