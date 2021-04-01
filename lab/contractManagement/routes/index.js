@@ -399,6 +399,17 @@ router.delete('/deleteContractTemplate/:id', (req, res, next) => {
 // CONTRACT
 // contract list
 // handle get contracts function
+const getDaysBetween = (d1, d2) => {
+  let date1 = new Date(d1)
+
+  let date2 = new Date(d2)
+  console.log({ date1, date2 })
+  var oneDay = 1000 * 60 * 60 * 24
+  var msDifference = date1.getTime() - date2.getTime()
+  var daysDifference = Math.round(Math.abs(msDifference / oneDay)).toFixed(0)
+  console.log("DAYS BETWEEN: ", daysDifference)
+  return daysDifference
+}
 const handleGetContract = (contracts, properties, req) => {
   // console.log('property list: ', properties.length)
 
@@ -446,9 +457,8 @@ const handleGetContract = (contracts, properties, req) => {
             })
             interestSoFar = numberOfPeriods.length * contract.interestRate * 1000
             break;
-
           default:
-            interestSoFar = ((new Date(Date.now()).getTime() - new Date(contract.loanPackage.agreementDate).getTime()) /( (1000 * 3600 * 24)) * parseFloat(contract.loanPackage.interestRate) * 1000)
+            interestSoFar = (getDaysBetween(Date.now(), contract.loanPackage.agreementDate) + 1) * (parseFloat(contract.loanPackage.interestRate))
 
             break;
         }
