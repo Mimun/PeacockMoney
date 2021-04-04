@@ -458,7 +458,7 @@ const handleGetContract = (contracts, properties, req) => {
             interestSoFar = numberOfPeriods.length * contract.interestRate * 1000
             break;
           default:
-            interestSoFar = (getDaysBetween(Date.now(), contract.loanPackage.agreementDate) + 1) * (parseFloat(contract.loanPackage.interestRate))
+            interestSoFar = (getDaysBetween(Date.now(), contract.loanPackage.agreementDate) + 1) * (parseFloat(contract.loanPackage.interestRate)*1000)
 
             break;
         }
@@ -1143,7 +1143,7 @@ router.get('/goingToDo', (req, res, next) => {
           if (contract.loanPackage) {
             contract.loanPackage.periodRecords.forEach(period => {
               if (-10 < period.daysBetween && period.daysBetween < 0) {
-                goingToDoPeriodArray.push({ ...period, contractId: contract._id })
+                goingToDoPeriodArray.push({ ...period, contractId: contract._id, daysBetween: period.daysBetween.toFixed(0) })
               }
             })
           }
@@ -1173,7 +1173,7 @@ router.get('/latePeriod', (req, res, next) => {
           if (contract.loanPackage) {
             contract.loanPackage.periodRecords.forEach(period => {
               if (period.daysBetween > 0) {
-                latePeriodArray.push({ ...period, contractId: contract._id })
+                latePeriodArray.push({ ...period, contractId: contract._id, daysBetween: period.daysBetween.toFixed(0) })
               }
             })
           }

@@ -24,12 +24,12 @@
           <tr>
             <th id="id">Mã kỳ</th>
             <th id="daysBetween">Số ngày quá hạn</th>
-            <th id="interest">Lãi</th>
-            <th id="principal">Gốc hàng tháng</th>
-            <th id="totalPenalty">Tổng số tiền phạt</th>
-            <th id="redemption">Tong phai dong</th>
-            <th id="paid">Đã trả</th>
-            <th id="remain">Còn lại</th>
+            <th id="interest" class="number-cell">Lãi</th>
+            <th id="principal" class="number-cell">Gốc hàng tháng</th>
+            <th id="totalPenalty" class="number-cell">Tổng số tiền phạt</th>
+            <th id="redemption" class="number-cell">Tổng tiền phải đóng</th>
+            <th id="paid" class="number-cell">Đã trả</th>
+            <th id="remain" class="number-cell">Còn lại</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -46,7 +46,12 @@
         tr.id = period.contractId
         document.querySelectorAll('table.going-to-do-period-table thead th').forEach(element => {
           var th = document.createElement('th')
-          th.innerHTML = period[element.id]
+          th.innerHTML = period[element.id].toLocaleString()
+          if(element.className.includes('number-cell')){
+            th.style.textAlign = 'right'
+          } else{
+            th.style.textAlign='center'
+          }
           tr.appendChild(th)
         })
         tr.addEventListener('click', (event) => {
