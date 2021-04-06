@@ -105,7 +105,8 @@ export const generateContractTemplateHTML = (itemObj, template, elementName, sto
             findNestedObj(itemObj.contractMetadata, 'name', 'numberOfAcceptanceTerms').value : 0
           // var numberOfDaysPerTerm = findNestedObj(itemObj, 'name', 'numberOfDaysPerTerm') ?
           //   findNestedObj(itemObj.contractMetadata, 'name', 'numberOfDaysPerTerm').value : 0
-          var contractEndingDate = new Date(new Date(event.target.value).getTime() + numberOfAcceptanceTerms * 30 * 24 * 60 * 60 * 1000)
+          console.log({date: new Date(event.target.value).getDate(), month: new Date(event.target.value).getMonth()+parseInt(numberOfAcceptanceTerms)+1, year: new Date(event.target.value).getFullYear()})
+          var contractEndingDate = new Date(`${new Date(event.target.value).getFullYear()}-${new Date(event.target.value).getMonth() + parseInt(numberOfAcceptanceTerms) +1}-${new Date(event.target.value).getDate()}`)
           console.log('contract ending date: ', contractEndingDate)
           contractInfoDiv.querySelector('input[name="contractEndingDate"]').value = formatDate(contractEndingDate)
         })

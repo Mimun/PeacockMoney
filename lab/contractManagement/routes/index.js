@@ -408,7 +408,7 @@ const getDaysBetween = (d1, d2) => {
   var msDifference = date1.getTime() - date2.getTime()
   var daysDifference = Math.round(Math.abs(msDifference / oneDay)).toFixed(0)
   console.log("DAYS BETWEEN: ", daysDifference)
-  return daysDifference
+  return parseInt(daysDifference)
 }
 const handleGetContract = (contracts, properties, req) => {
   // console.log('property list: ', properties.length)
@@ -455,10 +455,10 @@ const handleGetContract = (contracts, properties, req) => {
                 return period
               }
             })
-            interestSoFar = numberOfPeriods.length * contract.interestRate * 1000
+            interestSoFar = numberOfPeriods.length * (contract.loanPackage.interestRate/100) * contract.loanPackage.remainOrigin
             break;
           default:
-            interestSoFar = (getDaysBetween(Date.now(), contract.loanPackage.agreementDate) + 1) * (parseFloat(contract.loanPackage.interestRate)*1000)
+            interestSoFar = (getDaysBetween(contract.loanPackage.realLifeDate, contract.loanPackage.agreementDate)+1) * (parseFloat(contract.loanPackage.interestRate)/100) * contract.loanPackage.remainOrigin
 
             break;
         }
@@ -840,7 +840,7 @@ router.put('/contracts/:id', (req, res, next) => {
       var numberOfPeriods = parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'numberOfAcceptanceTerms')))
       var ruleArray = contract.penaltyRules
       var blockArray = contract.blockRules
-      var realLifeDate = new Date(Date.now())
+      var realLifeDate = new Date(formatDate(Date.now(), 3))
       var simulation = parseInt(getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'paymentMethod')))
       loanPackage = new Record({
         interestRate, presentValue, agreementDate,
