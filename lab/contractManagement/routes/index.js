@@ -455,10 +455,10 @@ const handleGetContract = (contracts, properties, req) => {
                 return period
               }
             })
-            interestSoFar = numberOfPeriods.length * (contract.loanPackage.interestRate/100) * contract.loanPackage.remainOrigin
+            interestSoFar = numberOfPeriods.length * (contract.loanPackage.interestRate / 100) * contract.loanPackage.remainOrigin
             break;
           default:
-            interestSoFar = (getDaysBetween(contract.loanPackage.realLifeDate, contract.loanPackage.agreementDate)+1) * (parseFloat(contract.loanPackage.interestRate)/100) * contract.loanPackage.remainOrigin
+            interestSoFar = (getDaysBetween(contract.loanPackage.realLifeDate, contract.loanPackage.agreementDate) + 1) * (parseFloat(contract.loanPackage.interestRate) / 100) * contract.loanPackage.remainOrigin
 
             break;
         }
@@ -1587,13 +1587,17 @@ var job = new CronJob('*/30 * * * *', function () {
       if (result) {
         result.forEach(contract => {
           // console.log('abcdefghi: ', contract.loanPackage)
-          contract.loanPackage = new Record(contract.loanPackage)
-          // contract.loanPackage.reassignPeriodRecords()
-          contract.loanPackage.count()
-          Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'loanPackage': contract.loanPackage } }).exec((err, result) => {
-            if (err) throw err
-            console.log('update loan package successfully!')
-          })
+          try {
+            contract.loanPackage = new Record(contract.loanPackage)
+            // contract.loanPackage.reassignPeriodRecords()
+            contract.loanPackage.count()
+            Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'loanPackage': contract.loanPackage } }).exec((err, result) => {
+              if (err) throw err
+              console.log('update loan package successfully!')
+            })
+          } catch (error) {
+            console.error(error)
+          }
         })
       }
     })
