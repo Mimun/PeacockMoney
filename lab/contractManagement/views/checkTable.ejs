@@ -229,6 +229,38 @@
             </div>
           </div>
 
+          <!-- pâyll-->
+          <div class="col">
+            <div class="pay-down" id="pay-down">
+              <h4>Tất toán</h4>
+              <div class="form-group">
+                <label>Số tiền đóng</label>
+                <!-- <input type="number" class="form-control" id="payAll"> -->
+                <input type="text" class="form-control currency-field" data-type="currency" id="payAll">
+                
+              </div>
+              <% if(simulation === 3){%>
+              <div class="form-group">
+                <label>Số kỳ tạo thêm</label>
+                <input type="number" class="form-control" id="numberOfNewPeriods">
+              </div>
+              <% } %>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="cash" checked>
+                  Tiền mặt
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="optionsRadios2" value="iCash">
+                  Chuyển khoản
+                </label>
+              </div>
+              <button class="btn btn-sm btn-primary" id="btn-pay-all">Tất toán</button>
+            </div>
+          </div>
+
           <!-- another fee -->
           <div class="col">
             <div class="another-fee" id="another-fee">
@@ -264,7 +296,7 @@
           <div class="col-1">
             <button class="btn btn-sm btn-primary" id="btn-expand">Gia hạn hợp đồng</button>
             <button class="btn btn-sm btn-primary" id="btn-undo">Undo</button>
-            <button class="btn btn-sm btn-primary" id="btn-pay-all">Tất toán</button>
+            <!-- <button class="btn btn-sm btn-primary" id="btn-pay-all">Tất toán</button> -->
           </div>
 
           <!-- <button class="btn btn-sm" id="receipt">In phiếu</button> -->
@@ -846,11 +878,11 @@
       if (loanPackage) {
         if (loanPackage.isLoanMoreOrPayDown === false) {
 
-          var numberOfNewPeriods = 1
+          var numberOfNewPeriods = simulation === 3 ? document.querySelector('#pay-down input#numberOfNewPeriods').value : null
           var payDownObj = {
             date: loanPackage.realLifeDate,
-            value: parseFloat(loanPackage.presentValue),
-            type: 'cash',
+            value: parseFloat(removeSeperator(document.querySelector('input#payAll').value)),
+            type: event.target.closest('div').querySelector('input:checked').value,
             receiptType: 1,
 
           }
@@ -872,12 +904,10 @@
             return rec.period
           })
 
-          // if (remainPeriods.length !== 0) {
-          //   window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
-          // } else {
-            
-          // }
-          if (simulation === 3) {
+          if (remainPeriods.length !== 0) {
+            window.alert(`You need to finish all remain periods (${remainPeriods.join(', ')}) to pay down!`)
+          } else {
+            if (simulation === 3) {
               if (numberOfNewPeriods) {
                 loanPackage.payDown(payDownObj, numberOfNewPeriods)
 
@@ -894,6 +924,7 @@
             console.log('trans his: ', transHistoryObj)
             displayLoanMorePayDownHistory()
             displayPaymentHistory()
+          }
         } else {
           window.alert('You have loaned more or payed down today. Please comeback later!')
         }
@@ -902,6 +933,7 @@
         window.alert('This contract is not approved!')
 
       }
+     
     })
 
     // calculate and display pay down
@@ -1067,7 +1099,7 @@
         }
         obj.array.push(payDownObj)
 
-        loanPackage.receiptRecords.push(obj2)
+        loanPackage.receiptRecords.push(payDownObj)
         updateFund(payDownObj, () => {
           updateLoanPackage(loanPackage)
         })
