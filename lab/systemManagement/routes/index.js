@@ -1558,7 +1558,7 @@ router.post('/checkTableSummaryReport/getReport', (req, res, next) => {
 const handleGetContract = (contracts, properties) => {
     // return a customized array of contract
     var contractList = contracts.map(contract => {
-        if (contract) {
+        if (contract && contract.loanPackage) {
             console.log('contracat length: ', contracts.length)
             var mergeWithObj = null
             var numberOfLatePeriods = 0,
