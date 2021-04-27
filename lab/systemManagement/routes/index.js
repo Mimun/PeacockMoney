@@ -584,17 +584,19 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
     var propertyList = []
     if (result.propertyList.length !== 0) {
       result.propertyList.map(itemObj => {
-        propertyList.push({
-          _id: itemObj._id,
-          currentWarehouse: itemObj.currentWarehouse,
-          warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
-          warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
-          contractId: itemObj.contract ? itemObj.contract.id : 'None',
-          itemTypeId: findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None',
-          propertyId: itemObj.id,
-          propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
-          movement: itemObj.movement
-        })
+        if(itemObj){
+          propertyList.push({
+            _id: itemObj._id,
+            currentWarehouse: itemObj.currentWarehouse,
+            warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
+            warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
+            contractId: itemObj.contract ? itemObj.contract.id : 'None',
+            itemTypeId: findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None',
+            propertyId: itemObj.id,
+            propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
+            movement: itemObj.movement
+          })
+        }
       })
     }
 
@@ -649,17 +651,19 @@ router.get('/properties', (req, res, next) => {
     var propertyList = []
     if (result.propertyList.length !== 0) {
       result.propertyList.map(itemObj => {
-        propertyList.push({
-          _id: itemObj._id,
-          currentWarehouse: itemObj.currentWarehouse,
-          warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
-          warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
-          contractId: itemObj.contract ? itemObj.contract.id : 'None',
-          itemTypeId: findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None',
-          propertyId: itemObj.id,
-          propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
-          movement: itemObj.movement
-        })
+        if(itemObj){
+          propertyList.push({
+            _id: itemObj._id,
+            currentWarehouse: itemObj.currentWarehouse,
+            warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
+            warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
+            contractId: itemObj.contract ? itemObj.contract.id : 'None',
+            itemTypeId: findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None',
+            propertyId: itemObj.id,
+            propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
+            movement: itemObj.movement
+          })
+        }
       })
     }
 
