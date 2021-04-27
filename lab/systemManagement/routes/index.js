@@ -1461,7 +1461,7 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
                             if (receipt !== null) {
                                 totalMoneyReport.push({
                                     ...receipt,
-                                    storeId: receipt.id.split('.')[0],
+                                    storeId: receipt.id? receipt.id.split('.')[0]: '-',
                                     itemType: itemType,
                                     itemTypeId: itemTypeId,
                                     contractId: contract.id,
