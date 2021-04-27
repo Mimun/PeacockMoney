@@ -588,7 +588,7 @@ router.get('/warehouses/:id/properties', (req, res, next) => {
                         warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
                         warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
                         contractId: itemObj.contract ? itemObj.contract.id : 'None',
-                        itemTypeId: !itemObj.contract ? (findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None') : '',
+                        itemTypeId: itemObj.contract ? (findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None') : '',
                         propertyId: itemObj.id,
                         propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
                         movement: itemObj.movement
@@ -653,7 +653,7 @@ router.get('/properties', (req, res, next) => {
                         warehouseId: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'id')) : 'None',
                         warehouseName: itemObj.currentWarehouse ? getNestedValue(findNestedObj(itemObj.currentWarehouse.metadata, 'name', 'name')) : 'None',
                         contractId: itemObj.contract ? itemObj.contract.id : 'None',
-                        itemTypeId: !itemObj.contract ? (findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None') : '',
+                        itemTypeId: itemObj.contract ? (findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId') ? findNestedObj(itemObj.contract.templateMetadata, 'name', 'itemTypeId').value : 'None') : '',
                         propertyId: itemObj.id,
                         propertyName: itemObj.infos[0] ? (itemObj.infos[0].value !== '' ? itemObj.infos[0].value : 'None') : 'None',
                         movement: itemObj.movement
