@@ -1580,7 +1580,7 @@ const updateFund = async (id, queries) => {
   })
 }
 // 0 0 * * *
-var job = new CronJob('*/30 * * * *', function () {
+var job = new CronJob('0 0 * * *', function () {
   try {
     Contract.find({ contractStatus: 'approved' }).exec((err, result) => {
       if (err) throw err
