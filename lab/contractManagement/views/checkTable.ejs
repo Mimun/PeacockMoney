@@ -563,7 +563,8 @@
       button.innerHTML = 'Print'
       button.addEventListener('click', event => {
         console.log('event: ', event.target.closest('tr').C_DATA)
-        window.location.href = `/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}&date=${event.target.closest('tr').C_DATA ? event.target.closest('tr').C_DATA.date : ''}`
+        // window.location.href = 
+        window.open(`/contractMng/contracts/${contract._id}/receipt?token=${window.localStorage.getItem('accessToken')}&date=${event.target.closest('tr').C_DATA ? event.target.closest('tr').C_DATA.date : ''}`)
       })
       document.querySelectorAll(`div.${query} tbody tr`).forEach(element => {
         if (!element.querySelector('td')) {

@@ -64,10 +64,11 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th id="receiptId">Mã thu</th>
+              <th id="receiptId">Mã <span id="receiptType"></span></th>
               <th id="receiptReason">Nội dung</th>
-              <th id="root">Phải thu</th>
-              <th id="paid">Thực thu </th>
+              <th id="root">Phải <span id="receiptType"></span></th>
+              <th id="paid">Thực <span id="receiptType"></span> </th>
+              <th id="type">Hình thức thanh toán</th>
               <th id="remain">Còn lại</th>
 
             </tr>
@@ -169,19 +170,19 @@
     const date = <%-JSON.stringify(date) %>
       console.log('contract date: ', date)
     if (contract && contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
-      const customArray = contract.loanPackage.receiptRecords.filter(rep => {
-        console.log(`${formatDate(new Date(rep.date))}, ${formatDate(date)}`)
+      let customArray = contract.loanPackage.receiptRecords.filter(rep => {
         return formatDate(new Date(rep.date)) === formatDate(date)
       })
-      console.log('custom array: ', customArray)
-      customArray.forEach(receipt => {
+      
+      customArray =  _(customArray).groupBy(x=>x.receiptType).value()
+      for(var index in customArray){
+        console.log('custom array: ', index)
         const receiptTemplate = document.querySelector('template#receipt-template')
         const receiptDiv = receiptTemplate.content.cloneNode(true)
-        console.log('receipt: ', receipt)
         // receipt header
         var obj = {
-          type: receipt.type === 'cash' ? 'MẶT' : 'GỬI',
-          receiptType: receipt.receiptType === 1 ? 'THU' : 'CHI',
+          type: '',
+          receiptType: index == 2 ? 'CHI' : 'THU',
           storeId: contract.loanPackage.contractId.split('.')[0]
 
         }
@@ -189,35 +190,88 @@
           element.innerHTML = obj[element.id]
         })
 
-        // contract info
-        var obj1 = {
-          customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-          customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
-          contractId: contract.id,
-          contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
-          date: formatDate(receipt.date),
-          id: receipt.id
-        }
-        receiptDiv.querySelectorAll('.post-header .info span').forEach(element => {
-          element.innerHTML = obj1[element.id]
-        })
+        customArray[index].forEach(receipt=>{
+          // contract info
+          var obj1 = {
+            customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+            customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+            contractId: contract.id,
+            contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
+            date: formatDate(receipt.date),
+            id: receipt.id
+          }
+          receiptDiv.querySelectorAll('.post-header .info span').forEach(element => {
+            element.innerHTML = obj1[element.id]
+          })
 
-        // table
-        var tr = document.createElement('tr')
-        receiptDiv.querySelectorAll('div.receipt-table table thead th').forEach(element => {
-          var th = document.createElement('th')
-          th.innerHTML = receipt[element.id].toLocaleString()
-          tr.appendChild(th)
-        })
-        receiptDiv.querySelector('div.receipt-table table tbody').appendChild(tr)
-        // if (receipt.array.length !== 0) {
-        //   receipt.array.forEach(rec => {
-        //     
-        //   })
-        // }
+          // table
+          var tr = document.createElement('tr')
+          receiptDiv.querySelectorAll('div.receipt-table table thead th').forEach(element => {
+            var th = document.createElement('th')
+            th.innerHTML = element.id === 'type'?(receipt[element.id]=== 'cash'? 'Tiền mặt': 'Chuyển khoản'): receipt[element.id].toLocaleString()
+            tr.appendChild(th)
+          })
+          receiptDiv.querySelectorAll('div.receipt-table table thead th span').forEach(element=>{
+            element.innerHTML = receipt[element.id]==1? 'thu': 'chi'
+          })
+          receiptDiv.querySelector('div.receipt-table table tbody').appendChild(tr)
+          // if (receipt.array.length !== 0) {
+          //   receipt.array.forEach(rec => {
+          //     
+          //   })
+          // }
 
+        })
         document.querySelector('div#page-content-wrapper').appendChild(receiptDiv)
-      })
+
+        
+      }
+      
+      // customArray.forEach(receipt => {
+      //   const receiptTemplate = document.querySelector('template#receipt-template')
+      //   const receiptDiv = receiptTemplate.content.cloneNode(true)
+      //   console.log('receipt: ', receipt)
+      //   // receipt header
+      //   var obj = {
+      //     type: receipt.type === 'cash' ? 'MẶT' : 'GỬI',
+      //     receiptType: receipt.receiptType === 1 ? 'THU' : 'CHI',
+      //     storeId: contract.loanPackage.contractId.split('.')[0]
+
+      //   }
+      //   receiptDiv.querySelectorAll('.header span').forEach(element => {
+      //     element.innerHTML = obj[element.id]
+      //   })
+
+      //   // contract info
+      //   var obj1 = {
+      //     customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+      //     customerId: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customerId')),
+      //     contractId: contract.id,
+      //     contractCreatedDate: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'contractCreatedDate')),
+      //     date: formatDate(receipt.date),
+      //     id: receipt.id
+      //   }
+      //   receiptDiv.querySelectorAll('.post-header .info span').forEach(element => {
+      //     element.innerHTML = obj1[element.id]
+      //   })
+
+      //   // table
+      //   var tr = document.createElement('tr')
+      //   receiptDiv.querySelectorAll('div.receipt-table table thead th').forEach(element => {
+      //     var th = document.createElement('th')
+      //     th.innerHTML = receipt[element.id].toLocaleString()
+      //     tr.appendChild(th)
+      //   })
+      //   receiptDiv.querySelector('div.receipt-table table tbody').appendChild(tr)
+      //   // if (receipt.array.length !== 0) {
+      //   //   receipt.array.forEach(rec => {
+      //   //     
+      //   //   })
+      //   // }
+
+      //   document.querySelector('div#page-content-wrapper').appendChild(receiptDiv)
+      // })
+    
     }
 
   </script>
