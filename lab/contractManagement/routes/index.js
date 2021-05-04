@@ -507,10 +507,10 @@ const handleGetContract = (contracts, properties, req) => {
         paidInterest: mergeWithObj ? mergeWithObj.paidInterest : 0,
 
         // realLiceCollectedInterest: mergeWithObj.paidInterest,
-        // paidPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
-        paidPrincipal: contract.loanPackage ? contract.loanPackage.presentValue : 0,
+        paidPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
+        // paidPrincipal: contract.loanPackage ? contract.loanPackage.presentValue : 0,
         realLifeCollectedPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
-        remainPrincipal: mergeWithObj ? mergeWithObj.remainPrincipal : 0,
+        remainPrincipal: contract.loanPackage ? contract.loanPackage.presentValue : 0,
         contractStatus: contract.contractStatus,
         propertyIsIn: propertiesArray[0] ? propertiesArray[0].isIn : '-',
         propertyStore: propertiesArray ? propertiesArray.map(property => property.store).join(', ') : '-',
