@@ -495,7 +495,7 @@ const handleGetContract = (contracts, properties, req) => {
         loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
         loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.length !== 1 ? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0) : 0) : 0,
         itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
-        itemName: contract.items.map(item=>item.infos[0].value).join(", "),
+        itemName: contract.items.map(item => item.infos[0].value).join(", "),
         staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
         interestRatePerMonth: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')),
         interestSoFar,
@@ -507,12 +507,13 @@ const handleGetContract = (contracts, properties, req) => {
         paidInterest: mergeWithObj ? mergeWithObj.paidInterest : 0,
 
         // realLiceCollectedInterest: mergeWithObj.paidInterest,
-        paidPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
+        // paidPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
+        paidPrincipal: contract.loanPackage ? contract.loanPackage.presentValue : 0,
         realLifeCollectedPrincipal: mergeWithObj ? mergeWithObj.paidPrincipal : 0,
         remainPrincipal: mergeWithObj ? mergeWithObj.remainPrincipal : 0,
         contractStatus: contract.contractStatus,
         propertyIsIn: propertiesArray[0] ? propertiesArray[0].isIn : '-',
-        propertyStore: propertiesArray ? propertiesArray.map(property=>property.store).join(', ') : '-',
+        propertyStore: propertiesArray ? propertiesArray.map(property => property.store).join(', ') : '-',
 
         totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
         estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
@@ -564,14 +565,14 @@ router.get('/contracts', (req, res, next) => {
       if (err) throw err
       var propertyList = result2.property
       var contractList = await handleGetContract(result2.contract, result2.property, req)
-      await res.render('contractsManagement', { 
-        originalContractList: result2.contract, 
-        contractList: contractList, 
-        roleAbility: req.roleAbility, 
-        payload: req.payload, 
+      await res.render('contractsManagement', {
+        originalContractList: result2.contract,
+        contractList: contractList,
+        roleAbility: req.roleAbility,
+        payload: req.payload,
         contractNow: result2.contractNow,
         property: result2.property
-      
+
       })
 
     })
