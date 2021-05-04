@@ -528,9 +528,20 @@
 
       var valueNeedToBeApproved = findNestedObj(data.contractMetadata, 'name', 'valueNeedToBeApproved').value
       var loan = findNestedObj(data.contractMetadata, 'name', 'loan').value
+      var evaluatingPrices = data.items.map(item=>{
+        return findNestedObj(item.evaluationItem.metadata, 'name', 'evaluatingPrice')?parseFloat(findNestedObj(item.evaluationItem.metadata, 'name', 'evaluatingPrice').value): 0
+      })
       if(loan> valueNeedToBeApproved){
         data.contractStatus = 'pending'
+      } else {
+        data.contractStatus = 'waiting'
       }
+      evaluatingPrices.forEach(item=>{
+        console.log("PRICE: ", item)
+        if(loan > item){
+          data.contractStatus = 'pending'
+        }
+      })
       var canCreate = true
       document.querySelectorAll('#contract-info-container select, #contract-info-container input').forEach(element=>{
         if(element.value === ''|| element.value === null || element.value === undefined){
@@ -552,6 +563,8 @@
         }
       })
       if(canCreate){
+        console.log('DATA BEFORE CREATING: ', data)
+
         // window.alert('Can create contract.')
         makeRequest('POST', '/contractMng/contracts', 'application/json', JSON.stringify(data), (result) => {
           window.localStorage.removeItem('evaluatingItem')
@@ -559,7 +572,8 @@
           var contract = result.contract
           var loan = findNestedObj(contract.contractMetadata, 'name', 'loan').value
           var valueNeedToBeApproved = findNestedObj(contract.contractMetadata, 'name', 'valueNeedToBeApproved').value
-          if(parseFloat(loan)>parseFloat(valueNeedToBeApproved)){
+
+          if(contract.contractStatus === 'pending'){
             window.location.href = '/contractMng/pendingContracts?token=' + window.localStorage.getItem('accessToken')
 
           } else {
