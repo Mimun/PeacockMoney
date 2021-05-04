@@ -39,6 +39,8 @@ var roleSelectOptions = `
   <option name="role" value="root" data-vie="chucVu" data-kor="koreanString">Root</option>
 
 `
+
+
 const modalContent = document.querySelector('#modalContactForm').querySelector('.modal-content')
 const modalBody = detailEmployeeTemplate.querySelector('.modal-body')
 
@@ -65,81 +67,79 @@ export const generateEmployeeManagementList = async (mainList, selectList, selec
       console.log('event: ', cData)
       detailEmployeeTemplate.querySelector('.object-div').C_DATA = cData
 
-      $("#modalContactForm").on('show.bs.modal', () => {
-        modalContent.innerHTML = ''
-        modalBody.innerHTML = ''
-        detailEmployeeTemplate.querySelector('#btn-edit').textContent = "Edit"
-        cData.metadata.forEach(data => {
-          if (data.cType === 'image') {
-            var imageContainer = document.createElement('div')
-            imageContainer.className = 'img-container avatar-container'
-            imageContainer.innerHTML = `<img src="${data.value}">`
-            modalBody.appendChild(imageContainer)
+      modalContent.innerHTML = ''
+      modalBody.innerHTML = ''
+      detailEmployeeTemplate.querySelector('#btn-edit').textContent = "Edit"
+      cData.metadata.forEach(data => {
+        if (data.cType === 'image') {
+          var imageContainer = document.createElement('div')
+          imageContainer.className = 'img-container avatar-container'
+          imageContainer.innerHTML = `<img src="${data.value}">`
+          modalBody.appendChild(imageContainer)
 
-            var imageEditContainer = document.createElement('div')
-            imageEditContainer.className = 'cropper-container'
-            imageEditContainer.innerHTML = `<cropper-wc title="abc"></cropper-wc>`
-            imageEditContainer.style.width = "100%"
-            imageEditContainer.style.margin = 'auto'
-            imageEditContainer.style.display = 'none'
-            modalBody.appendChild(imageEditContainer)
+          var imageEditContainer = document.createElement('div')
+          imageEditContainer.className = 'cropper-container'
+          imageEditContainer.innerHTML = `<cropper-wc title="abc"></cropper-wc>`
+          imageEditContainer.style.width = "100%"
+          imageEditContainer.style.margin = 'auto'
+          imageEditContainer.style.display = 'none'
+          modalBody.appendChild(imageEditContainer)
 
-          } else {
-            if (data.cType !== 'select') {
-              
-              const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
-              var inputDiv = detailInfoTemplateClone.querySelector('input')
-              var labelDiv = detailInfoTemplateClone.querySelector('label')
-              setInfo(data, inputDiv)
-              labelDiv.innerHTML = data.dataVie
-              modalBody.appendChild(detailInfoTemplateClone)
-            }
+        } else {
+          if (data.cType !== 'select') {
+            
+            const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
+            var inputDiv = detailInfoTemplateClone.querySelector('input')
+            var labelDiv = detailInfoTemplateClone.querySelector('label')
+            setInfo(data, inputDiv)
+            labelDiv.innerHTML = data.dataVie
+            modalBody.appendChild(detailInfoTemplateClone)
           }
-        })
-
-        // store select options
-        var storeSelectOptions = []
-        storeSelectOptions.push('<option value="">No store</option>')
-        if (selectList !== 0) {
-          selectList.map(select => {
-            var option = `<option name="store" data-vie="Cửa hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
-            storeSelectOptions.push(option)
-          })
         }
-        var roleSelectOptions = []
-        if(selectList2 !==0){
-          selectList2.map(select=>{
-            var option = `<option name="role" data-vie="Chức vụ" data-kor="koreanString" value="${select.name}">${select.name}</option>`
-            roleSelectOptions.push(option)
-          })
-        }
-        if (findNestedObj(itemObj, 'name', 'store')) {
-          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
-
-          // if (selectList.includes(findNestedObj(itemObj, 'name', 'store').value)) {
-          // } else {
-          //   modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
-          // }
-
-        } else {
-          modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
-
-        }
-        if (findNestedObj(itemObj, 'name', 'role')) {
-          modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'role').value, 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
-
-        } else {
-          modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phân quyền', selectContainer))
-
-        }
-        // modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {
-        //   if (!roleAbility.create.includes(option.getAttribute('value'))) {
-        //     option.style.display = 'none'
-        //   }
-        // })
-        modalContent.appendChild(detailEmployeeTemplate)
-
       })
+
+      // store select options
+      var storeSelectOptions = []
+      storeSelectOptions.push('<option value="">No store</option>')
+      if (selectList !== 0) {
+        selectList.map(select => {
+          var option = `<option name="store" data-vie="Cửa hàng" data-kor="koreanString" value=${select.id}>${select.name} - ${select.address}</option>`
+          storeSelectOptions.push(option)
+        })
+      }
+      var roleSelectOptions = []
+      if(selectList2 !==0){
+        selectList2.map(select=>{
+          var option = `<option name="role" data-vie="Chức vụ" data-kor="koreanString" value="${select.name}">${select.name}</option>`
+          roleSelectOptions.push(option)
+        })
+      }
+      if (findNestedObj(itemObj, 'name', 'store')) {
+        modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'store').value, 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+
+        // if (selectList.includes(findNestedObj(itemObj, 'name', 'store').value)) {
+        // } else {
+        //   modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cua hang', selectContainer))
+        // }
+
+      } else {
+        modalBody.appendChild(createSelect(select, '', 'store', 'Cửa hàng', 'koreanString', true, storeSelectOptions, selectLabel, 'Cửa hàng', selectContainer))
+
+      }
+      if (findNestedObj(itemObj, 'name', 'role')) {
+        modalBody.appendChild(createSelect(select, findNestedObj(itemObj, 'name', 'role').value, 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phan quyen', selectContainer))
+
+      } else {
+        modalBody.appendChild(createSelect(select, '', 'role', 'phanQuyen', 'koreanString', true, roleSelectOptions, selectLabel, 'Phân quyền', selectContainer))
+
+      }
+      // modalBody.querySelector('#role').querySelectorAll('option').forEach(option => {
+      //   if (!roleAbility.create.includes(option.getAttribute('value'))) {
+      //     option.style.display = 'none'
+      //   }
+      // })
+      modalContent.appendChild(detailEmployeeTemplate)
+
       $("#modalContactForm").modal('show')
       $("#modalContactForm").on('hidden.bs.modal', () => {
       })
