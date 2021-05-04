@@ -295,7 +295,7 @@
           <!-- expand package -->
           <div class="col-1">
             <button class="btn btn-sm btn-primary" id="btn-expand">Gia hạn hợp đồng</button>
-            <button class="btn btn-sm btn-primary" id="btn-undo">Undo</button>
+            <!-- <button class="btn btn-sm btn-primary" id="btn-undo">Undo</button> -->
             <!-- <button class="btn btn-sm btn-primary" id="btn-pay-all">Tất toán</button> -->
           </div>
 
@@ -1127,19 +1127,19 @@
     })
 
     // undo button
-    document.querySelector('button#btn-undo').addEventListener('click', (event) => {
-      console.log('prev loanPackage: ', JSON.parse(window.localStorage.getItem('prevLoanPackage')))
-      var prevLoanPackage = JSON.parse(window.localStorage.getItem('prevLoanPackage'))
-      loanPackage = prevLoanPackage
-      if(prevLoanPackage){
-        updateLoanPackage(prevLoanPackage)
-        window.localStorage.removeItem('prevLoanPackage')
-        displayPaymentHistory()
-        displayLoanMorePayDownHistory()
-      } else {
-        window.alert('Bạn không thể thực hiện thao tác này!')
-      }
-    })
+    // document.querySelector('button#btn-undo').addEventListener('click', (event) => {
+    //   console.log('prev loanPackage: ', JSON.parse(window.localStorage.getItem('prevLoanPackage')))
+    //   var prevLoanPackage = JSON.parse(window.localStorage.getItem('prevLoanPackage'))
+    //   loanPackage = prevLoanPackage
+    //   if(prevLoanPackage){
+    //     updateLoanPackage(prevLoanPackage)
+    //     window.localStorage.removeItem('prevLoanPackage')
+    //     displayPaymentHistory()
+    //     displayLoanMorePayDownHistory()
+    //   } else {
+    //     window.alert('Bạn không thể thực hiện thao tác này!')
+    //   }
+    // })
 
     // choose column to display
     document.querySelector('#btn-choose-column').addEventListener('click', (event) => {

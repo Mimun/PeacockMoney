@@ -471,7 +471,7 @@ const handleGetContract = (contracts, properties, req) => {
         //     typeofPropertyContractId: typeof property.contract._id,
         //   contractId: contract._id,
         // typeofContractId: typeof contract._id})
-        if (property && JSON.stringify(property.contract) === JSON.stringify(contract._id)) {
+        if (property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)) {
           propertiesArray.push({
             isIn: property.isIn,
             name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
@@ -479,6 +479,7 @@ const handleGetContract = (contracts, properties, req) => {
           })
         }
       })
+      console.log('PROPERTY ARRAY: ', propertiesArray)
 
       var obj = {
         contract_Id: contract._id,
@@ -494,7 +495,7 @@ const handleGetContract = (contracts, properties, req) => {
         loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
         loanMorePayDown: contract.loanPackage ? (contract.loanPackage.loanMorePayDownRecords.length !== 1 ? (contract.loanPackage.loanMorePayDownRecords.slice(-1).pop() ? contract.loanPackage.loanMorePayDownRecords.slice(-1).pop().value : 0) : 0) : 0,
         itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
-        itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
+        itemName: contract.items.map(item=>item.infos[0].value).join(", "),
         staticRedemptionDate: contract.loanPackage ? (contract.loanPackage.periodRecords.pop() ? new Date(contract.loanPackage.periodRecords.pop().redemptionDate).getDate() : '-') : '-',
         interestRatePerMonth: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'interestRatePerMonth')),
         interestSoFar,
@@ -511,7 +512,7 @@ const handleGetContract = (contracts, properties, req) => {
         remainPrincipal: mergeWithObj ? mergeWithObj.remainPrincipal : 0,
         contractStatus: contract.contractStatus,
         propertyIsIn: propertiesArray[0] ? propertiesArray[0].isIn : '-',
-        propertyStore: propertiesArray[0] ? propertiesArray[0].store : '-',
+        propertyStore: propertiesArray ? propertiesArray.map(property=>property.store).join(', ') : '-',
 
         totalLoanDays: contract.loanPackage ? (contract.loanPackage.numberOfPeriods - contract.loanPackage.numberOfLoaningMoreTimes - contract.loanPackage.numberOfPayingDownTimes) * 30 : '-',
         estimatingInterest: contract.loanPackage ? contract.loanPackage.estimatingInterest : '-',
@@ -563,7 +564,15 @@ router.get('/contracts', (req, res, next) => {
       if (err) throw err
       var propertyList = result2.property
       var contractList = await handleGetContract(result2.contract, result2.property, req)
-      await res.render('contractsManagement', { originalContractList: result2.contract, contractList: contractList, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+      await res.render('contractsManagement', { 
+        originalContractList: result2.contract, 
+        contractList: contractList, 
+        roleAbility: req.roleAbility, 
+        payload: req.payload, 
+        contractNow: result2.contractNow,
+        property: result2.property
+      
+      })
 
     })
   } catch (error) {
@@ -598,7 +607,7 @@ router.get('/waitingContracts', (req, res, next) => {
     }
   }, (err, result2) => {
     if (err) throw err
-    res.render('contractList', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
+    res.render('waitingContractList', { contractList: result2.contract, roleAbility: req.roleAbility, payload: req.payload, contractNow: result2.contractNow })
 
   })
 

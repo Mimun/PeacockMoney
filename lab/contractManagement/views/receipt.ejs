@@ -8,6 +8,7 @@
   <style>
     .receipt-container {
       max-width: 1000px;
+      width: 850px;
       border: 0.5px solid black;
       padding: 16px 32px;
       margin: 64px 0;
@@ -15,6 +16,10 @@
 
     .post-header p {
       margin: 0;
+    }
+
+    .empty_div{
+      height: 100px;
     }
   </style>
 </head>
@@ -39,11 +44,12 @@
               <div><strong>Mã khách hàng: </strong><span id="customerId"></span></div>
             </div>
             <div class="col">
-              <div><strong>Số hợp đồng: </strong><span id="contractId"></span></div>
               <div><strong>Ngày tạo hợp đồng: </strong><span id="contractCreatedDate"></span></div>
+              <div><strong>Số hợp đồng: </strong><span id="contractId"></span></div>
+
             </div>
             <div class="col">
-              <div><strong>Số phiếu: </strong><span id="id"></span></div>
+              <!-- <div><strong>Số phiếu: </strong><span id="id"></span></div> -->
               <div><strong>Ngày: </strong><span id="date"></span></div>
             </div>
 
@@ -107,6 +113,9 @@
 
           </div>
         </div>
+        <div class="empty_div">
+
+        </div class="empty_div">
       </div>
     </div>
   </template>
@@ -156,9 +165,9 @@
     }
 
     const contract = <%- JSON.stringify(contract) %>
-    console.log('contract detail: ', contract.loanPackage.receiptRecords)
+      console.log('contract detail: ', contract.loanPackage.receiptRecords)
     const date = <%-JSON.stringify(date) %>
-    console.log('contract date: ', date)
+      console.log('contract date: ', date)
     if (contract && contract.loanPackage && contract.loanPackage.receiptRecords.length !== 0) {
       const customArray = contract.loanPackage.receiptRecords.filter(rep => {
         console.log(`${formatDate(new Date(rep.date))}, ${formatDate(date)}`)
@@ -171,8 +180,8 @@
         console.log('receipt: ', receipt)
         // receipt header
         var obj = {
-          type: receipt.array[0].type === 'cash' ? 'MẶT' : 'GỬI',
-          receiptType: receipt.array[0].receiptType === 1 ? 'THU' : 'CHI',
+          type: receipt.type === 'cash' ? 'MẶT' : 'GỬI',
+          receiptType: receipt.receiptType === 1 ? 'THU' : 'CHI',
           storeId: contract.loanPackage.contractId.split('.')[0]
 
         }
@@ -194,17 +203,18 @@
         })
 
         // table
-        if (receipt.array.length !== 0) {
-          receipt.array.forEach(rec => {
-            var tr = document.createElement('tr')
-            receiptDiv.querySelectorAll('div.receipt-table table thead th').forEach(element => {
-              var th = document.createElement('th')
-              th.innerHTML = rec[element.id].toLocaleString()
-              tr.appendChild(th)
-            })
-            receiptDiv.querySelector('div.receipt-table table tbody').appendChild(tr)
-          })
-        }
+        var tr = document.createElement('tr')
+        receiptDiv.querySelectorAll('div.receipt-table table thead th').forEach(element => {
+          var th = document.createElement('th')
+          th.innerHTML = receipt[element.id].toLocaleString()
+          tr.appendChild(th)
+        })
+        receiptDiv.querySelector('div.receipt-table table tbody').appendChild(tr)
+        // if (receipt.array.length !== 0) {
+        //   receipt.array.forEach(rec => {
+        //     
+        //   })
+        // }
 
         document.querySelector('div#page-content-wrapper').appendChild(receiptDiv)
       })

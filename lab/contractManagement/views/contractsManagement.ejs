@@ -51,7 +51,7 @@
 
                 <th scope="col" id="staticRedemptionDate">Ngày đóng lãi cố định</th>
                 <th scope="col" id="interestRatePerMonth">Tổng % lãi suất</th>
-                <th scope="col" id="interestSoFar">Lãi đến ngày hôm nay (vnđ)</th>
+                <th scope="col" class="number-cell" id="interestSoFar" data-cal="calculate">Lãi đến ngày hôm nay (vnđ)</th>
                 <th scope="col" class="number-cell" id="millionPerDay">Phí vay/tr/ngày theo HĐ</th>
 
                 <th scope="col" id="employeeId">Mã nhân viên thẩm định</th>
@@ -153,7 +153,12 @@
       // console.log('original list: ', JSON.parse(abc))
       const contractList = <%- JSON.stringify(contractList) %>;
       const payload = <%- JSON.stringify(payload) %>;
+      const origin = <%- JSON.stringify(originalContractList)%>;
+      const property = <%- JSON.stringify(property)%>;
+
+      console.log('origin list: ', origin)
       console.log('contract list: ', contractList)
+      console.log('property: ', property)
       var contracts = [], packages = [], transactions = [], receipts = []
 
       // hanlde inporting contract csv file
@@ -211,7 +216,7 @@
                 parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0) : 0
 
             })
-            th.innerHTML = sum.toLocaleString()
+            th.innerHTML = sum? sum.toLocaleString(): '-'
             tr.appendChild(th)
 
           }
@@ -342,7 +347,6 @@
                     th.innerHTML =contract[element.id]? 'Lưu kho': 'Đã trả lại'
                     break;
                   case "contractStatus":
-                    console.log('alkfjskldjfajsdlkfjlaskd')
                     if(contract[element.id]==='waiting'||contract[element.id]==='pending'){
                       th.innerHTML = 'Đang chờ duyệt'
                     } else if(contract[element.id]==='completed'){

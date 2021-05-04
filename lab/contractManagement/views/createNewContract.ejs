@@ -531,14 +531,23 @@
       if(loan> valueNeedToBeApproved){
         data.contractStatus = 'pending'
       }
-      console.log('data: ', data)
       var canCreate = true
       document.querySelectorAll('#contract-info-container select, #contract-info-container input').forEach(element=>{
         if(element.value === ''|| element.value === null || element.value === undefined){
           canCreate = false
-          element.closest('div').querySelector('label').style.color = 'red'
+          element.closest('div').querySelector('label')?element.closest('div').querySelector('label').style.color = 'red': null
         } else {
-          element.closest('div').querySelector('label').style.color = null
+          element.closest('div').querySelector('label')?element.closest('div').querySelector('label').style.color = null: null
+
+        }
+      })
+      data.items.forEach(item=>{
+        if(item.evaluationItem === {} || item.evaluationItem === undefined || item.evaluationItem === null){
+          // console.log("NOT HAVING EVALUATION ITEM: ", item.evaluationItem)
+          window.alert('Vui lòng chọn tài sản thẩm định trước khi tạo hợp đồng')
+          canCreate = false
+        } else {
+          // console.log("HAVING EVALUATION ITEM: ", item.evaluationItem)
 
         }
       })
@@ -559,6 +568,7 @@
           }
         })
       } else {
+        console.log('DATA BEFORE CREATING: ', data)
         window.alert('Vui lòng điền đầy đủ thông tin trước khi tạo hợp đồng!')
       }
       

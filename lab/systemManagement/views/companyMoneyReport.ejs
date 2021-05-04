@@ -211,7 +211,7 @@
             sum += parseFloat(th.textContent) ? parseFloat(th.textContent.split(',').join('')) : 0
           })
           var th = document.createElement('th')
-          th.innerHTML = sum.toLocaleString()
+          th.innerHTML = sum?sum.toLocaleString():'-'
           th.style.textAlign = 'right'
 
           tr.appendChild(th)
@@ -237,7 +237,7 @@
               parseFloat(tr.querySelectorAll('th')[index].textContent.split(',').join('')) : 0
 
           })
-          th.innerHTML = sum.toLocaleString()
+          th.innerHTML = sum?sum.toLocaleString():'-'
           tr.appendChild(th)
         
           th.style.textAlign = 'right'

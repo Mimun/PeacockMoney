@@ -31,9 +31,6 @@
         background-color: #ffffff;
       }
     }
-    .container:hover{
-      cursor: pointer;
-    }
   </style>
 </head>
 
@@ -52,7 +49,7 @@
         </style>
 
         <div class="list-group-item object-div" style="border: 1px solid lightgrey; margin: 8px 0;">
-          <div class="container info">
+          <div class="container">
             <div class="row">
               <div class="col-3" style="margin: auto">
                 <div class="image-container" style="width: 193px; max-width: 256px; height: auto; max-height: 192px;">
@@ -71,18 +68,6 @@
               </div>
             </div>
           </div>
-          <div class="container interact">
-            <div class="row">
-              <div class="col-3">
-
-              </div>
-              <div class="col">
-                <div class="contract-likes"></div>
-
-              </div>
-              <div class="col-2"></div>
-            </div>
-          </div>
 
         </div>
 
@@ -95,7 +80,7 @@
 
       <div class="contract-list-container container" style="padding: 5% 2%; ">
         <div class="title-container" style="margin: auto;">
-          <p class="h2 mb-2" style="text-align: center; ">Danh sách hợp đồng cần phê duyệt</p>
+          <p class="h2 mb-2" style="text-align: center; ">Danh sách hợp đồng chờ</p>
         </div>
 
         <!-- filter|selector -->
@@ -148,7 +133,7 @@
 
 
   <script type="module">
-    import { generatePendingContractListHTML } from '/generatePendingContractListHTML.js'
+    import { generateContractListHTML } from '/generateContractListHTML.js'
     import { generateContractDetailHTML } from '/generateContractDetailHTML.js'
     $("#menu-toggle").click(function (e) {
       e.preventDefault();
@@ -156,17 +141,18 @@
     });
     const contractList = <%- JSON.stringify(contractList) %>;
     const payload = <%- JSON.stringify(payload) %>;
-    const isCheckMember = <%- JSON.stringify(isCheckMember)%>;
-    const isApproveMember = <%- JSON.stringify(isApproveMember)%>;
+    console.log('contract now: ', <%- JSON.stringify(contractNow)%>)
 
     console.log('contract list: ', contractList)
     console.log('payload: ', payload)
+
+   
 
     const template = document.querySelector('#contract-card-template')
     console.log('previous url: ', document.referrer.split('/').includes('createNewContract'))
 
     contractList.map(contract => {
-      generatePendingContractListHTML(contract, template, 'list-container', payload, {}, isCheckMember, isApproveMember)
+      generateContractListHTML(contract, template, 'list-container', payload, {})
     })
 
     if (document.referrer.split('/').includes('contractTemplates')) {
@@ -177,7 +163,7 @@
 
     const addClickEvent = () => {
       // handling contract onclick event (contract detail page)
-      document.querySelectorAll('.object-div .info').forEach(element => {
+      document.querySelectorAll('.object-div').forEach(element => {
         element.addEventListener('click', (event) => {
           console.log('clicked to object div')
           document.querySelector('.modal-body').innerHTML = ''
@@ -194,37 +180,6 @@
       })
     }
     addClickEvent()
-
-    const addClickEvent2 = ()=>{
-      document.querySelectorAll('.object-div .interact').forEach(element => {
-        element.addEventListener('click', (event) => {
-          document.querySelector('.modal-body').innerHTML = ''
-          var likes = event.target.closest('.object-div').C_DATA.likes
-          if(likes.length !== 0){
-            likes.forEach(like=>{
-              var p = document.createElement('p')
-              p.innerHTML = `${like.userName} - ${like.role}`
-              document.querySelector('.modal-body').appendChild(p)
-            })
-          } else {
-            var p = document.createElement('p')
-            p.innerHTML = `${likes.length} người đã đồng ý hợp đồng này.`
-            document.querySelector('.modal-body').appendChild(p)
-          }
-         
-          // const contractDetailContainerTemplate = document.querySelector('#contract-detail-container-template')
-          // const contractDetailContainerTemplateClone = contractDetailContainerTemplate.content.cloneNode(true)
-          // document.querySelector('.modal-body').appendChild(contractDetailContainerTemplateClone)
-
-          // const contractTemplate = document.querySelector('#contract-template')
-          // console.log('contract template', contractTemplate)
-          // generateContractDetailHTML(event.target.closest('.object-div').C_DATA, contractTemplate, 'contract-info')
-
-          $("#centralModalSm").modal();
-        })
-      })
-    }
-    addClickEvent2()
 
 
 
