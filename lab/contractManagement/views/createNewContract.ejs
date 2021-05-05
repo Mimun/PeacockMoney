@@ -529,6 +529,7 @@
       var valueNeedToBeApproved = findNestedObj(data.contractMetadata, 'name', 'valueNeedToBeApproved').value
       var loan = findNestedObj(data.contractMetadata, 'name', 'loan').value
       var evaluatingPrices = data.items.map(item=>{
+        if(item.evaluationItem)
         return findNestedObj(item.evaluationItem.metadata, 'name', 'evaluatingPrice')?parseFloat(findNestedObj(item.evaluationItem.metadata, 'name', 'evaluatingPrice').value): 0
       })
       if(loan> valueNeedToBeApproved){

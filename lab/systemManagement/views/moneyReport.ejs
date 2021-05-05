@@ -235,20 +235,34 @@
     document.querySelector('input#display-date').value = new Date(Date.now()).toLocaleDateString()
 
     const createCustomObj = (array, keys, index, groupBy = 'receiptId') => {
-      var customObj = _(array).groupBy(groupBy).
-        map((objs, key) => {
-          switch (index) {
-            case (1):
-              var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objs, key))))
-              return { receiptType: groupBy === 'receiptId' ? key : (key === '1' ? `T-${key}` : `C-${key}`), paid: def.paid }
-              break;
-            case (2):
-              return { receiptType: groupBy === 'receiptId' ? key : (key === '1' ? `T-${key}` : `C-${key}`), cases: objs.length }
-              break;
-            default:
-              break;
-          }
-        }).value()
+      var customObj = _(array).groupBy(item=>{
+        if(item.receiptId !== 'T-Gốc' &&item.receiptId !== 'C-Gốc' 
+        && item.receiptId !== 'T-Lãi'  && item.receiptId !== 'C-Lãi' 
+        && item.receiptId !== 'T-Giải ngân mới'  && item.receiptId !== 'C-Giải ngân mới' 
+        && item.receiptId !== 'T-Chuyển NB' && item.receiptId !== 'C-Chuyển NB'
+        && item.receiptId !== 'T-Nhận NB'  && item.receiptId !== 'C-Nhận NB' 
+        && item.receiptId !== 'T-Phạt'  && item.receiptId !== 'C-Phạt'){
+          item.receiptId = item.receiptType==1? 'T-Phí khác': 'C-Phí khác'
+        }
+        return item.receiptId
+      }).
+      map((objs, key) => {
+        switch (index) {
+          case (1):
+            var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objs, key))))
+            return { receiptType: groupBy === 'receiptId' ? key : (key === '1' ? `T-${key}` : `C-${key}`), paid: def.paid }
+            break;
+          case (2):
+            return { receiptType: groupBy === 'receiptId' ? key : (key === '1' ? `T-${key}` : `C-${key}`), cases: objs.length }
+            break;
+          default:
+            break;
+        }
+      }).
+      value()
+
+     
+      console.log('CUSTOM OBJ: ', customObj)
       return customObj
     }
 
@@ -383,6 +397,7 @@
       makeRequest('POST', 'moneyReport/getReport', 'application/json', JSON.stringify(obj), (result) => {
         var dailyMoneyReport = result.dailyMoneyReport
         var monthlyMoneyReport = result.monthlyMoneyReport
+        console.log('PLAIN OBJ: ', {dailyMoneyReport, monthlyMoneyReport})
         handleReportArray(dailyMoneyReport, monthlyMoneyReport)
         document.querySelector('input#display-date').value = new Date(document.querySelector('input#date').value).toLocaleDateString()
 

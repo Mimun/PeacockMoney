@@ -55,7 +55,7 @@
               <th class="calculate monthly number-cell" id="T-Gốc">Gốc</th>
               <th class="calculate monthly number-cell" id="T-Lãi">Lãi</th>
               <th class="calculate monthly number-cell" id="T-Nhận NB">Nhận NB</th>
-              <th class="calculate monthly number-cell" id="T-Khác">Khác</th>
+              <th class="calculate monthly number-cell" id="T-Phí Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -68,7 +68,7 @@
               <th class="calculate monthly number-cell" id="C-Giải ngân mới">Giải ngân mới</th>
               <th class="calculate monthly number-cell" id="C-Vay thêm">Vay thêm</th>
               <th class="calculate monthly number-cell" id="C-Chuyển NB">Chuyển NB</th>
-              <th class="calculate monthly number-cell" id="C-Khác">Khác</th>
+              <th class="calculate monthly number-cell" id="C-Phí Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -90,7 +90,7 @@
               <th class="calculate daily number-cell" id="T-Gốc">Gốc</th>
               <th class="calculate daily number-cell" id="T-Lãi">Lãi</th>
               <th class="calculate daily number-cell" id="T-Nhận NB">Nhận NB</th>
-              <th class="calculate daily number-cell" id="T-Khác">Khác</th>
+              <th class="calculate daily number-cell" id="T-Phí Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -103,7 +103,7 @@
               <th class="calculate daily number-cell" id="C-Giải ngân mới">Giải ngân mới</th>
               <th class="calculate daily number-cell" id="C-Vay thêm">Vay thêm</th>
               <th class="calculate daily number-cell" id="C-Chuyển NB">Chuyển NB</th>
-              <th class="calculate daily number-cell" id="C-Khác">Khác</th>
+              <th class="calculate daily number-cell" id="C-Phí Khác">Khác</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -148,12 +148,23 @@
     const getCustomArray = (array, keys) => {
       var abc = _(array).groupBy('storeId').map((objs, key) => {
         return {
-          storeId: key, receipts: _(objs).groupBy('receiptId').map((objects, key) => {
+          storeId: key, receipts: _(objs).groupBy(item=>{
+            if(item.receiptId !== 'T-Gốc' &&item.receiptId !== 'C-Gốc' 
+            && item.receiptId !== 'T-Lãi'  && item.receiptId !== 'C-Lãi' 
+            && item.receiptId !== 'T-Giải ngân mới'  && item.receiptId !== 'C-Giải ngân mới' 
+            && item.receiptId !== 'T-Chuyển NB' && item.receiptId !== 'C-Chuyển NB'
+            && item.receiptId !== 'T-Nhận NB'  && item.receiptId !== 'C-Nhận NB' 
+            && item.receiptId !== 'T-Phạt'  && item.receiptId !== 'C-Phạt'){
+              item.receiptId = item.receiptType==1? 'T-Phí khác': 'C-Phí khác'
+            }
+            return item.receiptId
+          }).map((objects, key) => {
             var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
             return { receiptId: key, value: def.paid }
           }).value()
         }
       }).value()
+      console.log("ABC: ", abc)
       return abc
     }
 
