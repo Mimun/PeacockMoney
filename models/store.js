@@ -13,6 +13,7 @@ const storeSchema = new mongoose.Schema({
     value: {type: String},
     cType: {type: String, default: 'text'}
   }],
+  isActive: {type: Boolean, default: true},
   representatives: [{type: mongoose.Types.ObjectId, ref: 'Employee'}]
 })
 

@@ -13,6 +13,7 @@ detailEmployeeTemplate.innerHTML = `
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
   <button class="btn btn-danger btn-sm" id="btn-delete">Delete</button>
+  <button class="btn btn-danger btn-sm" id="btn-deactive">Delete</button>
 </div>`
 
 const detailInfoTemplate = document.createElement('div')
@@ -70,6 +71,8 @@ export const generateEmployeeManagementList = async (mainList, selectList, selec
       modalContent.innerHTML = ''
       modalBody.innerHTML = ''
       detailEmployeeTemplate.querySelector('#btn-edit').textContent = "Edit"
+      detailEmployeeTemplate.querySelector('#btn-deactive').textContent =cData.isActive?"Hủy kích hoạt": "Kích hoạt"
+
       cData.metadata.forEach(data => {
         if (data.cType === 'image') {
           var imageContainer = document.createElement('div')
@@ -162,6 +165,17 @@ detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-edit')
 detailEmployeeTemplate.querySelector('.modal-footer').querySelector('#btn-delete').addEventListener('click', event => {
   var { routerName, user } = param
   deleteBtnFunction(event, routerName, user)
+})
+
+// deactive button
+detailEmployeeTemplate.querySelector('.modal-footer #btn-deactive').addEventListener('click', event=>{
+  var {routerName, user} = param
+  var cData = event.target.closest('.modal-content').querySelector('.object-div').C_DATA
+  var updateObj = { ...cData,isActive: !cData.isActive }
+  makeRequest('PUT', routerName + "/" + cData._id,
+  'application/json', JSON.stringify(updateObj), () => {
+    window.location.reload()
+  })
 })
 
 const editBtnFunction = (event, routerName, user) => {

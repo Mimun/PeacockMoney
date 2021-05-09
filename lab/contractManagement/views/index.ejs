@@ -43,6 +43,7 @@
                   <tr>
                     <th id="image"></th>
                     <th id="templateName">Tên mẫu hợp đồng</th>
+                    <th id="templateId">Mã mẫu hợp đồng</th>
                     <th id="itemType">Loại tài sản</th>
                     <th id="itemTypeId">Mã loại tài sản</th>
                     <th id="paymentMethod">Kiểu vay</th>
@@ -196,8 +197,20 @@
         deleteContractTemplateButton.addEventListener('click', (event) => {
           makeRequest('DELETE', 'deleteContractTemplate/' + itemObj._id, 'application/json', JSON.stringify({}), window.location.reload())
         })
-        buttonOptions.appendChild(deleteContractTemplateButton)
+        // buttonOptions.appendChild(deleteContractTemplateButton)
+
+        // deactive button
+        const deactiveContractTemplateButton = document.createElement('button')
+        deactiveContractTemplateButton.id = 'btn-deactive-contract-template'
+        deactiveContractTemplateButton.className = 'btn btn-outline-danger btn-sm'
+        deactiveContractTemplateButton.innerHTML = itemObj.isActive? 'Hủy kích hoạt': 'Kích hoạt'
+        deactiveContractTemplateButton.addEventListener('click', event=>{
+          // console.log("OBJ UPDATE: ", {...itemObj, isActive: false})
+          makeRequest('PUT', `contractTemplates/${itemObj._id}`, 'application/json', JSON.stringify({...itemObj, isActive: !itemObj.isActive}), window.location.reload())
+        })
+        buttonOptions.appendChild(deactiveContractTemplateButton)
         modalFooter.appendChild(buttonOptions)
+
         var contractTemplateImage = findNestedObj(itemObj, 'name', 'image').value
         clone.querySelector('img').setAttribute('src', contractTemplateImage)
 

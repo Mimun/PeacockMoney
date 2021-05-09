@@ -13,6 +13,7 @@ const employeeSchema = new mongoose.Schema({
     value: { type: String },
     cType: { type: String, default: 'text' }
   }],
+  isActive: {type: Boolean, default: true},
   isCheckMember: { type: Boolean, default: false },
   isApproveMember: { type: Boolean, default: false }
 })

@@ -13,6 +13,7 @@ detailStoreTemplate.innerHTML = `
 <div class="modal-footer d-flex justify-content-center">
   <button class="btn btn-raised btn-primary btn-sm" id="btn-edit">Edit</button>
   <button class="btn btn-raised btn-primary btn-sm" id="btn-money-report">Báo cáo tiền PGD</button>
+  <button class="btn btn-raised btn-primary btn-sm" id="btn-deactive"></button>
 </div>`
 
 const detailInfoTemplate = document.createElement('div')
@@ -62,62 +63,66 @@ export const generateStoreManagementList = async (mainList, selectList, elementN
       console.log('event: ', cData)
       detailStoreTemplate.querySelector('.object-div').C_DATA = cData
 
-      $("#modalContactForm").on('show.bs.modal', () => {
-        modalContent.innerHTML = ''
-        modalBody.innerHTML = ''
-        detailStoreTemplate.querySelector('#btn-edit').textContent = "Edit"
-        cData.metadata.forEach(data => {
-          if (data.cType !== 'select') {
-            const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
-            var inputDiv = detailInfoTemplateClone.querySelector('input')
-            var labelDiv = detailInfoTemplateClone.querySelector('label')
-            setInfo(data, inputDiv)
-            labelDiv.innerHTML = data.dataVie
-            // const script = document.createElement('script')
-            // script.src = '/mdbootstrap/js/mdb.min.js'
-            // detailInfoTemplateClone.prepend(script)
-            modalBody.appendChild(detailInfoTemplateClone)
-          }
-        })
-        if (cData.representatives.length !== 0) {
-          cData.representatives.forEach(representative => {
-            var isInSelectList = false
-            if (typeof representative === "object") {
-              selectList.forEach(selectOption => {
-                if (representative._id === selectOption._id) {
-                  isInSelectList = true
-                }
-              })
-              if (isInSelectList) {
-                createSelect(select, representative._id, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
-              } else {
-                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
-              }
-            } else if (typeof representative === "string") {
-              selectList.forEach(selectOption => {
-                if (representative === selectOption._id) {
-                  isInSelectList = true
-                }
-              })
-              if (isInSelectList) {
-                createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
-
-              } else {
-                createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
-
-              }
-            }
+      // $("#modalContactForm").on('show.bs.modal', () => {
 
 
-          })
+      // })
+      modalContent.innerHTML = ''
+      modalBody.innerHTML = ''
+      detailStoreTemplate.querySelector('#btn-edit').textContent = "Edit"
+      detailStoreTemplate.querySelector('#btn-deactive').textContent = cData.isActive? "Hủy kích hoạt": "Kích hoạt"
 
-        } else {
-          createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
-
+      cData.metadata.forEach(data => {
+        if (data.cType !== 'select') {
+          const detailInfoTemplateClone = detailInfoTemplate.cloneNode(true)
+          var inputDiv = detailInfoTemplateClone.querySelector('input')
+          var labelDiv = detailInfoTemplateClone.querySelector('label')
+          setInfo(data, inputDiv)
+          labelDiv.innerHTML = data.dataVie
+          // const script = document.createElement('script')
+          // script.src = '/mdbootstrap/js/mdb.min.js'
+          // detailInfoTemplateClone.prepend(script)
+          modalBody.appendChild(detailInfoTemplateClone)
         }
-        modalContent.appendChild(detailStoreTemplate)
-
       })
+
+      if (cData.representatives.length !== 0) {
+        cData.representatives.forEach(representative => {
+          var isInSelectList = false
+          if (typeof representative === "object") {
+            selectList.forEach(selectOption => {
+              if (representative._id === selectOption._id) {
+                isInSelectList = true
+              }
+            })
+            if (isInSelectList) {
+              createSelect(select, representative._id, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
+            } else {
+              createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
+            }
+          } else if (typeof representative === "string") {
+            selectList.forEach(selectOption => {
+              if (representative === selectOption._id) {
+                isInSelectList = true
+              }
+            })
+            if (isInSelectList) {
+              createSelect(select, representative, 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
+
+            } else {
+              createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
+
+            }
+          }
+
+
+        })
+
+      } else {
+        createSelect(select, '', 'representative-select', 'select-representative', representativeSelectOptions, selectLabel, 'Người đại diện', selectContainer)
+
+      }
+      modalContent.appendChild(detailStoreTemplate)
       $("#modalContactForm").modal('show')
       $('#modalContactForm').on('hidden.bs.modal', () => {
         console.log('this is called befor hidding')
@@ -179,6 +184,17 @@ modalFooter.querySelector('#btn-edit').addEventListener('click', event => {
   event.target.textContent = event.target.textContent === "Edit" ? event.target.textContent = "Update" : event.target.textContent = "Edit"
 
 
+})
+
+// deactive button
+modalFooter.querySelector('#btn-deactive').addEventListener('click', event => {
+  var { routerName } = param
+  var cData = event.target.closest('.modal-content').querySelector('.object-div').C_DATA
+  console.log("CDATA: ", cData)  
+  makeRequest('PUT', routerName + '/' + cData._id, 'application/json', JSON.stringify({...cData, isActive: !cData.isActive}), (res)=>{
+    // console.log('RESPONSE: ', res)
+    window.location.reload()
+  })
 })
 
 // delete button

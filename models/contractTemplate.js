@@ -22,6 +22,7 @@ const contractTemplateSchema = new mongoose.Schema({
     dataVie: { type: String },
     dataKor: { type: String, default: 'korean string' }
   }],
+  isActive: {type: Boolean, default: true},
   penaltyRules: [{ type: Object }],
   blockRules: [{ type: Object }]
 })

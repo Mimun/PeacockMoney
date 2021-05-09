@@ -22,7 +22,28 @@
               <th id="type">Loại</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <tr>
+              <th>T-Gốc</th>
+              <th>1</th>
+            </tr>
+            <tr>
+              <th>T-Lãi</th>
+              <th>1</th>
+            </tr>
+            <tr>
+              <th>T-Trả bớt</th>
+              <th>1</th>
+            </tr>
+            <tr>
+              <th>C-Vay thêm</th>
+              <th>2</th>
+            </tr>
+            <tr>
+              <th>C-Giải ngân mới</th>
+              <th>2</th>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -77,6 +98,10 @@
     var receiptIdList = JSON.parse('<%- JSON.stringify(receiptIdList) %>');
     console.log('receipt id: ', receiptIdList)
 
+    var modalFooter = document.querySelector('.modal .modal-footer')
+    var modalBody = document.querySelector('.modal .modal-body')
+    var modalContent = document.querySelector('.modal .modal-content')
+
     // generate item type list
     if (receiptIdList.length !== 0) {
       receiptIdList.forEach(receipt => {
@@ -86,6 +111,20 @@
           th.innerHTML = receipt[element.id] ? receipt[element.id] : '-'
           tr.appendChild(th)
         })
+        tr.addEventListener('click',event=>{
+          $(".modal").modal('show')
+          modalContent.C_DATA = receipt
+          var button = modalFooter.querySelector('button')
+          button.id = "edit"
+          button.innerHTML = "Sửa"
+          modalBody.querySelectorAll('input').forEach(input=>{
+            if(input.type!== 'radio'){
+              input.value = receipt[input.id]
+            }else {
+              input.value === receipt[input.id]? input.setAttribute('checked', true): input.removeAttribute('checked')
+            }
+          })
+        })
         document.querySelector('table tbody').appendChild(tr)
       })
     }
@@ -93,6 +132,14 @@
     // btn create item type
     document.querySelector('#btn-create-item-type').addEventListener('click', (event) => {
       $(".modal").modal('show')
+      var button = modalFooter.querySelector('button')
+      button.id = "submit"
+      button.innerHTML = "Tạo"
+      modalBody.querySelectorAll('input').forEach(input=>{
+        if(input.type!=='radio'){
+          input.value = ''
+        }
+      })
     })
 
     // submit button
@@ -103,10 +150,24 @@
       document.querySelector('.modal-body').querySelectorAll('input:not([type="radio"])').forEach(input => {
         postObj[input.id] = input.value
       })
-      console.log('postObj: ', postObj)
-      makeRequest('POST', 'receiptId', 'application/json', JSON.stringify(postObj), () => {
-        window.location.reload()
-      })
+     
+      switch (event.target.id) {
+        case 'submit':
+          console.log('postObj submit: ', postObj)
+          makeRequest('POST', 'receiptId', 'application/json', JSON.stringify(postObj), () => {
+            window.location.reload()
+          })
+          break;
+        case 'edit':
+          console.log('postObj edit: ', {...postObj, _id: modalContent.C_DATA._id})
+          makeRequest('PUT', 'receiptId/'+modalContent.C_DATA._id, 'application/json', JSON.stringify({...postObj, _id: modalContent.C_DATA._id}), () => {
+            window.location.reload()
+          })
+          break;
+        default:
+          break;
+      }
+     
     })
 
   </script>

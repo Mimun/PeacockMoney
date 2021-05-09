@@ -23,7 +23,7 @@ const store = require('../../../models/store');
 const checkRole = require('../../../js/roleMiddlleware')
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     // res.render('index', { title: 'Express' });
     res.redirect('employees')
 });
@@ -60,7 +60,7 @@ router.get('/employees', (req, res, next) => {
                 console.error(error)
             }
         }
-    }, async(err, results) => {
+    }, async (err, results) => {
         if (err) throw err
         var storeList = []
         if (results.stores.length !== 0) {
@@ -117,7 +117,7 @@ router.post('/multEmployee', (req, res, next) => {
     req.url = '/systemMng/employees'
     req.type = 'POST'
     next()
-}, checkRole, async(req, res) => {
+}, checkRole, async (req, res) => {
     // console.log('req.body: ', req.body)
     await req.body.dbObjects.forEach(object => {
         var employee = new Employee(object)
@@ -143,13 +143,13 @@ router.put('/employees/:id', (req, res, next) => {
         if (isBase64) {
             let base64Ext = employeeAvatar.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0].split('/')[1]
             console.log('extension 1: ', base64Ext)
-                // const imageBuffer = new Buffer(base64data, "base64");
+            // const imageBuffer = new Buffer(base64data, "base64");
             fs.writeFileSync(`public/images/${name}.${base64Ext}`, base64data, 'base64');
             findNestedObj(req.body.metadata, 'name', 'avatar').value = `/images/${name}.${base64Ext}`
         }
     }
 
-    Employee.findByIdAndUpdate({ _id: req.params.id }, { $set: { 'metadata': req.body.metadata, 'store': req.body.store } }, (err, result) => {
+    Employee.findByIdAndUpdate({ _id: req.params.id }, { $set: req.body }, (err, result) => {
         if (err) throw err
         res.send('Update successfully!')
     })
@@ -209,7 +209,7 @@ router.get('/stores', (req, res, next) => {
         },
         employees: callback => {
             try {
-                Employee.find({}).exec(callback)
+                Employee.find({ isActive: true }).exec(callback)
             } catch (err) {
                 console.error(err)
             }
@@ -255,7 +255,7 @@ router.post('/stores', (req, res, next) => {
     var store = new Store(req.body)
 
     // create warehouse
-    var warehouseBasedOnStore = {...req.body, metadata: [], store: store._id }
+    var warehouseBasedOnStore = { ...req.body, metadata: [], store: store._id }
     req.body.metadata.forEach(data => {
         if (data.name === "name" || data.name === "id" || data.name === "address" ||
             data.name === "phoneNumber" || data.name === "email" || data.name === "note") {
@@ -300,7 +300,7 @@ router.put('/stores/:id', (req, res, next) => {
     console.log('id: ', req.params.id)
     async.parallel({
         store: callback => {
-            Store.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }, { new: true }).exec(callback)
+            Store.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives, isActive: req.body.isActive } }, { new: true }).exec(callback)
         },
         warehouse: callback => {
             Warehouse.findByIdAndUpdate({ _id: req.params.id }, { $set: { "metadata": req.body.metadata, "representatives": req.body.representatives } }).exec(callback)
@@ -313,48 +313,48 @@ router.put('/stores/:id', (req, res, next) => {
 
         },
 
-    }, async(err, results) => {
+    }, async (err, results) => {
         if (err) throw err
         console.log('contract found: ', results.contracts.length)
         await results.contracts.forEach(async contract => {
-                var contractCustomId = contract.id.split('.')
-                contractCustomId[0] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
-                var newContractCustomId = contractCustomId.join('.')
-                console.log('new contract id: ', newContractCustomId)
+            var contractCustomId = contract.id.split('.')
+            contractCustomId[0] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
+            var newContractCustomId = contractCustomId.join('.')
+            console.log('new contract id: ', newContractCustomId)
 
-                try {
-                    await Property.find({ contract: contract._id }).exec((err, result2) => {
-                        if (err) throw err
-                        result2.forEach(property => {
-                            var customPropertyId = property.id.split('.')
-                            customPropertyId[1] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
-                            var newPropertyCustomId = customPropertyId.join('.')
-                            try {
-                                Property.findOneAndUpdate({ _id: property._id }, { $set: { 'id': newPropertyCustomId } }).exec((err, result3) => {
-                                    if (err) throw err
-                                })
-                            } catch (error) {
-                                console.error(error)
-                            }
-
-
-                        })
-                    })
-                } catch (error) {
-                    console.error(error)
-                }
-
-
-                await Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'store.value': results.store, 'id': newContractCustomId } }).exec(err, result => {
+            try {
+                await Property.find({ contract: contract._id }).exec((err, result2) => {
                     if (err) throw err
+                    result2.forEach(property => {
+                        var customPropertyId = property.id.split('.')
+                        customPropertyId[1] = getNestedValue(findNestedObj(results.store.metadata, 'name', 'id'))
+                        var newPropertyCustomId = customPropertyId.join('.')
+                        try {
+                            Property.findOneAndUpdate({ _id: property._id }, { $set: { 'id': newPropertyCustomId } }).exec((err, result3) => {
+                                if (err) throw err
+                            })
+                        } catch (error) {
+                            console.error(error)
+                        }
+
+
+                    })
                 })
+            } catch (error) {
+                console.error(error)
+            }
+
+
+            await Contract.findOneAndUpdate({ _id: contract._id }, { $set: { 'store.value': results.store, 'id': newContractCustomId } }).exec(err, result => {
+                if (err) throw err
             })
-            // await Employee.find({'metadata.value': findNestedObj(results.store.metadata, 'name', 'id').value}).exec((err, result2)=>{
-            //   if(err) throw err
-            //   console.log('employee found: ', result2.l)
-            //   // findNestedObj(result2.metadata, 'name', 'store').value = findNestedObj(results.store.metadata, 'name', 'id').value
-            //   // Employee.findOneAndUpdate({_id: result2._id}, {$set: result2}).exec((err, result)=>{
-            //   //   if(err) throw err
+        })
+        // await Employee.find({'metadata.value': findNestedObj(results.store.metadata, 'name', 'id').value}).exec((err, result2)=>{
+        //   if(err) throw err
+        //   console.log('employee found: ', result2.l)
+        //   // findNestedObj(result2.metadata, 'name', 'store').value = findNestedObj(results.store.metadata, 'name', 'id').value
+        //   // Employee.findOneAndUpdate({_id: result2._id}, {$set: result2}).exec((err, result)=>{
+        //   //   if(err) throw err
 
         //   // })
         // })
@@ -413,13 +413,13 @@ router.get('/warehouses', (req, res, next) => {
         warehouses: callback => {
             try {
                 Warehouse.find({}).populate([{
-                        path: 'store',
-                        model: 'Store'
-                    },
-                    {
-                        path: 'representatives',
-                        model: 'Employee'
-                    }
+                    path: 'store',
+                    model: 'Store'
+                },
+                {
+                    path: 'representatives',
+                    model: 'Employee'
+                }
                 ]).exec(callback)
             } catch (err) {
                 console.error(err)
@@ -427,19 +427,19 @@ router.get('/warehouses', (req, res, next) => {
         },
         employees: callback => {
             try {
-                Employee.find({}).exec(callback)
+                Employee.find({ isActive: true }).exec(callback)
             } catch (err) {
                 console.error(err)
             }
         },
         stores: callback => {
             try {
-                Store.find({}).exec(callback)
+                Store.find({ isActive: true }).exec(callback)
             } catch (err) {
                 console.error(err)
             }
         }
-    }, async(err, results) => {
+    }, async (err, results) => {
         if (err) throw err
         var employeeList = []
         var storeList = []
@@ -797,7 +797,7 @@ router.post('/statistic/search', (req, res) => {
 const callback = (result, dateConditions, res) => {
     console.log('date conditions: ', dateConditions)
     var array = []
-        // property list
+    // property list
     result.forEach(res => {
         res.movement.forEach(movement => {
             var importDate = formatDate(movement.importDate)
@@ -806,46 +806,46 @@ const callback = (result, dateConditions, res) => {
                 var toDate = formatDate(dateConditions.to)
                 if (fromDate <= importDate && importDate <= toDate) {
                     array.push({
-                            importDate: formatDate(movement.importDate),
-                            importNote: movement.importNote,
-                            storeId: movement.storeId,
-                            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
-                            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
-                            warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
-                            warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
-                            contractId: res.contract ? res.contract.id : 'None',
-                            propertyId: res.id,
-                            propertyName: res.infos ? res.infos[0].value : 'None',
-                            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
-                            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
-                            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
-                            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
-                            contract_Id: res.contract._id
-                        })
-                        // return res
+                        importDate: formatDate(movement.importDate),
+                        importNote: movement.importNote,
+                        storeId: movement.storeId,
+                        warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+                        warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+                        warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
+                        warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
+                        contractId: res.contract ? res.contract.id : 'None',
+                        propertyId: res.id,
+                        propertyName: res.infos ? res.infos[0].value : 'None',
+                        customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+                        customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
+                        itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+                        itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+                        contract_Id: res.contract._id
+                    })
+                    // return res
                 }
             } else {
                 var compareDate = formatDate(Date.now())
                 if (importDate === compareDate) {
                     array.push({
-                            importDate: formatDate(movement.importDate),
-                            importNote: movement.importNote,
-                            storeId: movement.storeId,
-                            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
-                            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
-                            warehouseFrom: movement.warehouseFrom,
-                            warehouseTo: movement.warehouseTo,
-                            contractId: res.contract ? res.contract.id : 'None',
-                            propertyId: res.id,
-                            propertyName: res.infos ? res.infos[0].value : 'None',
-                            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
-                            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
-                            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
-                            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
-                            contract_Id: res.contract._id
+                        importDate: formatDate(movement.importDate),
+                        importNote: movement.importNote,
+                        storeId: movement.storeId,
+                        warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+                        warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+                        warehouseFrom: movement.warehouseFrom,
+                        warehouseTo: movement.warehouseTo,
+                        contractId: res.contract ? res.contract.id : 'None',
+                        propertyId: res.id,
+                        propertyName: res.infos ? res.infos[0].value : 'None',
+                        customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+                        customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
+                        itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+                        itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+                        contract_Id: res.contract._id
 
-                        })
-                        // return res
+                    })
+                    // return res
                 }
             }
         })
@@ -860,7 +860,7 @@ const callback = (result, dateConditions, res) => {
 const callback2 = (result, dateConditions, res) => {
     console.log('date conditions: ', dateConditions)
     var array = []
-        // property list
+    // property list
     result.forEach(res => {
         res.movement.forEach(movement => {
             var exportDate = formatDate(movement.exportDate)
@@ -869,47 +869,47 @@ const callback2 = (result, dateConditions, res) => {
                 var toDate = formatDate(dateConditions.to)
                 if (fromDate <= exportDate && exportDate <= toDate) {
                     array.push({
-                            exportDate: formatDate(movement.exportDate),
-                            exportNote: movement.exportNote,
-                            storeId: movement.storeId,
-                            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
-                            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
-                            warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
-                            warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
-                            contractId: res.contract ? res.contract.id : 'None',
-                            propertyId: res.id,
-                            propertyName: res.infos ? res.infos[0].value : 'None',
-                            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
-                            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
-                            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
-                            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
-                            contract_Id: res.contract._id
+                        exportDate: formatDate(movement.exportDate),
+                        exportNote: movement.exportNote,
+                        storeId: movement.storeId,
+                        warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+                        warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+                        warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
+                        warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
+                        contractId: res.contract ? res.contract.id : 'None',
+                        propertyId: res.id,
+                        propertyName: res.infos ? res.infos[0].value : 'None',
+                        customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+                        customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
+                        itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+                        itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+                        contract_Id: res.contract._id
 
-                        })
-                        // return res
+                    })
+                    // return res
                 }
             } else {
                 var compareDate = formatDate(Date.now())
                 if (exportDate === compareDate) {
                     array.push({
-                            exportDate: formatDate(movement.exportDate),
-                            exportNote: movement.exportNote,
-                            storeId: movement.storeId,
-                            warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
-                            warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
-                            warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
-                            warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
-                            contractId: res.contract ? res.contract.id : 'None',
-                            propertyId: res.id,
-                            propertyName: res.infos ? res.infos[0].value : 'None',
-                            customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
-                            customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
-                            itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
-                            itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
-                            contract_Id: res.contract._id
+                        exportDate: formatDate(movement.exportDate),
+                        exportNote: movement.exportNote,
+                        storeId: movement.storeId,
+                        warehouseId: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'id')) : 'Out store',
+                        warehouseName: res.currentWarehouse ? getNestedValue(findNestedObj(res.currentWarehouse.metadata, 'name', 'name')) : 'Out store',
+                        warehouseFrom: movement.warehouseFrom !== '' ? movement.warehouseFrom : 'None',
+                        warehouseTo: movement.warehouseTo !== '' ? movement.warehouseTo : 'None',
+                        contractId: res.contract ? res.contract.id : 'None',
+                        propertyId: res.id,
+                        propertyName: res.infos ? res.infos[0].value : 'None',
+                        customerId: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customerId')) : 'No customer id',
+                        customerName: res.contract.contractMetadata ? getNestedValue(findNestedObj(res.contract.contractMetadata, 'name', 'customer')) : 'No customer',
+                        itemTypeId: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemTypeId')),
+                        itemType: getNestedValue(findNestedObj(res.contract.templateMetadata, 'name', 'itemType')),
+                        contract_Id: res.contract._id
 
-                        })
-                        // return res
+                    })
+                    // return res
                 }
             }
         })
@@ -947,6 +947,23 @@ router.post('/itemType', (req, res, next) => {
         if (err) throw err
         res.send('Save item type successfully!')
     })
+})
+
+router.put('/itemType/:id', (req, res) => {
+    try {
+        if (req.body._id) {
+            ItemType.findOneAndUpdate({ _id: req.body._id }, { $set: req.body }).exec((err, result) => {
+                if (err) throw err
+                res.send('Update successfully!')
+            })
+        } else {
+            res.send('Update failed')
+        }
+
+    } catch (error) {
+        console.error(error)
+
+    }
 })
 
 
@@ -1031,7 +1048,7 @@ const createRegexp = (array) => {
 // create search array for report
 const createSearchArrayForReport = (array) => {
     var searchArray = []
-        // search for metadata, infos, current warehouse
+    // search for metadata, infos, current warehouse
     var arrayMetadataConditions = []
     var arrayInfosConditions = []
     var arrayCurrentWarehouseConditions = []
@@ -1053,8 +1070,8 @@ const createSearchArrayForReport = (array) => {
         arrayPropertyIdConditions.push({ 'id': regex })
         arrayItemTypeIdConditions.push({ 'contract.templateMetadata.value': regex })
         arrayItemTypeConditions.push({ 'contract.templateMetadata.value': regex })
-            // arrayImportDateConditions.push({ 'movement.importDate': regex })
-            // arrayExportDateConditions.push({ 'movement.exportDate': regex })
+        // arrayImportDateConditions.push({ 'movement.importDate': regex })
+        // arrayExportDateConditions.push({ 'movement.exportDate': regex })
 
     })
 
@@ -1178,23 +1195,23 @@ router.put('/funds/:id', (req, res, next) => {
                 case ('cash'):
                     if (fundFrom && !_.isEmpty(fundFrom)) {
                         fundFrom.cash = parseFloat(fundFrom.cash) - parseFloat(obj.value)
-                        fundFrom.transHistory.push({...obj, value: -obj.value })
+                        fundFrom.transHistory.push({ ...obj, value: -obj.value })
                     }
 
                     if (fundTo && !_.isEmpty(fundTo)) {
                         fundTo.cash = parseFloat(fundTo.cash) + parseFloat(obj.value)
-                        fundTo.transHistory.push({...obj, value: +obj.value })
+                        fundTo.transHistory.push({ ...obj, value: +obj.value })
                     }
                     break
                 case ('iCash'):
                     if (fundFrom && !_.isEmpty(fundFrom)) {
                         fundFrom.iCash = parseFloat(fundFrom.iCash) - parseFloat(obj.value)
-                        fundFrom.transHistory.push({...obj, value: -obj.value })
+                        fundFrom.transHistory.push({ ...obj, value: -obj.value })
                     }
 
                     if (fundTo && !_.isEmpty(fundTo)) {
                         fundTo.iCash = parseFloat(fundTo.iCash) + parseFloat(obj.value)
-                        fundTo.transHistory.push({...obj, value: +obj.value })
+                        fundTo.transHistory.push({ ...obj, value: +obj.value })
                     }
                     break
                 default:
@@ -1461,7 +1478,7 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
                             if (receipt !== null) {
                                 totalMoneyReport.push({
                                     ...receipt,
-                                    storeId: receipt.id? receipt.id.split('.')[0]: '-',
+                                    storeId: receipt.id ? receipt.id.split('.')[0] : '-',
                                     itemType: itemType,
                                     itemTypeId: itemTypeId,
                                     contractId: contract.id,
@@ -1565,7 +1582,7 @@ const handleGetContract = (contracts, properties) => {
                 numberOfLateDays = 0,
                 lastPaidDate = '',
                 interestSoFar = 0
-                // number of late periods
+            // number of late periods
             if (contract.loanPackage) {
                 var latePeriodsArray = contract.loanPackage.periodRecords.filter(period => {
                     return period.daysBetween > 0 && period.periodStatus === false
@@ -1634,28 +1651,28 @@ const handleGetContract = (contracts, properties) => {
                 numberOfLateDays += period.daysBetween > 0 ? period.daysBetween : 0
             })
             var obj = {
-                    contract_Id: contract._id,
+                contract_Id: contract._id,
 
-                    storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
-                    contractId: contract.id,
-                    customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
-                    contractCreatedDate: formatDate(contractCreatedDate),
-                    contractEndingDate: formatDate(contractEndingDate),
-                    loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
-                    itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
-                    itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
-                    owedLoanNotDue,
-                    owedLoanDue,
-                    owedInterest,
-                    totalOwedDue,
-                    loanDaysOverdue: loanDaysOverdue <= 0 ? 0 : loanDaysOverdue,
-                    numberOfLateDays,
-                    numberOfLatePeriods,
-                    reminding_status: contract.loanPackage.reminding_status ? contract.loanPackage.reminding_status : '',
-                    reminding_detail: contract.loanPackage.reminding_detail ? contract.loanPackage.reminding_detail : '',
-                    loanPackage: contract.loanPackage
-                }
-                // console.log('obj acb: ', obj)
+                storeId: getNestedValue(findNestedObj(contract.store.value.metadata, 'name', 'id')),
+                contractId: contract.id,
+                customer: getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'customer')),
+                contractCreatedDate: formatDate(contractCreatedDate),
+                contractEndingDate: formatDate(contractEndingDate),
+                loan: parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) ? parseFloat(getNestedValue(findNestedObj(contract.contractMetadata, 'name', 'loan'))) : 0,
+                itemType: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')),
+                itemName: getNestedValue(findNestedObj(contract.templateMetadata, 'name', 'itemType')).split('loai')[1],
+                owedLoanNotDue,
+                owedLoanDue,
+                owedInterest,
+                totalOwedDue,
+                loanDaysOverdue: loanDaysOverdue <= 0 ? 0 : loanDaysOverdue,
+                numberOfLateDays,
+                numberOfLatePeriods,
+                reminding_status: contract.loanPackage.reminding_status ? contract.loanPackage.reminding_status : '',
+                reminding_detail: contract.loanPackage.reminding_detail ? contract.loanPackage.reminding_detail : '',
+                loanPackage: contract.loanPackage
+            }
+            // console.log('obj acb: ', obj)
             return obj
         }
     })
@@ -1664,7 +1681,7 @@ const handleGetContract = (contracts, properties) => {
 }
 
 // debt report
-router.get('/debtReport', async(req, res) => {
+router.get('/debtReport', async (req, res) => {
     async.parallel({
         contracts: callback => {
             Contract.find({}).exec(callback)
@@ -1672,7 +1689,7 @@ router.get('/debtReport', async(req, res) => {
         properties: callback => {
             Property.find({}).populate('contract').exec(callback)
         }
-    }, async(err, results) => {
+    }, async (err, results) => {
         if (err) throw err
         const debts = handleGetContract(results.contracts, results.properties)
         res.render('debtReport', { debts })
@@ -1705,6 +1722,18 @@ router.post('/receiptId', (req, res, next) => {
     })
 })
 
+router.put('/receiptId/:id', (req, res) => {
+    try {
+        ReceiptId.findOneAndUpdate({ _id: req.body._id }, { $set: req.body }).exec((err, result) => {
+            if (err) throw err
+            res.send('Update successfully!')
+        })
+    } catch (error) {
+        console.error(error)
+
+    }
+})
+
 // role management
 router.get('/roles', (req, res, next) => {
     req.url = '/systemMng/roles'
@@ -1716,7 +1745,7 @@ router.get('/roles', (req, res, next) => {
             Role.find({}).exec(callback)
         },
         stores: callback => {
-            Store.find({}).exec(callback)
+            Store.find({ isActive: true }).exec(callback)
         }
     }, (err, results) => {
         if (err) throw err
@@ -1740,7 +1769,7 @@ router.post('/roles', (req, res, next) => {
     req.url = '/systemMng/roles'
     req.type = 'POST'
     next()
-}, checkRole, async(req, res) => {
+}, checkRole, async (req, res) => {
     console.log('req body: ', req.body)
     Role.findOne({ name: req.body.name }).exec((err, result) => {
         if (err) throw err
@@ -1766,10 +1795,10 @@ router.delete('/roles/:id', (req, res, next) => {
     })
 })
 
-router.post('/jobTitle', async(req, res) => {
+router.post('/jobTitle', async (req, res) => {
     console.log('req body: ', req.body)
     try {
-        Role.findOne({ name: req.body.role }).select('name abilities').exec(async(err, result) => {
+        Role.findOne({ name: req.body.role }).select('name abilities').exec(async (err, result) => {
             if (err) throw err
             if (result) {
                 await new JobTitle({

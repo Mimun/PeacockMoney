@@ -145,10 +145,10 @@ const filterContract = (value1, value2, value3, req, res, next) => {
     result1: (callback) => {
       try {
         if (value1 !== '') {
-          ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
+          ContractTemplate.find({isActive: true}).elemMatch('templateMetadata', { 'value': value1 }).exec(callback)
 
         } else {
-          ContractTemplate.find({}).exec(callback)
+          ContractTemplate.find({isActive: true}).exec(callback)
         }
 
       } catch (err) {
@@ -158,10 +158,10 @@ const filterContract = (value1, value2, value3, req, res, next) => {
     result2: (callback) => {
       try {
         if (value2 !== '') {
-          ContractTemplate.find({}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
+          ContractTemplate.find({isActive: true}).elemMatch('templateMetadata', { 'value': value2 }).exec(callback)
 
         } else {
-          ContractTemplate.find({}).exec(callback)
+          ContractTemplate.find({isActive: true}).exec(callback)
         }
 
       } catch (err) {
@@ -170,7 +170,7 @@ const filterContract = (value1, value2, value3, req, res, next) => {
     },
     result3: callback => {
       try {
-        ContractTemplate.find({}).exec(callback)
+        ContractTemplate.find({isActive: true}).exec(callback)
 
       } catch (err) {
         next(err)
@@ -276,14 +276,14 @@ router.get('/contractTemplates/:id', (req, res, next) => {
     },
     store: callback => {
       var queries = req.stores.map(item => {
-        return { 'metadata.value': item }
+        return { 'metadata.value': item,isActive: true }
       })
       console.log('STORE QUERIES: ', queries)
       if (queries.length !== 0) {
         Store.find({ $or: queries }).exec(callback)
 
       } else {
-        Store.find({}).exec(callback)
+        Store.find({isActive: true}).exec(callback)
 
       }
     },
@@ -300,6 +300,21 @@ router.get('/contractTemplates/:id', (req, res, next) => {
   })
 })
 
+// update contract template
+router.put('/contractTemplates/:id', (req, res) => {
+  console.log('REQ: ', req.body._id)
+  try {
+    ContractTemplate.findOneAndUpdate({ _id: req.body._id }, { $set: {isActive: req.body.isActive} }).exec((err, result) => {
+      if (err) throw err
+      res.send('Update successfully!')
+    })
+  } catch (error) {
+    console.error(error)
+
+  }
+
+})
+
 router.post('/getStores', (req, res, next) => {
   console.log('req.body: ', req.body)
   Store.findOne({ _id: req.body.data }).exec((err, result) => {
@@ -309,10 +324,10 @@ router.post('/getStores', (req, res, next) => {
     if (result) {
       async.parallel({
         representatives: callback => {
-          Employee.find({ _id: { $in: result.representatives } }).exec(callback)
+          Employee.find({ _id: { $in: result.representatives }, isActive: true }).exec(callback)
         },
         employees: callback => {
-          Employee.find({ "metadata.value": findNestedObj(result, 'name', 'id').value }).exec(callback)
+          Employee.find({ "metadata.value": findNestedObj(result, 'name', 'id').value, isActive: true }).exec(callback)
         }
       }, async (err, results) => {
         if (err) throw err
@@ -471,13 +486,16 @@ const handleGetContract = (contracts, properties, req) => {
         //     typeofPropertyContractId: typeof property.contract._id,
         //   contractId: contract._id,
         // typeofContractId: typeof contract._id})
-        if (property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)) {
-          propertiesArray.push({
-            isIn: property.isIn,
-            name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
-            store: getNestedValue(findNestedObj(property.currentWarehouse.metadata, 'name', 'name'))
-          })
+        if (property.contract) {
+          if (property && JSON.stringify(property.contract._id) === JSON.stringify(contract._id)) {
+            propertiesArray.push({
+              isIn: property.isIn,
+              name: getNestedValue(findNestedObj(property.infos, 'name', 'Tên tài sản')),
+              store: getNestedValue(findNestedObj(property.currentWarehouse.metadata, 'name', 'name'))
+            })
+          }
         }
+
       })
       console.log('PROPERTY ARRAY: ', propertiesArray)
 
@@ -553,7 +571,7 @@ router.get('/contracts', (req, res, next) => {
   try {
     async.parallel({
       contract: callback => {
-        Contract.find({}, {}, { sort: { '_id': -1 } }).exec(callback)
+        Contract.find({ contractStatus: 'approved' }, {}, { sort: { '_id': -1 } }).exec(callback)
       },
       contractNow: callback => {
         Contract.find({}).elemMatch('contractMetadata', { 'value': formatDate(new Date(Date.now()), 3) }).exec(callback)

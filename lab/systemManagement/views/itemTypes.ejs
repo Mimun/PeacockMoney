@@ -65,10 +65,15 @@
     var itemTypeList = <%- JSON.stringify(itemTypeList) %>;
     console.log('itemType: ', itemTypeList)
 
+    const modal = document.querySelector('.modal')
+    const modalBody = document.querySelector('.modal-body')
+    const modalFooter = document.querySelector('.modal-footer')
+
     // generate item type list
     if (itemTypeList.length !== 0) {
       itemTypeList.forEach(itemType => {
         var tr = document.createElement('tr')
+        modalBody.C_DATA = itemType
         for (var prop in itemType) {
           if (prop === 'name' || prop === 'id') {
             var td = document.createElement('td')
@@ -78,6 +83,22 @@
 
 
         }
+        
+        tr.addEventListener('click', event=>{
+          modalBody.querySelectorAll('input').forEach(input=>{
+            input.value = itemType[input.getAttribute('name')]
+            input.closest('.form-group').classList.add('is-filled')
+          })
+          var button = modalFooter.querySelector('button')
+          button.id = 'edit'
+          button.innerHTML = 'edit'
+          // button.addEventListener('click', event=>{
+          //   console.log('EDIT', event.target)
+          // })
+         
+          $(".modal").modal('show')
+        // $(tr).bootstrapMaterialDesign()
+        })
         document.querySelector('.table').querySelector('tbody').appendChild(tr)
       })
     }
@@ -85,21 +106,42 @@
     // btn create item type
     document.querySelector('#btn-create-item-type').addEventListener('click', (event) => {
       console.log('event: ', event)
+      modalBody.querySelectorAll('input').forEach(input=>{
+        input.value = ''
+      })
+      var button = modalFooter.querySelector('button')
+      button.id = 'submit'
+      button.innerHTML = 'submit'
       $(".modal").modal('show')
     })
 
     // submit button
     document.querySelector('#submit').addEventListener('click', (event) => {
-      console.log('event: ', event)
-
       var postObj = {}
       document.querySelector('.modal-body').querySelectorAll('input').forEach(input => {
         postObj[input.name] = input.value
       })
-      console.log('postObj: ', postObj)
-      makeRequest('POST', 'itemType', 'application/json', JSON.stringify(postObj), () => {
-        window.location.reload()
-      })
+      switch (event.target.innerText) {
+        case "EDIT":
+          console.log("EDIT")
+          console.log('postObj: ', postObj)
+          modalBody.C_DATA? postObj._id = modalBody.C_DATA._id: null
+
+          makeRequest('PUT', 'itemType/'+postObj._id, 'application/json', JSON.stringify(postObj), () => {
+            window.location.reload()
+          })
+          break;
+        case "SUBMIT":
+          console.log("SUBMIT")
+          console.log('postObj: ', postObj)
+          makeRequest('POST', 'itemType', 'application/json', JSON.stringify(postObj), () => {
+            window.location.reload()
+          })
+          break;
+        default:
+          break;
+      }
+     
     })
 
   </script>
