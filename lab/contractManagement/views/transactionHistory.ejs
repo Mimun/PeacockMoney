@@ -26,6 +26,8 @@
           <div class="row">
             <div class="col-5">
               <button class="btn btn-sm btn-default" id="btn-transfer">Chuyển tiền NB</button>
+              <button class="btn btn-sm btn-default" id="btn-convert">Quy đổi tiền</button>
+
               <table class="table table-responsive table-hover table-bordered table-striped table1">
                 <thead>
                   <tr>
@@ -151,6 +153,58 @@
         </div>
       </div>
 
+      <div class="modal fade" id="basicExampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header-2">
+              <h5 class="modal-title" id="exampleModalLabel">Quy đổi tiền</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body-2" data-type="1">
+              <div class="container">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="store" class="bmd-label-floating">Cửa hàng</label>
+                      <select id="store">
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="value" class="bmd-label-floating">Số tiền quy đổi</label>
+                      <input type="number" class="form-control" id="value">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="radio">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="type" value="cash"> Từ tiền mặt sang chuyển khoản
+                      </label>
+                    </div>
+                    <div class="radio">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="type" value="iCash">
+                        Từ chuyển khoản sang tiền mặt
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer-2">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+              <button type="button" class="btn btn-primary" id="convert">Chuyển</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -171,7 +225,8 @@
       option.innerHTML = `${fund.name} - ${fund.storeId}`
 
       document.querySelector('.modal-body select#from').appendChild(option.cloneNode(true))
-      document.querySelector('.modal-body select#to').appendChild(option)
+      document.querySelector('.modal-body select#to').appendChild(option.cloneNode(true))
+      document.querySelector('.modal-body-2 select#store').appendChild(option.cloneNode(true))
 
     });
 
@@ -358,7 +413,50 @@
         updateFund(receiptRecord)
       }
       console.log('obj: ', obj)
-      console.log('trans obj: ', receiptRecordForFrom)
+      console.log('trans obj: ', receiptRecord)
+
+    })
+
+    // convert
+    document.querySelector('button#btn-convert').addEventListener('click', (event)=>{
+      $('#basicExampleModal2').modal('show')
+
+    })
+
+    document.querySelector('button#convert').addEventListener('click', event=>{
+      var obj = {
+        date: new Date(Date.now())
+      }
+
+      document.querySelectorAll('.modal-body-2 select, .modal-body-2 input:not([type="radio"]), .modal-body-2 input[type="radio"]:checked').forEach(element => {
+        obj[element.id] = element.value
+      })
+
+      var chosenStore = document.querySelector('.modal-body-2 select#store')
+
+      var receiptRecord = {
+        root: 0,
+        paid: parseFloat(obj.value),
+        remain: 0,
+        receiptId: '',
+        receiptReason: '',
+        date: new Date(Date.now()),
+        type: obj.type,
+        // receiptType: 2,
+        from:obj.store,
+        to: obj.store,
+        storeId: obj.store,
+        storeName: chosenStore.options[chosenStore.selectedIndex].id,
+        customerId: obj.store,
+        customerName: chosenStore.options[chosenStore.selectedIndex].id,
+        employeeId: '-',
+        employeeName: '-',
+      }
+
+      updateFund2(receiptRecord)
+
+      console.log('obj: ', obj)
+      console.log('trans obj: ', receiptRecord)
     })
 
     const updateFund = (receiptRecord) => {
@@ -374,6 +472,18 @@
       })
     }
 
+    const updateFund2 = (receiptRecord) => {
+      $.ajax({
+        type: 'POST',
+        url: `/contractMng/funds/convert?token=${window.localStorage.getItem('accessToken')}`,
+        contentType: 'application/json',
+        data: JSON.stringify(receiptRecord),
+        success: result => {
+          console.log('result: ', result)
+          window.location.reload()
+        }
+      })
+    }
 
   </script>
 

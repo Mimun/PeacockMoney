@@ -1580,6 +1580,102 @@ router.post('/funds3', async (req, res) => {
   })
 })
 
+// update fund when converting
+router.post('/funds/convert',async (req, res) => {
+  var obj = req.body
+  console.log('req.body', req.body)
+  async.parallel({
+    fundFrom: callback => {
+      // var id = mongoose.Types.ObjectId.isValid(req.body.from) ? mongoose.Types.ObjectId(req.body.from) : null
+      var id = obj.from
+      console.log('id from: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+      } else {
+        callback(null, {})
+      }
+    },
+    fundTo: callback => {
+      var id = obj.to
+      console.log('id to: ', id)
+
+      if (id) {
+        Fund.findOne({ storeId: id }).exec(callback)
+
+      } else {
+        callback(null, {})
+      }
+
+    }
+  }, async (err, results) => {
+    if (err) throw err
+    console.log('results: ', results)
+    var fundFrom = results.fundFrom
+    var fundTo = results.fundTo
+    try {
+      var receivingObj = {
+        ...obj,
+        type: obj.type==='iCash'? 'cash': 'iCash',
+        from: obj.to,
+        to: obj.from,
+        storeId: obj.customerId,
+        storeName: obj.customerName,
+        customerId: obj.storeId,
+        customerName: obj.storeName,
+      }
+      switch (obj.type) {
+        case ('cash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.cash = parseFloat(fundFrom.cash) - Math.abs(parseFloat(obj.paid))
+            fundFrom.receiptRecords.push({ ...obj, paid: -Math.abs(obj.paid), receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+         
+          break
+        case ('iCash'):
+          if (fundFrom && !_.isEmpty(fundFrom)) {
+            fundFrom.iCash = parseFloat(fundFrom.iCash) - Math.abs(parseFloat(obj.paid))
+            fundFrom.receiptRecords.push({ ...obj, paid: -Math.abs(obj.paid), receiptType: 2, receiptId: 'C-Chuyển NB', receiptReason: 'Chuyển NB' })
+          }
+          break
+        default:
+      }
+
+      await Fund.findOneAndUpdate({ _id: fundFrom._id }, { $set: fundFrom }, { new: true }).exec(async (err, result)=>{
+        if(err) throw err
+        switch (receivingObj.type) {
+          case ('cash'):
+            if (result && !_.isEmpty(result)) {
+              result.cash = parseFloat(result.cash) + Math.abs(parseFloat(obj.paid))
+              result.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Nhận NB', receiptReason: 'Nhận NB' })
+            }
+           
+            break
+          case ('iCash'):
+            if (result && !_.isEmpty(result)) {
+              result.iCash = parseFloat(result.iCash) + Math.abs(parseFloat(obj.paid))
+              result.receiptRecords.push({ ...receivingObj, paid: +Math.abs(receivingObj.paid), receiptType: 1, receiptId: 'T-Nhận NB', receiptReason: 'Nhận NB' })
+            }
+            break
+          default:
+        }
+  
+        await Fund.findOneAndUpdate({ _id: result._id }, { $set: result }, { new: true })
+      })
+
+    
+
+      console.log('fund from after transferring: ', fundFrom)
+      console.log('fund to after transferring: ', fundTo)
+      res.send({ fundFrom: fundFrom.receiptRecords[fundFrom.receiptRecords.length - 1], fundTo: fundTo.receiptRecords[fundTo.receiptRecords.length - 1] })
+
+      
+    } catch (error) {
+      console.error(error)
+    }
+  })
+})
+
 const updateFund = async (id, queries) => {
   // return new Promise((resolve, reject) => {
   //   Fund.findOneAndUpdate({ _id: fund._id }, { $set: fund }).exec((err, result) => {
