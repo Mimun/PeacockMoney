@@ -130,7 +130,7 @@
           </tbody>
         </table>
       </div>
-      <div class="table-container">
+      <!-- <div class="table-container">
         <table class="table table-bordered table-striped table-hover total-table" id="total-table">
           <thead>
             <tr>
@@ -155,7 +155,7 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
 
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -247,6 +247,7 @@
         return item.receiptId
       }).
       map((objs, key) => {
+        // console.log("OBJS: ", objs)
         switch (index) {
           case (1):
             var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objs, key))))
@@ -372,16 +373,16 @@
       displayTable('table.case-table thead th.monthly', 'table.case-table tbody tr', customMonthlyCaseReport, 2)
 
       // render total
-      document.querySelectorAll('table.total-table tbody th:not(.static)').forEach(element => {
-        element.closest('tr').removeChild(element)
-      })
+      // document.querySelectorAll('table.total-table tbody th:not(.static)').forEach(element => {
+      //   element.closest('tr').removeChild(element)
+      // })
 
-      displayTable('table.total-table thead th.daily', 'table.total-table tbody tr', customTotalDailyMoneyReport, 1)
-      displayTable('table.total-table thead th.monthly', 'table.total-table tbody tr', customTotalMonthlyMoneyReport, 1)
+      // displayTable('table.total-table thead th.daily', 'table.total-table tbody tr', customTotalDailyMoneyReport, 1)
+      // displayTable('table.total-table thead th.monthly', 'table.total-table tbody tr', customTotalMonthlyMoneyReport, 1)
 
       calculateColumnSum('table.money-table')
       calculateColumnSum('table.case-table')
-      calculateColumnSum('table.total-table')
+      // calculateColumnSum('table.total-table')
 
     }
 

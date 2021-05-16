@@ -1333,13 +1333,24 @@ router.post('/moneyReport/getReport', (req, res, next) => {
 })
 
 // money report of company
-const handleReceiptArray2 = (chosenDate, chosenMonth, funds, callback) => {
+const handleReceiptArray2 = (chosenDate, chosenMonth, funds, stores, callback) => {
     try {
         var dailyMoneyReport = [],
             monthlyMoneyReport = [],
-            customFundReceiptRecords = []
+            customFundReceiptRecords = [],
+            storeIds = stores.map(store => {
+                return getNestedValue(findNestedObj(store.metadata, 'name', 'id'))
+            })
+        console.log({ storeIds })
         funds.forEach(fund => {
-            customFundReceiptRecords = customFundReceiptRecords.concat(fund.receiptRecords)
+            fund.receiptRecords.forEach(receipt=>{
+                if (storeIds.includes(receipt.storeId)) {
+                    // customFundReceiptRecords = customFundReceiptRecords.concat(fund.receiptRecords)
+                    customFundReceiptRecords.push(receipt)
+
+                }
+            })
+          
         })
         console.log('custom fund receipt: ', customFundReceiptRecords)
         if (customFundReceiptRecords && customFundReceiptRecords.length !== 0) {
@@ -1384,7 +1395,7 @@ router.get('/companyMoneyReport', (req, res, next) => {
         }
     }, (err, results) => {
         if (err) throw err
-        handleReceiptArray2(chosenDate, chosenMonth, results.funds, (dailyMoneyReport, monthlyMoneyReport) => {
+        handleReceiptArray2(chosenDate, chosenMonth, results.funds, results.stores, (dailyMoneyReport, monthlyMoneyReport) => {
             res.render('companyMoneyReport', { store: results.stores, contracts: results.funds, dailyMoneyReport, monthlyMoneyReport })
 
         })
@@ -1414,8 +1425,7 @@ router.post('/companyMoneyReport/getReport', (req, res, next) => {
 
     }, (err, results) => {
         if (err) throw err
-        console.log('results contract: ', results.contracts.length)
-        handleReceiptArray2(chosenDate, chosenMonth, results.funds, (dailyMoneyReport, monthlyMoneyReport) => {
+        handleReceiptArray2(chosenDate, chosenMonth, results.funds, results.stores, (dailyMoneyReport, monthlyMoneyReport) => {
             console.log('daily result: ', dailyMoneyReport.length)
             console.log('monthly result: ', monthlyMoneyReport.length)
 
@@ -1478,7 +1488,7 @@ const handleReceiptArray3 = (chosenDate, chosenMonth, contracts, callback) => {
                             if (receipt !== null) {
                                 totalMoneyReport.push({
                                     ...receipt,
-                                    storeId: receipt.id ? receipt.id.split('.')[0] : '-',
+                                    storeId: receipt.storeId,
                                     itemType: itemType,
                                     itemTypeId: itemTypeId,
                                     contractId: contract.id,

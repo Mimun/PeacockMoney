@@ -213,16 +213,12 @@
       var abc = _(array).groupBy('itemType').map((objs, key) => {
         return {
           itemType: key,
-          presentValue: _.sum(_(objs).groupBy('contractId').map((objs2, key) => {
-            return objs2.map(obj => {
-              return obj.presentValue
-            }).pop()
-          }).value()),
+       
           array: _(objs).groupBy('storeId').map((objects, key) => {
             // console.log('objects abcdef: ', objects)
             return {
               storeId: key,
-              receipts: _(objects).flatMap('array').groupBy('receiptId').map((objects, key) => {
+              receipts: _(objects).groupBy('receiptId').map((objects, key) => {
                 switch (index) {
                   case 1:
                     var def = _.zipObject(keys, keys.map(key => _.sum(_.map(objects, key))))
@@ -240,7 +236,11 @@
                     break;
                 }
               }).value(),
-
+              presentValue: _.sum(_(objects).groupBy('contractId').map((objs2, key) => {
+                return objs2.map(obj => {
+                  return obj.presentValue
+                }).pop()
+              }).value()),
 
             }
           }).value()
@@ -336,19 +336,26 @@
           var obj = findNestedObj(array, 'itemType', element2.id)
           // console.log('obj: ', obj, ', itemType: ', element2.id, ', storeid: ', element1.id)
           if (obj) {
-            if (keyIndex === 0) {
-              var obj2 = findNestedObj(obj.array, 'storeId', element1.id)
-              if (obj2) {
-                // console.log('obj2: ', obj2, ', receiptid: ', obj2.receipts)
-                th.innerHTML = getNestedValue(findNestedObj(obj2.receipts, 'receiptId', receiptId)).toLocaleString()
-              } else {
-                th.innerHTML = '-'
-              }
-
-            } else {
+            // if (keyIndex === 0) {
              
-              th.innerHTML = obj.presentValue.toLocaleString()
+            // } else {
+             
+            //   th.innerHTML = obj.presentValue.toLocaleString()
+            // }
+            var obj2 = findNestedObj(obj.array, 'storeId', element1.id)
+            if (obj2) {
+              // console.log('obj2: ', obj2, ', receiptid: ', obj2.receipts)
+              if(keyIndex === 0){
+                th.innerHTML = getNestedValue(findNestedObj(obj2.receipts, 'receiptId', receiptId)).toLocaleString()
+
+              } else {
+                th.innerHTML = obj2.presentValue.toLocaleString()
+
+              }
+            } else {
+              th.innerHTML = '-'
             }
+
 
           } else {
             th.innerHTML = '-'
