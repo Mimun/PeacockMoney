@@ -36,7 +36,7 @@
     "jsonschema": "^1.2.6",
     "jsonwebtoken": "^8.5.1",
     "jspdf": "^2.1.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "material-components-web": "^7.0.0",
     "mdbootstrap": "^4.19.1",
     "mongoose": "^5.10.3",
