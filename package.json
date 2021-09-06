@@ -3,7 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "install-authen": "cd lab/authentication && npm install",
+    "install-contractMng": "cd lab/contractManagement && npm install",
+    "install-evaluationMng": "cd lab/evaluationMng && npm install",
+    "install-systemMng": "cd lab/systemManagement && npm install",
+    "install-uploadImage": "cd lab/uploadImage && npm install",
+    "lib-install": "npm install && npm run install-authen && npm run install-contractMng && npm run install-evaluationMng && npm run install-systemMng &&npm run install-uploadImage "
   },
   "dependencies": {
     "ajax": "0.0.4",
@@ -11,6 +17,7 @@
     "atob": "^2.1.2",
     "body-parser": "^1.19.0",
     "btoa": "^1.2.1",
+    "concurrently": "^6.2.1",
     "cookie-parser": "~1.4.4",
     "cron": "^1.8.2",
     "cropperjs": "^1.5.8",
