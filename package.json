@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "ajax": "0.0.4",
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "atob": "^2.1.2",
     "body-parser": "^1.19.0",
     "btoa": "^1.2.1",
