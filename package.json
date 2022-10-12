@@ -28,7 +28,7 @@
     "fetch": "^1.1.0",
     "font-awesome": "^4.7.0",
     "html2canvas": "^1.0.0-rc.7",
-    "html2pdf.js": "^0.9.2",
+    "html2pdf.js": "^0.10.1",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
     "jquery.redirect": "^1.1.4",
